@@ -25,15 +25,17 @@ app.use(express.json())
 app.use(methodOverride('_method'))
 
 // ── Session ──────────────────────────────────
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'dev-secret',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 1000 * 60 * 60 * 8 // 8 ชั่วโมง
-  }
-}))
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "dev-secret",
+    resave: false,
+    saveUninitialized: false,
+    ccookie: {
+      secure: false,
+      maxAge: 1000 * 60 * 60 * 8,
+    },
+  }),
+);
 
 // ── Flash messages ───────────────────────────
 app.use(flash())
