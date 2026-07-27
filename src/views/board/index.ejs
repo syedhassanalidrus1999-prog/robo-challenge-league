@@ -1,0 +1,111 @@
+<div class="page-hd">
+  <div class="page-title">สรุปผล — <span
+      style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
+      <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
+    </span></div>
+  <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#16A34A">
+    <i class="ti ti-point-filled" style="font-size:14px"></i>Live
+  </div>
+</div>
+
+<div class="card">
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>อันดับ</th>
+          <th>ชื่อทีม</th>
+          <th>รอบที่ 1</th>
+          <th>รอบที่ 2</th>
+          <th>คะแนนที่ดีที่สุด</th>
+          <th>สถานะ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (ranked.length===0) { %>
+          <tr>
+            <td colspan="6">
+              <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
+            </td>
+          </tr>
+          <% } %>
+            <% ranked.forEach(function(t, i) { %>
+              <tr>
+                <td>
+                  <div class="rank-cell">
+                    <% if (i===0) { %><span style="font-size:20px">🥇</span><span class="rank-gold">
+                        <%= i+1 %>
+                      </span>
+                      <% } else if (i===1) { %><span style="font-size:20px">🥈</span><span class="rank-silver">
+                          <%= i+1 %>
+                        </span>
+                        <% } else if (i===2) { %><span style="font-size:20px">🥉</span><span class="rank-bronze">
+                            <%= i+1 %>
+                          </span>
+                          <% } else { %><span class="rank-other">#<%= i+1 %></span>
+                            <% } %>
+                  </div>
+                </td>
+                <td>
+                  <div class="team-name">
+                    <%= t.name %>
+                  </div>
+                  <div style="font-size:11px;color:#94A3B8">
+                    <%= t.institution || '' %>
+                  </div>
+                </td>
+                <td>
+                  <% if (parseFloat(t.r1_score)> 0) { %>
+                    <span class="score-num">
+                      <%= parseFloat(t.r1_score) %> pts
+                    </span>
+                    <span style="color:#CBD5E1;margin:0 3px">·</span>
+                    <span class="score-time">
+                      <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2) + ' sec' : '' %>
+                    </span>
+                    <% } else { %><span style="color:#CBD5E1">—</span>
+                      <% } %>
+                </td>
+                <td>
+                  <% if (parseFloat(t.r2_score)> 0) { %>
+                    <span class="score-num">
+                      <%= parseFloat(t.r2_score) %> pts
+                    </span>
+                    <span style="color:#CBD5E1;margin:0 3px">·</span>
+                    <span class="score-time">
+                      <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2) + ' sec' : '' %>
+                    </span>
+                    <% } else { %><span style="color:#CBD5E1">—</span>
+                      <% } %>
+                </td>
+                <td>
+                  <% if (parseFloat(t.best_score)> 0) { %>
+                    <div style="display:flex;align-items:baseline;gap:6px">
+                      <span class="best-score">
+                        <%= parseFloat(t.best_score) %> pts
+                      </span>
+                      <span style="color:#CBD5E1">·</span>
+                      <span class="score-time" style="font-size:13px">
+                        <%= t.best_time ? parseFloat(t.best_time).toFixed(2) + ' sec' : '' %>
+                      </span>
+                    </div>
+                    <div class="bar-bg">
+                      <div class="bar-fill"
+                        style="width:<%= maxScore > 0 ? Math.round(parseFloat(t.best_score)/maxScore*100) : 0 %>%;background:<%= i===0?'#D97706':i===1?'#64748B':i===2?'#92400E':'#2563EB' %>">
+                      </div>
+                    </div>
+                    <% } else { %><span style="color:#CBD5E1">—</span>
+                      <% } %>
+                </td>
+                <td>
+                  <% if (t.status==='approved' ) { %><span class="badge badge-green badge-dot">เสร็จสิ้น</span>
+                    <% } else if (t.status==='rejected' ) { %><span class="badge badge-red badge-dot">ไม่ผ่าน</span>
+                      <% } else { %><span class="badge badge-blue badge-dot">รอพิจารณา</span>
+                        <% } %>
+                </td>
+              </tr>
+              <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>

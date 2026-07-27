@@ -1,0 +1,343 @@
+<% var TIER_COLOR={ beginner: 'green' , intermediate: 'blue' , advance: 'amber' } %>
+  <% var STATUS_LABEL={ approved: 'อนุมัติแล้ว' , pending: 'รอพิจารณา' , rejected: 'ไม่ผ่าน' } %>
+    <% var STATUS_BADGE={ approved: 'badge-green' , pending: 'badge-blue' , rejected: 'badge-red' } %>
+
+  <div class="stat-grid">
+    <% ['beginner','intermediate','advance'].forEach(function(t) { %>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div>
+            <div class="stat-lbl">
+              <%= t==='beginner' ?'Beginner':t==='intermediate' ?'Intermediate':'Advance' %>
+            </div>
+            <div class="stat-num">
+              <%= counts[t] || 0 %>
+            </div>
+          </div>
+          <div class="stat-icon"
+            style="background:<%= t==='beginner'?'#F0FDF4':t==='intermediate'?'#EFF6FF':'#FFF7ED' %>">
+            <i class="ti <%= t==='beginner'?'ti-leaf':t==='intermediate'?'ti-flame':'ti-rocket' %>"
+              style="color:<%= t==='beginner'?'#16A34A':t==='intermediate'?'#2563EB':'#EA580C' %>"></i>
+          </div>
+        </div>
+        <div class="stat-lbl" style="margin-top:2px">ทีม</div>
+      </div>
+      <% }) %>
+        <div class="stat-card">
+          <div class="stat-top">
+            <div>
+              <div class="stat-lbl">ทั้งหมด</div>
+              <div class="stat-num">
+                <%= counts.total || 0 %>
+              </div>
+            </div>
+            <div class="stat-icon" style="background:#F5F3FF"><i class="ti ti-users" style="color:#7C3AED"></i></div>
+          </div>
+          <div class="stat-lbl" style="margin-top:2px">ทีม</div>
+        </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-title">รุ่น <span
+          style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
+          <%= TIER_LABEL[tier] %>
+        </span></div>
+      <button class="btn btn-primary btn-sm" onclick="openModal('addModal')"><i class="ti ti-plus"></i>
+        เพิ่มทีม</button>
+    </div>
+    <div class="toolbar">
+      <form method="GET" action="/teams" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1">
+        <input type="hidden" name="tier" value="<%= tier %>">
+        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" name="search"
+            placeholder="ค้นหาชื่อทีม / สถาบัน" value="<%= search %>"></div>
+        <button type="submit" class="btn btn-secondary btn-sm">ค้นหา</button>
+        <% if (search) { %><a href="/teams?tier=<%= tier %>" class="btn btn-ghost btn-sm">ล้าง</a>
+          <% } %>
+      </form>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>ชื่อทีม</th>
+            <th>สถาบัน</th>
+            <th>นักเรียน 1</th>
+            <th>นักเรียน 2</th>
+            <th>นักเรียน 3</th>
+            <th>โคช</th>
+            <th>เบอร์โทร</th>
+            <th>สถานะ</th>
+            <th>โน้ต</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (teams.length===0) { %>
+            <tr>
+              <td colspan="11">
+                <div class="empty"><i class="ti ti-users-minus"></i>ยังไม่มีทีมในรุ่น <%= TIER_LABEL[tier] %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+              <% teams.forEach(function(t) { %>
+                <tr>
+                  <td><span class="team-id">
+                      <%= t.id %>
+                    </span></td>
+                  <td><span class="team-name">
+                      <%= t.name %>
+                    </span></td>
+                  <td>
+                    <%= t.institution || '—' %>
+                  </td>
+                  <td style="font-size:12px">
+                    <%= t.student_1 || '—' %>
+                      <% if (t.student_1_dob) { %>
+                        <div style="font-size:10px;color:#94A3B8">
+                          <%= new Date(t.student_1_dob).toLocaleDateString('th-TH') %>
+                            (อายุ <%= new Date().getFullYear() - new Date(t.student_1_dob).getFullYear() %> ปี)
+                        </div>
+                        <% } %>
+                  </td>
+                  <td style="font-size:12px">
+                    <%= t.student_2 || '—' %>
+                      <% if (t.student_2_dob) { %>
+                        <div style="font-size:10px;color:#94A3B8">
+                          <%= new Date(t.student_2_dob).toLocaleDateString('th-TH') %>
+                            (อายุ <%= new Date().getFullYear() - new Date(t.student_2_dob).getFullYear() %> ปี)
+                        </div>
+                        <% } %>
+                  </td>
+                  <td style="font-size:12px">
+                    <%= t.student_3 || '—' %>
+                      <% if (t.student_3_dob) { %>
+                        <div style="font-size:10px;color:#94A3B8">
+                          <%= new Date(t.student_3_dob).toLocaleDateString('th-TH') %>
+                            (อายุ <%= new Date().getFullYear() - new Date(t.student_3_dob).getFullYear() %> ปี)
+                        </div>
+                        <% } %>
+                  </td>
+                  <td style="font-size:12px">
+                    <%= t.coach || '—' %>
+                  </td>
+                  <td style="font-size:12px">
+                    <%= t.phone || '—' %>
+                  </td>
+                  <td><span class="badge <%= STATUS_BADGE[t.status] %> badge-dot">
+                      <%= STATUS_LABEL[t.status] %>
+                    </span></td>
+                  <td
+                    style="font-size:12px;color:#64748B;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                    <%= t.note || '—' %>
+                  </td>
+                  <td>
+                    <div class="action-row">
+                      <button class="btn btn-icon btn-secondary" onclick="openEditModal(<%= JSON.stringify(t) %>)"
+                        title="แก้ไข"><i class="ti ti-edit" style="font-size:15px"></i></button>
+                      <form method="POST" action="/teams/<%= t.id %>?_method=DELETE&tier=<%= tier %>"
+                        style="display:inline" onsubmit="return confirm('ยืนยันการลบทีม <%= t.name %>?')">
+                        <button type="submit" class="btn btn-icon btn-danger" title="ลบ"><i class="ti ti-trash"
+                            style="font-size:15px"></i></button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal: เพิ่มทีม -->
+  <div id="addModal" class="modal-backdrop" style="display:none">
+    <div class="modal">
+      <div class="modal-hd">
+        <div>
+          <div class="modal-title">เพิ่มทีมใหม่</div>
+          <div class="modal-sub">ระบบจะกำหนด ID อัตโนมัติ</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('addModal')"><i class="ti ti-x"></i></button>
+      </div>
+      <form method="POST" action="/teams">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="fg">
+              <div class="fl">ชื่อทีม *</div><input class="fi" name="name" placeholder="ชื่อทีม" required>
+            </div>
+            <div class="fg">
+              <div class="fl">สถาบัน *</div><input class="fi" name="institution" placeholder="โรงเรียน / สถาบัน"
+                required>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="fg">
+              <div class="fl">รุ่น *</div>
+              <select class="fi" name="tier">
+                <option value="beginner" <%=tier==='beginner' ?'selected':'' %>>Beginner</option>
+                <option value="intermediate" <%=tier==='intermediate' ?'selected':'' %>>Intermediate</option>
+                <option value="advance" <%=tier==='advance' ?'selected':'' %>>Advance</option>
+              </select>
+            </div>
+            <div class="fg">
+              <div class="fl">สถานะ</div>
+              <select class="fi" name="status">
+                <option value="pending">รอพิจารณา</option>
+                <option value="approved">อนุมัติแล้ว</option>
+                <option value="rejected">ไม่ผ่าน</option>
+              </select>
+            </div>
+          </div>
+          <div class="section-div"></div>
+          <div
+            style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">
+            สมาชิกทีม</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 1</div>
+              <div class="form-grid" style="margin-bottom:0">
+                <div class="fg">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_1" placeholder="ชื่อ-นามสกุล">
+                </div>
+                <div class="fg">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_1_dob">
+                </div>
+              </div>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 2</div>
+              <div class="form-grid" style="margin-bottom:0">
+                <div class="fg">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_2" placeholder="ชื่อ-นามสกุล">
+                </div>
+                <div class="fg">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_2_dob">
+                </div>
+              </div>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 3</div>
+              <div class="form-grid" style="margin-bottom:0">
+                <div class="fg">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_3" placeholder="ชื่อ-นามสกุล">
+                </div>
+                <div class="fg">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_3_dob">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="fg">
+              <div class="fl">ชื่อโคช</div><input class="fi" name="coach" placeholder="ชื่อโคช">
+            </div>
+          </div>
+          <div class="fg">
+            <div class="fl">โน้ต</div><textarea class="fi" name="note" placeholder="หมายเหตุ..."></textarea>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: แก้ไขทีม -->
+  <div id="editModal" class="modal-backdrop" style="display:none">
+    <div class="modal">
+      <div class="modal-hd">
+        <div>
+          <div class="modal-title">แก้ไขข้อมูลทีม</div>
+          <div class="modal-sub" id="editModalSub"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal('editModal')"><i class="ti ti-x"></i></button>
+      </div>
+      <form id="editForm" method="POST">
+        <input type="hidden" name="_method" value="PUT">
+        <input type="hidden" name="tier" id="edit_tier_hidden">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="fg">
+              <div class="fl">ชื่อทีม *</div><input class="fi" name="name" id="edit_name" required>
+            </div>
+            <div class="fg">
+              <div class="fl">สถาบัน *</div><input class="fi" name="institution" id="edit_institution" required>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="fg">
+              <div class="fl">รุ่น</div>
+              <select class="fi" name="tier" id="edit_tier">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advance">Advance</option>
+              </select>
+            </div>
+            <div class="fg">
+              <div class="fl">สถานะ</div>
+              <select class="fi" name="status" id="edit_status">
+                <option value="pending">รอพิจารณา</option>
+                <option value="approved">อนุมัติแล้ว</option>
+                <option value="rejected">ไม่ผ่าน</option>
+              </select>
+            </div>
+          </div>
+          <div class="section-div"></div>
+          <div
+            style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">
+            สมาชิกทีม</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 1</div>
+              <div class="form-grid" style="margin-bottom:0">
+                <div class="fg">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_1" id="edit_s1">
+                </div>
+                <div class="fg">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_1_dob" id="edit_s1_dob">
+                </div>
+              </div>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 2</div>
+              <div class="form-grid" style="margin-bottom:0">
+                <div class="fg">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_2" id="edit_s2">
+                </div>
+                <div class="fg">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_2_dob" id="edit_s2_dob">
+                </div>
+              </div>
+            </div>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 3</div>
+              <div class="form-grid" style="margin-bottom:0">
+                <div class="fg">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_3" id="edit_s3">
+                </div>
+                <div class="fg">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_3_dob" id="edit_s3_dob">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="fg">
+              <div class="fl">ชื่อโคช</div><input class="fi" name="coach" id="edit_coach">
+            </div>
+          </div>
+          <div class="fg">
+            <div class="fl">โน้ต</div><textarea class="fi" name="note" id="edit_note"></textarea>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>

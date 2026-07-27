@@ -1,0 +1,24 @@
+<div class="topbar">
+  <div class="topbar-title">
+    <% if (typeof pageTitle !== 'undefined') { %>
+      <%- pageTitle %>
+    <% } %>
+  </div>
+  <div class="topbar-right">
+    <% if (typeof tierSelector !== 'undefined' && tierSelector && user && user.role === 'admin') { %>
+    <div class="tier-toggle">
+      <% ['beginner','intermediate','advance'].forEach(t => { %>
+      <a href="?tier=<%= t %>"
+         class="tier-btn t-<%= t[0] %> <%= (typeof activeTier !== 'undefined' && activeTier === t) ? 'active' : '' %>">
+        <%= t === 'beginner' ? 'Beginner' : t === 'intermediate' ? 'Intermediate' : 'Advance' %>
+      </a>
+      <% }) %>
+    </div>
+    <% } %>
+    <% if (typeof activeTier !== 'undefined' && user && user.role === 'judge') { %>
+    <span class="badge badge-blue" style="font-size:12px;padding:5px 14px">
+      <%= activeTier === 'beginner' ? 'Beginner' : activeTier === 'intermediate' ? 'Intermediate' : 'Advance' %>
+    </span>
+    <% } %>
+  </div>
+</div>

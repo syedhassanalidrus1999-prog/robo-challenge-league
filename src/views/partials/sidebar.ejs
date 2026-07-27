@@ -1,0 +1,56 @@
+<nav class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon" style="background:transparent;padding:0">
+      <img src="/RCL Logo.png" style="width:34px;height:34px;object-fit:contain">
+    </div>
+    <div class="sb-logo-text">
+      <div class="sb-logo-name">ROBO CHALLENGE LEAGUE</div>
+      <div class="sb-logo-role">
+        <% if (user && user.role === 'admin') { %>Admin Panel
+        <% } else if (user) { %>กรรมการ — <%= user.tier === 'beginner' ? 'Beginner' : user.tier === 'intermediate' ? 'Intermediate' : 'Advance' %>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-nav">
+    <% if (user && user.role === 'admin') { %>
+    <div class="sb-section">จัดการ</div>
+    <a href="/teams" class="sb-item <%= currentPath.startsWith('/teams') ? 'active' : '' %>">
+      <i class="ti ti-users"></i> จัดการทีม
+    </a>
+    <a href="/board"
+      class="sb-item <%= currentPath === '/board' || (currentPath.startsWith('/board') && !currentPath.startsWith('/board/criteria')) ? 'active' : '' %>">
+      <i class="ti ti-trophy"></i> สรุปผลคะแนน
+    </a>
+    <a href="/board/criteria" class="sb-item <%= currentPath.startsWith('/board/criteria') ? 'active' : '' %>">
+      <i class="ti ti-settings"></i> เกณฑ์คะแนน
+    </a>
+    <% } %>
+
+    <div class="sb-section">การแข่งขัน</div>
+    <a href="/scores" class="sb-item <%= currentPath.startsWith('/scores') ? 'active' : '' %>">
+      <i class="ti ti-clipboard-check"></i> ลงคะแนน
+    </a>
+
+    <% if (!user || user.role === 'admin') { %>
+    <div class="sb-section">ทั่วไป</div>
+    <a href="/" class="sb-item" target="_blank">
+      <i class="ti ti-world"></i> หน้าสาธารณะ
+    </a>
+    <% } %>
+  </div>
+
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-avatar"><%= user ? user.name.charAt(0).toUpperCase() : '?' %></div>
+      <div class="sb-user-info">
+        <div class="sb-uname"><%= user ? user.name : '' %></div>
+        <div class="sb-urole"><%= user && user.role === 'admin' ? 'ผู้ดูแลระบบ' : 'กรรมการ' %></div>
+      </div>
+      <a href="/auth/logout" class="sb-logout" title="ออกจากระบบ">
+        <i class="ti ti-logout"></i>
+      </a>
+    </div>
+  </div>
+</nav>

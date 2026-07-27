@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robo Challenge League</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #061a3a;
+      --navy-2: #0a2c63;
+      --blue: #2563eb;
+      --blue-2: #3b82f6;
+      --gold: #f59e0b;
+      --text: #10213f;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --page: #f4f7fb;
+      --surface: #fff;
+      --green: #16a34a;
+      --amber: #ea580c;
+      --red: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--page);
+      font-family: 'Sarabun', sans-serif;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .pub-wrap {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 88% 8%, rgba(37, 99, 235, .12), transparent 25%),
+        radial-gradient(circle at 10% 35%, rgba(245, 158, 11, .05), transparent 22%),
+        var(--page);
+    }
+
+    /* TOPBAR */
+    .pub-topbar {
+      height: 70px;
+      padding: 0 max(24px, calc((100vw - 1220px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, .92);
+      border-bottom: 1px solid rgba(226, 232, 240, .9);
+      backdrop-filter: blur(16px);
+    }
+
+    .pub-topbar-logo img {
+      height: 100px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .pub-topnav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pub-topnav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 14px;
+      border-radius: 11px;
+      color: #475569;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: .18s ease;
+    }
+
+    .pub-topnav a:hover {
+      color: var(--blue);
+      background: #eff6ff;
+    }
+
+    .pub-topnav a.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue), #1d4ed8);
+      box-shadow: 0 9px 22px rgba(37, 99, 235, .24);
+    }
+
+    .pub-topnav a:last-child {
+      color: #334155;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    /* HERO */
+    .pub-hero {
+      width: min(1220px, calc(100% - 40px));
+      min-height: 248px;
+      margin: 24px auto 0;
+      padding: 34px 42px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      align-items: center;
+      gap: 30px;
+      overflow: hidden;
+      position: relative;
+      border-radius: 26px;
+      background:
+        linear-gradient(115deg, rgba(5, 24, 55, .99) 0%, rgba(9, 45, 99, .98) 58%, rgba(37, 99, 235, .92) 100%);
+      box-shadow: 0 24px 55px rgba(7, 27, 61, .20);
+    }
+
+    .pub-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .18;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .08) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: linear-gradient(to right, transparent 20%, #000 100%);
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 9px;
+      color: #bfdbfe;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+    }
+
+    .hero-live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 5px rgba(34, 197, 94, .14);
+    }
+
+    .pub-hero-title {
+      margin: 0;
+      color: #fff;
+      font-size: clamp(34px, 4.3vw, 56px);
+      font-weight: 800;
+      line-height: .96;
+      letter-spacing: -.9px;
+    }
+
+    .pub-hero-title span {
+      color: #fbbf24;
+    }
+
+    .pub-hero-sub {
+      margin: 15px 0 4px;
+      color: rgba(255, 255, 255, .93);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .pub-hero-sub2 {
+      margin: 0 0 21px;
+      color: rgba(255, 255, 255, .62);
+      font-size: 13px;
+    }
+
+    .pub-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pub-stat {
+      min-width: 145px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .17);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .10);
+      backdrop-filter: blur(8px);
+    }
+
+    .pub-stat-icon {
+      width: 37px;
+      height: 37px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, .12);
+      font-size: 19px;
+    }
+
+    .pub-stat-num {
+      font-size: 23px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .pub-stat-lbl {
+      margin-top: 4px;
+      color: rgba(255, 255, 255, .66);
+      font-size: 11px;
+    }
+
+    .hero-visual {
+      height: 190px;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, .15);
+      background:
+        radial-gradient(circle at 64% 35%, rgba(96, 165, 250, .55), transparent 20%),
+        linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03));
+    }
+
+    .hero-orbit {
+      width: 240px;
+      height: 240px;
+      position: absolute;
+      right: -24px;
+      top: -28px;
+      border: 1px solid rgba(255, 255, 255, .14);
+      border-radius: 50%;
+      box-shadow: 0 0 0 38px rgba(255, 255, 255, .035), 0 0 0 78px rgba(255, 255, 255, .02);
+    }
+
+    .city {
+      position: absolute;
+      inset: auto 0 0;
+      height: 96px;
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 8px;
+      opacity: .95;
+    }
+
+    .city span {
+      width: 28px;
+      border: 1px solid rgba(147, 197, 253, .32);
+      border-bottom: none;
+      background: linear-gradient(180deg, rgba(96, 165, 250, .38), rgba(30, 64, 175, .58));
+      box-shadow: inset 0 0 16px rgba(96, 165, 250, .12);
+    }
+
+    .city span:nth-child(1) {
+      height: 42px
+    }
+
+    .city span:nth-child(2) {
+      height: 70px
+    }
+
+    .city span:nth-child(3) {
+      height: 54px
+    }
+
+    .city span:nth-child(4) {
+      height: 90px
+    }
+
+    .city span:nth-child(5) {
+      height: 63px
+    }
+
+    .city span:nth-child(6) {
+      height: 80px
+    }
+
+    .city span:nth-child(7) {
+      height: 48px
+    }
+
+    .hero-logo-card {
+      width: 150px;
+      height: 150px;
+      position: absolute;
+      right: 78px;
+      top: 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, .24), 0 0 0 8px rgba(255, 255, 255, .06);
+    }
+
+    .hero-logo-card img {
+      width: 112px;
+      object-fit: contain;
+    }
+
+    /* MAIN */
+    .pub-body {
+      width: min(1220px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 22px 0 12px;
+    }
+
+    .pub-tab-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .pub-tier-tabs {
+      display: inline-flex;
+      gap: 5px;
+      padding: 5px;
+      border: 1px solid #dce5f1;
+      border-radius: 14px;
+      background: #eaf0f8;
+    }
+
+    .pub-tier-tab {
+      min-width: 146px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      color: #60708a;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: .18s ease;
+    }
+
+    .pub-tier-tab:hover {
+      color: var(--blue);
+      background: rgba(255, 255, 255, .7);
+    }
+
+    .pub-tier-tab.active {
+      color: var(--blue);
+      background: #fff;
+      box-shadow: 0 5px 14px rgba(15, 23, 42, .08);
+    }
+
+    .pub-tier-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .tier-count {
+      min-width: 23px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0 6px;
+      border-radius: 999px;
+      color: #475569;
+      background: #fff;
+      font-size: 11px;
+    }
+
+    .pub-tier-tab.active .tier-count {
+      color: var(--blue);
+      background: #eff6ff;
+    }
+
+    .pub-info {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 11px;
+      color: #7b8aa1;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: #fff;
+      font-size: 12px;
+    }
+
+    .pub-info a {
+      width: 27px;
+      height: 27px;
+      display: inline-grid;
+      place-items: center;
+      margin-left: 3px;
+      color: var(--blue);
+      border-radius: 8px;
+      background: #eff6ff;
+      text-decoration: none;
+    }
+
+    .pub-card {
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 14px 35px rgba(15, 23, 42, .06);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pub-nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pub-nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 16px;
+      margin-bottom: -1px;
+      color: #64748b;
+      border-bottom: 3px solid transparent;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .pub-nav-tab:hover {
+      color: var(--text);
+    }
+
+    .pub-nav-tab.active {
+      color: var(--blue);
+      border-bottom-color: var(--blue);
+    }
+
+    .table-tools {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 10px;
+    }
+
+    .search-box {
+      width: 255px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      color: #94a3b8;
+      border: 1px solid #dbe4ef;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+
+    .search-box:focus-within {
+      border-color: #93c5fd;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
+    }
+
+    .search-box input {
+      width: 100%;
+      border: none;
+      outline: none;
+      color: #334155;
+      background: transparent;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .result-count {
+      padding: 8px 10px;
+      color: #64748b;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th,
+    td {
+      padding: 15px 18px;
+      text-align: left;
+      border-bottom: 1px solid #edf1f6;
+    }
+
+    th {
+  position: sticky;
+  top: 0px;
+  z-index: 3;
+  color: #64748b;
+  background: #f8fafc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+
+    td {
+      color: #334155;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    tbody tr {
+      transition: .15s ease;
+    }
+
+    tbody tr:hover td {
+      background: #f8fbff;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .index-cell {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      color: #64748b;
+      border-radius: 10px;
+      background: #f1f5f9;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .team-id {
+      color: var(--blue);
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+
+    .team-name {
+      color: #10213f;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .institution {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #475569;
+    }
+
+    .institution i {
+      color: #94a3b8;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .badge-green {
+      color: #15803d;
+      background: #ecfdf3;
+    }
+
+    .badge-blue {
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+
+    .badge-amber {
+      color: #b45309;
+      background: #fff7ed;
+    }
+
+    .badge-red {
+      color: #b91c1c;
+      background: #fef2f2;
+    }
+
+    .badge-dot::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .rank-cell {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+    }
+
+    .rank-gold {
+      color: #b77900;
+    }
+
+    .rank-silver {
+      color: #64748b;
+    }
+
+    .rank-bronze {
+      color: #b45309;
+    }
+
+    .rank-other {
+      color: #94a3b8;
+    }
+
+    .score-num {
+      color: #0f172a;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .score-time {
+      display: block;
+      margin-top: 2px;
+      color: #64748b;
+      font-size: 11px;
+    }
+
+    .best-score {
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .bar-bg {
+      width: 120px;
+      height: 5px;
+      margin-top: 7px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: #e8eef7;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .empty {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 8px;
+      color: #94a3b8;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .empty i {
+      font-size: 38px;
+      color: #cbd5e1;
+    }
+
+    .empty strong {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .empty span {
+      color: #a0aec0;
+      font-size: 12px;
+    }
+
+    .hidden-row {
+      display: none;
+    }
+
+    .table-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 16px;
+      color: #7b8aa1;
+      border-top: 1px solid #edf1f6;
+      background: #fbfdff;
+      font-size: 11px;
+    }
+
+    .pub-footer {
+      width: min(1220px, calc(100% - 40px));
+      margin: 34px auto 0;
+      padding: 22px 0 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid #dfe6ef;
+    }
+
+    .pub-footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pub-footer-logo img {
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .pub-footer-name {
+      color: #263750;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .pub-footer-sub,
+    .pub-footer-social {
+      color: #7b8aa1;
+      font-size: 11px;
+    }
+
+    .pub-footer-social {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    @media (max-width: 900px) {
+      .pub-topbar {
+        height: 64px;
+        padding: 0 16px;
+      }
+
+      .pub-topbar-logo img {
+        height: 40px;
+      }
+
+      .pub-topnav a {
+        padding: 9px 10px;
+        font-size: 12px;
+      }
+
+      .pub-topnav a:nth-child(2) {
+        display: none;
+      }
+
+      .pub-hero {
+        width: calc(100% - 24px);
+        grid-template-columns: 1fr;
+        margin-top: 14px;
+        padding: 30px 24px;
+        border-radius: 20px;
+      }
+
+      .hero-visual {
+        display: none;
+      }
+
+      .pub-body {
+        width: calc(100% - 24px);
+        padding-top: 18px;
+      }
+
+      .pub-tab-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .pub-tier-tabs {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .pub-tier-tab {
+        min-width: 135px;
+        flex: 1;
+      }
+
+      .pub-info {
+        align-self: flex-end;
+      }
+
+      .card-top {
+        align-items: stretch;
+        flex-direction: column;
+        padding-top: 8px;
+      }
+
+      .table-tools {
+        padding: 0 4px 10px;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      th {
+        top: 64px;
+      }
+
+      .pub-footer {
+        width: calc(100% - 24px);
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .pub-topnav a:first-child {
+        display: none;
+      }
+
+      .pub-hero-title {
+        font-size: 34px;
+      }
+
+      .pub-hero-sub {
+        font-size: 15px;
+      }
+
+      .pub-stats {
+        gap: 8px;
+      }
+
+      .pub-stat {
+        min-width: 0;
+        flex: 1 1 110px;
+        padding: 10px;
+      }
+
+      .pub-stat-icon {
+        width: 34px;
+        height: 34px;
+      }
+
+      .pub-nav-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 12px 7px;
+      }
+
+      .result-count {
+        display: none;
+      }
+    }
+    .mobile-cards { display: none; padding: 12px; }
+.team-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+.team-card:last-child { margin-bottom: 0; }
+.team-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.team-card-name { font-size: 15px; font-weight: 800; color: #1E293B; }
+.team-card-id { font-size: 11px; font-weight: 700; color: #2563EB; margin-top: 2px; }
+.team-card-info { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748B; }
+
+@media (max-width: 640px) {
+  .desktop-table { display: none; }
+  .mobile-cards { display: block; }
+  .table-scroll { overflow-x: visible; }
+}
+@media (max-width: 480px) {
+  .pub-topnav a:first-child { display: none; }
+  .pub-hero { grid-template-columns: 1fr; }
+  .pub-hero-title { font-size: 24px; }
+  .pub-stat { flex: 1 1 80px; }
+  .pub-stat-icon { display: none; }
+}
+  </style>
+</head>
+
+<body>
+  <div class="pub-wrap">
+    <header class="pub-topbar">
+      <div class="pub-topbar-logo"><img src="/RCL Logo.png" alt="RCL"></div>
+      <nav class="pub-topnav">
+        <a href="/?tier=<%= activeTier %>&view=teams" class="<%= view==='teams'?'active':'' %>"><i
+            class="ti ti-home"></i> หน้าสถานะ</a>
+        <a href="/?tier=<%= activeTier %>&view=board" class="<%= view==='board'?'active':'' %>"><i
+            class="ti ti-trophy"></i> ผลการแข่งขัน</a>
+        <a href="/register"
+          style="background:#2563EB;color:#fff;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
+          <i class="ti ti-pencil-plus"></i> สมัครแข่งขัน
+        </a>
+        <a href="/auth/login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
+      </nav>
+    </header>
+
+    <section class="pub-hero">
+      <div class="hero-copy">
+        <div class="hero-eyebrow"><span class="hero-live-dot"></span> Competition status</div>
+        <h1 class="pub-hero-title">ROBO<br><span>CHALLENGE LEAGUE</span></h1>
+        <div class="pub-hero-sub">ระบบแสดงผลการแข่งขันหุ่นยนต์</div>
+        <div class="pub-hero-sub2">ติดตามสถานะทีมและผลการแข่งขันแบบเรียลไทม์</div>
+        <div class="pub-stats">
+          <div class="pub-stat">
+            <div class="pub-stat-icon"><i class="ti ti-users"></i></div>
+            <div>
+              <div class="pub-stat-num">
+                <%= teamCount || 0 %>
+              </div>
+              <div class="pub-stat-lbl">ทีมทั้งหมด</div>
+            </div>
+          </div>
+          <div class="pub-stat">
+            <div class="pub-stat-icon"><i class="ti ti-robot"></i></div>
+            <div>
+              <div class="pub-stat-num">3</div>
+              <div class="pub-stat-lbl">รุ่นการแข่งขัน</div>
+            </div>
+          </div>
+          <div class="pub-stat">
+            <div class="pub-stat-icon"><i class="ti ti-trophy"></i></div>
+            <div>
+              <div class="pub-stat-num">
+                <%= scoredCount || 0 %>
+              </div>
+              <div class="pub-stat-lbl">ประกาศผลแล้ว</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="pub-body">
+      <div class="pub-tab-row">
+        <div class="pub-tier-tabs">
+          <a href="/?tier=beginner&view=<%= view %>" class="pub-tier-tab <%= activeTier==='beginner'?'active':'' %>">
+            <span class="pub-tier-dot" style="background:#16a34a"></span>Beginner
+            <% if (activeTier==='beginner' ) { %><span class="tier-count">
+                <%= teams ? teams.length : 0 %>
+              </span>
+              <% } %>
+          </a>
+          <a href="/?tier=intermediate&view=<%= view %>"
+            class="pub-tier-tab <%= activeTier==='intermediate'?'active':'' %>">
+            <span class="pub-tier-dot" style="background:#2563eb"></span>Intermediate
+            <% if (activeTier==='intermediate' ) { %><span class="tier-count">
+                <%= teams ? teams.length : 0 %>
+              </span>
+              <% } %>
+          </a>
+          <a href="/?tier=advance&view=<%= view %>" class="pub-tier-tab <%= activeTier==='advance'?'active':'' %>">
+            <span class="pub-tier-dot" style="background:#ea580c"></span>Advance
+            <% if (activeTier==='advance' ) { %><span class="tier-count">
+                <%= teams ? teams.length : 0 %>
+              </span>
+              <% } %>
+          </a>
+        </div>
+        <div class="pub-info"><i class="ti ti-clock"></i>
+          <%= timeStr %><a href="javascript:location.reload()" aria-label="รีเฟรช"><i class="ti ti-refresh"></i></a>
+        </div>
+      </div>
+
+      <section class="pub-card">
+        <div class="card-top">
+          <div class="pub-nav-tabs">
+            <a href="/?tier=<%= activeTier %>&view=teams" class="pub-nav-tab <%= view==='teams'?'active':'' %>"><i
+                class="ti ti-users"></i> ทีมที่สมัคร</a>
+            <a href="/?tier=<%= activeTier %>&view=board" class="pub-nav-tab <%= view==='board'?'active':'' %>"><i
+                class="ti ti-trophy"></i> ผลสรุปคะแนน</a>
+          </div>
+
+          <% if (view==='teams' ) { %>
+            <div class="table-tools">
+              <label class="search-box">
+                <i class="ti ti-search"></i>
+                <input id="teamSearch" type="search" placeholder="ค้นหา ID ชื่อทีม หรือสถาบัน..." autocomplete="off">
+              </label>
+              <div class="result-count"><span id="visibleCount">
+                  <%= teams ? teams.length : 0 %>
+                </span> ทีม</div>
+            </div>
+            <% } %>
+        </div>
+
+        <div class="table-scroll">
+          <% if (view==='teams' ) { %>
+        
+            <!-- Desktop table -->
+            <table class="desktop-table" id="teamTable">
+              <thead>
+                <tr>
+                  <th style="width:72px">#</th>
+                  <th style="width:140px">Team ID</th>
+                  <th>ชื่อทีม</th>
+                  <th>สถาบัน</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (!teams || teams.length===0) { %>
+                  <tr>
+                    <td colspan="6">
+                      <div class="empty"><i class="ti ti-robot-off"></i><strong>ยังไม่มีทีมในรุ่นนี้</strong></div>
+                    </td>
+                  </tr>
+                  <% } %>
+                    <% if (teams) { teams.forEach(function(t, i) { %>
+                      <tr class="team-row" data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
+                        <td><span class="index-cell">
+                            <%= i+1 %>
+                          </span></td>
+                        <td><span class="team-id">
+                            <%= t.id %>
+                          </span></td>
+                        <td><span class="team-name">
+                            <%= t.name %>
+                          </span></td>
+                        <td><span class="institution"><i class="ti ti-school"></i>
+                            <%= t.institution || '—' %>
+                          </span></td>
+                      </tr>
+                      <% }) } %>
+                        <% if (teams && teams.length>0) { %>
+                          <tr id="noSearchResult" class="hidden-row">
+                            <td colspan="6">
+                              <div class="empty"><i class="ti ti-search-off"></i><strong>ไม่พบทีมที่ค้นหา</strong></div>
+                            </td>
+                          </tr>
+                          <% } %>
+              </tbody>
+            </table>
+        
+            <!-- Mobile cards -->
+            <div class="mobile-cards" id="mobileTeamCards">
+              <% if (!teams || teams.length===0) { %>
+                <div class="empty"><i class="ti ti-robot-off"></i><strong>ยังไม่มีทีมในรุ่นนี้</strong></div>
+                <% } %>
+                  <% if (teams) { teams.forEach(function(t, i) { %>
+                    <div class="team-card"
+                      data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
+                      <div class="team-card-top">
+                        <div>
+                          <div class="team-card-name">
+                            <%= t.name %>
+                          </div>
+                          <div class="team-card-id">
+                            <%= t.id %>
+                          </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                          <% if (t.tier==='beginner' ) { %><span class="badge badge-green">Beginner</span>
+                            <% } else if (t.tier==='intermediate' ) { %><span class="badge badge-blue">Intermediate</span>
+                              <% } else { %><span class="badge badge-amber">Advance</span>
+                                <% } %>
+                                  <% if (t.status==='approved' ) { %><span
+                                      class="badge badge-green badge-dot">อนุมัติแล้ว</span>
+                                    <% } else { %><span class="badge badge-blue badge-dot">รอพิจารณา</span>
+                                      <% } %>
+                        </div>
+                      </div>
+                      <div class="team-card-info">
+                        <i class="ti ti-school" style="color:#94A3B8"></i>
+                        <span>
+                          <%= t.institution || '—' %>
+                        </span>
+                      </div>
+                    </div>
+                    <% }) } %>
+                      <div id="noMobileResult" class="hidden-row">
+                        <div class="empty"><i class="ti ti-search-off"></i><strong>ไม่พบทีมที่ค้นหา</strong></div>
+                      </div>
+            </div>
+        
+            <% } else { %>
+              <!-- Board table (desktop) -->
+              <table class="desktop-table">
+                <thead>
+                  <tr>
+                    <th style="width:100px">อันดับ</th>
+                    <th>ชื่อทีม</th>
+                    <th>สถาบัน</th>
+                    <th>รอบที่ 1</th>
+                    <th>รอบที่ 2</th>
+                    <th>คะแนนสูงสุด</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (!ranked || ranked.length===0) { %>
+                    <tr>
+                      <td colspan="6">
+                        <div class="empty"><i class="ti ti-trophy-off"></i><strong>ยังไม่มีผลการแข่งขัน</strong></div>
+                      </td>
+                    </tr>
+                    <% } %>
+                      <% if (ranked) { ranked.forEach(function(t, i) { %>
+                        <tr>
+                          <td>
+                            <div class="rank-cell">
+                              <% if (i===0) { %><span style="font-size:18px">🥇</span><span class="rank-gold">1</span>
+                                <% } else if (i===1) { %><span style="font-size:18px">🥈</span><span
+                                    class="rank-silver">2</span>
+                                  <% } else if (i===2) { %><span style="font-size:18px">🥉</span><span
+                                      class="rank-bronze">3</span>
+                                    <% } else { %><span class="rank-other">#<%= i+1 %></span>
+                                      <% } %>
+                            </div>
+                          </td>
+                          <td><span class="team-name">
+                              <%= t.name %>
+                            </span></td>
+                          <td><span class="institution"><i class="ti ti-school"></i>
+                              <%= t.institution || '—' %>
+                            </span></td>
+                          <td>
+                            <% if (parseFloat(t.r1_score)>0) { %>
+                              <span class="score-num">
+                                <%= parseFloat(t.r1_score) %>
+                              </span>
+                              <span class="score-time">
+                                <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
+                              </span>
+                              <% } else { %><span style="color:#cbd5e1">—</span>
+                                <% } %>
+                          </td>
+                          <td>
+                            <% if (parseFloat(t.r2_score)>0) { %>
+                              <span class="score-num">
+                                <%= parseFloat(t.r2_score) %>
+                              </span>
+                              <span class="score-time">
+                                <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
+                              </span>
+                              <% } else { %><span style="color:#cbd5e1">—</span>
+                                <% } %>
+                          </td>
+                          <td>
+                            <% if (parseFloat(t.best_score)>0) { %>
+                              <span class="best-score">
+                                <%= parseFloat(t.best_score) %>
+                              </span>
+                              <span class="score-time">
+                                <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : '' %>
+                              </span>
+                              <div class="bar-bg">
+                                <div class="bar-fill"
+                                  style="width:<%= maxScore>0?Math.round(parseFloat(t.best_score)/maxScore*100):0 %>%"></div>
+                              </div>
+                              <% } else { %><span style="color:#cbd5e1">—</span>
+                                <% } %>
+                          </td>
+                        </tr>
+                        <% }) } %>
+                </tbody>
+              </table>
+        
+              <!-- Mobile board cards -->
+              <div class="mobile-cards">
+                <% if (!ranked || ranked.length===0) { %>
+                  <div class="empty"><i class="ti ti-trophy-off"></i><strong>ยังไม่มีผลการแข่งขัน</strong></div>
+                  <% } %>
+                    <% if (ranked) { ranked.forEach(function(t, i) { %>
+                      <div class="team-card">
+                        <div class="team-card-top">
+                          <div style="display:flex;align-items:center;gap:10px">
+                            <span style="font-size:22px">
+                              <%= i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1) %>
+                            </span>
+                            <div>
+                              <div class="team-card-name">
+                                <%= t.name %>
+                              </div>
+                              <div style="font-size:11px;color:#64748B">
+                                <%= t.institution || '' %>
+                              </div>
+                            </div>
+                          </div>
+                          <% if (parseFloat(t.best_score)>0) { %>
+                            <div style="text-align:right">
+                              <div style="font-size:20px;font-weight:800;color:#2563EB">
+                                <%= parseFloat(t.best_score) %>
+                              </div>
+                              <div style="font-size:10px;color:#94A3B8">
+                                <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : '' %>
+                              </div>
+                            </div>
+                            <% } %>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+                          <div style="background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
+                            <div style="font-size:10px;color:#64748B;margin-bottom:2px">รอบที่ 1</div>
+                            <% if (parseFloat(t.r1_score)>0) { %>
+                              <div style="font-size:16px;font-weight:700;color:#1E293B">
+                                <%= parseFloat(t.r1_score) %>
+                              </div>
+                              <div style="font-size:10px;color:#94A3B8">
+                                <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
+                              </div>
+                              <% } else { %>
+                                <div style="color:#CBD5E1">—</div>
+                                <% } %>
+                          </div>
+                          <div style="background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
+                            <div style="font-size:10px;color:#64748B;margin-bottom:2px">รอบที่ 2</div>
+                            <% if (parseFloat(t.r2_score)>0) { %>
+                              <div style="font-size:16px;font-weight:700;color:#1E293B">
+                                <%= parseFloat(t.r2_score) %>
+                              </div>
+                              <div style="font-size:10px;color:#94A3B8">
+                                <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
+                              </div>
+                              <% } else { %>
+                                <div style="color:#CBD5E1">—</div>
+                                <% } %>
+                          </div>
+                        </div>
+                      </div>
+                      <% }) } %>
+              </div>
+              <% } %>
+        </div>
+
+        <div class="table-footer">
+          <span><i class="ti ti-info-circle"></i> ข้อมูลนี้เป็นหน้าสาธารณะสำหรับติดตามสถานะการแข่งขัน</span>
+          <span>ROBO CHALLENGE LEAGUE</span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pub-footer">
+      <div class="pub-footer-logo">
+        <img src="/RCL Logo.png" alt="RCL">
+        <div>
+          <div class="pub-footer-name">ROBO CHALLENGE LEAGUE</div>
+          <div class="pub-footer-sub">สร้างสรรค์นวัตกรรม พัฒนาทักษะ สู่อนาคต</div>
+        </div>
+      </div>
+      <div class="pub-footer-social"><i class="ti ti-brand-facebook"></i> RCL — Robo Challenge League</div>
+    </footer>
+  </div>
+
+  <script>
+    (() => {
+      const input = document.getElementById('teamSearch')
+      if (!input) return
+      const rows = Array.from(document.querySelectorAll('.team-row'))
+      const cards = Array.from(document.querySelectorAll('#mobileTeamCards .team-card'))
+      const count = document.getElementById('visibleCount')
+      const noResult = document.getElementById('noSearchResult')
+      const noMobile = document.getElementById('noMobileResult')
+      const normalize = v => (v || '').toString().trim().toLowerCase()
+
+      input.addEventListener('input', () => {
+        const kw = normalize(input.value)
+        let visible = 0
+        rows.forEach(r => {
+          const m = !kw || normalize(r.dataset.search).includes(kw)
+          r.classList.toggle('hidden-row', !m)
+          if (m) visible++
+        })
+        cards.forEach(c => {
+          const m = !kw || normalize(c.dataset.search).includes(kw)
+          c.style.display = m ? '' : 'none'
+        })
+        if (count) count.textContent = visible
+        if (noResult) noResult.classList.toggle('hidden-row', visible !== 0)
+        if (noMobile) noMobile.style.display = visible === 0 ? '' : 'none'
+      })
+    })()
+  </script>
+</body>
+
+</html>

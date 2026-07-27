@@ -1,0 +1,33 @@
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-icon" style="background:transparent;padding:0;width:80px;height:80px;margin:0 auto 10px">
+        <img src="/RCL Logo.png" style="width:80px;height:80px;object-fit:contain">
+      </div>
+      <div class="login-name">ROBO CHALLENGE LEAGUE</div>
+      <div class="login-sub">ระบบจัดการการแข่งขันหุ่นยนต์</div>
+    </div>
+
+    <%- include('partials/alert') %>
+
+    <form method="POST" action="/auth/login">
+      <div class="fg" style="margin-bottom:10px">
+        <label class="fl">ชื่อผู้ใช้</label>
+        <input class="fi" type="text" name="username" placeholder="กรอกชื่อผู้ใช้" autofocus required>
+      </div>
+      <div class="fg" style="margin-bottom:18px">
+        <label class="fl">รหัสผ่าน</label>
+        <input class="fi" type="password" name="password" placeholder="กรอกรหัสผ่าน" required>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:10px;font-size:14px">
+        <i class="ti ti-login"></i> เข้าสู่ระบบ
+      </button>
+    </form>
+
+    <div style="text-align:center;margin-top:14px">
+      <a href="/" class="btn btn-ghost btn-sm">
+        <i class="ti ti-world"></i> ดูหน้าสาธารณะ
+      </a>
+    </div>
+  </div>
+</div>

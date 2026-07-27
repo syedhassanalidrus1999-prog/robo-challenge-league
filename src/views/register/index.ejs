@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครแข่งขัน — Robo Challenge League</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background: #F4F7FB;
+            font-family: 'Sarabun', sans-serif
+        }
+
+        .reg-topbar {
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
+        }
+
+        .reg-topbar-logo img {
+            height: 40px;
+            object-fit: contain
+        }
+
+        .reg-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px
+        }
+
+        .reg-hero {
+            text-align: center;
+            margin-bottom: 32px
+        }
+
+        .reg-hero-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1E293B;
+            margin-bottom: 6px
+        }
+
+        .reg-hero-title span {
+            color: #2563EB
+        }
+
+        .reg-hero-sub {
+            font-size: 14px;
+            color: #64748B
+        }
+
+        .tier-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px
+        }
+
+        .tier-card {
+            background: #fff;
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all .2s;
+            text-align: center;
+            text-decoration: none;
+            display: block
+        }
+
+        .tier-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .1)
+        }
+
+        .tier-card.t-beginner:hover,
+        .tier-card.t-beginner.selected {
+            border-color: #16A34A;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, .15)
+        }
+
+        .tier-card.t-intermediate:hover,
+        .tier-card.t-intermediate.selected {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .15)
+        }
+
+        .tier-card.t-advance:hover,
+        .tier-card.t-advance.selected {
+            border-color: #EA580C;
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, .15)
+        }
+
+        .tier-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px
+        }
+
+        .tier-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 4px
+        }
+
+        .tier-desc {
+            font-size: 12px;
+            color: #64748B;
+            margin-bottom: 12px
+        }
+
+        .tier-score {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block
+        }
+
+        .form-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
+        }
+
+        .form-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #F1F5F9
+        }
+
+        .member-block {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px
+        }
+
+        .member-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #2563EB;
+            margin-bottom: 10px
+        }
+
+        .success-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
+        }
+
+        .success-icon {
+            width: 72px;
+            height: 72px;
+            background: #F0FDF4;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px
+        }
+
+        .success-id {
+            font-size: 36px;
+            font-weight: 800;
+            color: #2563EB;
+            letter-spacing: 2px;
+            background: #EFF6FF;
+            padding: 12px 24px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 12px 0
+        }
+
+        .line-box {
+            background: #F0FDF4;
+            border: 2px solid #BBF7D0;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0
+        }
+
+        .line-box-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #15803D;
+            margin-bottom: 4px
+        }
+
+        .line-id {
+            font-size: 20px;
+            font-weight: 800;
+            color: #16A34A
+        }
+
+        .fg {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .fl {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748B;
+            letter-spacing: .5px;
+            text-transform: uppercase
+        }
+
+        .fi {
+            padding: 8px 10px;
+            border: 1px solid #CBD5E1;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: 'Sarabun', sans-serif;
+            color: #1E293B;
+            background: #fff;
+            outline: none;
+            width: 100%;
+            transition: border-color .15s
+        }
+
+        .fi:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1)
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            transition: all .15s
+        }
+
+        .btn-primary {
+            background: #2563EB;
+            color: #fff
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #334155;
+            border: 1px solid #CBD5E1
+        }
+
+        .section-div {
+            height: 1px;
+            background: #E2E8F0;
+            margin: 16px 0
+        }
+    </style>
+</head>
+
+<body>
+    <div class="reg-topbar">
+        <a href="/">
+            <div class="reg-topbar-logo"><img src="/RCL Logo.png" alt="RCL"></div>
+        </a>
+        <div style="font-size:15px;font-weight:700;color:#1E293B;flex:1">สมัครแข่งขัน</div>
+        <a href="/" class="btn btn-secondary btn-sm" style="font-size:12px;padding:6px 12px"><i
+                class="ti ti-arrow-left"></i> กลับหน้าหลัก</a>
+    </div>
+
+    <div class="reg-wrap">
+        <% if (typeof success !=='undefined' && success) { %>
+            <!-- Success page -->
+            <div class="success-card">
+                <div class="success-icon">✅</div>
+                <div style="font-size:22px;font-weight:800;color:#1E293B;margin-bottom:6px">ส่งใบสมัครสำเร็จ!</div>
+                <div style="font-size:14px;color:#64748B;margin-bottom:16px">รหัสทีมของคุณคือ</div>
+                <div class="success-id">
+                    <%= teamId %>
+                </div>
+                <div style="font-size:13px;color:#64748B;margin-bottom:16px">
+                    <strong style="color:#1E293B">
+                        <%= teamName %>
+                    </strong> — รุ่น <%= tier==='beginner' ? 'Beginner' : tier==='intermediate' ? 'Intermediate'
+                        : 'Advance' %>
+                </div>
+                <div class="line-box">
+                    <div class="line-label"
+                        style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:8px">
+                        <span style="font-size:20px">📱</span>
+                        <div class="line-box-title">ขั้นตอนต่อไป — ยืนยันและชำระค่าสมัคร</div>
+                    </div>
+                    <div style="font-size:13px;color:#166534;margin-bottom:10px">
+                        📸 <strong>แคปหน้าจอนี้</strong> แล้วส่งใน LINE พร้อมรหัสทีมของคุณ
+                    </div>
+                    <div style="font-size:12px;color:#64748B;margin-bottom:8px">LINE Official Account</div>
+                    <div class="line-id">@robochampion</div>
+                </div>
+                <div style="font-size:12px;color:#94A3B8;margin-bottom:20px">
+                    สถานะใบสมัครจะเปลี่ยนเป็น <strong>อนุมัติแล้ว</strong> หลังชำระค่าสมัครเรียบร้อย
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                    <a href="/register" class="btn btn-secondary"><i class="ti ti-plus"></i> สมัครทีมอื่น</a>
+                    <a href="/" class="btn btn-primary"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
+                </div>
+            </div>
+
+            <% } else if (typeof tier !=='undefined' && tier) { %>
+                <!-- Registration form -->
+                <div class="reg-hero">
+                    <div class="reg-hero-title">สมัครรุ่น <span>
+                            <%= tier==='beginner' ? 'Beginner' : tier==='intermediate' ? 'Intermediate' : 'Advance' %>
+                        </span></div>
+                    <div class="reg-hero-sub">กรอกข้อมูลให้ครบถ้วน แล้วส่งใบสมัคร</div>
+                </div>
+
+                <% if (typeof errorMsg !=='undefined' && errorMsg) { %>
+                    <div
+                        style="background:#FEF2F2;border:1px solid #FECDD3;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#DC2626;font-size:13px">
+                        <i class="ti ti-alert-circle"></i>
+                        <%= errorMsg %>
+                    </div>
+                    <% } %>
+
+                        <form method="POST" action="/register">
+                            <input type="hidden" name="tier" value="<%= tier %>">
+                            <div class="form-card">
+                                <div class="form-section-title">ข้อมูลทีม</div>
+                                <div class="form-grid">
+                                    <div class="fg">
+                                        <div class="fl">ชื่อทีม *</div><input class="fi" name="name"
+                                            placeholder="ชื่อทีม" required
+                                            value="<%= typeof formData !== 'undefined' ? (formData.name||'') : '' %>">
+                                    </div>
+                                    <div class="fg">
+                                        <div class="fl">สถาบัน / โรงเรียน *</div><input class="fi" name="institution"
+                                            placeholder="ชื่อสถาบัน" required
+                                            value="<%= typeof formData !== 'undefined' ? (formData.institution||'') : '' %>">
+                                    </div>
+                                </div>
+                                <div class="form-grid">
+                                    <div class="fg">
+                                        <div class="fl">เบอร์โทรติดต่อ *</div><input class="fi" name="phone" type="tel"
+                                            placeholder="0XX-XXX-XXXX" required
+                                            value="<%= typeof formData !== 'undefined' ? (formData.phone||'') : '' %>">
+                                    </div>
+                                    <div class="fg">
+                                        <div class="fl">ชื่อโคช</div><input class="fi" name="coach"
+                                            placeholder="ชื่อโคช"
+                                            value="<%= typeof formData !== 'undefined' ? (formData.coach||'') : '' %>">
+                                    </div>
+                                </div>
+
+                                <div class="section-div"></div>
+                                <div class="form-section-title">สมาชิกทีม</div>
+
+                                <div class="member-block">
+                                    <div class="member-label">นักเรียนคนที่ 1</div>
+                                    <div class="form-grid">
+                                        <div class="fg">
+                                            <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_1"
+                                                placeholder="ชื่อ-นามสกุล"
+                                                value="<%= typeof formData !== 'undefined' ? (formData.student_1||'') : '' %>">
+                                        </div>
+                                        <div class="fg">
+                                            <div class="fl">วันเกิด</div><input class="fi" type="date"
+                                                name="student_1_dob"
+                                                value="<%= typeof formData !== 'undefined' ? (formData.student_1_dob||'') : '' %>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="member-block">
+                                    <div class="member-label">นักเรียนคนที่ 2</div>
+                                    <div class="form-grid">
+                                        <div class="fg">
+                                            <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_2"
+                                                placeholder="ชื่อ-นามสกุล"
+                                                value="<%= typeof formData !== 'undefined' ? (formData.student_2||'') : '' %>">
+                                        </div>
+                                        <div class="fg">
+                                            <div class="fl">วันเกิด</div><input class="fi" type="date"
+                                                name="student_2_dob"
+                                                value="<%= typeof formData !== 'undefined' ? (formData.student_2_dob||'') : '' %>">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="member-block">
+                                    <div class="member-label">นักเรียนคนที่ 3</div>
+                                    <div class="form-grid">
+                                        <div class="fg">
+                                            <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_3"
+                                                placeholder="ชื่อ-นามสกุล"
+                                                value="<%= typeof formData !== 'undefined' ? (formData.student_3||'') : '' %>">
+                                        </div>
+                                        <div class="fg">
+                                            <div class="fl">วันเกิด</div><input class="fi" type="date"
+                                                name="student_3_dob"
+                                                value="<%= typeof formData !== 'undefined' ? (formData.student_3_dob||'') : '' %>">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="section-div"></div>
+                                <div
+                                    style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+                                    <a href="/register" class="btn btn-secondary"><i class="ti ti-arrow-left"></i>
+                                        เลือกรุ่นอื่น</a>
+                                    <button type="submit" class="btn btn-primary"><i class="ti ti-send"></i>
+                                        ส่งใบสมัคร</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <% } else { %>
+                            <!-- Tier selection -->
+                            <div class="reg-hero">
+                                <div class="reg-hero-title">สมัคร<span>แข่งขัน</span></div>
+                                <div class="reg-hero-sub">เลือกรุ่นที่ต้องการสมัครแข่งขัน</div>
+                            </div>
+
+                            <div class="tier-cards">
+                                <a href="/register/beginner" class="tier-card t-beginner">
+                                    <div class="tier-icon" style="background:#F0FDF4"><span
+                                            style="font-size:26px">🌱</span></div>
+                                    <div class="tier-name" style="color:#16A34A">Beginner</div>
+                                    <div class="tier-desc">สำหรับผู้เริ่มต้น<br>เหมาะสำหรับนักเรียนที่เพิ่งเริ่มเรียนรู้
+                                    </div>
+                                    <span class="tier-score" style="background:#F0FDF4;color:#16A34A">คะแนนรวม 50
+                                        คะแนน</span>
+                                </a>
+                                <a href="/register/intermediate" class="tier-card t-intermediate">
+                                    <div class="tier-icon" style="background:#EFF6FF"><span
+                                            style="font-size:26px">🔥</span></div>
+                                    <div class="tier-name" style="color:#2563EB">Intermediate</div>
+                                    <div class="tier-desc">สำหรับระดับกลาง<br>มีประสบการณ์การแข่งขันมาบ้าง</div>
+                                    <span class="tier-score" style="background:#EFF6FF;color:#2563EB">คะแนนรวม 100
+                                        คะแนน</span>
+                                </a>
+                                <a href="/register/advance" class="tier-card t-advance">
+                                    <div class="tier-icon" style="background:#FFF7ED"><span
+                                            style="font-size:26px">🚀</span></div>
+                                    <div class="tier-name" style="color:#EA580C">Advance</div>
+                                    <div class="tier-desc">สำหรับระดับสูง<br>ผู้มีประสบการณ์และทักษะสูง</div>
+                                    <span class="tier-score" style="background:#FFF7ED;color:#EA580C">คะแนนรวม 100
+                                        คะแนน</span>
+                                </a>
+                            </div>
+
+                            <div
+                                style="background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:16px 20px;font-size:13px;color:#64748B">
+                                <i class="ti ti-info-circle" style="color:#2563EB"></i>
+                                หลังสมัครสำเร็จ กรุณาแคปหน้าจอรหัสทีมและส่งใน LINE <strong
+                                    style="color:#16A34A">@robochampion</strong> เพื่อยืนยันและชำระค่าสมัคร
+                            </div>
+                            <% } %>
+    </div>
+</body>
+
+</html>

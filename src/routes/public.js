@@ -1,0 +1,151 @@
+const express = require("express");
+const router = express.Router();
+const { query } = require("../config/database");
+const { requireLogin } = require("../middleware/auth");
+const { getRanked, getMaxScore } = require("./board");
+
+// GET / — หน้าสาธารณะ
+router.get("/", async (req, res) => {
+  const tier = req.query.tier || "beginner";
+  const view = req.query.view || "teams";
+
+  try {
+    const now = new Date();
+    const timeStr =
+      now.toLocaleDateString("th-TH", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }) +
+      " เวลา " +
+      now.getHours() +
+      ":" +
+      String(now.getMinutes()).padStart(2, "0") +
+      " น.";
+
+    const [teamsAll, scoresAll] = await Promise.all([
+      query("SELECT COUNT(*) as cnt FROM teams", []),
+      query("SELECT COUNT(DISTINCT team_id) as cnt FROM scores", []),
+    ]);
+
+    let data = { teams: null, ranked: null, maxScore: 0 };
+
+    if (view === "teams") {
+      const result = await query(
+        `SELECT id, name, institution, tier, student_1, student_2, student_3, status
+   FROM teams WHERE tier = $1 AND status = 'approved' ORDER BY created_at ASC`,
+        [tier],
+      );
+      data.teams = result.rows;
+    } else {
+      data.ranked = await getRanked(tier);
+      data.maxScore = await getMaxScore(tier);
+    }
+
+    res.render("public/index", {
+      layout: false,
+      title: "Robo Challenge League",
+      activeTier: tier,
+      view,
+      timeStr,
+      teamCount: parseInt(teamsAll.rows[0].cnt),
+      scoredCount: parseInt(scoresAll.rows[0].cnt),
+      ...data,
+    });
+  } catch (err) {
+    console.error(err);
+    res.render("public/index", {
+      layout: false,
+      title: "Robo Challenge League",
+      activeTier: tier,
+      view: "teams",
+      timeStr: "",
+      teamCount: 0,
+      scoredCount: 0,
+      teams: [],
+      ranked: null,
+      maxScore: 0,
+    });
+  }
+});
+
+// GET /dashboard — redirect ตาม role
+router.get("/dashboard", requireLogin, (req, res) => {
+  if (req.session.user.role === "admin") return res.redirect("/teams");
+  res.redirect("/scores");
+});
+
+// GET /register
+router.get('/register', (req, res) => {
+  res.render('register/index', {
+    layout: false,
+    tier: null,
+    success: false,
+    teamId: '',
+    teamName: '',
+    formData: {},
+    errorMsg: null
+  })
+})
+
+// GET /register/:tier
+router.get('/register/:tier', (req, res) => {
+  const { tier } = req.params
+  if (!['beginner','intermediate','advance'].includes(tier)) return res.redirect('/register')
+  res.render('register/index', {
+    layout: false,
+    tier,
+    success: false,
+    teamId: '',
+    teamName: '',
+    formData: {},
+    errorMsg: null
+  })
+})
+
+// POST /register
+router.post('/register', async (req, res) => {
+  const { tier, name, institution, phone, coach, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob } = req.body
+
+  if (!name || !institution || !phone || !tier) {
+    return res.render('register/index', {
+      layout: false, tier, success: false, teamId: '', teamName: '',
+      errorMsg: 'กรุณากรอกชื่อทีม สถาบัน และเบอร์โทรติดต่อ',
+      formData: req.body
+    })
+  }
+
+  try {
+    const prefix = tier === 'beginner' ? 'B' : tier === 'intermediate' ? 'I' : 'A'
+    const countResult = await query('SELECT COUNT(*) as cnt FROM teams WHERE tier = $1', [tier])
+    const num = parseInt(countResult.rows[0].cnt) + 1
+    const id = `T${String(num).padStart(3, '0')}_${prefix}`
+
+    await query(`
+      INSERT INTO teams (id, name, institution, tier, phone, coach, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob, status)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'pending')
+    `, [id, name.trim(), institution.trim(), tier,
+        phone.trim(), coach?.trim()||null,
+        student_1?.trim()||null, student_1_dob||null,
+        student_2?.trim()||null, student_2_dob||null,
+        student_3?.trim()||null, student_3_dob||null])
+
+    res.render('register/index', {
+      layout: false,
+      success: true,
+      teamId: id,
+      teamName: name,
+      tier,
+      formData: {},
+      errorMsg: null
+    })
+  } catch (err) {
+    console.error(err)
+    res.render('register/index', {
+      layout: false, tier, success: false, teamId: '', teamName: '',
+      errorMsg: 'เกิดข้อผิดพลาด กรุณาลองใหม่',
+      formData: req.body
+    })
+  }
+})
+module.exports = router;
