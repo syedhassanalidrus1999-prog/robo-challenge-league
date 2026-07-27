@@ -898,11 +898,6 @@
   .mobile-cards { display: none; }
 }
 
-@media (max-width: 640px) {
-  .hide-mobile { display: none; }
-  th, td { padding: 10px 8px; font-size: 12px; }
-}
-
 @media (max-width: 480px) {
   .pub-topnav a:first-child { display: none; }
   .pub-hero { grid-template-columns: 1fr; }
@@ -1026,10 +1021,10 @@
             <table class="desktop-table" id="teamTable">
               <thead>
                 <tr>
-                  <th style="width:36px">#</th>
+                  <th style="width:72px">#</th>
+                  <th style="width:140px">Team ID</th>
                   <th>ชื่อทีม</th>
-                  <th class="hide-mobile">Team ID</th>
-                  <th class="hide-mobile">สถาบัน</th>
+                  <th>สถาบัน</th>
                 </tr>
               </thead>
               <tbody>
@@ -1042,20 +1037,18 @@
                   <% } %>
                     <% if (teams) { teams.forEach(function(t, i) { %>
                       <tr class="team-row" data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                        <td>
-                          <%= i+1 %>
-                        </td>
-                        <td>
-                          <div class="team-name">
-                            <%= t.name %>
-                          </div>
-                          <div style="font-size:11px;color:#64748B">
+                        <td><span class="index-cell">
+                            <%= i+1 %>
+                          </span></td>
+                        <td><span class="team-id">
                             <%= t.id %>
-                          </div>
-                          <div style="font-size:11px;color:#94A3B8">
-                            <%= t.institution || '' %>
-                          </div>
-                        </td>
+                          </span></td>
+                        <td><span class="team-name">
+                            <%= t.name %>
+                          </span></td>
+                        <td><span class="institution"><i class="ti ti-school"></i>
+                            <%= t.institution || '—' %>
+                          </span></td>
                       </tr>
                       <% }) } %>
                         <% if (teams && teams.length>0) { %>
