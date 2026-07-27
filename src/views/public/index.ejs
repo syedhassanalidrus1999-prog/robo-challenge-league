@@ -1078,16 +1078,12 @@
                             <%= t.id %>
                           </div>
                         </div>
-                        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                          <% if (t.tier==='beginner' ) { %><span class="badge badge-green">Beginner</span>
-                            <% } else if (t.tier==='intermediate' ) { %><span class="badge badge-blue">Intermediate</span>
-                              <% } else { %><span class="badge badge-amber">Advance</span>
-                                <% } %>
-                                  <% if (t.status==='approved' ) { %><span
-                                      class="badge badge-green badge-dot">อนุมัติแล้ว</span>
-                                    <% } else { %><span class="badge badge-blue badge-dot">รอพิจารณา</span>
-                                      <% } %>
-                        </div>
+                      </div>
+                      <div class="team-card-info">
+                        <i class="ti ti-school" style="color:#94A3B8"></i>
+                        <span>
+                          <%= t.institution || '—' %>
+                        </span>
                       </div>
                       <div class="team-card-info">
                         <i class="ti ti-school" style="color:#94A3B8"></i>
