@@ -525,16 +525,16 @@
     }
 
     th {
-  position: sticky;
-  top: 0px;
-  z-index: 3;
-  color: #64748b;
-  background: #f8fafc;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: .3px;
-  text-transform: uppercase;
-}
+      position: sticky;
+      top: 0px;
+      z-index: 3;
+      color: #64748b;
+      background: #f8fafc;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+    }
 
     td {
       color: #334155;
@@ -885,26 +885,286 @@
         display: none;
       }
     }
-    .mobile-cards { display: none; padding: 12px; }
-.team-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
-.team-card:last-child { margin-bottom: 0; }
-.team-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
-.team-card-name { font-size: 15px; font-weight: 800; color: #1E293B; }
-.team-card-id { font-size: 11px; font-weight: 700; color: #2563EB; margin-top: 2px; }
-.team-card-info { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748B; }
 
-@media (max-width: 640px) {
-  .desktop-table { display: none; }
-  .mobile-cards { display: block; }
-}
+    .mobile-cards {
+      display: none;
+      padding: 8px;
+    }
 
-@media (max-width: 480px) {
-  .pub-topnav a:first-child { display: none; }
-  .pub-hero { grid-template-columns: 1fr; }
-  .pub-hero-title { font-size: 24px; }
-  .pub-stat { flex: 1 1 80px; }
-  .pub-stat-icon { display: none; }
-}
+    .mobile-list {
+      display: grid;
+      gap: 7px;
+      background: transparent;
+      border: 0;
+      overflow: visible;
+    }
+
+    .mobile-list-item {
+      display: block;
+      padding: 11px 13px;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .04);
+    }
+
+    .mobile-team-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mobile-team-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .mobile-team-number {
+      width: 27px;
+      height: 27px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #2563EB;
+      background: #EFF6FF;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .mobile-list-name {
+      overflow: hidden;
+      color: #1E293B;
+      font-size: 14px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-list-id {
+      flex-shrink: 0;
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: #2563EB;
+      background: #EFF6FF;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .mobile-list-inst {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 7px;
+      padding-top: 7px;
+      color: #64748B;
+      border-top: 1px solid #F1F5F9;
+      font-size: 11px;
+    }
+
+    .mobile-pagination {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 4px 4px;
+    }
+
+    .mobile-pagination button {
+      min-width: 32px;
+      height: 32px;
+      padding: 0 9px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #E2E8F0;
+      border-radius: 9px;
+      color: #64748B;
+      background: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mobile-pagination button.active {
+      color: #fff;
+      border-color: #2563EB;
+      background: #2563EB;
+    }
+
+    .mobile-pagination button:disabled {
+      opacity: .35;
+      cursor: default;
+    }
+
+    .mobile-page-info {
+      min-width: 56px;
+      color: #64748B;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* Mobile score board cards */
+    .mobile-board-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .mobile-board-card {
+      padding: 12px;
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .05);
+    }
+
+    .mobile-board-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .mobile-board-team {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .mobile-rank {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #475569;
+      background: #F1F5F9;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .mobile-rank.rank-1 {
+      background: #FFF7D6;
+      color: #B77900;
+    }
+
+    .mobile-rank.rank-2 {
+      background: #F1F5F9;
+      color: #64748B;
+    }
+
+    .mobile-rank.rank-3 {
+      background: #FFF1E8;
+      color: #B45309;
+    }
+
+    .mobile-board-copy {
+      min-width: 0;
+    }
+
+    .mobile-board-name {
+      overflow: hidden;
+      color: #172033;
+      font-size: 14px;
+      font-weight: 800;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-board-inst {
+      overflow: hidden;
+      margin-top: 2px;
+      color: #94A3B8;
+      font-size: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-best {
+      flex-shrink: 0;
+      min-width: 58px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: #EFF6FF;
+      text-align: right;
+    }
+
+    .mobile-best-label {
+      color: #64748B;
+      font-size: 9px;
+    }
+
+    .mobile-best-score {
+      color: #2563EB;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .mobile-best-time {
+      margin-top: 2px;
+      color: #94A3B8;
+      font-size: 9px;
+    }
+
+    .mobile-rounds {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .mobile-round {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 46px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #F8FAFC;
+    }
+
+    .mobile-round-label {
+      color: #64748B;
+      font-size: 10px;
+    }
+
+    .mobile-round-score {
+      color: #1E293B;
+      font-size: 15px;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .mobile-round-time {
+      margin-top: 1px;
+      color: #94A3B8;
+      font-size: 9px;
+      text-align: right;
+    }
+
+    .mobile-round-empty {
+      color: #CBD5E1;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .desktop-table {
+        display: none;
+      }
+
+      .mobile-cards {
+        display: block;
+      }
+    }
   </style>
 </head>
 
@@ -1016,7 +1276,7 @@
 
         <div class="table-scroll">
           <% if (view==='teams' ) { %>
-        
+
             <!-- Desktop table -->
             <table class="desktop-table" id="teamTable">
               <thead>
@@ -1036,7 +1296,8 @@
                   </tr>
                   <% } %>
                     <% if (teams) { teams.forEach(function(t, i) { %>
-                      <tr class="team-row" data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
+                      <tr class="team-row"
+                        data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
                         <td><span class="index-cell">
                             <%= i+1 %>
                           </span></td>
@@ -1060,38 +1321,55 @@
                           <% } %>
               </tbody>
             </table>
-        
+
             <!-- Mobile cards -->
             <div class="mobile-cards" id="mobileTeamCards">
               <% if (!teams || teams.length===0) { %>
                 <div class="empty"><i class="ti ti-robot-off"></i><strong>ยังไม่มีทีมในรุ่นนี้</strong></div>
                 <% } %>
-                  <% if (teams) { teams.forEach(function(t, i) { %>
-                    <div class="team-card"
-                      data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                      <div class="team-card-top">
-                        <div>
-                          <div class="team-card-name">
-                            <%= t.name %>
+                  <% if (teams && teams.length> 0) { %>
+                    <div class="mobile-list">
+                      <% teams.forEach(function(t, i) { %>
+                        <div class="mobile-list-item team-card"
+                          data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
+                          <div class="mobile-team-top">
+                            <div class="mobile-team-main">
+                              <div class="mobile-team-number">
+                                <%= i + 1 %>
+                              </div>
+                              <div class="mobile-list-name">
+                                <%= t.name %>
+                              </div>
+                            </div>
+                            <div class="mobile-list-id">
+                              <%= t.id %>
+                            </div>
                           </div>
-                          <div class="team-card-id">
-                            <%= t.id %>
+                          <div class="mobile-list-inst">
+                            <i class="ti ti-school"></i>
+                            <span>
+                              <%= t.institution || '—' %>
+                            </span>
                           </div>
                         </div>
-                      </div>
-                      <div class="team-card-info">
-                        <i class="ti ti-school" style="color:#94A3B8"></i>
-                        <span>
-                          <%= t.institution || '—' %>
-                        </span>
-                      </div>
+                        <% }) %>
                     </div>
-                    <% }) } %>
-                      <div id="noMobileResult" class="hidden-row">
-                        <div class="empty"><i class="ti ti-search-off"></i><strong>ไม่พบทีมที่ค้นหา</strong></div>
-                      </div>
+
+                    <div class="mobile-pagination" id="mobilePagination">
+                      <button type="button" id="mobilePrevPage" aria-label="หน้าก่อนหน้า">
+                        <i class="ti ti-chevron-left"></i>
+                      </button>
+                      <span class="mobile-page-info" id="mobilePageInfo"></span>
+                      <button type="button" id="mobileNextPage" aria-label="หน้าถัดไป">
+                        <i class="ti ti-chevron-right"></i>
+                      </button>
+                    </div>
+
+                    <div id="noMobileResult" style="display:none">
+                      <div class="empty"><i class="ti ti-search-off"></i><strong>ไม่พบทีมที่ค้นหา</strong></div>
+                    </div>
+                    <% } %>
             </div>
-        
             <% } else { %>
               <!-- Board table (desktop) -->
               <table class="desktop-table">
@@ -1164,7 +1442,8 @@
                               </span>
                               <div class="bar-bg">
                                 <div class="bar-fill"
-                                  style="width:<%= maxScore>0?Math.round(parseFloat(t.best_score)/maxScore*100):0 %>%"></div>
+                                  style="width:<%= maxScore>0?Math.round(parseFloat(t.best_score)/maxScore*100):0 %>%">
+                                </div>
                               </div>
                               <% } else { %><span style="color:#cbd5e1">—</span>
                                 <% } %>
@@ -1173,69 +1452,94 @@
                         <% }) } %>
                 </tbody>
               </table>
-        
+
               <!-- Mobile board cards -->
-              <div class="mobile-cards">
+              <div class="mobile-cards" id="mobileBoardCards">
                 <% if (!ranked || ranked.length===0) { %>
                   <div class="empty"><i class="ti ti-trophy-off"></i><strong>ยังไม่มีผลการแข่งขัน</strong></div>
                   <% } %>
-                    <% if (ranked) { ranked.forEach(function(t, i) { %>
-                      <div class="team-card">
-                        <div class="team-card-top">
-                          <div style="display:flex;align-items:center;gap:10px">
-                            <span style="font-size:22px">
-                              <%= i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1) %>
-                            </span>
-                            <div>
-                              <div class="team-card-name">
-                                <%= t.name %>
+
+                    <% if (ranked && ranked.length>0) { %>
+                      <div class="mobile-board-list">
+                        <% ranked.forEach(function(t, i) { %>
+                          <div class="mobile-board-card board-page-item">
+                            <div class="mobile-board-head">
+                              <div class="mobile-board-team">
+                                <div class="mobile-rank rank-<%= i+1 %>">
+                                  <%= i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1) %>
+                                </div>
+                                <div class="mobile-board-copy">
+                                  <div class="mobile-board-name">
+                                    <%= t.name %>
+                                  </div>
+                                  <div class="mobile-board-inst"><i class="ti ti-school"></i>
+                                    <%= t.institution || '—' %>
+                                  </div>
+                                </div>
                               </div>
-                              <div style="font-size:11px;color:#64748B">
-                                <%= t.institution || '' %>
+
+                              <div class="mobile-best">
+                                <div class="mobile-best-label">คะแนนสูงสุด</div>
+                                <% if (parseFloat(t.best_score)>0) { %>
+                                  <div class="mobile-best-score">
+                                    <%= parseFloat(t.best_score) %>
+                                  </div>
+                                  <div class="mobile-best-time">
+                                    <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : '' %>
+                                  </div>
+                                  <% } else { %>
+                                    <div class="mobile-best-score" style="color:#CBD5E1">—</div>
+                                    <% } %>
+                              </div>
+                            </div>
+
+                            <div class="mobile-rounds">
+                              <div class="mobile-round">
+                                <div class="mobile-round-label">รอบที่ 1</div>
+                                <% if (parseFloat(t.r1_score)>0) { %>
+                                  <div>
+                                    <div class="mobile-round-score">
+                                      <%= parseFloat(t.r1_score) %>
+                                    </div>
+                                    <div class="mobile-round-time">
+                                      <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
+                                    </div>
+                                  </div>
+                                  <% } else { %>
+                                    <div class="mobile-round-empty">—</div>
+                                    <% } %>
+                              </div>
+
+                              <div class="mobile-round">
+                                <div class="mobile-round-label">รอบที่ 2</div>
+                                <% if (parseFloat(t.r2_score)>0) { %>
+                                  <div>
+                                    <div class="mobile-round-score">
+                                      <%= parseFloat(t.r2_score) %>
+                                    </div>
+                                    <div class="mobile-round-time">
+                                      <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
+                                    </div>
+                                  </div>
+                                  <% } else { %>
+                                    <div class="mobile-round-empty">—</div>
+                                    <% } %>
                               </div>
                             </div>
                           </div>
-                          <% if (parseFloat(t.best_score)>0) { %>
-                            <div style="text-align:right">
-                              <div style="font-size:20px;font-weight:800;color:#2563EB">
-                                <%= parseFloat(t.best_score) %>
-                              </div>
-                              <div style="font-size:10px;color:#94A3B8">
-                                <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : '' %>
-                              </div>
-                            </div>
-                            <% } %>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
-                          <div style="background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
-                            <div style="font-size:10px;color:#64748B;margin-bottom:2px">รอบที่ 1</div>
-                            <% if (parseFloat(t.r1_score)>0) { %>
-                              <div style="font-size:16px;font-weight:700;color:#1E293B">
-                                <%= parseFloat(t.r1_score) %>
-                              </div>
-                              <div style="font-size:10px;color:#94A3B8">
-                                <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
-                              </div>
-                              <% } else { %>
-                                <div style="color:#CBD5E1">—</div>
-                                <% } %>
-                          </div>
-                          <div style="background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
-                            <div style="font-size:10px;color:#64748B;margin-bottom:2px">รอบที่ 2</div>
-                            <% if (parseFloat(t.r2_score)>0) { %>
-                              <div style="font-size:16px;font-weight:700;color:#1E293B">
-                                <%= parseFloat(t.r2_score) %>
-                              </div>
-                              <div style="font-size:10px;color:#94A3B8">
-                                <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
-                              </div>
-                              <% } else { %>
-                                <div style="color:#CBD5E1">—</div>
-                                <% } %>
-                          </div>
-                        </div>
+                          <% }) %>
                       </div>
-                      <% }) } %>
+
+                      <div class="mobile-pagination" id="boardPagination">
+                        <button type="button" id="boardPrevPage" aria-label="หน้าก่อนหน้า">
+                          <i class="ti ti-chevron-left"></i>
+                        </button>
+                        <span class="mobile-page-info" id="boardPageInfo"></span>
+                        <button type="button" id="boardNextPage" aria-label="หน้าถัดไป">
+                          <i class="ti ti-chevron-right"></i>
+                        </button>
+                      </div>
+                      <% } %>
               </div>
               <% } %>
         </div>
@@ -1263,30 +1567,144 @@
     (() => {
       const input = document.getElementById('teamSearch')
       if (!input) return
+
       const rows = Array.from(document.querySelectorAll('.team-row'))
       const cards = Array.from(document.querySelectorAll('#mobileTeamCards .team-card'))
       const count = document.getElementById('visibleCount')
       const noResult = document.getElementById('noSearchResult')
       const noMobile = document.getElementById('noMobileResult')
-      const normalize = v => (v || '').toString().trim().toLowerCase()
+      const pagination = document.getElementById('mobilePagination')
+      const prevButton = document.getElementById('mobilePrevPage')
+      const nextButton = document.getElementById('mobileNextPage')
+      const pageInfo = document.getElementById('mobilePageInfo')
 
-      input.addEventListener('input', () => {
-        const kw = normalize(input.value)
+      const normalize = value => (value || '').toString().trim().toLowerCase()
+      const itemsPerPage = 6
+      let currentPage = 1
+      let filteredCards = [...cards]
+
+      function renderMobilePage() {
+        const totalPages = Math.max(1, Math.ceil(filteredCards.length / itemsPerPage))
+        currentPage = Math.min(currentPage, totalPages)
+
+        cards.forEach(card => {
+          card.style.display = 'none'
+        })
+
+        const start = (currentPage - 1) * itemsPerPage
+        filteredCards.slice(start, start + itemsPerPage).forEach(card => {
+          card.style.display = ''
+        })
+
+        if (pagination) {
+          pagination.style.display = filteredCards.length > itemsPerPage ? 'flex' : 'none'
+        }
+        if (prevButton) prevButton.disabled = currentPage <= 1
+        if (nextButton) nextButton.disabled = currentPage >= totalPages
+        if (pageInfo) pageInfo.textContent = filteredCards.length ? `${currentPage} / ${totalPages}` : ''
+        if (noMobile) noMobile.style.display = filteredCards.length === 0 ? '' : 'none'
+      }
+
+      function applySearch() {
+        const keyword = normalize(input.value)
         let visible = 0
-        rows.forEach(r => {
-          const m = !kw || normalize(r.dataset.search).includes(kw)
-          r.classList.toggle('hidden-row', !m)
-          if (m) visible++
+
+        rows.forEach(row => {
+          const matches = !keyword || normalize(row.dataset.search).includes(keyword)
+          row.classList.toggle('hidden-row', !matches)
+          if (matches) visible++
         })
-        cards.forEach(c => {
-          const m = !kw || normalize(c.dataset.search).includes(kw)
-          c.style.display = m ? '' : 'none'
-        })
+
+        filteredCards = cards.filter(card =>
+          !keyword || normalize(card.dataset.search).includes(keyword)
+        )
+
+        currentPage = 1
+        renderMobilePage()
+
         if (count) count.textContent = visible
         if (noResult) noResult.classList.toggle('hidden-row', visible !== 0)
-        if (noMobile) noMobile.style.display = visible === 0 ? '' : 'none'
+      }
+
+      input.addEventListener('input', applySearch)
+
+      prevButton?.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--
+          renderMobilePage()
+          document.querySelector('.pub-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
       })
-    })()
+
+      nextButton?.addEventListener('click', () => {
+        const totalPages = Math.ceil(filteredCards.length / itemsPerPage)
+        if (currentPage < totalPages) {
+          currentPage++
+          renderMobilePage()
+          document.querySelector('.pub-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      })
+
+      renderMobilePage()
+    })();
+
+    (() => {
+      const boardCards = Array.from(document.querySelectorAll('#mobileBoardCards .board-page-item'))
+      if (!boardCards.length) return
+
+      const pagination = document.getElementById('boardPagination')
+      const prevButton = document.getElementById('boardPrevPage')
+      const nextButton = document.getElementById('boardNextPage')
+      const pageInfo = document.getElementById('boardPageInfo')
+
+      const itemsPerPage = 5
+      let currentPage = 1
+
+      function renderBoardPage() {
+        const totalPages = Math.max(1, Math.ceil(boardCards.length / itemsPerPage))
+        currentPage = Math.min(Math.max(currentPage, 1), totalPages)
+
+        const start = (currentPage - 1) * itemsPerPage
+        const end = start + itemsPerPage
+
+        boardCards.forEach((card, index) => {
+          card.style.display = index >= start && index < end ? '' : 'none'
+        })
+
+        if (pagination) {
+          pagination.style.display = boardCards.length > itemsPerPage ? 'flex' : 'none'
+        }
+        if (prevButton) prevButton.disabled = currentPage <= 1
+        if (nextButton) nextButton.disabled = currentPage >= totalPages
+        if (pageInfo) pageInfo.textContent = `หน้า ${currentPage} / ${totalPages}`
+      }
+
+      function scrollToBoard() {
+        document.querySelector('.pub-card')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }
+
+      prevButton?.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--
+          renderBoardPage()
+          scrollToBoard()
+        }
+      })
+
+      nextButton?.addEventListener('click', () => {
+        const totalPages = Math.ceil(boardCards.length / itemsPerPage)
+        if (currentPage < totalPages) {
+          currentPage++
+          renderBoardPage()
+          scrollToBoard()
+        }
+      })
+
+      renderBoardPage()
+    })();
   </script>
 </body>
 
