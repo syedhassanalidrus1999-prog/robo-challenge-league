@@ -1,10 +1,12 @@
 <div class="page-hd">
-  <div class="page-title">สรุปผล — <span
+  <div class="page-title">ลงคะแนน — <span
       style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
       <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
     </span></div>
-  <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#16A34A">
-    <i class="ti ti-point-filled" style="font-size:14px"></i>Live
+  <div style="font-size:12px;color:#64748B;background:#fff;border:1px solid #E2E8F0;padding:5px 12px;border-radius:6px">
+    คะแนนสูงสุด <strong style="color:#2563EB">
+      <%= maxScore %> คะแนน
+    </strong> ต่อรอบ
   </div>
 </div>
 
@@ -13,95 +15,76 @@
     <table>
       <thead>
         <tr>
-          <th>อันดับ</th>
-          <th>ชื่อทีม</th>
+          <th>ทีม</th>
+          <th>สถาบัน</th>
           <th>รอบที่ 1</th>
           <th>รอบที่ 2</th>
-          <th>คะแนนที่ดีที่สุด</th>
-          <th>สถานะ</th>
+          <th>คะแนนดีสุด</th>
+          <th>ลงคะแนน</th>
         </tr>
       </thead>
       <tbody>
-        <% if (ranked.length===0) { %>
+        <% if (teams.length===0) { %>
           <tr>
             <td colspan="6">
-              <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
+              <div class="empty"><i class="ti ti-clipboard-x"></i>ยังไม่มีทีมในรุ่นนี้</div>
             </td>
           </tr>
           <% } %>
-            <% ranked.forEach(function(t, i) { %>
+            <% teams.forEach(function(t) { %>
               <tr>
-                <td>
-                  <div class="rank-cell">
-                    <% if (i===0) { %><span style="font-size:20px">🥇</span><span class="rank-gold">
-                        <%= i+1 %>
-                      </span>
-                      <% } else if (i===1) { %><span style="font-size:20px">🥈</span><span class="rank-silver">
-                          <%= i+1 %>
-                        </span>
-                        <% } else if (i===2) { %><span style="font-size:20px">🥉</span><span class="rank-bronze">
-                            <%= i+1 %>
-                          </span>
-                          <% } else { %><span class="rank-other">#<%= i+1 %></span>
-                            <% } %>
-                  </div>
-                </td>
                 <td>
                   <div class="team-name">
                     <%= t.name %>
                   </div>
-                  <div style="font-size:11px;color:#94A3B8">
-                    <%= t.institution || '' %>
+                  <div class="team-id">
+                    <%= t.id %>
                   </div>
                 </td>
-                <td>
-                  <% if (parseFloat(t.r1_score)> 0) { %>
-                    <span class="score-num">
-                      <%= parseFloat(t.r1_score) %> pts
-                    </span>
-                    <span style="color:#CBD5E1;margin:0 3px">·</span>
-                    <span class="score-time">
-                      <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2) + ' sec' : '' %>
-                    </span>
-                    <% } else { %><span style="color:#CBD5E1">—</span>
-                      <% } %>
+                <td style="color:#64748B;font-size:12px">
+                  <%= t.institution || '—' %>
                 </td>
                 <td>
-                  <% if (parseFloat(t.r2_score)> 0) { %>
-                    <span class="score-num">
-                      <%= parseFloat(t.r2_score) %> pts
-                    </span>
-                    <span style="color:#CBD5E1;margin:0 3px">·</span>
-                    <span class="score-time">
-                      <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2) + ' sec' : '' %>
-                    </span>
-                    <% } else { %><span style="color:#CBD5E1">—</span>
-                      <% } %>
-                </td>
-                <td>
-                  <% if (parseFloat(t.best_score)> 0) { %>
-                    <div style="display:flex;align-items:baseline;gap:6px">
-                      <span class="best-score">
-                        <%= parseFloat(t.best_score) %> pts
-                      </span>
-                      <span style="color:#CBD5E1">·</span>
-                      <span class="score-time" style="font-size:13px">
-                        <%= t.best_time ? parseFloat(t.best_time).toFixed(2) + ' sec' : '' %>
-                      </span>
+                  <% if ((parseFloat(t.r1_score)||0)> 0) { %>
+                    <div class="score-num">
+                      <%= parseFloat(t.r1_score) %>
                     </div>
+                    <div class="score-time">
+                      <%= t.r1_time ? t.r1_time + ' วิ' : '' %>
+                    </div>
+                    <% } else { %><span style="color:#CBD5E1">—</span>
+                      <% } %>
+                </td>
+                <td>
+                  <% if ((parseFloat(t.r2_score)||0)> 0) { %>
+                    <div class="score-num" style="color:#EA580C">
+                      <%= parseFloat(t.r2_score) %>
+                    </div>
+                    <div class="score-time">
+                      <%= t.r2_time ? t.r2_time + ' วิ' : '' %>
+                    </div>
+                    <% } else { %><span style="color:#CBD5E1">—</span>
+                      <% } %>
+                </td>
+                <td>
+                  <div class="best-score">
+                    <%= Math.max(parseFloat(t.r1_score)||0, parseFloat(t.r2_score)||0) || '—' %>
+                  </div>
+                  <% if (Math.max(parseFloat(t.r1_score)||0, parseFloat(t.r2_score)||0)> 0) { %>
                     <div class="bar-bg">
                       <div class="bar-fill"
-                        style="width:<%= maxScore > 0 ? Math.round(parseFloat(t.best_score)/maxScore*100) : 0 %>%;background:<%= i===0?'#D97706':i===1?'#64748B':i===2?'#92400E':'#2563EB' %>">
+                        style="width:<%= Math.round(Math.max(parseFloat(t.r1_score)||0, parseFloat(t.r2_score)||0)/maxScore*100) %>%">
                       </div>
                     </div>
-                    <% } else { %><span style="color:#CBD5E1">—</span>
-                      <% } %>
+                    <% } %>
                 </td>
                 <td>
-                  <% if (t.status==='approved' ) { %><span class="badge badge-green badge-dot">เสร็จสิ้น</span>
-                    <% } else if (t.status==='rejected' ) { %><span class="badge badge-red badge-dot">ไม่ผ่าน</span>
-                      <% } else { %><span class="badge badge-blue badge-dot">รอพิจารณา</span>
-                        <% } %>
+                  <div class="action-row">
+                    <a href="/scores/<%= t.id %>/1" class="btn btn-secondary btn-sm"
+                      style="color:#7C3AED;border-color:#DDD6FE">รอบที่ 1</a>
+                    <a href="/scores/<%= t.id %>/2" class="btn btn-secondary btn-sm"
+                      style="color:#D97706;border-color:#FDE68A">รอบที่ 2</a>
+                  </div>
                 </td>
               </tr>
               <% }) %>
