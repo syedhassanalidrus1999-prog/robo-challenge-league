@@ -171,17 +171,19 @@ router.post(
         req.files && req.files.photo ? req.files.photo[0].path : null;
 
       var signatureUrl = null;
+      var sigData = Array.isArray(req.body.signature_data)
+        ? req.body.signature_data[0]
+        : req.body.signature_data;
       if (
-        req.body.signature_data &&
-        req.body.signature_data.startsWith("data:image")
+        sigData &&
+        typeof sigData === "string" &&
+        sigData.startsWith("data:image")
       ) {
         try {
-          var uploadResult = await cloudinary.uploader.upload(
-            req.body.signature_data,
-            {
-              folder: "robo-league/signatures",
-            },
-          );
+          var uploadResult = await cloudinary.uploader.upload(sigData,
+             {
+            folder: "robo-league/signatures",
+          });
           signatureUrl = uploadResult.secure_url;
         } catch (sigErr) {
           console.error("Signature upload error:", sigErr.message);
