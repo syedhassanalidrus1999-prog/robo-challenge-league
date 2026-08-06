@@ -227,6 +227,7 @@ router.post(
       res.redirect("/scores");
     } catch (err) {
       console.error(err);
+      console.error("SCORE POST ERROR:", err.message); // เพิ่มบรรทัดนี้
       req.flash("error", "ไม่สามารถบันทึกคะแนนได้");
       res.redirect("/scores");
     }
