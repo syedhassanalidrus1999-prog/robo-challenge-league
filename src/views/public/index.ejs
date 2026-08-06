@@ -4,1708 +4,1229 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Robo Challenge League</title>
+  <title>Robo Challenge League 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+
   <style>
     :root {
-      --navy: #061a3a;
-      --navy-2: #0a2c63;
-      --blue: #2563eb;
-      --blue-2: #3b82f6;
-      --gold: #f59e0b;
-      --text: #10213f;
-      --muted: #64748b;
-      --line: #e2e8f0;
-      --page: #f4f7fb;
-      --surface: #fff;
-      --green: #16a34a;
-      --amber: #ea580c;
-      --red: #dc2626;
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-soft: #EFF6FF;
+      --navy: #0F172A;
+      --text: #1E293B;
+      --muted: #64748B;
+      --line: #E2E8F0;
+      --surface: #FFFFFF;
+      --page: #F6F9FE;
+      --shadow-sm: 0 8px 24px rgba(15, 23, 42, .07);
+      --shadow-md: 0 20px 60px rgba(37, 99, 235, .14);
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0
     }
 
     html {
-      scroll-behavior: smooth;
+      scroll-behavior: smooth
     }
 
-    body {
-      margin: 0;
-      color: var(--text);
-      background: var(--page);
+   body {
       font-family: 'Sarabun', sans-serif;
+      background: var(--page);
+      color: var(--text);
+      overflow-x: hidden;
     }
 
     a {
-      color: inherit;
-    }
-
-    .pub-wrap {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 88% 8%, rgba(37, 99, 235, .12), transparent 25%),
-        radial-gradient(circle at 10% 35%, rgba(245, 158, 11, .05), transparent 22%),
-        var(--page);
+      text-decoration: none;
+      color: inherit
     }
 
     /* TOPBAR */
-    .pub-topbar {
-      height: 70px;
-      padding: 0 max(24px, calc((100vw - 1220px) / 2));
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      height: 72px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(255, 255, 255, .92);
+      gap: 10px;
+      padding: 0 30px;
+      background: rgba(255, 255, 255, .88);
       border-bottom: 1px solid rgba(226, 232, 240, .9);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
       backdrop-filter: blur(16px);
     }
 
-    .pub-topbar-logo img {
-      height: 100px;
-      display: block;
-      object-fit: contain;
+    .topbar-logo {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0
     }
 
-    .pub-topnav {
+    .topbar-logo img {
+      height: 44px;
+      width: auto;
+      object-fit: contain
+    }
+
+    .topbar-nav {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex: 1;
+      margin-left: 18px;
     }
 
-    .pub-topnav a {
+    .nav-link {
+      min-height: 42px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: #334155;
+      font: 700 14px 'Sarabun', sans-serif;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 10px 14px;
+      transition: .2s ease;
+    }
+
+    .nav-link:hover {
+      background: #F1F5F9;
+      color: var(--primary);
+      transform: translateY(-1px)
+    }
+
+    .nav-link.active {
+      color: var(--primary);
+      background: var(--primary-soft)
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto
+    }
+
+    .btn-reg,
+    .btn-login {
+      min-height: 42px;
+      padding: 0 17px;
       border-radius: 11px;
-      color: #475569;
+      font: 800 13px 'Sarabun', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: .2s ease;
+    }
+
+    .btn-reg {
+      color: #fff;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, #3478F6, #2563EB);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+    }
+
+    .btn-reg:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
+    }
+
+    .btn-login {
+      color: #334155;
+      background: #fff;
+      border: 1px solid var(--line)
+    }
+
+    .btn-login:hover {
+      background: #F8FAFC;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm)
+    }
+
+    /* DROPDOWN */
+    .dropdown {
+      position: relative
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      min-width: 200px;
+      padding: 8px;
+      display: none;
+      z-index: 200;
+      background: rgba(255, 255, 255, .98);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+    }
+
+    .dropdown-item {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px;
+      border-radius: 10px;
+      color: #334155;
       font-size: 14px;
       font-weight: 700;
-      text-decoration: none;
       transition: .18s ease;
     }
 
-    .pub-topnav a:hover {
-      color: var(--blue);
-      background: #eff6ff;
+    .dropdown-item:hover {
+      background: var(--primary-soft);
+      color: var(--primary)
     }
 
-    .pub-topnav a.active {
-      color: #fff;
-      background: linear-gradient(135deg, var(--blue), #1d4ed8);
-      box-shadow: 0 9px 22px rgba(37, 99, 235, .24);
+    .dropdown-item i {
+      font-size: 17px;
+      color: #64748B
     }
 
-    .pub-topnav a:last-child {
-      color: #334155;
-      background: #fff;
-      border: 1px solid var(--line);
+    .dropdown-item:hover i {
+      color: var(--primary)
     }
 
     /* HERO */
-    .pub-hero {
-      width: min(1220px, calc(100% - 40px));
-      min-height: 248px;
-      margin: 24px auto 0;
-      padding: 34px 42px;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 340px;
-      align-items: center;
-      gap: 30px;
-      overflow: hidden;
-      position: relative;
-      border-radius: 26px;
-      background:
-        linear-gradient(115deg, rgba(5, 24, 55, .99) 0%, rgba(9, 45, 99, .98) 58%, rgba(37, 99, 235, .92) 100%);
-      box-shadow: 0 24px 55px rgba(7, 27, 61, .20);
-    }
+    .hero {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    .pub-hero::before {
+    justify-content: flex-start; /* จาก center */
+
+    text-align: center;
+    padding: 140px 24px 84px;
+
+    background:
+        linear-gradient(
+            rgba(255,255,255,.202),
+            rgba(255,255,255,.901)
+        ),
+        url("/images/hero-bg.png") center/cover no-repeat;
+}
+
+    .hero::before {
       content: '';
       position: absolute;
-      inset: 0;
-      opacity: .18;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, .08) 1px, transparent 1px);
-      background-size: 46px 46px;
-      mask-image: linear-gradient(to right, transparent 20%, #000 100%);
-    }
-
-    .hero-copy {
-      position: relative;
-      z-index: 2;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 9px;
-      color: #bfdbfe;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .7px;
-      text-transform: uppercase;
-    }
-
-    .hero-live-dot {
-      width: 8px;
-      height: 8px;
+      width: 760px;
+      height: 760px;
+      top: -230px;
+      left: 50%;
+      transform: translateX(-50%);
       border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 0 5px rgba(34, 197, 94, .14);
+      border: 1px solid rgba(37, 99, 235, .10);
+      box-shadow:
+        0 0 0 70px rgba(37, 99, 235, .025),
+        0 0 0 150px rgba(37, 99, 235, .018);
+      pointer-events: none;
     }
 
-    .pub-hero-title {
-      margin: 0;
-      color: #fff;
-      font-size: clamp(34px, 4.3vw, 56px);
-      font-weight: 800;
-      line-height: .96;
-      letter-spacing: -.9px;
-    }
-
-    .pub-hero-title span {
-      color: #fbbf24;
-    }
-
-    .pub-hero-sub {
-      margin: 15px 0 4px;
-      color: rgba(255, 255, 255, .93);
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .pub-hero-sub2 {
-      margin: 0 0 21px;
-      color: rgba(255, 255, 255, .62);
-      font-size: 13px;
-    }
-
-    .pub-stats {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .pub-stat {
-      min-width: 145px;
-      padding: 11px 14px;
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, .17);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, .10);
-      backdrop-filter: blur(8px);
-    }
-
-    .pub-stat-icon {
-      width: 37px;
-      height: 37px;
-      display: grid;
-      place-items: center;
-      border-radius: 11px;
-      background: rgba(255, 255, 255, .12);
-      font-size: 19px;
-    }
-
-    .pub-stat-num {
-      font-size: 23px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .pub-stat-lbl {
-      margin-top: 4px;
-      color: rgba(255, 255, 255, .66);
-      font-size: 11px;
-    }
-
-    .hero-visual {
-      height: 190px;
-      position: relative;
-      z-index: 2;
-      overflow: hidden;
-      border-radius: 22px;
-      border: 1px solid rgba(255, 255, 255, .15);
-      background:
-        radial-gradient(circle at 64% 35%, rgba(96, 165, 250, .55), transparent 20%),
-        linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03));
-    }
-
-    .hero-orbit {
-      width: 240px;
-      height: 240px;
-      position: absolute;
-      right: -24px;
-      top: -28px;
-      border: 1px solid rgba(255, 255, 255, .14);
-      border-radius: 50%;
-      box-shadow: 0 0 0 38px rgba(255, 255, 255, .035), 0 0 0 78px rgba(255, 255, 255, .02);
-    }
-
-    .city {
+    .hero::after {
+      content: '';
       position: absolute;
       inset: auto 0 0;
-      height: 96px;
-      display: flex;
-      align-items: end;
-      justify-content: center;
-      gap: 8px;
-      opacity: .95;
-    }
-
-    .city span {
-      width: 28px;
-      border: 1px solid rgba(147, 197, 253, .32);
-      border-bottom: none;
-      background: linear-gradient(180deg, rgba(96, 165, 250, .38), rgba(30, 64, 175, .58));
-      box-shadow: inset 0 0 16px rgba(96, 165, 250, .12);
-    }
-
-    .city span:nth-child(1) {
-      height: 42px
-    }
-
-    .city span:nth-child(2) {
-      height: 70px
-    }
-
-    .city span:nth-child(3) {
-      height: 54px
-    }
-
-    .city span:nth-child(4) {
-      height: 90px
-    }
-
-    .city span:nth-child(5) {
-      height: 63px
-    }
-
-    .city span:nth-child(6) {
-      height: 80px
-    }
-
-    .city span:nth-child(7) {
-      height: 48px
-    }
-
-    .hero-logo-card {
-      width: 150px;
-      height: 150px;
-      position: absolute;
-      right: 78px;
-      top: 18px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, .96);
-      box-shadow: 0 20px 45px rgba(0, 0, 0, .24), 0 0 0 8px rgba(255, 255, 255, .06);
-    }
-
-    .hero-logo-card img {
-      width: 112px;
-      object-fit: contain;
-    }
-
-    /* MAIN */
-    .pub-body {
-      width: min(1220px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 22px 0 12px;
-    }
-
-    .pub-tab-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 14px;
-    }
-
-    .pub-tier-tabs {
-      display: inline-flex;
-      gap: 5px;
-      padding: 5px;
-      border: 1px solid #dce5f1;
-      border-radius: 14px;
-      background: #eaf0f8;
-    }
-
-    .pub-tier-tab {
-      min-width: 146px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border-radius: 10px;
-      color: #60708a;
-      font-size: 13px;
-      font-weight: 800;
-      text-decoration: none;
-      transition: .18s ease;
-    }
-
-    .pub-tier-tab:hover {
-      color: var(--blue);
-      background: rgba(255, 255, 255, .7);
-    }
-
-    .pub-tier-tab.active {
-      color: var(--blue);
-      background: #fff;
-      box-shadow: 0 5px 14px rgba(15, 23, 42, .08);
-    }
-
-    .pub-tier-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-
-    .tier-count {
-      min-width: 23px;
-      height: 22px;
-      display: inline-grid;
-      place-items: center;
-      padding: 0 6px;
-      border-radius: 999px;
-      color: #475569;
-      background: #fff;
-      font-size: 11px;
-    }
-
-    .pub-tier-tab.active .tier-count {
-      color: var(--blue);
-      background: #eff6ff;
-    }
-
-    .pub-info {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 11px;
-      color: #7b8aa1;
-      border: 1px solid var(--line);
-      border-radius: 11px;
-      background: #fff;
-      font-size: 12px;
-    }
-
-    .pub-info a {
-      width: 27px;
-      height: 27px;
-      display: inline-grid;
-      place-items: center;
-      margin-left: 3px;
-      color: var(--blue);
-      border-radius: 8px;
-      background: #eff6ff;
-      text-decoration: none;
-    }
-
-    .pub-card {
-      overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      box-shadow: 0 14px 35px rgba(15, 23, 42, .06);
-    }
-
-    .card-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 12px 14px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .pub-nav-tabs {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .pub-nav-tab {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 12px 16px;
-      margin-bottom: -1px;
-      color: #64748b;
-      border-bottom: 3px solid transparent;
-      font-size: 13px;
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .pub-nav-tab:hover {
-      color: var(--text);
-    }
-
-    .pub-nav-tab.active {
-      color: var(--blue);
-      border-bottom-color: var(--blue);
-    }
-
-    .table-tools {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 10px;
-    }
-
-    .search-box {
-      width: 255px;
-      height: 38px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 12px;
-      color: #94a3b8;
-      border: 1px solid #dbe4ef;
-      border-radius: 10px;
-      background: #f8fafc;
-    }
-
-    .search-box:focus-within {
-      border-color: #93c5fd;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
-    }
-
-    .search-box input {
-      width: 100%;
-      border: none;
-      outline: none;
-      color: #334155;
-      background: transparent;
-      font-family: inherit;
-      font-size: 12px;
-    }
-
-    .result-count {
-      padding: 8px 10px;
-      color: #64748b;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-      font-size: 11px;
-      white-space: nowrap;
-    }
-
-    .table-scroll {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      min-width: 820px;
-      border-collapse: separate;
-      border-spacing: 0;
-    }
-
-    th,
-    td {
-      padding: 15px 18px;
-      text-align: left;
-      border-bottom: 1px solid #edf1f6;
-    }
-
-    th {
-      position: sticky;
-      top: 0px;
-      z-index: 3;
-      color: #64748b;
-      background: #f8fafc;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .3px;
-      text-transform: uppercase;
-    }
-
-    td {
-      color: #334155;
-      font-size: 13px;
-      background: #fff;
-    }
-
-    tbody tr {
-      transition: .15s ease;
-    }
-
-    tbody tr:hover td {
-      background: #f8fbff;
-    }
-
-    tbody tr:last-child td {
-      border-bottom: none;
-    }
-
-    .index-cell {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      color: #64748b;
-      border-radius: 10px;
-      background: #f1f5f9;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .team-id {
-      color: var(--blue);
-      font-weight: 800;
-      letter-spacing: .2px;
-    }
-
-    .team-name {
-      color: #10213f;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .institution {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #475569;
-    }
-
-    .institution i {
-      color: #94a3b8;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .badge-green {
-      color: #15803d;
-      background: #ecfdf3;
-    }
-
-    .badge-blue {
-      color: #1d4ed8;
-      background: #eff6ff;
-    }
-
-    .badge-amber {
-      color: #b45309;
-      background: #fff7ed;
-    }
-
-    .badge-red {
-      color: #b91c1c;
-      background: #fef2f2;
-    }
-
-    .badge-dot::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
-    .rank-cell {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-weight: 800;
-    }
-
-    .rank-gold {
-      color: #b77900;
-    }
-
-    .rank-silver {
-      color: #64748b;
-    }
-
-    .rank-bronze {
-      color: #b45309;
-    }
-
-    .rank-other {
-      color: #94a3b8;
-    }
-
-    .score-num {
-      color: #0f172a;
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .score-time {
-      display: block;
-      margin-top: 2px;
-      color: #64748b;
-      font-size: 11px;
-    }
-
-    .best-score {
-      color: var(--blue);
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .bar-bg {
-      width: 120px;
-      height: 5px;
-      margin-top: 7px;
-      overflow: hidden;
-      border-radius: 99px;
-      background: #e8eef7;
-    }
-
-    .bar-fill {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #2563eb, #60a5fa);
-    }
-
-    .empty {
-      min-height: 220px;
-      display: grid;
-      place-items: center;
-      align-content: center;
-      gap: 8px;
-      color: #94a3b8;
-      text-align: center;
-      font-size: 13px;
-    }
-
-    .empty i {
-      font-size: 38px;
-      color: #cbd5e1;
-    }
-
-    .empty strong {
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .empty span {
-      color: #a0aec0;
-      font-size: 12px;
-    }
-
-    .hidden-row {
-      display: none;
-    }
-
-    .table-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 11px 16px;
-      color: #7b8aa1;
-      border-top: 1px solid #edf1f6;
-      background: #fbfdff;
-      font-size: 11px;
-    }
-
-    .pub-footer {
-      width: min(1220px, calc(100% - 40px));
-      margin: 34px auto 0;
-      padding: 22px 0 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      border-top: 1px solid #dfe6ef;
-    }
-
-    .pub-footer-logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .pub-footer-logo img {
-      height: 38px;
-      object-fit: contain;
-    }
-
-    .pub-footer-name {
-      color: #263750;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .pub-footer-sub,
-    .pub-footer-social {
-      color: #7b8aa1;
-      font-size: 11px;
-    }
-
-    .pub-footer-social {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    @media (max-width: 900px) {
-      .pub-topbar {
-        height: 64px;
-        padding: 0 16px;
+      height: 190px;
+      background:
+        linear-gradient(135deg, transparent 48%, rgba(37, 99, 235, .04) 49%, rgba(37, 99, 235, .04) 51%, transparent 52%) 0 0/42px 42px;
+      mask-image: linear-gradient(to top, black, transparent);
+      pointer-events: none;
+    }
+
+    .hero>* {
+      position: relative;
+      z-index: 1
+    }
+
+    .hero-logo{
+    width:1000px;
+    height:auto;
+    object-fit:contain;
+    margin-bottom:10px;
+    margin-top: 0px;
+    filter:drop-shadow(0 24px 40px rgba(37,99,235,.25));
+    animation:floatLogo 4s ease-in-out infinite;
+}
+
+    @keyframes floatLogo {
+
+      0%,
+      100% {
+        transform: translateY(0)
       }
 
-      .pub-topbar-logo img {
-        height: 40px;
-      }
-
-      .pub-topnav a {
-        padding: 9px 10px;
-        font-size: 12px;
-      }
-
-      .pub-topnav a:nth-child(2) {
-        display: none;
-      }
-
-      .pub-hero {
-        width: calc(100% - 24px);
-        grid-template-columns: 1fr;
-        margin-top: 14px;
-        padding: 30px 24px;
-        border-radius: 20px;
-      }
-
-      .hero-visual {
-        display: none;
-      }
-
-      .pub-body {
-        width: calc(100% - 24px);
-        padding-top: 18px;
-      }
-
-      .pub-tab-row {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .pub-tier-tabs {
-        width: 100%;
-        overflow-x: auto;
-      }
-
-      .pub-tier-tab {
-        min-width: 135px;
-        flex: 1;
-      }
-
-      .pub-info {
-        align-self: flex-end;
-      }
-
-      .card-top {
-        align-items: stretch;
-        flex-direction: column;
-        padding-top: 8px;
-      }
-
-      .table-tools {
-        padding: 0 4px 10px;
-      }
-
-      .search-box {
-        width: 100%;
-      }
-
-      th {
-        top: 64px;
-      }
-
-      .pub-footer {
-        width: calc(100% - 24px);
-        align-items: flex-start;
-        flex-direction: column;
+      50% {
+        transform: translateY(-8px)
       }
     }
 
-    @media (max-width: 560px) {
-      .pub-topnav a:first-child {
-        display: none;
-      }
-
-      .pub-hero-title {
-        font-size: 34px;
-      }
-
-      .pub-hero-sub {
-        font-size: 15px;
-      }
-
-      .pub-stats {
-        gap: 8px;
-      }
-
-      .pub-stat {
-        min-width: 0;
-        flex: 1 1 110px;
-        padding: 10px;
-      }
-
-      .pub-stat-icon {
-        width: 34px;
-        height: 34px;
-      }
-
-      .pub-nav-tab {
-        flex: 1;
-        justify-content: center;
-        padding: 12px 7px;
-      }
-
-      .result-count {
-        display: none;
-      }
+    .hero-title {
+      font-size: clamp(42px, 5vw, 68px);
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1;
+      letter-spacing: 4px;
+      margin-bottom: 9px;
     }
 
-    .mobile-cards {
-      display: none;
-      padding: 8px;
-    }
-
-    .mobile-list {
-      display: grid;
-      gap: 7px;
-      background: transparent;
-      border: 0;
-      overflow: visible;
-    }
-
-    .mobile-list-item {
-      display: block;
-      padding: 11px 13px;
-      border: 1px solid #E2E8F0;
-      border-radius: 12px;
-      background: #fff;
-      box-shadow: 0 3px 10px rgba(15, 23, 42, .04);
-    }
-
-    .mobile-team-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .mobile-team-main {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .mobile-team-number {
-      width: 27px;
-      height: 27px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: #2563EB;
-      background: #EFF6FF;
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .mobile-list-name {
-      overflow: hidden;
-      color: #1E293B;
-      font-size: 14px;
-      font-weight: 800;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .mobile-list-id {
-      flex-shrink: 0;
-      padding: 4px 9px;
-      border-radius: 999px;
-      color: #2563EB;
-      background: #EFF6FF;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .mobile-list-inst {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 7px;
-      padding-top: 7px;
-      color: #64748B;
-      border-top: 1px solid #F1F5F9;
-      font-size: 11px;
-    }
-
-    .mobile-pagination {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 12px 4px 4px;
-    }
-
-    .mobile-pagination button {
-      min-width: 32px;
-      height: 32px;
-      padding: 0 9px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #E2E8F0;
-      border-radius: 9px;
-      color: #64748B;
-      background: #fff;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .mobile-pagination button.active {
-      color: #fff;
-      border-color: #2563EB;
-      background: #2563EB;
-    }
-
-    .mobile-pagination button:disabled {
-      opacity: .35;
-      cursor: default;
-    }
-
-    .mobile-page-info {
-      min-width: 56px;
-      color: #64748B;
-      font-size: 11px;
-      font-weight: 700;
-      text-align: center;
-    }
-
-    /* Mobile score board cards */
-    .mobile-board-list {
-      display: grid;
-      gap: 9px;
-    }
-
-    .mobile-board-card {
-      padding: 12px;
-      border: 1px solid #E2E8F0;
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: 0 4px 14px rgba(15, 23, 42, .05);
-    }
-
-    .mobile-board-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .mobile-board-team {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-    }
-
-    .mobile-rank {
-      width: 32px;
-      height: 32px;
-      flex-shrink: 0;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      color: #475569;
-      background: #F1F5F9;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .mobile-rank.rank-1 {
-      background: #FFF7D6;
-      color: #B77900;
-    }
-
-    .mobile-rank.rank-2 {
-      background: #F1F5F9;
-      color: #64748B;
-    }
-
-    .mobile-rank.rank-3 {
-      background: #FFF1E8;
-      color: #B45309;
-    }
-
-    .mobile-board-copy {
-      min-width: 0;
-    }
-
-    .mobile-board-name {
-      overflow: hidden;
-      color: #172033;
-      font-size: 14px;
-      font-weight: 800;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .mobile-board-inst {
-      overflow: hidden;
-      margin-top: 2px;
-      color: #94A3B8;
-      font-size: 10px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .mobile-best {
-      flex-shrink: 0;
-      min-width: 58px;
-      padding: 6px 8px;
-      border-radius: 10px;
-      background: #EFF6FF;
-      text-align: right;
-    }
-
-    .mobile-best-label {
-      color: #64748B;
-      font-size: 9px;
-    }
-
-    .mobile-best-score {
-      color: #2563EB;
-      font-size: 18px;
-      font-weight: 800;
+    .hero-year {
+      font-size: clamp(40px, 5.2vw, 72px);
+      font-weight: 900;
       line-height: 1.05;
+      letter-spacing: -1.5px;
+      margin-bottom: 22px;
+      background: linear-gradient(90deg, #1D4ED8, #2563EB 55%, #0EA5E9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 12px 30px rgba(37, 99, 235, .12);
     }
 
-    .mobile-best-time {
-      margin-top: 2px;
+    .hero-sub {
+      max-width: 890px;
+      margin-bottom: 34px;
+      color: #5B6B82;
+      font-size: 17px;
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hero-btn-register{
+    width: 100%;
+    min-height: 64px;      /* จากเดิม 52-56px */
+    font-size: 18px;       /* จากเดิม 15px */
+    font-weight: 800;
+    border-radius: 16px;
+    box-shadow: 0 14px 32px rgba(37,99,235,.28);
+}
+
+.hero-actions-bottom {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.hero-actions-bottom .hero-btn-secondary {
+  width: 100%;
+}
+
+    .hero-btn-primary,
+    .hero-btn-secondary {
+      min-height: 52px;
+      padding: 0 28px;
+      border-radius: 14px;
+      font: 800 15px 'Sarabun', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: .22s ease;
+    }
+
+    .hero-btn-primary {
+      color: #fff;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, #3478F6, #2563EB);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, .26);
+    }
+
+    .hero-btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 38px rgba(37, 99, 235, .34)
+    }
+
+    .hero-btn-secondary {
+      color: #334155;
+      border: 1px solid rgba(203, 213, 225, .9);
+      background: rgba(255, 255, 255, .84);
+      box-shadow: 0 8px 22px rgba(15, 23, 42, .06);
+      backdrop-filter: blur(10px);
+      min-height: 56px;      /* ถ้าอยากให้ปุ่มสูงขึ้นด้วย */
+      font-size: 20px;       /* จาก 15 → 17 */
+      font-weight: 800;
+    }
+
+    .hero-btn-secondary:hover {
+      transform: translateY(-3px);
+      border-color: #93C5FD;
+      color: var(--primary)
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
       color: #94A3B8;
-      font-size: 9px;
+      font-size: 12px;
+      animation: bounce 2s ease-in-out infinite;
     }
 
-    .mobile-rounds {
+    .hero-actions .hero-btn-primary.hero-btn-register {
+  width: 100%;
+  min-height: 72px;
+  padding: 0 36px;
+  font-size: 30px;
+  font-weight: 900;
+  border-radius: 18px;
+}
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateX(-50%) translateY(0)
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(6px)
+      }
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: 96px 24px
+    }
+
+    .section-inner {
+      max-width: 1120px;
+      margin: 0 auto
+    }
+
+    .section-label {
+      margin-bottom: 10px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2.4px;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    .section-title {
+      margin-bottom: 12px;
+      color: var(--navy);
+      font-size: clamp(28px, 3vw, 38px);
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: -.4px;
+    }
+
+    .section-sub {
+      max-width: 650px;
+      margin: 0 auto 46px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+      text-align: center;
+    }
+
+    /* ABOUT */
+    .about-section {
+      background:
+        radial-gradient(circle at 12% 18%, rgba(37, 99, 235, .07), transparent 22%),
+        #F8FAFC;
+      border-top: 1px solid #EEF2F7;
+      border-bottom: 1px solid #EEF2F7;
+    }
+
+    .about-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 7px;
-      margin-top: 10px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
     }
 
-    .mobile-round {
+    .about-card {
+      position: relative;
+      overflow: hidden;
+      padding: 30px 26px;
+      text-align: left;
+      background: rgba(255, 255, 255, .94);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .05);
+      transition: .22s ease;
+    }
+
+    .about-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, .09)
+    }
+
+    .about-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 0 18px;
+      border-radius: 17px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      min-height: 46px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: #F8FAFC;
+      justify-content: center;
+      font-size: 26px;
     }
 
-    .mobile-round-label {
-      color: #64748B;
-      font-size: 10px;
+    .about-card-title {
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 17px;
+      font-weight: 900
     }
 
-    .mobile-round-score {
-      color: #1E293B;
-      font-size: 15px;
+    .about-card-desc {
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.7
+    }
+
+    /* TIERS */
+    .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .tier-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 330px;
+      padding: 34px 28px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .055);
+      transition: .24s ease;
+    }
+
+    .tier-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 5px;
+      background: var(--tier-color, #2563EB);
+    }
+
+    .tier-card.t-b {
+      --tier-color: #16A34A
+    }
+
+    .tier-card.t-i {
+      --tier-color: #2563EB
+    }
+
+    .tier-card.t-a {
+      --tier-color: #EA580C
+    }
+
+    .tier-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 22px 52px rgba(15, 23, 42, .12)
+    }
+
+    .tier-emoji {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 48px
+    }
+
+    .tier-name {
+      margin-bottom: 10px;
+      font-size: 24px;
+      font-weight: 900
+    }
+
+    .tier-name.green {
+      color: #16A34A
+    }
+
+    .tier-name.blue {
+      color: #2563EB
+    }
+
+    .tier-name.orange {
+      color: #EA580C
+    }
+
+    .tier-desc {
+      min-height: 70px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.7
+    }
+
+    .tier-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 13px;
+      border-radius: 999px;
+      font-size: 12px;
       font-weight: 800;
-      text-align: right;
     }
 
-    .mobile-round-time {
-      margin-top: 1px;
-      color: #94A3B8;
-      font-size: 9px;
-      text-align: right;
+    .tier-badge.green {
+      background: #F0FDF4;
+      color: #16A34A
     }
 
-    .mobile-round-empty {
-      color: #CBD5E1;
-      font-size: 15px;
+    .tier-badge.blue {
+      background: #EFF6FF;
+      color: #2563EB
+    }
+
+    .tier-badge.orange {
+      background: #FFF7ED;
+      color: #EA580C
+    }
+
+    .tier-reg-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 42px;
+      margin-top: 20px;
+      padding: 0 20px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 800;
+      transition: .2s ease;
+    }
+
+    .tier-reg-btn:hover {
+      transform: translateY(-2px)
+    }
+
+    .tier-reg-btn.green {
+      background: #F0FDF4;
+      color: #16A34A;
+      border: 1px solid #BBF7D0
+    }
+
+    .tier-reg-btn.blue {
+      background: #EFF6FF;
+      color: #2563EB;
+      border: 1px solid #BFDBFE
+    }
+
+    .tier-reg-btn.orange {
+      background: #FFF7ED;
+      color: #EA580C;
+      border: 1px solid #FED7AA
+    }
+
+    /* FOOTER */
+    .footer {
+      padding: 36px 20px;
+      text-align: center;
+      background: linear-gradient(135deg, #0F172A, #1E293B);
+    }
+
+    .footer-logo img {
+      height: 42px;
+      object-fit: contain;
+      margin-bottom: 11px
+    }
+
+    .footer-name {
+      margin-bottom: 5px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800
+    }
+
+    .footer-sub {
+      color: rgba(255, 255, 255, .48);
+      font-size: 12px
+    }
+
+    @media(max-width:900px) {
+
+      .about-grid,
+      .tiers-grid {
+        grid-template-columns: 1fr
+      }
+
+      .tier-card {
+        min-height: auto
+      }
+    }
+
+    @media(max-width:640px) {
+      .topbar {
+        height: 64px;
+        padding: 0 14px
+      }
+
+      .topbar-logo img {
+        height: 36px
+      }
+
+      .topbar-nav {
+        margin-left: 4px
+      }
+
+      .topbar-nav .nav-link:not(.dropdown .nav-link) {
+        display: none
+      }
+
+      .btn-reg {
+        padding: 0 12px;
+        font-size: 12px
+      }
+
+      .btn-login {
+        width: 40px;
+        padding: 0;
+        font-size: 0
+      }
+
+      .btn-login i {
+        font-size: 16px
+      }
+
+      .hero {
+        min-height: calc(100svh - 64px);
+        justify-content: flex-start;
+        padding-top: 100px;
+      }
+
+      .hero-logo {
+        width: 550px;
+        height: auto;
+        padding-bottom: 100px;
+      }
+
+      .hero-title {
+        font-size: 38px;
+        letter-spacing: 2px
+      }
+
+      .hero-year {
+        font-size: 38px
+      }
+
+      .hero-sub {
+        font-size: 15px
+      }
+
+      .hero-btn-primary,
+      .hero-btn-secondary {
+        width: 100%;
+        max-width: 320px
+      }
+
+      .section {
+        padding: 72px 16px
+      }
+
+      .about-card,
+      .tier-card {
+        padding: 26px 22px
+      }
+    }
+
+    /* ABOUT SECTION — refined */
+    .about-section {
+      position: relative;
+      overflow: hidden;
+      padding: 82px 24px 88px;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(37, 99, 235, .10), transparent 24%),
+        radial-gradient(circle at 88% 78%, rgba(14, 165, 233, .08), transparent 24%),
+        linear-gradient(180deg, #F7FAFF 0%, #F3F7FC 100%);
+      border-top: 1px solid #EAF0F7;
+      border-bottom: 1px solid #EAF0F7;
+    }
+
+    .about-section::before {
+      content: '';
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      left: -210px;
+      top: -150px;
+      border-radius: 50%;
+      border: 1px solid rgba(37, 99, 235, .10);
+      box-shadow:
+        0 0 0 55px rgba(37, 99, 235, .025),
+        0 0 0 110px rgba(37, 99, 235, .015);
+      pointer-events: none;
+    }
+
+    .about-section .section-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1180px;
+    }
+
+    .about-section .section-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: max-content;
+      margin: 0 auto 14px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: #EAF2FF;
+      color: #2563EB;
+      letter-spacing: 1.8px;
+    }
+
+    .about-section .section-title {
+      max-width: 760px;
+      margin: 0 auto 14px;
+      font-size: clamp(30px, 3vw, 42px);
+      line-height: 1.2;
+    }
+
+    .about-section .section-sub {
+      max-width: 720px;
+      margin: 0 auto 42px;
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .about-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .about-card {
+      min-height: 220px;
+      padding: 30px 28px 28px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .95);
+      border: 1px solid rgba(226, 232, 240, .95);
+      box-shadow: 0 14px 36px rgba(15, 23, 42, .06);
+    }
+
+    .about-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 5px;
+      background: linear-gradient(90deg, #2563EB, #60A5FA);
+      opacity: .85;
+    }
+
+    .about-card:nth-child(2)::before {
+      background: linear-gradient(90deg, #16A34A, #4ADE80);
+    }
+
+    .about-card:nth-child(3)::before {
+      background: linear-gradient(90deg, #D97706, #FBBF24);
+    }
+
+    .about-card:hover {
+      transform: translateY(-7px);
+      border-color: #BFDBFE;
+      box-shadow: 0 24px 52px rgba(37, 99, 235, .12);
+    }
+
+    .about-icon {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 20px;
+      border-radius: 19px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7);
+    }
+
+    .about-card-title {
+      margin-bottom: 10px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    .about-card-desc {
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    /* TIERS SECTION — connect visually with the section above */
+    #tiers {
+      padding-top: 88px;
+      background: #fff;
+    }
+
+    #tiers .section-label {
+      display: inline-flex;
+      width: max-content;
+      margin: 0 auto 14px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: #EFF6FF;
+    }
+
+    @media(max-width:900px) {
+      .about-grid {
+        grid-template-columns: 1fr
+      }
+
+      .about-card {
+        min-height: auto
+      }
+    }
+
+    @media(max-width:640px) {
+      .about-section {
+        padding: 64px 16px 70px
+      }
+
+      .about-section .section-sub {
+        margin-bottom: 30px;
+        font-size: 14px
+      }
+
+      .about-card {
+        padding: 26px 22px
+      }
+    }
+  
+
+    /* ===== TIERS SECTION — BALANCED LAYOUT ===== */
+    #tiers {
+      padding: 88px 24px 96px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(37, 99, 235, .045), transparent 30%),
+        #fff;
+    }
+
+    #tiers .section-inner {
+      max-width: 1180px;
+    }
+
+    #tiers .section-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: max-content;
+      margin: 0 auto 14px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: #EFF6FF;
+      color: #2563EB;
+      letter-spacing: 1.7px;
+    }
+
+    #tiers .section-title {
+      margin-bottom: 10px;
+      font-size: clamp(32px, 3.3vw, 44px);
+      line-height: 1.18;
+    }
+
+    #tiers .section-sub {
+      margin-bottom: 42px;
+      font-size: 16px;
+    }
+
+    #tiers .tiers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+      gap: 24px;
+    }
+
+    #tiers .tier-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 470px;
+      padding: 42px 30px 34px;
+      border-radius: 26px;
+      box-shadow: 0 14px 38px rgba(15, 23, 42, .065);
+    }
+
+    #tiers .tier-card::before {
+      height: 6px;
+    }
+
+    #tiers .tier-emoji {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 18px;
+      border-radius: 22px;
+      font-size: 42px;
+      line-height: 1;
+      background: color-mix(in srgb, var(--tier-color) 9%, white);
+    }
+
+    #tiers .tier-name {
+      margin-bottom: 14px;
+      font-size: 25px;
+      line-height: 1.2;
+    }
+
+    /* คำอธิบายหลัก */
+    #tiers .tier-name + .tier-desc {
+      min-height: 92px;
+      max-width: 310px;
+      margin: 0 auto 20px;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    /* ข้อความอายุ */
+    #tiers .tier-desc + .tier-desc {
+      min-height: auto;
+      margin: 0 auto 26px;
+      padding-top: 18px;
+      width: 100%;
+      border-top: 1px solid #EEF2F7;
+      font-size: 14px;
       font-weight: 700;
+      line-height: 1.5;
+      color: #64748B;
+    }
+
+    #tiers .tier-badge {
+      min-height: 34px;
+      margin-top: auto;
+      padding: 0 16px;
+      font-size: 12.5px;
+    }
+
+    #tiers .tier-card > br {
+      display: none;
+    }
+
+    #tiers .tier-reg-btn {
+      width: min(100%, 168px);
+      min-height: 46px;
+      margin-top: 18px;
+      padding: 0 20px;
+      border-radius: 12px;
+      font-size: 13.5px;
+    }
+
+    #tiers .tier-reg-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px color-mix(in srgb, var(--tier-color) 17%, transparent);
     }
 
     @media (max-width: 900px) {
-      .desktop-table {
-        display: none;
+      #tiers .tiers-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .mobile-cards {
-        display: block;
+      #tiers .tier-card:last-child {
+        grid-column: 1 / -1;
+        width: min(100%, 560px);
+        justify-self: center;
       }
     }
-  </style>
+
+    @media (max-width: 640px) {
+      #tiers {
+        padding: 68px 16px 74px;
+      }
+
+      #tiers .section-sub {
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+
+      #tiers .tiers-grid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+
+      #tiers .tier-card,
+      #tiers .tier-card:last-child {
+        grid-column: auto;
+        width: 100%;
+        min-height: 420px;
+        padding: 34px 24px 28px;
+      }
+
+      #tiers .tier-name + .tier-desc {
+        min-height: auto;
+      }
+    }
+
+</style>
+
 </head>
 
 <body>
-  <div class="pub-wrap">
-    <header class="pub-topbar">
-      <div class="pub-topbar-logo"><img src="/RCL Logo.png" alt="RCL"></div>
-      <nav class="pub-topnav">
-        <a href="/?tier=<%= activeTier %>&view=teams" class="<%= view==='teams'?'active':'' %>"><i
-            class="ti ti-home"></i> หน้าสถานะ</a>
-        <a href="/?tier=<%= activeTier %>&view=board" class="<%= view==='board'?'active':'' %>"><i
-            class="ti ti-trophy"></i> ผลการแข่งขัน</a>
-        <a href="/register"
-          style="background:#2563EB;color:#fff;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px">
-          <i class="ti ti-pencil-plus"></i> สมัครแข่งขัน
-        </a>
-        <a href="/auth/login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
-      </nav>
-    </header>
 
-    <section class="pub-hero">
-      <div class="hero-copy">
-        <div class="hero-eyebrow"><span class="hero-live-dot"></span> Competition status</div>
-        <h1 class="pub-hero-title">ROBO<br><span>CHALLENGE LEAGUE</span></h1>
-        <div class="pub-hero-sub">ระบบแสดงผลการแข่งขันหุ่นยนต์</div>
-        <div class="pub-hero-sub2">ติดตามสถานะทีมและผลการแข่งขันแบบเรียลไทม์</div>
-        <div class="pub-stats">
-          <div class="pub-stat">
-            <div class="pub-stat-icon"><i class="ti ti-users"></i></div>
-            <div>
-              <div class="pub-stat-num">
-                <%= teamCount || 0 %>
-              </div>
-              <div class="pub-stat-lbl">ทีมทั้งหมด</div>
-            </div>
-          </div>
-          <div class="pub-stat">
-            <div class="pub-stat-icon"><i class="ti ti-robot"></i></div>
-            <div>
-              <div class="pub-stat-num">3</div>
-              <div class="pub-stat-lbl">รุ่นการแข่งขัน</div>
-            </div>
-          </div>
-          <div class="pub-stat">
-            <div class="pub-stat-icon"><i class="ti ti-trophy"></i></div>
-            <div>
-              <div class="pub-stat-num">
-                <%= scoredCount || 0 %>
-              </div>
-              <div class="pub-stat-lbl">ประกาศผลแล้ว</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
+    <nav class="topbar-nav">
+      <a href="/" class="nav-link active"><i class="ti ti-home"></i> หน้าหลัก</a>
 
-    <main class="pub-body">
-      <div class="pub-tab-row">
-        <div class="pub-tier-tabs">
-          <a href="/?tier=beginner&view=<%= view %>" class="pub-tier-tab <%= activeTier==='beginner'?'active':'' %>">
-            <span class="pub-tier-dot" style="background:#16a34a"></span>Beginner
-            <% if (activeTier==='beginner' ) { %><span class="tier-count">
-                <%= teams ? teams.length : 0 %>
-              </span>
-              <% } %>
+      <div class="dropdown">
+        <button class="nav-link">
+          <i class="ti ti-trophy"></i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a href="/competition?view=teams" class="dropdown-item">
+            <i class="ti ti-users"></i> ทีมที่สมัคร
           </a>
-          <a href="/?tier=intermediate&view=<%= view %>"
-            class="pub-tier-tab <%= activeTier==='intermediate'?'active':'' %>">
-            <span class="pub-tier-dot" style="background:#2563eb"></span>Intermediate
-            <% if (activeTier==='intermediate' ) { %><span class="tier-count">
-                <%= teams ? teams.length : 0 %>
-              </span>
-              <% } %>
+          <a href="/competition?view=board" class="dropdown-item">
+            <i class="ti ti-chart-bar"></i> ผลสรุปคะแนน
           </a>
-          <a href="/?tier=advance&view=<%= view %>" class="pub-tier-tab <%= activeTier==='advance'?'active':'' %>">
-            <span class="pub-tier-dot" style="background:#ea580c"></span>Advance
-            <% if (activeTier==='advance' ) { %><span class="tier-count">
-                <%= teams ? teams.length : 0 %>
-              </span>
-              <% } %>
-          </a>
-        </div>
-        <div class="pub-info"><i class="ti ti-clock"></i>
-          <%= timeStr %><a href="javascript:location.reload()" aria-label="รีเฟรช"><i class="ti ti-refresh"></i></a>
         </div>
       </div>
 
-      <section class="pub-card">
-        <div class="card-top">
-          <div class="pub-nav-tabs">
-            <a href="/?tier=<%= activeTier %>&view=teams" class="pub-nav-tab <%= view==='teams'?'active':'' %>"><i
-                class="ti ti-users"></i> ทีมที่สมัคร</a>
-            <a href="/?tier=<%= activeTier %>&view=board" class="pub-nav-tab <%= view==='board'?'active':'' %>"><i
-                class="ti ti-trophy"></i> ผลสรุปคะแนน</a>
-          </div>
-
-          <% if (view==='teams' ) { %>
-            <div class="table-tools">
-              <label class="search-box">
-                <i class="ti ti-search"></i>
-                <input id="teamSearch" type="search" placeholder="ค้นหา ID ชื่อทีม หรือสถาบัน..." autocomplete="off">
-              </label>
-              <div class="result-count"><span id="visibleCount">
-                  <%= teams ? teams.length : 0 %>
-                </span> ทีม</div>
-            </div>
-            <% } %>
-        </div>
-
-        <div class="table-scroll">
-          <% if (view==='teams' ) { %>
-
-            <!-- Desktop table -->
-            <table class="desktop-table" id="teamTable">
-              <thead>
-                <tr>
-                  <th style="width:72px">#</th>
-                  <th style="width:140px">Team ID</th>
-                  <th>ชื่อทีม</th>
-                  <th>สถาบัน</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% if (!teams || teams.length===0) { %>
-                  <tr>
-                    <td colspan="6">
-                      <div class="empty"><i class="ti ti-robot-off"></i><strong>ยังไม่มีทีมในรุ่นนี้</strong></div>
-                    </td>
-                  </tr>
-                  <% } %>
-                    <% if (teams) { teams.forEach(function(t, i) { %>
-                      <tr class="team-row"
-                        data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                        <td><span class="index-cell">
-                            <%= i+1 %>
-                          </span></td>
-                        <td><span class="team-id">
-                            <%= t.id %>
-                          </span></td>
-                        <td><span class="team-name">
-                            <%= t.name %>
-                          </span></td>
-                        <td><span class="institution"><i class="ti ti-school"></i>
-                            <%= t.institution || '—' %>
-                          </span></td>
-                      </tr>
-                      <% }) } %>
-                        <% if (teams && teams.length>0) { %>
-                          <tr id="noSearchResult" class="hidden-row">
-                            <td colspan="6">
-                              <div class="empty"><i class="ti ti-search-off"></i><strong>ไม่พบทีมที่ค้นหา</strong></div>
-                            </td>
-                          </tr>
-                          <% } %>
-              </tbody>
-            </table>
-
-            <!-- Mobile cards -->
-            <div class="mobile-cards" id="mobileTeamCards">
-              <% if (!teams || teams.length===0) { %>
-                <div class="empty"><i class="ti ti-robot-off"></i><strong>ยังไม่มีทีมในรุ่นนี้</strong></div>
-                <% } %>
-                  <% if (teams && teams.length> 0) { %>
-                    <div class="mobile-list">
-                      <% teams.forEach(function(t, i) { %>
-                        <div class="mobile-list-item team-card"
-                          data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                          <div class="mobile-team-top">
-                            <div class="mobile-team-main">
-                              <div class="mobile-team-number">
-                                <%= i + 1 %>
-                              </div>
-                              <div class="mobile-list-name">
-                                <%= t.name %>
-                              </div>
-                            </div>
-                            <div class="mobile-list-id">
-                              <%= t.id %>
-                            </div>
-                          </div>
-                          <div class="mobile-list-inst">
-                            <i class="ti ti-school"></i>
-                            <span>
-                              <%= t.institution || '—' %>
-                            </span>
-                          </div>
-                        </div>
-                        <% }) %>
-                    </div>
-
-                    <div class="mobile-pagination" id="mobilePagination">
-                      <button type="button" id="mobilePrevPage" aria-label="หน้าก่อนหน้า">
-                        <i class="ti ti-chevron-left"></i>
-                      </button>
-                      <span class="mobile-page-info" id="mobilePageInfo"></span>
-                      <button type="button" id="mobileNextPage" aria-label="หน้าถัดไป">
-                        <i class="ti ti-chevron-right"></i>
-                      </button>
-                    </div>
-
-                    <div id="noMobileResult" style="display:none">
-                      <div class="empty"><i class="ti ti-search-off"></i><strong>ไม่พบทีมที่ค้นหา</strong></div>
-                    </div>
-                    <% } %>
-            </div>
-            <% } else { %>
-              <!-- Board table (desktop) -->
-              <table class="desktop-table">
-                <thead>
-                  <tr>
-                    <th style="width:100px">อันดับ</th>
-                    <th>ชื่อทีม</th>
-                    <th>สถาบัน</th>
-                    <th>รอบที่ 1</th>
-                    <th>รอบที่ 2</th>
-                    <th>คะแนนสูงสุด</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if (!ranked || ranked.length===0) { %>
-                    <tr>
-                      <td colspan="6">
-                        <div class="empty"><i class="ti ti-trophy-off"></i><strong>ยังไม่มีผลการแข่งขัน</strong></div>
-                      </td>
-                    </tr>
-                    <% } %>
-                      <% if (ranked) { ranked.forEach(function(t, i) { %>
-                        <tr>
-                          <td>
-                            <div class="rank-cell">
-                              <% if (i===0) { %><span style="font-size:18px">🥇</span><span class="rank-gold">1</span>
-                                <% } else if (i===1) { %><span style="font-size:18px">🥈</span><span
-                                    class="rank-silver">2</span>
-                                  <% } else if (i===2) { %><span style="font-size:18px">🥉</span><span
-                                      class="rank-bronze">3</span>
-                                    <% } else { %><span class="rank-other">#<%= i+1 %></span>
-                                      <% } %>
-                            </div>
-                          </td>
-                          <td><span class="team-name">
-                              <%= t.name %>
-                            </span></td>
-                          <td><span class="institution"><i class="ti ti-school"></i>
-                              <%= t.institution || '—' %>
-                            </span></td>
-                          <td>
-                            <% if (parseFloat(t.r1_score)>0) { %>
-                              <span class="score-num">
-                                <%= parseFloat(t.r1_score) %>
-                              </span>
-                              <span class="score-time">
-                                <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
-                              </span>
-                              <% } else { %><span style="color:#cbd5e1">—</span>
-                                <% } %>
-                          </td>
-                          <td>
-                            <% if (parseFloat(t.r2_score)>0) { %>
-                              <span class="score-num">
-                                <%= parseFloat(t.r2_score) %>
-                              </span>
-                              <span class="score-time">
-                                <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
-                              </span>
-                              <% } else { %><span style="color:#cbd5e1">—</span>
-                                <% } %>
-                          </td>
-                          <td>
-                            <% if (parseFloat(t.best_score)>0) { %>
-                              <span class="best-score">
-                                <%= parseFloat(t.best_score) %>
-                              </span>
-                              <span class="score-time">
-                                <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : '' %>
-                              </span>
-                              <div class="bar-bg">
-                                <div class="bar-fill"
-                                  style="width:<%= maxScore>0?Math.round(parseFloat(t.best_score)/maxScore*100):0 %>%">
-                                </div>
-                              </div>
-                              <% } else { %><span style="color:#cbd5e1">—</span>
-                                <% } %>
-                          </td>
-                        </tr>
-                        <% }) } %>
-                </tbody>
-              </table>
-
-              <!-- Mobile board cards -->
-              <div class="mobile-cards" id="mobileBoardCards">
-                <% if (!ranked || ranked.length===0) { %>
-                  <div class="empty"><i class="ti ti-trophy-off"></i><strong>ยังไม่มีผลการแข่งขัน</strong></div>
-                  <% } %>
-
-                    <% if (ranked && ranked.length>0) { %>
-                      <div class="mobile-board-list">
-                        <% ranked.forEach(function(t, i) { %>
-                          <div class="mobile-board-card board-page-item">
-                            <div class="mobile-board-head">
-                              <div class="mobile-board-team">
-                                <div class="mobile-rank rank-<%= i+1 %>">
-                                  <%= i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1) %>
-                                </div>
-                                <div class="mobile-board-copy">
-                                  <div class="mobile-board-name">
-                                    <%= t.name %>
-                                  </div>
-                                  <div class="mobile-board-inst"><i class="ti ti-school"></i>
-                                    <%= t.institution || '—' %>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div class="mobile-best">
-                                <div class="mobile-best-label">คะแนนสูงสุด</div>
-                                <% if (parseFloat(t.best_score)>0) { %>
-                                  <div class="mobile-best-score">
-                                    <%= parseFloat(t.best_score) %>
-                                  </div>
-                                  <div class="mobile-best-time">
-                                    <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : '' %>
-                                  </div>
-                                  <% } else { %>
-                                    <div class="mobile-best-score" style="color:#CBD5E1">—</div>
-                                    <% } %>
-                              </div>
-                            </div>
-
-                            <div class="mobile-rounds">
-                              <div class="mobile-round">
-                                <div class="mobile-round-label">รอบที่ 1</div>
-                                <% if (parseFloat(t.r1_score)>0) { %>
-                                  <div>
-                                    <div class="mobile-round-score">
-                                      <%= parseFloat(t.r1_score) %>
-                                    </div>
-                                    <div class="mobile-round-time">
-                                      <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
-                                    </div>
-                                  </div>
-                                  <% } else { %>
-                                    <div class="mobile-round-empty">—</div>
-                                    <% } %>
-                              </div>
-
-                              <div class="mobile-round">
-                                <div class="mobile-round-label">รอบที่ 2</div>
-                                <% if (parseFloat(t.r2_score)>0) { %>
-                                  <div>
-                                    <div class="mobile-round-score">
-                                      <%= parseFloat(t.r2_score) %>
-                                    </div>
-                                    <div class="mobile-round-time">
-                                      <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
-                                    </div>
-                                  </div>
-                                  <% } else { %>
-                                    <div class="mobile-round-empty">—</div>
-                                    <% } %>
-                              </div>
-                            </div>
-                          </div>
-                          <% }) %>
-                      </div>
-
-                      <div class="mobile-pagination" id="boardPagination">
-                        <button type="button" id="boardPrevPage" aria-label="หน้าก่อนหน้า">
-                          <i class="ti ti-chevron-left"></i>
-                        </button>
-                        <span class="mobile-page-info" id="boardPageInfo"></span>
-                        <button type="button" id="boardNextPage" aria-label="หน้าถัดไป">
-                          <i class="ti ti-chevron-right"></i>
-                        </button>
-                      </div>
-                      <% } %>
-              </div>
-              <% } %>
-        </div>
-
-        <div class="table-footer">
-          <span><i class="ti ti-info-circle"></i> ข้อมูลนี้เป็นหน้าสาธารณะสำหรับติดตามสถานะการแข่งขัน</span>
-          <span>ROBO CHALLENGE LEAGUE</span>
-        </div>
-      </section>
-    </main>
-
-    <footer class="pub-footer">
-      <div class="pub-footer-logo">
-        <img src="/RCL Logo.png" alt="RCL">
-        <div>
-          <div class="pub-footer-name">ROBO CHALLENGE LEAGUE</div>
-          <div class="pub-footer-sub">สร้างสรรค์นวัตกรรม พัฒนาทักษะ สู่อนาคต</div>
-        </div>
-      </div>
-      <div class="pub-footer-social"><i class="ti ti-brand-facebook"></i> RCL — Robo Challenge League</div>
-    </footer>
+      <a href="/docs" class="nav-link"><i class="ti ti-files"></i> เอกสาร</a>
+    </nav>
+    <div class="topbar-actions">
+      <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
+    </div>
   </div>
 
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <img src="/RCL home.png" alt="RCL Logo" class="hero-logo">
+    <div class="hero-sub"> <strong style="color:#0F172A; font-weight: 1500;">ROBO Challenge League (RCL)</strong> คือการแข่งขันหุ่นยนต์เชิงวิศวกรรมและการเขียนโปรแกรม ที่เปิดโอกาสให้นักเรียนได้พัฒนาทักษะด้าน
+    Coding, Robotics และการคิดแก้ปัญหา ผ่านภารกิจที่จำลองจากสถานการณ์จริง ผู้เข้าแข่งขันจะต้องออกแบบ วางแผน
+    และเขียนโปรแกรมควบคุมหุ่นยนต์ให้สามารถทำภารกิจได้อย่างถูกต้อง แม่นยำ และมีประสิทธิภาพ ภายใต้เวลาที่กำหนด</div>
+    <div class="hero-actions">
+      <a href="#tiers" class="hero-btn-primary hero-btn-register">
+        <i class="ti ti-pencil-plus"></i> สมัครแข่งขัน
+      </a>
+    
+      <div class="hero-actions-bottom">
+        <a href="/competition?view=teams" class="hero-btn-secondary hero-btn-team">
+          <i class="ti ti-users"></i> ดูทีมแข่งขัน
+        </a>
+    
+        <a href="/competition?view=board" class="hero-btn-secondary hero-btn-score">
+          <i class="ti ti-trophy"></i> ดูผลคะแนน
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>เลื่อนลง</span>
+      <i class="ti ti-chevron-down" style="font-size:18px"></i>
+    </div>
+  </section>
+
+  <!-- เกี่ยวกับเรา -->
+  <section class="section about-section" id="about">
+    <div class="section-inner">
+      <div class="section-label">เกี่ยวกับเรา</div>
+      <div class="section-title">ROBO CHALLENGE LEAGUE คืออะไร?</div>
+      <div class="section-sub">การแข่งขันหุ่นยนต์ที่มุ่งพัฒนาทักษะ ความคิดสร้างสรรค์ และนวัตกรรม
+        เพื่อเตรียมความพร้อมเยาวชนสู่อนาคต</div>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon" style="background:#EFF6FF"><i class="ti ti-robot"
+              style="color:#2563EB;font-size:24px"></i></div>
+          <div class="about-card-title">การแข่งขันหุ่นยนต์</div>
+          <div class="about-card-desc">การแข่งขันที่ท้าทายทักษะการเขียนโปรแกรมและการออกแบบหุ่นยนต์</div>
+        </div>
+        <div class="about-card">
+          <div class="about-icon" style="background:#F0FDF4"><i class="ti ti-users"
+              style="color:#16A34A;font-size:24px"></i></div>
+          <div class="about-card-title">3 รุ่นการแข่งขัน</div>
+          <div class="about-card-desc">แบ่งเป็น Beginner, Intermediate และ Advance เหมาะกับทุกระดับ</div>
+        </div>
+        <div class="about-card">
+          <div class="about-icon" style="background:#FFFBEB"><i class="ti ti-trophy"
+              style="color:#D97706;font-size:24px"></i></div>
+          <div class="about-card-title">รางวัลมากมาย</div>
+          <div class="about-card-desc">ถ้วยรางวัล เกียรติบัตร และของรางวัลสำหรับทีมที่ชนะเลิศ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ประเภทการแข่งขัน -->
+  <section class="section" id="tiers">
+    <div class="section-inner">
+      <div class="section-label">ประเภทการแข่งขัน</div>
+      <div class="section-title">เลือกรุ่นที่เหมาะกับคุณ</div>
+      <div class="section-sub">3 รุ่นการแข่งขัน ออกแบบมาสำหรับทุกระดับความสามารถ</div>
+      <div class="tiers-grid">
+        <div class="tier-card t-b">
+          <span class="tier-emoji">🌱</span>
+          <div class="tier-name green">Beginner</div>
+          <div class="tier-desc">สำหรับผู้เริ่มต้น เหมาะกับนักเรียนที่เพิ่งเริ่มเรียนรู้การเขียนโปรแกรมและหุ่นยนต์</div>
+          <div class="tier-desc">สำหรับรุ่นอายุไม่เกิน 9 ปี</div>
+
+          <span class="tier-badge green">คะแนนรวม 50 คะแนน</span>
+          <br>
+          <a href="/register/beginner" class="tier-reg-btn green"><i class="ti ti-pencil-plus"></i> สมัครรุ่นนี้</a>
+        </div>
+        <div class="tier-card t-i">
+          <span class="tier-emoji">🔥</span>
+          <div class="tier-name blue">Intermediate</div>
+          <div class="tier-desc">สำหรับระดับกลาง เหมาะกับนักเรียนที่มีประสบการณ์และต้องการความท้าทายมากขึ้น</div>
+          <div class="tier-desc">สำหรับรุ่นอายุไม่เกิน 12 ปี</div>
+          <span class="tier-badge blue">คะแนนรวม 100 คะแนน</span>
+          <br>
+          <a href="/register/intermediate" class="tier-reg-btn blue"><i class="ti ti-pencil-plus"></i> สมัครรุ่นนี้</a>
+        </div>
+        <div class="tier-card t-a">
+          <span class="tier-emoji">🚀</span>
+          <div class="tier-name orange">Advance</div>
+          <div class="tier-desc">สำหรับระดับสูง เหมาะกับนักเรียนที่มีทักษะและประสบการณ์สูง พร้อมรับความท้าทาย</div>
+          <div class="tier-desc">สำหรับรุ่นอายุไม่เกิน 18 ปี</div>
+          <span class="tier-badge orange">คะแนนรวม 100 คะแนน</span>
+          <br>
+          <a href="/register/advance" class="tier-reg-btn orange"><i class="ti ti-pencil-plus"></i> สมัครรุ่นนี้</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-logo"><img src="/RCL Logo.png" alt="RCL"></div>
+    <div class="footer-name">ROBO CHALLENGE LEAGUE 2026</div>
+    <div class="footer-sub">สร้างสรรค์นวัตกรรม พัฒนาทักษะ สู่อนาคต</div>
+  </div>
   <script>
-    (() => {
-      const input = document.getElementById('teamSearch')
-      if (!input) return
-
-      const rows = Array.from(document.querySelectorAll('.team-row'))
-      const cards = Array.from(document.querySelectorAll('#mobileTeamCards .team-card'))
-      const count = document.getElementById('visibleCount')
-      const noResult = document.getElementById('noSearchResult')
-      const noMobile = document.getElementById('noMobileResult')
-      const pagination = document.getElementById('mobilePagination')
-      const prevButton = document.getElementById('mobilePrevPage')
-      const nextButton = document.getElementById('mobileNextPage')
-      const pageInfo = document.getElementById('mobilePageInfo')
-
-      const normalize = value => (value || '').toString().trim().toLowerCase()
-      const itemsPerPage = 6
-      let currentPage = 1
-      let filteredCards = [...cards]
-
-      function renderMobilePage() {
-        const totalPages = Math.max(1, Math.ceil(filteredCards.length / itemsPerPage))
-        currentPage = Math.min(currentPage, totalPages)
-
-        cards.forEach(card => {
-          card.style.display = 'none'
-        })
-
-        const start = (currentPage - 1) * itemsPerPage
-        filteredCards.slice(start, start + itemsPerPage).forEach(card => {
-          card.style.display = ''
-        })
-
-        if (pagination) {
-          pagination.style.display = filteredCards.length > itemsPerPage ? 'flex' : 'none'
-        }
-        if (prevButton) prevButton.disabled = currentPage <= 1
-        if (nextButton) nextButton.disabled = currentPage >= totalPages
-        if (pageInfo) pageInfo.textContent = filteredCards.length ? `${currentPage} / ${totalPages}` : ''
-        if (noMobile) noMobile.style.display = filteredCards.length === 0 ? '' : 'none'
-      }
-
-      function applySearch() {
-        const keyword = normalize(input.value)
-        let visible = 0
-
-        rows.forEach(row => {
-          const matches = !keyword || normalize(row.dataset.search).includes(keyword)
-          row.classList.toggle('hidden-row', !matches)
-          if (matches) visible++
-        })
-
-        filteredCards = cards.filter(card =>
-          !keyword || normalize(card.dataset.search).includes(keyword)
-        )
-
-        currentPage = 1
-        renderMobilePage()
-
-        if (count) count.textContent = visible
-        if (noResult) noResult.classList.toggle('hidden-row', visible !== 0)
-      }
-
-      input.addEventListener('input', applySearch)
-
-      prevButton?.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--
-          renderMobilePage()
-          document.querySelector('.pub-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
+    document.querySelectorAll('.dropdown').forEach(function (dd) {
+      var menu = dd.querySelector('.dropdown-menu')
+      var timer
+      dd.addEventListener('mouseenter', function () {
+        clearTimeout(timer)
+        menu.style.display = 'block'
       })
-
-      nextButton?.addEventListener('click', () => {
-        const totalPages = Math.ceil(filteredCards.length / itemsPerPage)
-        if (currentPage < totalPages) {
-          currentPage++
-          renderMobilePage()
-          document.querySelector('.pub-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
+      dd.addEventListener('mouseleave', function () {
+        timer = setTimeout(function () { menu.style.display = 'none' }, 200)
       })
-
-      renderMobilePage()
-    })();
-
-    (() => {
-      const boardCards = Array.from(document.querySelectorAll('#mobileBoardCards .board-page-item'))
-      if (!boardCards.length) return
-
-      const pagination = document.getElementById('boardPagination')
-      const prevButton = document.getElementById('boardPrevPage')
-      const nextButton = document.getElementById('boardNextPage')
-      const pageInfo = document.getElementById('boardPageInfo')
-
-      const itemsPerPage = 5
-      let currentPage = 1
-
-      function renderBoardPage() {
-        const totalPages = Math.max(1, Math.ceil(boardCards.length / itemsPerPage))
-        currentPage = Math.min(Math.max(currentPage, 1), totalPages)
-
-        const start = (currentPage - 1) * itemsPerPage
-        const end = start + itemsPerPage
-
-        boardCards.forEach((card, index) => {
-          card.style.display = index >= start && index < end ? '' : 'none'
-        })
-
-        if (pagination) {
-          pagination.style.display = boardCards.length > itemsPerPage ? 'flex' : 'none'
-        }
-        if (prevButton) prevButton.disabled = currentPage <= 1
-        if (nextButton) nextButton.disabled = currentPage >= totalPages
-        if (pageInfo) pageInfo.textContent = `หน้า ${currentPage} / ${totalPages}`
-      }
-
-      function scrollToBoard() {
-        document.querySelector('.pub-card')?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        })
-      }
-
-      prevButton?.addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--
-          renderBoardPage()
-          scrollToBoard()
-        }
+      menu.addEventListener('mouseenter', function () { clearTimeout(timer) })
+      menu.addEventListener('mouseleave', function () {
+        timer = setTimeout(function () { menu.style.display = 'none' }, 200)
       })
-
-      nextButton?.addEventListener('click', () => {
-        const totalPages = Math.ceil(boardCards.length / itemsPerPage)
-        if (currentPage < totalPages) {
-          currentPage++
-          renderBoardPage()
-          scrollToBoard()
-        }
-      })
-
-      renderBoardPage()
-    })();
+    })
   </script>
+
 </body>
 
 </html>

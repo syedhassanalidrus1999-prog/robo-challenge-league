@@ -23,7 +23,8 @@
                     <tr>
                         <th>#</th>
                         <th>ชื่อภารกิจ</th>
-                        <th>คะแนนเต็ม</th>
+                        <th>คะแนน/ชิ้น (เต็ม)</th>
+                        <th>คะแนน/ชิ้น (บางส่วน)</th>
                         <th>จัดการ</th>
                     </tr>
                 </thead>
@@ -36,14 +37,26 @@
                             <td><span class="team-name">
                                     <%= c.name %>
                                 </span></td>
-                            <td><span
+                            <td>
+                                <span
                                     style="font-size:16px;font-weight:700;color:<%= t==='beginner'?'#16A34A':t==='intermediate'?'#2563EB':'#EA580C' %>">
                                     <%= c.max_score %>
-                                </span> คะแนน</td>
+                                </span> คะแนน
+                            </td>
+                            <td>
+                                <% if (c.score_type==='both' ) { %>
+                                    <span style="font-size:14px;font-weight:700;color:#D97706">
+                                        <%= c.score_partial %>
+                                    </span> คะแนน
+                                    <% } else { %>
+                                        <span style="color:#CBD5E1">—</span>
+                                        <% } %>
+                            </td>
                             <td>
                                 <div class="action-row">
-                                    <button class="btn btn-secondary btn-sm"
-                                        onclick="openEditModal(<%= c.id %>,'<%= c.name %>',<%= c.max_score %>,'<%= c.tier %>')">
+                                    <button class="btn btn-secondary btn-sm" data-id="<%= c.id %>" data-name="<%= c.name %>" data-max="<%= c.max_score %>"
+                                        data-tier="<%= c.tier %>" data-type="<%= c.score_type || 'full_only' %>" data-partial="<%= c.score_partial || 0 %>"
+                                        onclick="openEditModalFromBtn(this)">
                                         <i class="ti ti-edit"></i> แก้ไข
                                     </button>
                                     <form method="POST"
@@ -58,7 +71,7 @@
                         <% }) %>
                             <% if (criteria.filter(function(c){return c.tier===t}).length===0) { %>
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="5">
                                         <div class="empty"><i class="ti ti-list-x"></i>ยังไม่มีภารกิจ</div>
                                     </td>
                                 </tr>
@@ -71,7 +84,7 @@
 
         <!-- Modal เพิ่มภารกิจ -->
         <div id="addModal" class="modal-backdrop" style="display:none">
-            <div class="modal" style="max-width:420px">
+            <div class="modal" style="max-width:460px">
                 <div class="modal-hd">
                     <div>
                         <div class="modal-title">เพิ่มภารกิจใหม่</div>
@@ -86,10 +99,30 @@
                             <div class="fl">ชื่อภารกิจ *</div>
                             <input class="fi" name="name" placeholder="เช่น ภารกิจที่ 5" required>
                         </div>
-                        <div class="fg">
-                            <div class="fl">คะแนนเต็ม *</div>
+                        <div class="fg" style="margin-bottom:12px">
+                            <div class="fl">คะแนนต่อชิ้น (เข้าเต็ม) *</div>
                             <input class="fi" name="max_score" type="number" min="1" max="999" step="0.5"
-                                placeholder="เช่น 20" required>
+                                placeholder="เช่น 10" required>
+                        </div>
+                        <div class="fg" style="margin-bottom:12px">
+                            <div class="fl">ประเภทการให้คะแนน</div>
+                            <div style="display:flex;gap:10px;margin-top:4px">
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                                    <input type="radio" name="score_type" value="full_only" checked
+                                        onchange="togglePartial('add',this.value)">
+                                    เข้าเต็มอย่างเดียว
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                                    <input type="radio" name="score_type" value="both"
+                                        onchange="togglePartial('add',this.value)">
+                                    มีเข้าบางส่วนด้วย
+                                </label>
+                            </div>
+                        </div>
+                        <div class="fg" id="add_partial_row" style="display:none">
+                            <div class="fl">คะแนนต่อชิ้น (เข้าบางส่วน)</div>
+                            <input class="fi" name="score_partial" id="add_score_partial" type="number" min="0"
+                                max="999" step="0.5" placeholder="เช่น 5">
                         </div>
                     </div>
                     <div class="modal-foot">
@@ -102,7 +135,7 @@
 
         <!-- Modal แก้ไขภารกิจ -->
         <div id="editModal" class="modal-backdrop" style="display:none">
-            <div class="modal" style="max-width:420px">
+            <div class="modal" style="max-width:460px">
                 <div class="modal-hd">
                     <div>
                         <div class="modal-title">แก้ไขภารกิจ</div>
@@ -117,10 +150,30 @@
                             <div class="fl">ชื่อภารกิจ *</div>
                             <input class="fi" name="name" id="edit_name" required>
                         </div>
-                        <div class="fg">
-                            <div class="fl">คะแนนเต็ม *</div>
+                        <div class="fg" style="margin-bottom:12px">
+                            <div class="fl">คะแนนต่อชิ้น (เข้าเต็ม) *</div>
                             <input class="fi" name="max_score" id="edit_max" type="number" min="1" max="999" step="0.5"
                                 required>
+                        </div>
+                        <div class="fg" style="margin-bottom:12px">
+                            <div class="fl">ประเภทการให้คะแนน</div>
+                            <div style="display:flex;gap:10px;margin-top:4px">
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                                    <input type="radio" name="score_type" id="edit_type_full" value="full_only"
+                                        onchange="togglePartial('edit',this.value)">
+                                    เข้าเต็มอย่างเดียว
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                                    <input type="radio" name="score_type" id="edit_type_both" value="both"
+                                        onchange="togglePartial('edit',this.value)">
+                                    มีเข้าบางส่วนด้วย
+                                </label>
+                            </div>
+                        </div>
+                        <div class="fg" id="edit_partial_row" style="display:none">
+                            <div class="fl">คะแนนต่อชิ้น (เข้าบางส่วน)</div>
+                            <input class="fi" name="score_partial" id="edit_score_partial" type="number" min="0"
+                                max="999" step="0.5">
                         </div>
                     </div>
                     <div class="modal-foot">
@@ -134,17 +187,59 @@
         </div>
 
         <script>
+            function togglePartial(prefix, val) {
+                var row = document.getElementById(prefix + '_partial_row')
+                row.style.display = val === 'both' ? 'block' : 'none'
+            }
+
             function openAddModal(tier) {
                 document.getElementById('add_tier').value = tier
                 var label = tier === 'beginner' ? 'Beginner' : tier === 'intermediate' ? 'Intermediate' : 'Advance'
                 document.getElementById('addModalSub').textContent = 'รุ่น ' + label
+                document.getElementById('add_partial_row').style.display = 'none'
                 openModal('addModal')
             }
-            function openEditModal(id, name, maxScore, tier) {
+
+            function openEditModalFromBtn(btn) {
+                    openCriteriaEditModal(
+                        btn.dataset.id,
+                        btn.dataset.name,
+                        btn.dataset.max,
+                        btn.dataset.tier,
+                        btn.dataset.type,
+                        btn.dataset.partial
+                    )
+                }
+
+                function openCriteriaEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
+                    document.getElementById('editForm').action = '/board/criteria/' + id + '?_method=PUT'
+                    document.getElementById('edit_name').value = name
+                    document.getElementById('edit_max').value = maxScore
+                    document.getElementById('edit_tier').value = tier
+                    document.getElementById('edit_score_partial').value = scorePartial || 0
+                    if (scoreType === 'both') {
+                        document.getElementById('edit_type_both').checked = true
+                        document.getElementById('edit_partial_row').style.display = 'block'
+                    } else {
+                        document.getElementById('edit_type_full').checked = true
+                        document.getElementById('edit_partial_row').style.display = 'none'
+                    }
+                    openModal('editModal')
+                }
+
+            function openEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
                 document.getElementById('editForm').action = '/board/criteria/' + id + '?_method=PUT'
                 document.getElementById('edit_name').value = name
                 document.getElementById('edit_max').value = maxScore
                 document.getElementById('edit_tier').value = tier
+                document.getElementById('edit_score_partial').value = scorePartial || 0
+                if (scoreType === 'both') {
+                    document.getElementById('edit_type_both').checked = true
+                    document.getElementById('edit_partial_row').style.display = 'block'
+                } else {
+                    document.getElementById('edit_type_full').checked = true
+                    document.getElementById('edit_partial_row').style.display = 'none'
+                }
                 openModal('editModal')
             }
         </script>

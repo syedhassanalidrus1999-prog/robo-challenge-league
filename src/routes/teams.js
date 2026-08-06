@@ -13,10 +13,10 @@ async function generateTeamId(tier) {
   const prefix =
     tier === "beginner" ? "B" : tier === "intermediate" ? "I" : "A";
   const result = await query(
-    `SELECT COUNT(*) as cnt FROM teams WHERE tier = $1`,
+    "SELECT MAX(CAST(SUBSTRING(id FROM 2 FOR 3) AS INT)) as maxnum FROM teams WHERE tier = $1",
     [tier],
   );
-  const num = parseInt(result.rows[0].cnt) + 1;
+  const num = (parseInt(result.rows[0].maxnum) || 0) + 1;
   return `T${String(num).padStart(3, "0")}_${prefix}`;
 }
 

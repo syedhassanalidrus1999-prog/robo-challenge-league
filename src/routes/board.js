@@ -81,12 +81,16 @@ router.get('/criteria', requireLogin, async (req, res) => {
 
 // POST /board/criteria — เพิ่มภารกิจ
 router.post('/criteria', requireLogin, async (req, res) => {
-  const { tier, name, max_score } = req.body
+  const { tier, name, max_score, score_type, score_partial } = req.body
   try {
     const countResult = await query('SELECT COUNT(*) as cnt FROM criteria WHERE tier = $1', [tier])
     const nextMission = parseInt(countResult.rows[0].cnt) + 1
-    await query('INSERT INTO criteria (tier, mission, name, max_score) VALUES ($1,$2,$3,$4)',
-      [tier, nextMission, name.trim(), parseFloat(max_score)])
+    const sType = score_type === 'both' ? 'both' : 'full_only'
+    const sPartial = sType === 'both' ? parseFloat(score_partial) || 0 : 0
+    await query(
+      'INSERT INTO criteria (tier, mission, name, max_score, score_type, score_partial) VALUES ($1,$2,$3,$4,$5,$6)',
+      [tier, nextMission, name.trim(), parseFloat(max_score), sType, sPartial]
+    )
     req.flash('success', 'เพิ่มภารกิจแล้ว')
     res.redirect('/board/criteria?tier=' + tier)
   } catch (err) {
@@ -98,10 +102,14 @@ router.post('/criteria', requireLogin, async (req, res) => {
 
 // PUT /board/criteria/:id — แก้ไขภารกิจ
 router.put('/criteria/:id', requireLogin, async (req, res) => {
-  const { name, max_score, tier } = req.body
+  const { name, max_score, tier, score_type, score_partial } = req.body
   try {
-    await query('UPDATE criteria SET name=$1, max_score=$2 WHERE id=$3',
-      [name.trim(), parseFloat(max_score), req.params.id])
+    const sType = score_type === 'both' ? 'both' : 'full_only'
+    const sPartial = sType === 'both' ? parseFloat(score_partial) || 0 : 0
+    await query(
+      'UPDATE criteria SET name=$1, max_score=$2, score_type=$3, score_partial=$4 WHERE id=$5',
+      [name.trim(), parseFloat(max_score), sType, sPartial, req.params.id]
+    )
     req.flash('success', 'อัปเดตภารกิจแล้ว')
     res.redirect('/board/criteria?tier=' + tier)
   } catch (err) {
@@ -124,6 +132,8 @@ router.delete('/criteria/:id', requireLogin, async (req, res) => {
     res.redirect('/board/criteria?tier=' + tier)
   }
 })
+
+
 
 module.exports = router
 module.exports.getRanked = getRanked

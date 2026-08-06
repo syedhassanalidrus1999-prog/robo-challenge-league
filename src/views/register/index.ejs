@@ -10,290 +10,588 @@
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-soft: #EFF6FF;
+            --success: #16A34A;
+            --success-dark: #15803D;
+            --success-soft: #F0FDF4;
+            --ink: #0F172A;
+            --muted: #64748B;
+            --line: #E2E8F0;
+            --surface: #FFFFFF;
+            --surface-soft: #F8FAFC;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background: #F4F7FB;
-            font-family: 'Sarabun', sans-serif
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 15% 5%, rgba(37, 99, 235, .10), transparent 28%),
+                radial-gradient(circle at 85% 10%, rgba(22, 163, 74, .08), transparent 24%),
+                #F4F7FB;
+            font-family: 'Sarabun', sans-serif;
+            color: var(--ink);
         }
 
         .reg-topbar {
-            height: 64px;
-            background: #fff;
-            border-bottom: 1px solid #E2E8F0;
+            height: 68px;
+            background: rgba(255, 255, 255, .92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, .9);
             display: flex;
             align-items: center;
-            padding: 0 24px;
-            gap: 12px;
+            padding: 0 28px;
+            gap: 14px;
             position: sticky;
             top: 0;
             z-index: 10;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
         }
 
         .reg-topbar-logo img {
-            height: 40px;
-            object-fit: contain
+            height: 42px;
+            object-fit: contain;
+            display: block;
         }
 
         .reg-wrap {
-            max-width: 900px;
+            max-width: 860px;
             margin: 0 auto;
-            padding: 32px 20px
+            padding: 42px 20px 64px;
         }
 
         .reg-hero {
             text-align: center;
-            margin-bottom: 32px
+            margin-bottom: 30px;
         }
 
         .reg-hero-title {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 800;
-            color: #1E293B;
-            margin-bottom: 6px
+            color: var(--ink);
+            margin-bottom: 6px;
         }
 
         .reg-hero-title span {
-            color: #2563EB
+            color: var(--primary);
         }
 
         .reg-hero-sub {
             font-size: 14px;
-            color: #64748B
+            color: var(--muted);
         }
 
         .tier-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 16px;
-            margin-bottom: 32px
+            margin-bottom: 28px;
         }
 
         .tier-card {
             background: #fff;
-            border: 2px solid #E2E8F0;
-            border-radius: 16px;
-            padding: 24px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 26px 22px;
             cursor: pointer;
-            transition: all .2s;
+            transition: .2s;
             text-align: center;
             text-decoration: none;
-            display: block
+            display: block;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .05);
         }
 
         .tier-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, .1)
+            transform: translateY(-4px);
+            box-shadow: 0 16px 34px rgba(15, 23, 42, .11);
         }
 
         .tier-card.t-beginner:hover,
         .tier-card.t-beginner.selected {
             border-color: #16A34A;
-            box-shadow: 0 0 0 3px rgba(22, 163, 74, .15)
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, .12), 0 16px 34px rgba(15, 23, 42, .08);
         }
 
         .tier-card.t-intermediate:hover,
         .tier-card.t-intermediate.selected {
             border-color: #2563EB;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .15)
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .12), 0 16px 34px rgba(15, 23, 42, .08);
         }
 
         .tier-card.t-advance:hover,
         .tier-card.t-advance.selected {
             border-color: #EA580C;
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, .15)
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, .12), 0 16px 34px rgba(15, 23, 42, .08);
         }
 
         .tier-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            margin: 0 auto 12px;
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            margin: 0 auto 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px
+            font-size: 26px;
         }
 
         .tier-name {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 800;
-            margin-bottom: 4px
+            margin-bottom: 5px;
         }
 
         .tier-desc {
-            font-size: 12px;
-            color: #64748B;
-            margin-bottom: 12px
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.65;
+            margin-bottom: 14px;
         }
 
         .tier-score {
             font-size: 11px;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 20px;
-            display: inline-block
+            font-weight: 700;
+            padding: 5px 11px;
+            border-radius: 999px;
+            display: inline-block;
+        }
+
+        .form-card,
+        .success-card {
+            background: rgba(255, 255, 255, .96);
+            border: 1px solid rgba(226, 232, 240, .95);
+            border-radius: 24px;
+            box-shadow: 0 22px 60px rgba(15, 23, 42, .10);
         }
 
         .form-card {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
+            padding: 28px;
         }
 
         .form-section-title {
             font-size: 13px;
-            font-weight: 700;
-            color: #64748B;
+            font-weight: 800;
+            color: var(--muted);
             text-transform: uppercase;
             letter-spacing: .8px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #F1F5F9
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #EEF2F7;
         }
 
         .member-block {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 10px
+            background: var(--surface-soft);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
         }
 
         .member-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: #2563EB;
-            margin-bottom: 10px
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
         }
 
         .success-card {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 16px;
-            padding: 40px;
+            overflow: hidden;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, .06)
+        }
+
+        .success-banner {
+            padding: 34px 34px 28px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 100%);
+            border-bottom: 1px solid #E6EEF8;
+            position: relative;
+        }
+
+        .success-banner:before,
+        .success-banner:after {
+            content: '';
+            position: absolute;
+            border-radius: 999px;
+            filter: blur(2px);
+            opacity: .6;
+        }
+
+        .success-banner:before {
+            width: 110px;
+            height: 110px;
+            background: rgba(37, 99, 235, .10);
+            left: -28px;
+            top: -38px;
+        }
+
+        .success-banner:after {
+            width: 90px;
+            height: 90px;
+            background: rgba(22, 163, 74, .10);
+            right: -18px;
+            bottom: -34px;
         }
 
         .success-icon {
-            width: 72px;
-            height: 72px;
-            background: #F0FDF4;
-            border-radius: 50%;
+            width: 76px;
+            height: 76px;
+            background: #fff;
+            border: 1px solid #D1FAE5;
+            border-radius: 24px;
             margin: 0 auto 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px
+            font-size: 38px;
+            box-shadow: 0 12px 28px rgba(22, 163, 74, .16);
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .success-subtitle {
+            font-size: 14px;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
         }
 
         .success-id {
-            font-size: 36px;
+            font-size: 38px;
             font-weight: 800;
-            color: #2563EB;
-            letter-spacing: 2px;
-            background: #EFF6FF;
-            padding: 12px 24px;
-            border-radius: 10px;
+            color: var(--primary);
+            letter-spacing: 3px;
+            background: #fff;
+            padding: 13px 28px;
+            border: 1px solid #DBEAFE;
+            border-radius: 14px;
             display: inline-block;
-            margin: 12px 0
+            margin: 18px 0 10px;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .10);
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-meta {
+            font-size: 14px;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .team-meta strong {
+            color: var(--ink);
+        }
+
+        .success-body {
+            padding: 26px 32px 32px;
         }
 
         .line-box {
-            background: #F0FDF4;
-            border: 2px solid #BBF7D0;
+            background: linear-gradient(180deg, #F0FDF4, #F7FFF9);
+            border: 1px solid #BBF7D0;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 0 0 18px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .line-box-left {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .line-icon {
+            width: 42px;
+            height: 42px;
             border-radius: 12px;
-            padding: 16px;
-            margin: 20px 0
+            background: #DCFCE7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex: 0 0 auto;
         }
 
         .line-box-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #15803D;
-            margin-bottom: 4px
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--success-dark);
+            margin-bottom: 4px;
+        }
+
+        .line-copy {
+            font-size: 13px;
+            color: #166534;
+            line-height: 1.55;
         }
 
         .line-id {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 800;
-            color: #16A34A
+            color: var(--success);
+            white-space: nowrap;
+            background: #fff;
+            border: 1px solid #BBF7D0;
+            padding: 9px 13px;
+            border-radius: 10px;
+        }
+
+        .info-card {
+            text-align: left;
+            margin: 0;
+            background: var(--surface-soft);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .info-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--muted);
+            letter-spacing: .8px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px 24px;
+            margin-bottom: 16px;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #94A3B8;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            word-break: break-word;
+        }
+
+        .member-list {
+            border-top: 1px solid var(--line);
+            padding-top: 13px;
+        }
+
+        .member-list-title {
+            font-size: 14px;
+            color: #94A3B8;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .member-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 13px;
+            padding: 8px 0;
+            border-bottom: 1px solid #EEF2F7;
+        }
+
+        .member-row:last-child {
+            border-bottom: 0;
+        }
+
+        .member-name {
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .member-date {
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .status-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--muted);
+            margin: 18px 0;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #F59E0B;
+            box-shadow: 0 0 0 4px #FEF3C7;
         }
 
         .fg {
             display: flex;
             flex-direction: column;
-            gap: 4px
+            gap: 5px;
         }
 
         .fl {
             font-size: 11px;
-            font-weight: 600;
-            color: #64748B;
-            letter-spacing: .5px;
-            text-transform: uppercase
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: .4px;
+            text-transform: uppercase;
         }
 
         .fi {
-            padding: 8px 10px;
+            padding: 10px 12px;
             border: 1px solid #CBD5E1;
-            border-radius: 6px;
+            border-radius: 9px;
             font-size: 13px;
             font-family: 'Sarabun', sans-serif;
-            color: #1E293B;
+            color: var(--ink);
             background: #fff;
             outline: none;
             width: 100%;
-            transition: border-color .15s
+            transition: .15s;
         }
 
         .fi:focus {
-            border-color: #2563EB;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1)
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
-            margin-bottom: 12px
+            margin-bottom: 12px;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 10px 20px;
-            border-radius: 8px;
+            justify-content: center;
+            gap: 7px;
+            padding: 10px 18px;
+            border-radius: 10px;
             border: none;
             cursor: pointer;
             font-size: 14px;
             font-weight: 700;
             font-family: 'Sarabun', sans-serif;
-            transition: all .15s
+            transition: .15s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
         }
 
         .btn-primary {
-            background: #2563EB;
-            color: #fff
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
         }
 
         .btn-primary:hover {
-            background: #1d4ed8
+            background: var(--primary-dark);
         }
 
         .btn-secondary {
             background: #fff;
             color: #334155;
-            border: 1px solid #CBD5E1
+            border: 1px solid #CBD5E1;
         }
 
         .section-div {
             height: 1px;
-            background: #E2E8F0;
-            margin: 16px 0
+            background: var(--line);
+            margin: 18px 0;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width:640px) {
+            .reg-topbar {
+                padding: 0 14px;
+                height: 62px;
+            }
+
+            .reg-topbar-logo img {
+                height: 36px;
+            }
+
+            .reg-wrap {
+                padding: 24px 12px 40px;
+            }
+
+            .success-banner {
+                padding: 28px 18px 24px;
+            }
+
+            .success-title {
+                font-size: 22px;
+            }
+
+            .success-id {
+                font-size: 30px;
+                padding: 11px 20px;
+            }
+
+            .success-body {
+                padding: 18px 16px 22px;
+            }
+
+            .line-box {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .line-id {
+                text-align: center;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .member-row {
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .action-row .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -312,36 +610,93 @@
         <% if (typeof success !=='undefined' && success) { %>
             <!-- Success page -->
             <div class="success-card">
-                <div class="success-icon">✅</div>
-                <div style="font-size:22px;font-weight:800;color:#1E293B;margin-bottom:6px">ส่งใบสมัครสำเร็จ!</div>
-                <div style="font-size:14px;color:#64748B;margin-bottom:16px">รหัสทีมของคุณคือ</div>
-                <div class="success-id">
-                    <%= teamId %>
-                </div>
-                <div style="font-size:13px;color:#64748B;margin-bottom:16px">
-                    <strong style="color:#1E293B">
-                        <%= teamName %>
-                    </strong> — รุ่น <%= tier==='beginner' ? 'Beginner' : tier==='intermediate' ? 'Intermediate'
-                        : 'Advance' %>
-                </div>
-                <div class="line-box">
-                    <div class="line-label"
-                        style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:8px">
-                        <span style="font-size:20px">📱</span>
-                        <div class="line-box-title">ขั้นตอนต่อไป — ยืนยันและชำระค่าสมัคร</div>
+                <div class="success-banner">
+                    <div class="success-icon"><i class="ti ti-circle-check" style="color:#22C55E"></i></div>
+                    <div class="success-title">ส่งใบสมัครสำเร็จ!</div>
+                    <div class="success-subtitle">บันทึกข้อมูลเรียบร้อยแล้ว กรุณาเก็บรหัสทีมไว้สำหรับยืนยันการสมัคร
                     </div>
-                    <div style="font-size:13px;color:#166534;margin-bottom:10px">
-                        📸 <strong>แคปหน้าจอนี้</strong> แล้วส่งใน LINE พร้อมรหัสทีมของคุณ
+                    <div class="success-id">
+                        <%= teamId %>
                     </div>
-                    <div style="font-size:12px;color:#64748B;margin-bottom:8px">LINE Official Account</div>
-                    <div class="line-id">@robochampion</div>
+                    <div class="team-meta"><strong>
+                            <%= teamName %>
+                        </strong> · รุ่น <%= tier==='beginner' ? 'Beginner' : tier==='intermediate' ? 'Intermediate'
+                            : 'Advance' %>
+                    </div>
                 </div>
-                <div style="font-size:12px;color:#94A3B8;margin-bottom:20px">
-                    สถานะใบสมัครจะเปลี่ยนเป็น <strong>อนุมัติแล้ว</strong> หลังชำระค่าสมัครเรียบร้อย
-                </div>
-                <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-                    <a href="/register" class="btn btn-secondary"><i class="ti ti-plus"></i> สมัครทีมอื่น</a>
-                    <a href="/" class="btn btn-primary"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
+
+                <div class="success-body">
+                    <div class="line-box">
+                        <div class="line-box-left">
+                            <div class="line-icon"><i class="ti ti-brand-line"></i></div>
+                            <div>
+                                <div class="line-box-title">ขั้นตอนต่อไป: ยืนยันและชำระค่าสมัคร</div>
+                                <div class="line-copy">แคปหน้าจอนี้ แล้วส่งผ่าน LINE พร้อมแจ้งรหัสทีมของคุณ</div>
+                            </div>
+                        </div>
+                        <div class="line-id">@robochampion</div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-title"><i class="ti ti-clipboard-check"></i> ข้อมูลที่กรอก — กรุณาตรวจสอบ</div>
+                        <div class="info-grid">
+                            <div>
+                                <div class="info-label">ชื่อทีม</div>
+                                <div class="info-value">
+                                    <%= formData.name || '—' %>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="info-label">สถาบัน / โรงเรียน</div>
+                                <div class="info-value">
+                                    <%= formData.institution || '—' %>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="info-label">เบอร์โทรติดต่อ</div>
+                                <div class="info-value">
+                                    <%= formData.phone || '—' %>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="info-label">ชื่อโค้ช</div>
+                                <div class="info-value">
+                                    <%= formData.coach || '—' %>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="member-list">
+                            <div class="member-list-title">สมาชิกทีม</div>
+                            <% if (formData.student_1) { %>
+                                <div class="member-row"><span class="member-name">
+                                        <%= formData.student_1 %>
+                                    </span><span class="member-date">
+                                        <%= formData.student_1_dob || '' %>
+                                    </span></div>
+                                <% } %>
+                                    <% if (formData.student_2) { %>
+                                        <div class="member-row"><span class="member-name">
+                                                <%= formData.student_2 %>
+                                            </span><span class="member-date">
+                                                <%= formData.student_2_dob || '' %>
+                                            </span></div>
+                                        <% } %>
+                                            <% if (formData.student_3) { %>
+                                                <div class="member-row"><span class="member-name">
+                                                        <%= formData.student_3 %>
+                                                    </span><span class="member-date">
+                                                        <%= formData.student_3_dob || '' %>
+                                                    </span></div>
+                                                <% } %>
+                        </div>
+                    </div>
+
+                    <div class="status-note"><span class="status-dot"></span>สถานะใบสมัครจะเปลี่ยนเป็น
+                        <strong>อนุมัติแล้ว</strong> หลังชำระค่าสมัครเรียบร้อย</div>
+                    <div class="action-row">
+                        <a href="/register" class="btn btn-secondary"><i class="ti ti-plus"></i> สมัครทีมอื่น</a>
+                        <a href="/" class="btn btn-primary"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
+                    </div>
                 </div>
             </div>
 

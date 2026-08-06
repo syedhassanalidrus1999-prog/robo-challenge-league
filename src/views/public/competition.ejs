@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= view==='board' ?'ผลสรุปคะแนน':'ทีมที่สมัคร' %> — Robo Challenge League
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-soft: #EFF6FF;
+            --text: #172033;
+            --muted: #64748B;
+            --line: #E5EAF2;
+            --surface: #FFFFFF;
+            --surface-soft: #F8FAFC;
+            --page: #F3F6FB;
+            --shadow-sm: 0 4px 14px rgba(15, 23, 42, .05);
+            --shadow-md: 0 12px 30px rgba(15, 23, 42, .08);
+        }
+
+        html {
+            background: var(--page);
+        }
+
+        body {
+    font-family: 'Sarabun', sans-serif;
+    background: #F4F7FB;
+    color: #1E293B;
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .topbar {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 28px;
+            background: rgba(255, 255, 255, .92);
+            border-bottom: 1px solid rgba(226, 232, 240, .9);
+            box-shadow: 0 2px 16px rgba(15, 23, 42, .04);
+            backdrop-filter: blur(14px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-logo {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .topbar-logo img {
+            height: 42px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .topbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            margin-left: 18px;
+        }
+
+        .nav-link {
+            min-height: 42px;
+            padding: 0 14px;
+            border-radius: 11px;
+            border: none;
+            background: transparent;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: background .18s ease, color .18s ease, transform .18s ease;
+        }
+
+        .nav-link:hover {
+            background: #F1F5F9;
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .nav-link i {
+            font-size: 17px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .btn-reg,
+        .btn-login {
+            min-height: 42px;
+            padding: 0 17px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+
+        .btn-reg {
+            color: #fff;
+            background: linear-gradient(135deg, #2F6FED, #2563EB);
+            border: 1px solid #2563EB;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+        }
+
+        .btn-reg:hover {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(37, 99, 235, .28);
+        }
+
+        .btn-login {
+            color: #334155;
+            background: #fff;
+            border: 1px solid #DDE4EE;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-1px);
+            background: #F8FAFC;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            min-width: 200px;
+            padding: 8px;
+            display: none;
+            z-index: 200;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .dropdown-item {
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 12px;
+            border-radius: 10px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background .16s ease, color .16s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #F8FAFC;
+            color: var(--primary);
+        }
+
+        .dropdown-item.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .dropdown-item i {
+            font-size: 17px;
+            color: #64748B;
+        }
+
+        .dropdown-item.active i {
+            color: var(--primary);
+        }
+
+        .wrap{
+    width:min(1280px,92%);
+    max-width:none;
+    margin:40px auto;
+    padding:0;
+    flex:1;
+}
+
+.card{
+    margin-top:22px;
+}
+
+        .page-hd {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 34px;
+            flex-wrap: wrap;
+        }
+
+        .page-title {
+            position: relative;
+            padding-left: 16px;
+            font-size: 28px;
+            line-height: 1.2;
+            font-weight: 800;
+            letter-spacing: -.4px;
+            color: var(--text);
+        }
+
+        .page-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 4px;
+            width: 5px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #60A5FA, #2563EB);
+        }
+
+        .page-title span {
+            color: var(--primary);
+        }
+
+        .view-toggle {
+            display: flex;
+            padding: 4px;
+            gap: 4px;
+            background: rgba(255, 255, 255, .9);
+            border: 1px solid #E2E8F0;
+            border-radius: 13px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .view-btn {
+            min-height: 40px;
+            padding: 0 16px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
+            color: #64748B;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all .18s ease;
+        }
+
+        .view-btn:hover {
+            color: var(--text);
+            background: #F8FAFC;
+        }
+
+        .view-btn.active {
+            color: #fff;
+            background: #172033;
+            box-shadow: 0 6px 14px rgba(15, 23, 42, .18);
+        }
+
+        .tier-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 7px;
+            background: rgba(255, 255, 255, .9);
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+             margin-bottom:24px;
+        }
+
+        .tier-tab {
+            min-height: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 0 12px;
+            border-radius: 11px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #64748B;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .tier-tab:hover {
+            color: var(--text);
+            background: #F8FAFC;
+        }
+
+        .tier-tab.active {
+            color: #fff;
+            background: linear-gradient(135deg, #2F6FED, #2563EB);
+            box-shadow: 0 8px 18px rgba(37, 99, 235, .24);
+        }
+
+        .tier-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, .18);
+        }
+
+        .card {
+            overflow: hidden;
+            background: rgba(255, 255, 255, .97);
+            border: 1px solid #E4EAF2;
+            border-radius: 18px;
+            box-shadow: 0 16px 38px rgba(15, 23, 42, .07);
+        }
+
+        .search-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 24px;
+            border-bottom: 1px solid #EDF1F6;
+            background: linear-gradient(180deg, #FFFFFF, #FBFCFE);
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 240px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 14px;
+            background: #F8FAFC;
+            border: 1px solid #DDE5EF;
+            border-radius: 12px;
+            transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+        }
+
+        .search-box:focus-within {
+            background: #fff;
+            border-color: #93C5FD;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .09);
+        }
+
+        .search-box i {
+            color: #94A3B8;
+            font-size: 17px;
+        }
+
+        .search-box input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 13px;
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: #9AA8BA;
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 11px;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .time-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #94A3B8;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            padding: 13px 16px;
+            text-align: left;
+            background: #F8FAFC;
+            border-bottom: 1px solid #E5EAF2;
+            color: #718096;
+            font-size: 11px;
+            letter-spacing: .55px;
+            text-transform: uppercase;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #EEF2F6;
+            color: #334155;
+            font-size: 13px;
+            vertical-align: middle;
+            background: #fff;
+            transition: background .16s ease;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover td {
+            background: #F8FBFF;
+        }
+
+        .team-name {
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .team-id {
+            margin-top: 3px;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .score-num {
+            color: var(--primary);
+            font-size: 17px;
+            font-weight: 800;
+        }
+
+        .score-time {
+            display: block;
+            margin-top: 2px;
+            color: #94A3B8;
+            font-size: 11px;
+        }
+
+        .best-score {
+            color: var(--text);
+            font-size: 21px;
+            font-weight: 900;
+        }
+
+        .bar-bg {
+            max-width: 92px;
+            height: 5px;
+            margin-top: 7px;
+            overflow: hidden;
+            background: #E2E8F0;
+            border-radius: 999px;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: var(--primary);
+        }
+
+        .rank-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .rank-gold {
+            color: #D97706;
+        }
+
+        .rank-silver {
+            color: #64748B;
+        }
+
+        .rank-bronze {
+            color: #92400E;
+        }
+
+        .rank-other {
+            color: #94A3B8;
+        }
+
+        .empty {
+            padding: 58px 24px;
+            text-align: center;
+            color: #94A3B8;
+        }
+
+        .empty i {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 40px;
+            opacity: .45;
+        }
+
+        .mobile-list {
+            padding: 10px;
+        }
+
+        .mobile-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 13px 12px;
+            border: 1px solid #EDF1F6;
+            border-radius: 13px;
+            background: #fff;
+        }
+
+        .mobile-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .mobile-num {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .mobile-info {
+            flex: 1;
+        }
+
+        .mobile-name {
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .mobile-id {
+            margin-top: 2px;
+            color: var(--primary);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .mobile-inst {
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #94A3B8;
+            font-size: 11px;
+        }
+
+        .mobile-arrow {
+            color: #CBD5E1;
+            font-size: 15px;
+        }
+
+        .board-mobile-item {
+            margin: 10px;
+            padding: 15px 14px;
+            border: 1px solid #EDF1F6;
+            border-radius: 14px;
+            background: #fff;
+        }
+
+        .board-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .board-rank-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .board-medal {
+            font-size: 21px;
+        }
+
+        .board-pos {
+            font-size: 15px;
+            font-weight: 900;
+        }
+
+        .board-name {
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .board-inst {
+            color: #94A3B8;
+            font-size: 11px;
+        }
+
+        .board-best-score {
+            color: var(--primary);
+            font-size: 23px;
+            font-weight: 900;
+            text-align: right;
+        }
+
+        .board-best-time {
+            color: #94A3B8;
+            font-size: 10px;
+            text-align: right;
+        }
+
+        .board-rounds {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .board-round {
+            padding: 10px;
+            text-align: center;
+            background: #F8FAFC;
+            border: 1px solid #EEF2F6;
+            border-radius: 11px;
+        }
+
+        .board-round-label {
+            margin-bottom: 3px;
+            color: #64748B;
+            font-size: 10px;
+        }
+
+        .board-round-score {
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .board-round-time {
+            color: #94A3B8;
+            font-size: 10px;
+        }
+
+        .footer {
+    background: #1E293B;
+    padding: 20px;
+    text-align: center;
+    margin-top: 32px;
+}
+
+       .wrap{
+    width:min(1400px,92%);
+    margin:48px auto;
+}
+        .footer img {
+            height: 32px;
+            margin-bottom: 9px;
+            object-fit: contain;
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, .48);
+            font-size: 12px;
+            letter-spacing: .35px;
+        }
+
+        @media (min-width: 640px) {
+
+            .mobile-list,
+            .board-mobile-item,
+            .mobile-item {
+                display: none;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .topbar {
+                height: 64px;
+                padding: 0 14px;
+            }
+
+            .topbar-logo img {
+                height: 36px;
+            }
+
+            .topbar-nav {
+                margin-left: 4px;
+            }
+
+            .topbar-nav .nav-link:not(.dropdown .nav-link) {
+                display: none;
+            }
+
+            .btn-reg,
+            .btn-login {
+                min-height: 38px;
+                padding: 0 12px;
+            }
+
+            .btn-reg {
+                font-size: 12px;
+            }
+
+            .btn-login {
+                width: 40px;
+                padding: 0;
+                font-size: 0;
+            }
+
+            .btn-login i {
+                font-size: 16px;
+            }
+
+            .page-title {
+                font-size: 23px;
+            }
+
+            .page-hd {
+                align-items: stretch;
+            }
+
+            .page-hd>div:last-child {
+                width: 100%;
+            }
+
+            .view-toggle {
+                width: 100%;
+            }
+
+            .view-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .tier-tab {
+                min-height: 42px;
+                padding: 0 6px;
+                font-size: 11px;
+            }
+
+            .search-row {
+                padding: 13px;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 639px) {
+            .desktop-table {
+                display: none;
+            }
+
+            .card {
+                border-radius: 15px;
+            }
+
+            .footer {
+                margin-top: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
+        <nav class="topbar-nav">
+            <a href="/" class="nav-link"><i class="ti ti-home"></i> หน้าหลัก</a>
+            <div class="dropdown">
+                <button class="nav-link" style="color:#2563EB">
+                    <i class="ti ti-trophy"></i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="/competition?view=teams&tier=<%= activeTier %>"
+                        class="dropdown-item <%= view==='teams'?'active':'' %>">
+                        <i class="ti ti-users"></i> ทีมที่สมัคร
+                    </a>
+                    <a href="/competition?view=board&tier=<%= activeTier %>"
+                        class="dropdown-item <%= view==='board'?'active':'' %>">
+                        <i class="ti ti-chart-bar"></i> ผลสรุปคะแนน
+                    </a>
+                </div>
+            </div>
+            <a href="/docs" class="nav-link"><i class="ti ti-files"></i> เอกสาร</a>
+        </nav>
+        <div class="topbar-actions">
+            <a href="/register" class="btn-reg"><i class="ti ti-pencil-plus"></i> สมัครแข่งขัน</a>
+            <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <div class="page-hd">
+            <div class="page-title">
+                <% if (view==='teams' ) { %><span>ทีม</span>ที่สมัคร<% } else { %><span>ผลสรุป</span>คะแนน<% } %>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <div class="view-toggle">
+                    <a href="/competition?view=teams&tier=<%= activeTier %>"
+                        class="view-btn <%= view==='teams'?'active':'' %>">
+                        <i class="ti ti-users"></i> ทีมที่สมัคร
+                    </a>
+                    <a href="/competition?view=board&tier=<%= activeTier %>"
+                        class="view-btn <%= view==='board'?'active':'' %>">
+                        <i class="ti ti-trophy"></i> ผลสรุปคะแนน
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier tabs -->
+        <div style="margin-bottom:14px">
+            <div class="tier-tabs">
+                <a href="/competition?view=<%= view %>&tier=beginner"
+                    class="tier-tab <%= activeTier==='beginner'?'active':'' %>">
+                    <span class="tier-dot"
+                        style="background:<%= activeTier==='beginner'?'#fff':'#16A34A' %>"></span>Beginner
+                    <% if (activeTier==='beginner' && teams) { %><span
+                            style="font-size:10px;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:10px">
+                            <%= teams.length %>
+                        </span>
+                        <% } %>
+                </a>
+                <a href="/competition?view=<%= view %>&tier=intermediate"
+                    class="tier-tab <%= activeTier==='intermediate'?'active':'' %>">
+                    <span class="tier-dot"
+                        style="background:<%= activeTier==='intermediate'?'#fff':'#2563EB' %>"></span>Intermediate
+                </a>
+                <a href="/competition?view=<%= view %>&tier=advance"
+                    class="tier-tab <%= activeTier==='advance'?'active':'' %>">
+                    <span class="tier-dot"
+                        style="background:<%= activeTier==='advance'?'#fff':'#EA580C' %>"></span>Advance
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <% if (view==='teams' ) { %>
+                <div class="search-row">
+                    <div class="search-box">
+                        <i class="ti ti-search"></i>
+                        <input id="teamSearch" placeholder="ค้นหา ID ชื่อทีม หรือสถาบัน...">
+                    </div>
+                    <span class="count-badge" id="visibleCount">
+                        <%= teams ? teams.length : 0 %> ทีม
+                    </span>
+                    <span class="time-info"><i class="ti ti-clock"></i>
+                        <%= timeStr %>
+                    </span>
+                </div>
+
+                <!-- Desktop table -->
+                <div class="desktop-table" style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ชื่อทีม</th>
+                                <th>สถาบัน</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamTableBody">
+                            <% if (!teams || teams.length===0) { %>
+                                <tr>
+                                    <td colspan="3">
+                                        <div class="empty"><i class="ti ti-robot-off"></i>ยังไม่มีทีมในรุ่นนี้</div>
+                                    </td>
+                                </tr>
+                                <% } %>
+                                    <% if (teams) { teams.forEach(function(t, i) { %>
+                                        <tr
+                                            data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
+                                            <td style="color:#94A3B8;font-size:12px">
+                                                <%= i+1 %>
+                                            </td>
+                                            <td>
+                                                <div class="team-name">
+                                                    <%= t.name %>
+                                                </div>
+                                                <div class="team-id">
+                                                    <%= t.id %>
+                                                </div>
+                                            </td>
+                                            <td style="font-size:12px;color:#64748B"><i class="ti ti-school"
+                                                    style="font-size:12px"></i>
+                                                <%= t.institution || '—' %>
+                                            </td>
+                                        </tr>
+                                        <% }) } %>
+                                            <tr id="noResult" style="display:none">
+                                                <td colspan="3">
+                                                    <div class="empty"><i class="ti ti-search-off"></i>ไม่พบทีมที่ค้นหา
+                                                    </div>
+                                                </td>
+                                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Mobile list -->
+                <div class="mobile-list" id="mobileList">
+                    <% if (!teams || teams.length===0) { %>
+                        <div class="empty"><i class="ti ti-robot-off"></i>ยังไม่มีทีมในรุ่นนี้</div>
+                        <% } %>
+                            <% if (teams) { teams.forEach(function(t, i) { %>
+                                <div class="mobile-item"
+                                    data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
+                                    <div class="mobile-num">
+                                        <%= i+1 %>
+                                    </div>
+                                    <div class="mobile-info">
+                                        <div class="mobile-name">
+                                            <%= t.name %>
+                                        </div>
+                                        <div class="mobile-id">
+                                            <%= t.id %>
+                                        </div>
+                                        <div class="mobile-inst"><i class="ti ti-school"></i>
+                                            <%= t.institution || '—' %>
+                                        </div>
+                                    </div>
+                                    <i class="ti ti-chevron-right mobile-arrow"></i>
+                                </div>
+                                <% }) } %>
+                                    <div id="noMobileResult" style="display:none" class="empty"><i
+                                            class="ti ti-search-off"></i>ไม่พบทีมที่ค้นหา</div>
+                </div>
+
+                <% } else { %>
+
+                    <!-- Board desktop -->
+                    <div class="desktop-table" style="overflow-x:auto">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>อันดับ</th>
+                                    <th>ชื่อทีม</th>
+                                    <th>รอบที่ 1</th>
+                                    <th>รอบที่ 2</th>
+                                    <th>คะแนนที่ดีที่สุด</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (!ranked || ranked.length===0) { %>
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                        <% if (ranked) { ranked.forEach(function(t, i) { %>
+                                            <tr>
+                                                <td>
+                                                    <div class="rank-cell">
+                                                        <% if (i===0) { %><span style="font-size:20px">🥇</span><span
+                                                                class="rank-gold">1</span>
+                                                            <% } else if (i===1) { %><span
+                                                                    style="font-size:20px">🥈</span><span
+                                                                    class="rank-silver">2</span>
+                                                                <% } else if (i===2) { %><span
+                                                                        style="font-size:20px">🥉</span><span
+                                                                        class="rank-bronze">3</span>
+                                                                    <% } else { %><span class="rank-other">#<%= i+1 %>
+                                                                        </span>
+                                                                        <% } %>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="team-name">
+                                                        <%= t.name %>
+                                                    </div>
+                                                    <div style="font-size:11px;color:#94A3B8">
+                                                        <%= t.institution || '' %>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <% if (parseFloat(t.r1_score)>0) { %>
+                                                        <span class="score-num">
+                                                            <%= parseFloat(t.r1_score) %> pts
+                                                        </span>
+                                                        <span class="score-time">
+                                                            <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : ''
+                                                                %>
+                                                        </span>
+                                                        <% } else { %><span style="color:#CBD5E1">—</span>
+                                                            <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (parseFloat(t.r2_score)>0) { %>
+                                                        <span class="score-num">
+                                                            <%= parseFloat(t.r2_score) %> pts
+                                                        </span>
+                                                        <span class="score-time">
+                                                            <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : ''
+                                                                %>
+                                                        </span>
+                                                        <% } else { %><span style="color:#CBD5E1">—</span>
+                                                            <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (parseFloat(t.best_score)>0) { %>
+                                                        <span class="best-score">
+                                                            <%= parseFloat(t.best_score) %> pts
+                                                        </span>
+                                                        <span class="score-time">
+                                                            <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ'
+                                                                : '' %>
+                                                        </span>
+                                                        <div class="bar-bg">
+                                                            <div class="bar-fill"
+                                                                style="width:<%= maxScore>0?Math.round(parseFloat(t.best_score)/maxScore*100):0 %>%;background:<%= i===0?'#D97706':i===1?'#94A3B8':i===2?'#92400E':'#2563EB' %>">
+                                                            </div>
+                                                        </div>
+                                                        <% } else { %><span style="color:#CBD5E1">—</span>
+                                                            <% } %>
+                                                </td>
+                                            </tr>
+                                            <% }) } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Board mobile -->
+                    <div style="display:none" id="boardMobile">
+                        <% if (!ranked || ranked.length===0) { %>
+                            <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
+                            <% } %>
+                                <% if (ranked) { ranked.forEach(function(t, i) { %>
+                                    <div class="board-mobile-item">
+                                        <div class="board-top">
+                                            <div class="board-rank-left">
+                                                <% if (i===0) { %><span class="board-medal">🥇</span><span
+                                                        class="board-pos rank-gold">1</span>
+                                                    <% } else if (i===1) { %><span class="board-medal">🥈</span><span
+                                                            class="board-pos rank-silver">2</span>
+                                                        <% } else if (i===2) { %><span
+                                                                class="board-medal">🥉</span><span
+                                                                class="board-pos rank-bronze">3</span>
+                                                            <% } else { %><span class="board-pos rank-other"
+                                                                    style="margin-left:4px">#<%= i+1 %></span>
+                                                                <% } %>
+                                                                    <div>
+                                                                        <div class="board-name">
+                                                                            <%= t.name %>
+                                                                        </div>
+                                                                        <div class="board-inst">
+                                                                            <%= t.institution || '' %>
+                                                                        </div>
+                                                                    </div>
+                                            </div>
+                                            <% if (parseFloat(t.best_score)>0) { %>
+                                                <div>
+                                                    <div class="board-best-score">
+                                                        <%= parseFloat(t.best_score) %>
+                                                    </div>
+                                                    <div class="board-best-time">
+                                                        <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' วิ' : ''
+                                                            %>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                        </div>
+                                        <div class="board-rounds">
+                                            <div class="board-round">
+                                                <div class="board-round-label">รอบที่ 1</div>
+                                                <% if (parseFloat(t.r1_score)>0) { %>
+                                                    <div class="board-round-score">
+                                                        <%= parseFloat(t.r1_score) %>
+                                                    </div>
+                                                    <div class="board-round-time">
+                                                        <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' วิ' : '' %>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <div style="color:#CBD5E1;font-size:14px">—</div>
+                                                        <% } %>
+                                            </div>
+                                            <div class="board-round">
+                                                <div class="board-round-label">รอบที่ 2</div>
+                                                <% if (parseFloat(t.r2_score)>0) { %>
+                                                    <div class="board-round-score">
+                                                        <%= parseFloat(t.r2_score) %>
+                                                    </div>
+                                                    <div class="board-round-time">
+                                                        <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' วิ' : '' %>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <div style="color:#CBD5E1;font-size:14px">—</div>
+                                                        <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) } %>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+
+    <div class="footer">
+        <img src="/RCL Logo.png" alt="RCL">
+        <div class="footer-text">ROBO CHALLENGE LEAGUE 2026</div>
+    </div>
+
+    <script>
+        (function () {
+            if (window.innerWidth < 640) {
+                var bm = document.getElementById('boardMobile')
+                if (bm) bm.style.display = 'block'
+            }
+            var input = document.getElementById('teamSearch')
+            if (!input) return
+            var rows = Array.from(document.querySelectorAll('#teamTableBody tr[data-search]'))
+            var items = Array.from(document.querySelectorAll('#mobileList .mobile-item'))
+            var count = document.getElementById('visibleCount')
+            var noResult = document.getElementById('noResult')
+            var noMobile = document.getElementById('noMobileResult')
+            input.addEventListener('input', function () {
+                var kw = input.value.trim().toLowerCase()
+                var visible = 0
+                rows.forEach(function (r) { var m = !kw || r.dataset.search.includes(kw); r.style.display = m ? '' : 'none'; if (m) visible++ })
+                items.forEach(function (r) { var m = !kw || r.dataset.search.includes(kw); r.style.display = m ? '' : 'none' })
+                if (count) count.textContent = visible + ' ทีม'
+                if (noResult) noResult.style.display = visible === 0 ? '' : 'none'
+                if (noMobile) noMobile.style.display = visible === 0 ? 'block' : 'none'
+            })
+        })()
+
+        document.querySelectorAll('.dropdown').forEach(function (dd) {
+            var menu = dd.querySelector('.dropdown-menu')
+            var timer
+            dd.addEventListener('mouseenter', function () {
+                clearTimeout(timer)
+                menu.style.display = 'block'
+            })
+            dd.addEventListener('mouseleave', function () {
+                timer = setTimeout(function () { menu.style.display = 'none' }, 200)
+            })
+            menu.addEventListener('mouseenter', function () { clearTimeout(timer) })
+            menu.addEventListener('mouseleave', function () {
+                timer = setTimeout(function () { menu.style.display = 'none' }, 200)
+            })
+        })
+    </script>
+</body>
+
+</html>

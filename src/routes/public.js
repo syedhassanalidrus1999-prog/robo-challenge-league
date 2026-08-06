@@ -77,15 +77,15 @@ router.get("/dashboard", requireLogin, (req, res) => {
 
 // GET /register
 router.get('/register', (req, res) => {
-  res.render('register/index', {
+  res.render("register/index", {
     layout: false,
-    tier: null,
-    success: false,
-    teamId: '',
-    teamName: '',
-    formData: {},
-    errorMsg: null
-  })
+    success: true,
+    teamId: id,
+    teamName: name,
+    tier,
+    formData: req.body, // เพิ่มบรรทัดนี้
+    errorMsg: null,
+  });
 })
 
 // GET /register/:tier
@@ -105,6 +105,7 @@ router.get('/register/:tier', (req, res) => {
 
 // POST /register
 router.post('/register', async (req, res) => {
+  console.log(req.body);
   const { tier, name, institution, phone, coach, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob } = req.body
 
   if (!name || !institution || !phone || !tier) {
@@ -117,9 +118,12 @@ router.post('/register', async (req, res) => {
 
   try {
     const prefix = tier === 'beginner' ? 'B' : tier === 'intermediate' ? 'I' : 'A'
-    const countResult = await query('SELECT COUNT(*) as cnt FROM teams WHERE tier = $1', [tier])
-    const num = parseInt(countResult.rows[0].cnt) + 1
-    const id = `T${String(num).padStart(3, '0')}_${prefix}`
+    const countResult = await query(
+      "SELECT MAX(CAST(SUBSTRING(id FROM 2 FOR 3) AS INT)) as maxnum FROM teams WHERE tier = $1",
+      [tier],
+    );
+    const num = (parseInt(countResult.rows[0].maxnum) || 0) + 1;
+    const id = `T${String(num).padStart(3, "0")}_${prefix}`;
 
     await query(`
       INSERT INTO teams (id, name, institution, tier, phone, coach, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob, status)
@@ -130,15 +134,16 @@ router.post('/register', async (req, res) => {
         student_2?.trim()||null, student_2_dob||null,
         student_3?.trim()||null, student_3_dob||null])
 
-    res.render('register/index', {
+    res.render("register/index", {
       layout: false,
       success: true,
       teamId: id,
       teamName: name,
       tier,
       formData: {},
-      errorMsg: null
-    })
+      formData: req.body, // ← มีบรรทัดนี้ไหม?
+      errorMsg: null,
+    });
   } catch (err) {
     console.error(err)
     res.render('register/index', {
@@ -146,6 +151,46 @@ router.post('/register', async (req, res) => {
       errorMsg: 'เกิดข้อผิดพลาด กรุณาลองใหม่',
       formData: req.body
     })
+  }
+})
+// GET /docs
+router.get('/docs', (req, res) => {
+  res.render('public/docs', {
+    layout: false,
+    docs: {
+      project:           null,  // ใส่ Google Drive link ตรงนี้
+      invitation:        null,  // ใส่ Google Drive link ตรงนี้
+      rules_beginner:    null,  // ใส่ Google Drive link ตรงนี้
+      rules_intermediate: null, // ใส่ Google Drive link ตรงนี้
+      rules_advance:     null   // ใส่ Google Drive link ตรงนี้
+    }
+  })
+})
+
+// GET /competition
+router.get('/competition', async (req, res) => {
+  const tier = req.query.tier || 'beginner'
+  const view = req.query.view || 'teams'
+  const now = new Date()
+  const timeStr = now.toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}) + ' เวลา ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0') + ' น.'
+
+  try {
+    let data = { teams: null, ranked: null, maxScore: 0 }
+    if (view === 'teams') {
+      const result = await query(
+        `SELECT id, name, institution, tier, status FROM teams WHERE tier = $1 AND status = 'approved' ORDER BY created_at ASC`, [tier]
+      )
+      data.teams = result.rows
+    } else {
+      data.ranked = await getRanked(tier)
+      data.maxScore = await getMaxScore(tier)
+    }
+    return res.render('public/competition', {
+      layout: false, activeTier: tier, view, timeStr, ...data
+    })
+  } catch (err) {
+    console.error(err)
+    return res.redirect('/')
   }
 })
 module.exports = router;
