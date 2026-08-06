@@ -188,6 +188,13 @@ router.post(
         }
       }
 
+      var totalScore =
+        mission1.total +
+        mission2.total +
+        mission3.total +
+        mission4.total +
+        mission5.total;
+
       await query(
         `
   INSERT INTO scores (
@@ -197,8 +204,8 @@ router.post(
     mission_3, mission_3_full, mission_3_partial,
     mission_4, mission_4_full, mission_4_partial,
     mission_5, mission_5_full, mission_5_partial,
-    time_seconds, photo_url, signature_url
-  ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+    total_score, time_seconds, photo_url, signature_url
+  ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
   ON CONFLICT (team_id, round) DO UPDATE SET
     judge_id=$2,
     mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
@@ -206,9 +213,10 @@ router.post(
     mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
     mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
     mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
-    time_seconds=$19,
-    photo_url=COALESCE($20, scores.photo_url),
-    signature_url=COALESCE($21, scores.signature_url),
+    total_score=$19,
+    time_seconds=$20,
+    photo_url=COALESCE($21, scores.photo_url),
+    signature_url=COALESCE($22, scores.signature_url),
     scored_at=NOW()
 `,
         [
@@ -230,6 +238,7 @@ router.post(
           mission5.total,
           mission5.full,
           mission5.partial,
+          totalScore,
           time_seconds ? parseFloat(time_seconds) : null,
           photoUrl,
           signatureUrl,
