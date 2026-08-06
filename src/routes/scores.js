@@ -190,30 +190,30 @@ router.post(
 
       await query(
         `
-        INSERT INTO scores (
-          team_id, judge_id, round,
-          mission_1, mission_1_full, mission_1_partial,
-          mission_2, mission_2_full, mission_2_partial,
-          mission_3, mission_3_full, mission_3_partial,
-          mission_4, mission_4_full, mission_4_partial,
-          mission_5, mission_5_full, mission_5_partial,
-          time_seconds, photo_url, signature_url
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
-        ON CONFLICT (team_id, round) DO UPDATE SET
-          judge_id=$2,
-          mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
-          mission_2=$7, mission_2_full=$8, mission_2_partial=$9,
-          mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
-          mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
-          mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
-          time_seconds=$19,
-          photo_url=COALESCE($20, scores.photo_url),
-          signature_url=COALESCE($21, scores.signature_url),
-          scored_at=NOW()
-      `,
+  INSERT INTO scores (
+    team_id, judge_id, round,
+    mission_1, mission_1_full, mission_1_partial,
+    mission_2, mission_2_full, mission_2_partial,
+    mission_3, mission_3_full, mission_3_partial,
+    mission_4, mission_4_full, mission_4_partial,
+    mission_5, mission_5_full, mission_5_partial,
+    time_seconds, photo_url, signature_url
+  ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+  ON CONFLICT (team_id, round) DO UPDATE SET
+    judge_id=$2,
+    mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
+    mission_2=$7, mission_2_full=$8, mission_2_partial=$9,
+    mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
+    mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
+    mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
+    time_seconds=$19,
+    photo_url=COALESCE($20, scores.photo_url),
+    signature_url=COALESCE($21, scores.signature_url),
+    scored_at=NOW()
+`,
         [
           teamId,
-          user.id,
+          parseInt(user.id),
           parseInt(round),
           mission1.total,
           mission1.full,
