@@ -133,6 +133,39 @@ router.delete('/criteria/:id', requireLogin, async (req, res) => {
   }
 })
 
+// GET /board/settings
+router.get('/settings', requireLogin, async (req, res) => {
+  try {
+    const result = await query('SELECT * FROM settings', [])
+    const settings = {}
+    result.rows.forEach(function(r) { settings[r.key] = r.value })
+    res.render('board/settings', {
+      title: 'ตั้งค่า',
+      pageTitle: '<span>ตั้งค่า</span>ระบบ',
+      tierSelector: false,
+      activeTier: '',
+      settings
+    })
+  } catch (err) {
+    console.error(err)
+    req.flash('error', 'โหลดข้อมูลไม่ได้')
+    res.redirect('/board')
+  }
+})
+
+// POST /board/settings
+router.post('/settings', requireLogin, async (req, res) => {
+  const { event_date, event_date_end, event_date_label } = req.body
+  await query('INSERT INTO settings (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=$2',
+    ['event_date', event_date || null])
+  await query('INSERT INTO settings (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=$2',
+    ['event_date_end', event_date_end || null])
+  await query('INSERT INTO settings (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=$2',
+    ['event_date_label', event_date_label || null])
+  req.flash('success', 'บันทึกการตั้งค่าแล้ว')
+  res.redirect('/board/settings')
+})
+
 
 
 module.exports = router

@@ -23,10 +23,16 @@ router.get("/", async (req, res) => {
       String(now.getMinutes()).padStart(2, "0") +
       " น.";
 
-    const [teamsAll, scoresAll] = await Promise.all([
+    const [teamsAll, scoresAll, settingsResult] = await Promise.all([
       query("SELECT COUNT(*) as cnt FROM teams", []),
       query("SELECT COUNT(DISTINCT team_id) as cnt FROM scores", []),
+      query("SELECT * FROM settings", []),
     ]);
+
+    const settings = {};
+    settingsResult.rows.forEach(function (r) {
+      settings[r.key] = r.value;
+    });
 
     let data = { teams: null, ranked: null, maxScore: 0 };
 
@@ -50,6 +56,10 @@ router.get("/", async (req, res) => {
       timeStr,
       teamCount: parseInt(teamsAll.rows[0].cnt),
       scoredCount: parseInt(scoresAll.rows[0].cnt),
+      eventDate: settings.event_date || null,
+      eventDateLabel: settings.event_date_label || null,
+      eventDateEnd: settings.event_date_end || null,
+
       ...data,
     });
   } catch (err) {

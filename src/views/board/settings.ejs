@@ -1,0 +1,33 @@
+<div class="page-hd">
+    <div class="page-title"><span>ตั้งค่า</span>ระบบ</div>
+</div>
+
+<div class="card" style="max-width:500px">
+    <div class="card-hd">
+        <div class="card-title">วันแข่งขัน</div>
+    </div>
+    <form method="POST" action="/board/settings">
+        <div class="card-body">
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">วันที่เริ่ม</div>
+                <input class="fi" type="date" name="event_date" value="<%= settings.event_date || '' %>">
+            </div>
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">วันที่สิ้นสุด (ไม่บังคับ)</div>
+                <input class="fi" type="date" name="event_date_end" value="<%= settings.event_date_end || '' %>">
+                <div style="font-size:11px;color:#94A3B8;margin-top:4px">ถ้าไม่กำหนดวันเริ่ม จะแสดงเป็น "เร็วๆ นี้"
+                </div>
+            </div>
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">สถานที่ (ไม่บังคับ)</div>
+                <input class="fi" type="text" name="event_date_label" value="<%= settings.event_date_label || '' %>"
+                    placeholder="เช่น ณ โรงเรียน ROBO Champion Academy">
+            </div>
+        </div>
+        <div class="modal-foot" style="padding:14px 16px">
+            <button type="submit" class="btn btn-primary">
+                <i class="ti ti-device-floppy"></i> บันทึก
+            </button>
+        </div>
+    </form>
+</div>

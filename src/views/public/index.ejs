@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 
@@ -14,1439 +13,468 @@
   <link rel="stylesheet" href="/css/style.css">
 
   <style>
-    :root {
-      --primary: #2563EB;
-      --primary-dark: #1D4ED8;
-      --primary-soft: #EFF6FF;
-      --navy: #0F172A;
-      --text: #1E293B;
-      --muted: #64748B;
-      --line: #E2E8F0;
-      --surface: #FFFFFF;
-      --page: #F6F9FE;
-      --shadow-sm: 0 8px 24px rgba(15, 23, 42, .07);
-      --shadow-md: 0 20px 60px rgba(37, 99, 235, .14);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
-
-    html {
-      scroll-behavior: smooth
-    }
-
-    body {
-      font-family: 'Sarabun', sans-serif;
-      background: var(--page);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit
-    }
-
-    /* TOPBAR */
-    .topbar {
-      position: fixed;
-      inset: 0 0 auto 0;
-      z-index: 100;
-      height: 84px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 30px;
-      background: transparent;
-      border-bottom: 1px solid transparent;
-      box-shadow: none;
-      backdrop-filter: none;
-      transition: background .3s ease, box-shadow .3s ease, border-color .3s ease;
-    }
-
-    .topbar.scrolled {
-      background: rgba(255, 255, 255, .88);
-      border-bottom: 1px solid rgba(226, 232, 240, .9);
-      box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
-      backdrop-filter: blur(16px);
-    }
-
-    .topbar-logo {
-      display: inline-flex;
-      align-items: center;
-      flex-shrink: 0
-    }
-
-    .topbar-logo img {
-      height: 120px;
-      width: auto;
-      object-fit: contain
-    }
-
-    .topbar-nav {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex: 1;
-      margin-left: 18px;
-    }
-
-    .nav-link {
-      min-height: 52px;
-      padding: 0 18px;
-      border: 0;
-      border-radius: 11px;
-      background: transparent;
-      color: #334155;
-      font-family: "Kanit", sans-serif;
-      letter-spacing: 2px;
-      font-weight: 600;
-      font-size: 18px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: .2s ease;
-    }
-
-    .nav-link:hover {
-      color: var(--primary);
-      transform: translateY(-1px)
-    }
-
-    .nav-link.active {
-      background: transparent;
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-left: auto
-    }
-
-    .btn-reg,
-    .btn-login {
-      min-height: 52px;
-      padding: 0 20px;
-      border-radius: 11px;
-      font: 800 16px 'Sarabun', sans-serif;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      transition: .2s ease;
-    }
-
-    .btn-reg {
-      color: #fff;
-      border: 1px solid transparent;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
-    }
-
-    .btn-reg:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
-    }
-
-    .btn-login {
-      color: #334155;
-      background: #fff;
-      border: 1px solid var(--line)
-    }
-
-    .btn-login:hover {
-      background: #F8FAFC;
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-sm)
-    }
-
-    /* DROPDOWN */
-    .dropdown {
-      position: relative
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 0;
-      min-width: 200px;
-      padding: 8px;
-      display: none;
-      z-index: 200;
-      background: rgba(255, 255, 255, .98);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-    }
-
-    .dropdown-item {
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 12px;
-      border-radius: 10px;
-      color: #334155;
-      font-size: 14px;
-      font-weight: 700;
-      transition: .18s ease;
-    }
-
-    .dropdown-item:hover {
-      background: var(--primary-soft);
-      color: var(--primary)
-    }
-
-    .dropdown-item i {
-      font-size: 17px;
-      color: #64748B
-    }
-
-    .dropdown-item:hover i {
-      color: var(--primary)
-    }
-
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      justify-content: flex-start;
-      /* จาก center */
-
-      text-align: center;
-      padding: 140px 24px 84px;
-
-      background:
-        linear-gradient(rgba(255, 255, 255, .202),
-          rgba(255, 255, 255, .901)),
-        url("/images/hero-bg.png") center/cover no-repeat;
-    }
-
-    .hero::before {
-      content: '';
-      position: absolute;
-      width: 760px;
-      height: 760px;
-      top: -230px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      border: 1px solid rgba(37, 99, 235, .10);
-      box-shadow:
-        0 0 0 70px rgba(37, 99, 235, .025),
-        0 0 0 150px rgba(37, 99, 235, .018);
-      pointer-events: none;
-    }
-
-    .hero::after {
-      content: '';
-      position: absolute;
-      inset: auto 0 0;
-      height: 190px;
-      background:
-        linear-gradient(135deg, transparent 48%, rgba(37, 99, 235, .04) 49%, rgba(37, 99, 235, .04) 51%, transparent 52%) 0 0/42px 42px;
-      mask-image: linear-gradient(to top, black, transparent);
-      pointer-events: none;
-    }
-
-    .hero>* {
-      position: relative;
-      z-index: 1
-    }
-
-    .hero-logo {
-      width: 1000px;
-      height: auto;
-      object-fit: contain;
-      margin-bottom: 10px;
-      margin-top: 0px;
-      filter: drop-shadow(0 24px 40px rgba(37, 99, 235, .25));
-      animation: floatLogo 4s ease-in-out infinite;
-    }
-
-    @keyframes floatLogo {
-
-      0%,
-      100% {
-        transform: translateY(0)
-      }
-
-      50% {
-        transform: translateY(-8px)
-      }
-    }
-
-    .hero-title {
-      font-size: clamp(42px, 5vw, 68px);
-      font-weight: 900;
-      color: var(--navy);
-      line-height: 1;
-      letter-spacing: 4px;
-      margin-bottom: 9px;
-    }
-
-    .hero-year {
-      font-size: clamp(40px, 5.2vw, 72px);
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -1.5px;
-      margin-bottom: 22px;
-      background: linear-gradient(90deg, #1D4ED8, #2563EB 55%, #0EA5E9);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 12px 30px rgba(37, 99, 235, .12);
-    }
-
-    .hero-sub {
-      max-width: 890px;
-      margin-bottom: 34px;
-      color: #5B6B82;
-      font-size: 17px;
-      line-height: 1.75;
-    }
-
-    .hero-actions {
-      width: min(100%, 520px);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .hero-btn-register {
-      width: 100%;
-      min-height: 64px;
-      /* จากเดิม 52-56px */
-      font-size: 18px;
-      /* จากเดิม 15px */
-      font-weight: 800;
-      border-radius: 16px;
-      box-shadow: 0 14px 32px rgba(37, 99, 235, .28);
-    }
-
-    .hero-actions-bottom {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      width: 100%;
-    }
-
-    .hero-actions-bottom .hero-btn-secondary {
-      width: 100%;
-    }
-
-    .hero-btn-primary,
-    .hero-btn-secondary {
-      min-height: 52px;
-      padding: 0 28px;
-      border-radius: 14px;
-      font: 800 15px 'Sarabun', sans-serif;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      transition: .22s ease;
-    }
-
-    .hero-btn-primary {
-      color: #fff;
-      border: 1px solid transparent;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, .26);
-    }
-
-    .hero-btn-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 18px 38px rgba(37, 99, 235, .34)
-    }
-
-    .hero-btn-secondary {
-      color: #334155;
-      border: 1px solid rgba(203, 213, 225, .9);
-      background: rgba(255, 255, 255, .84);
-      box-shadow: 0 8px 22px rgba(15, 23, 42, .06);
-      backdrop-filter: blur(10px);
-      min-height: 56px;
-      /* ถ้าอยากให้ปุ่มสูงขึ้นด้วย */
-      font-size: 23px;
-      /* จาก 15 → 17 */
-      font-weight: 650;
-      font-family: "Kanit", sans-serif;
-      letter-spacing: 2px;
-    }
-
-    .hero-btn-secondary:hover {
-      transform: translateY(-3px);
-      border-color: #93C5FD;
-      color: var(--primary)
-    }
-
-    .hero-scroll {
-      position: absolute;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 3px;
-      color: #94A3B8;
-      font-size: 12px;
-      animation: bounce 2s ease-in-out infinite;
-    }
-
-    .hero-actions .hero-btn-primary.hero-btn-register {
-      width: 100%;
-      min-height: 72px;
-      padding: 0 36px;
-      font-size: 40px;
-      font-weight: 650;
-      border-radius: 18px;
-      font-family: "Kanit", sans-serif;
-      letter-spacing: 2px;
-    }
-
-    @keyframes bounce {
-
-      0%,
-      100% {
-        transform: translateX(-50%) translateY(0)
-      }
-
-      50% {
-        transform: translateX(-50%) translateY(6px)
-      }
-    }
-
-    /* SECTIONS */
-    .section {
-      padding: 96px 24px
-    }
-
-    .section-inner {
-      max-width: 1120px;
-      margin: 0 auto
-    }
-
-    .section-label {
-      margin-bottom: 10px;
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 2.4px;
-      text-transform: uppercase;
-      text-align: center;
-    }
-
-    .section-title {
-      font-family: 'Kanit', sans-serif;
-      margin-bottom: 12px;
-      color: #054394;
-      font-size: clamp(28px, 3vw, 38px);
-      font-weight: 550;
-      text-align: center;
-      letter-spacing: -.4px;
-    }
-
-    .section-sub {
-      max-width: 750px;
-      margin: 0 auto 46px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.75;
-      text-align: center;
-    }
-
-    /* ABOUT */
-    .about-section {
-      background:
-        radial-gradient(circle at 12% 18%, rgba(37, 99, 235, .07), transparent 22%),
-        #F8FAFC;
-      border-top: 1px solid #EEF2F7;
-      border-bottom: 1px solid #EEF2F7;
-    }
-
-    .about-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 22px;
-    }
-
-    .about-card {
-      position: relative;
-      overflow: hidden;
-      padding: 30px 26px;
-      text-align: left;
-      background: rgba(255, 255, 255, .94);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, .05);
-      transition: .22s ease;
-    }
-
-    .about-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 18px 42px rgba(15, 23, 42, .09)
-    }
-
-    .about-icon {
-      width: 58px;
-      height: 58px;
-      margin: 0 0 18px;
-      border-radius: 17px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-    }
-
-    .about-card-title {
-      margin-bottom: 8px;
-      color: var(--navy);
-      font-size: 17px;
-      font-weight: 900
-    }
-
-    .about-card-desc {
-      color: var(--muted);
-      font-size: 13.5px;
-      line-height: 1.7
-    }
-
-    /* TIERS */
-    .tiers-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 22px;
-    }
-
-    .tier-card {
-      position: relative;
-      overflow: hidden;
-      min-height: 330px;
-      padding: 34px 28px;
-      text-align: center;
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, .055);
-      transition: .24s ease;
-    }
-
-    .tier-card::before {
-      content: '';
-      position: absolute;
-      inset: 0 0 auto;
-      height: 5px;
-      background: var(--tier-color, #2563EB);
-    }
-
-    .tier-card.t-b {
-      --tier-color: #16A34A
-    }
-
-    .tier-card.t-i {
-      --tier-color: #2563EB
-    }
-
-    .tier-card.t-a {
-      --tier-color: #EA580C
-    }
-
-    .tier-card:hover {
-      transform: translateY(-7px);
-      box-shadow: 0 22px 52px rgba(15, 23, 42, .12)
-    }
-
-    .tier-emoji {
-      display: block;
-      margin-bottom: 16px;
-      font-size: 48px
-    }
-
-    .tier-name {
-      margin-bottom: 10px;
-      font-size: 24px;
-      font-weight: 900
-    }
-
-    .tier-name.green {
-      color: #16A34A
-    }
-
-    .tier-name.blue {
-      color: #2563EB
-    }
-
-    .tier-name.orange {
-      color: #EA580C
-    }
-
-    .tier-desc {
-      min-height: 70px;
-      margin-bottom: 18px;
-      color: var(--muted);
-      font-size: 13.5px;
-      line-height: 1.7
-    }
-
-    .tier-badge {
-      display: inline-flex;
-      align-items: center;
-      min-height: 30px;
-      padding: 0 13px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .tier-badge.green {
-      background: #F0FDF4;
-      color: #16A34A
-    }
-
-    .tier-badge.blue {
-      background: #EFF6FF;
-      color: #2563EB
-    }
-
-    .tier-badge.orange {
-      background: #FFF7ED;
-      color: #EA580C
-    }
-
-    .tier-reg-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      min-height: 42px;
-      margin-top: 20px;
-      padding: 0 20px;
-      border-radius: 11px;
-      font-size: 13px;
-      font-weight: 800;
-      transition: .2s ease;
-    }
-
-    .tier-reg-btn:hover {
-      transform: translateY(-2px)
-    }
-
-    .tier-reg-btn.green {
-      background: #F0FDF4;
-      color: #16A34A;
-      border: 1px solid #BBF7D0
-    }
-
-    .tier-reg-btn.blue {
-      background: #EFF6FF;
-      color: #2563EB;
-      border: 1px solid #BFDBFE
-    }
-
-    .tier-reg-btn.orange {
-      background: #FFF7ED;
-      color: #EA580C;
-      border: 1px solid #FED7AA
-    }
-
-    /* FOOTER */
-    .footer {
-      padding: 36px 20px;
-      text-align: center;
-      background: linear-gradient(135deg, #0F172A, #1E293B);
-    }
-
-    .footer-logo img {
-      height: 42px;
-      object-fit: contain;
-      margin-bottom: 11px
-    }
-
-    .footer-name {
-      margin-bottom: 5px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800
-    }
-
-    .footer-sub {
-      color: rgba(255, 255, 255, .48);
-      font-size: 12px
-    }
-
-    @media(max-width:900px) {
-
-      .about-grid,
-      .tiers-grid {
-        grid-template-columns: 1fr
-      }
-
-      .tier-card {
-        min-height: auto
-      }
-
-      .hero-logo {
-        width: 700px;
-        height: auto;
-        object-fit: contain;
-        margin-bottom: 10px;
-        margin-top: 0px;
-        filter: drop-shadow(0 24px 40px rgba(37, 99, 235, .25));
-        animation: floatLogo 4s ease-in-out infinite;
-      }
-    }
-
-
-    @media (max-width:640px) {
-
-      /* ---------- Topbar ---------- */
-
-      .topbar {
-        height: 60px;
-        padding: 0 16px;
-      }
-
-      .topbar-logo img {
-        height: 30px;
-      }
-
-      .topbar-nav {
-        margin-left: 6px;
-      }
-
-      .nav-link {
-        font-size: 14px;
-      }
-
-      .btn-login {
-        width: 42px;
-        height: 42px;
-      }
-
-
-      /* ---------- Hero ---------- */
-
-      .hero {
-
-        min-height: auto;
-
-        padding:
-          78px 20px 48px;
-
-      }
-
-      /* วงกลมพื้นหลัง */
-
-      .hero::before {
-
-        width: 420px;
-        height: 420px;
-
-        top: -130px;
-
-      }
-
-      /* โลโก้ */
-
-      .hero-logo {
-
-        width: 100%;
-        max-width: 640px;
-
-        margin: 0 auto 20px;
-
-        padding: 0;
-
-      }
-
-      /* ข้อความ */
-
-      .hero-sub {
-
-        max-width: 100%;
-
-        font-size: 15px;
-
-        line-height: 1.8;
-
-        text-align: center;
-
-        margin-bottom: 26px;
-
-      }
-
-      /* ปุ่ม */
-
-      .hero-actions {
-
-        width: 100%;
-
-        gap: 14px;
-
-      }
-
-      .hero-actions .hero-btn-register {
-
-        min-height: 58px;
-
-        font-size: 24px;
-
-        border-radius: 18px;
-
-      }
-
-      .hero-actions-bottom {
-
-        gap: 10px;
-
-      }
-
-      .hero-btn-secondary {
-
-        min-height: 50px;
-
-        font-size: 16px;
-
-        border-radius: 14px;
-
-      }
-
-      /* Scroll */
-
-      .hero-scroll {
-
-        position: relative;
-
-        margin-top: 34px;
-
-        bottom: auto;
-
-        left: auto;
-
-        transform: none;
-
-      }
-    }
-
-    /* ABOUT SECTION — refined */
-    .about-section {
-      position: relative;
-      overflow: hidden;
-      padding: 82px 24px 88px;
-      background:
-        radial-gradient(circle at 12% 18%, rgba(37, 99, 235, .10), transparent 24%),
-        radial-gradient(circle at 88% 78%, rgba(14, 165, 233, .08), transparent 24%),
-        linear-gradient(180deg, #F7FAFF 0%, #F3F7FC 100%);
-      border-top: 1px solid #EAF0F7;
-      border-bottom: 1px solid #EAF0F7;
-    }
-
-    .about-section::before {
-      content: '';
-      position: absolute;
-      width: 420px;
-      height: 420px;
-      left: -210px;
-      top: -150px;
-      border-radius: 50%;
-      border: 1px solid rgba(37, 99, 235, .10);
-      box-shadow:
-        0 0 0 55px rgba(37, 99, 235, .025),
-        0 0 0 110px rgba(37, 99, 235, .015);
-      pointer-events: none;
-    }
-
-    .about-section .section-inner {
-      position: relative;
-      z-index: 1;
-      max-width: 1180px;
-    }
-
-    .about-section .section-label {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: max-content;
-      margin: 0 auto 14px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: #EAF2FF;
-      color: #2563EB;
-      letter-spacing: 1.8px;
-    }
-
-
-    .about-section .section-sub {
-      max-width: 920px;
-      margin: 0 auto 42px;
-      font-size: 16px;
-      line-height: 1.8;
-    }
-
-    .about-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 24px;
-    }
-
-    .about-card {
-      min-height: 220px;
-      padding: 30px 28px 28px;
-      border-radius: 24px;
-      background: rgba(255, 255, 255, .95);
-      border: 1px solid rgba(226, 232, 240, .95);
-      box-shadow: 0 14px 36px rgba(15, 23, 42, .06);
-    }
-
-    .about-card::before {
-      content: '';
-      position: absolute;
-      inset: 0 0 auto;
-      height: 5px;
-      background: linear-gradient(90deg, #2563EB, #60A5FA);
-      opacity: .85;
-    }
-
-    .about-card:nth-child(2)::before {
-      background: linear-gradient(90deg, #16A34A, #4ADE80);
-    }
-
-    .about-card:nth-child(3)::before {
-      background: linear-gradient(90deg, #D97706, #FBBF24);
-    }
-
-    .about-card:hover {
-      transform: translateY(-7px);
-      border-color: #BFDBFE;
-      box-shadow: 0 24px 52px rgba(37, 99, 235, .12);
-    }
-
-    .about-icon {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 20px;
-      border-radius: 19px;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7);
-    }
-
-    .about-card-title {
-      margin-bottom: 10px;
-      font-size: 18px;
-      line-height: 1.35;
-    }
-
-    .about-card-desc {
-      font-size: 14px;
-      line-height: 1.75;
-    }
-
-    /* TIERS SECTION — connect visually with the section above */
-    #tiers {
-      padding-top: 88px;
-      background: #fff;
-    }
-
-    #tiers .section-label {
-      display: inline-flex;
-      width: max-content;
-      margin: 0 auto 14px;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: #EFF6FF;
-    }
-
-    @media(max-width:900px) {
-      .about-grid {
-        grid-template-columns: 1fr
-      }
-
-      .about-card {
-        min-height: auto
-      }
-    }
-
-    @media(max-width:640px) {
-      .about-section {
-        padding: 64px 16px 70px
-      }
-
-      .about-section .section-sub {
-        margin-bottom: 30px;
-        font-size: 10px
-      }
-
-      .about-card {
-        padding: 26px 22px
-      }
-    }
-
-
-    /* ===== TIERS SECTION — BALANCED LAYOUT ===== */
-    #tiers {
-      padding: 88px 24px 96px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(37, 99, 235, .045), transparent 30%),
-        #fff;
-    }
-
-    #tiers .section-inner {
-      max-width: 1180px;
-    }
-
-    #tiers .section-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: max-content;
-      margin: 0 auto 14px;
-      padding: 8px 16px;
-      border-radius: 999px;
-      background: #EFF6FF;
-      color: #2563EB;
-      letter-spacing: 1.7px;
-    }
-
-    #tiers .section-title {
-      margin-bottom: 10px;
-      font-size: clamp(32px, 3.3vw, 44px);
-      line-height: 1.18;
-    }
-
-    #tiers .section-sub {
-      margin-bottom: 42px;
-      font-size: 16px;
-    }
-
-    #tiers .tiers-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      align-items: stretch;
-      gap: 24px;
-    }
-
-    #tiers .tier-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 470px;
-      padding: 42px 30px 34px;
-      border-radius: 26px;
-      box-shadow: 0 14px 38px rgba(15, 23, 42, .065);
-    }
-
-    #tiers .tier-card::before {
-      height: 6px;
-    }
-
-    #tiers .tier-emoji {
-      display: grid;
-      place-items: center;
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 18px;
-      border-radius: 22px;
-      font-size: 42px;
-      line-height: 1;
-      background: color-mix(in srgb, var(--tier-color) 9%, white);
-    }
-
-    #tiers .tier-name {
-      margin-bottom: 14px;
-      font-size: 25px;
-      line-height: 1.2;
-    }
-
-    /* คำอธิบายหลัก */
-    #tiers .tier-name+.tier-desc {
-      min-height: 92px;
-      max-width: 310px;
-      margin: 0 auto 20px;
-      font-size: 14px;
-      line-height: 1.75;
-    }
-
-    /* ข้อความอายุ */
-    #tiers .tier-desc+.tier-desc {
-      min-height: auto;
-      margin: 0 auto 26px;
-      padding-top: 18px;
-      width: 100%;
-      border-top: 1px solid #EEF2F7;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.5;
-      color: #64748B;
-    }
-
-    #tiers .tier-badge {
-      min-height: 34px;
-      margin-top: auto;
-      padding: 0 16px;
-      font-size: 12.5px;
-    }
-
-    #tiers .tier-card>br {
-      display: none;
-    }
-
-    #tiers .tier-reg-btn {
-      width: min(100%, 168px);
-      min-height: 46px;
-      margin-top: 18px;
-      padding: 0 20px;
-      border-radius: 12px;
-      font-size: 13.5px;
-    }
-
-    #tiers .tier-reg-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 22px color-mix(in srgb, var(--tier-color) 17%, transparent);
-    }
-
-    @media (max-width: 900px) {
-      #tiers .tiers-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      #tiers .tier-card:last-child {
-        grid-column: 1 / -1;
-        width: min(100%, 560px);
-        justify-self: center;
-      }
-    }
-
-    @media (max-width: 640px) {
-      #tiers {
-        padding: 68px 16px 74px;
-      }
-
-      #tiers .section-sub {
-        margin-bottom: 30px;
-        font-size: 14px;
-      }
-
-      #tiers .tiers-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-      }
-
-      #tiers .tier-card,
-      #tiers .tier-card:last-child {
-        grid-column: auto;
-        width: 100%;
-        min-height: 420px;
-        padding: 34px 24px 28px;
-      }
-
-      #tiers .tier-name+.tier-desc {
-        min-height: auto;
-      }
-    }
-
-
-    /* ===== RESPONSIVE OVERRIDES ===== */
-    @media (min-width: 1440px) {
-      .topbar {
-        padding-inline: 48px;
-      }
-
-      .hero-logo {
-        width: min(1000px, 62vw);
-      }
-
-      .section-inner,
-      .about-section .section-inner,
-      #tiers .section-inner {
-        max-width: 1240px;
-      }
-    }
-
-    @media (min-width: 901px) and (max-width: 1199px) {
-      .topbar {
-        padding: 0 20px;
-      }
-
-      .topbar-logo img {
-        height: 92px;
-      }
-
-      .nav-link {
-        padding: 0 12px;
-        font-size: 16px;
-        letter-spacing: 1px;
-      }
-
-      .btn-login {
-        padding: 0 14px;
-        font-size: 14px;
-      }
-
-      .hero {
-        padding-top: 125px;
-      }
-
-      .hero-logo {
-        width: min(760px, 78vw);
-      }
-
-      .hero-actions .hero-btn-primary.hero-btn-register {
-        font-size: 32px;
-      }
-    }
-
-    @media (min-width: 641px) and (max-width: 900px) {
-      .topbar {
-        height: 72px;
-        padding: 0 16px;
-        gap: 4px;
-      }
-
-      .topbar-logo img {
-        height: 70px;
-      }
-
-      .topbar-nav {
-        margin-left: 4px;
-        gap: 2px;
-      }
-
-      .nav-link {
-        min-height: 44px;
-        padding: 0 9px;
-        font-size: 14px;
-        letter-spacing: .5px;
-      }
-
-      .btn-login {
-        min-height: 44px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
-
-      .hero {
-        min-height: 100svh;
-        padding: 108px 24px 64px;
-      }
-
-      .hero-logo {
-        width: min(700px, 88vw);
-      }
-
-      .hero-sub {
-        max-width: 720px;
-        font-size: 16px;
-      }
-
-      .hero-actions {
-        width: min(100%, 500px);
-      }
-
-      .hero-actions .hero-btn-primary.hero-btn-register {
-        min-height: 64px;
-        font-size: 30px;
-      }
-
-      .hero-btn-secondary {
-        font-size: 19px;
-      }
-
-      .section {
-        padding-inline: 20px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .topbar {
-        height: 60px;
-        padding: 0 12px;
-      }
-
-      .topbar-logo img {
-        height: 46px;
-        max-width: 92px;
-      }
-
-      .topbar-nav {
-        margin-left: 2px;
-        gap: 0;
-        overflow: visible;
-      }
-
-      .nav-link {
-        min-height: 40px;
-        padding: 0 7px;
-        font-size: 12px;
-        letter-spacing: 0;
-        white-space: nowrap;
-      }
-
-      .topbar-actions {
-        gap: 4px;
-      }
-
-      .btn-login {
-        width: 40px;
-        min-width: 40px;
-        height: 40px;
-        min-height: 40px;
-        padding: 0;
-        font-size: 0;
-        border-radius: 10px;
-      }
-
-      .btn-login i {
-        font-size: 18px;
-      }
-
-      .dropdown-menu {
-        position: fixed;
-        top: 58px;
-        left: 10px;
-        right: 10px;
-        min-width: 0;
-      }
-
-      .hero {
-        min-height: 100svh;
-        padding: 82px 16px 42px;
-        justify-content: flex-start;
-      }
-
-      .hero::before {
-        width: 360px;
-        height: 360px;
-      }
-
-      .hero-logo {
-        width: min(100%, 520px);
-        margin-bottom: 14px;
-      }
-
-      .hero-sub {
-        font-size: 13px;
-        line-height: 1.7;
-        margin-bottom: 22px;
-      }
-
-      .hero-actions {
-        width: 100%;
-        max-width: 440px;
-        gap: 10px;
-      }
-
-      .hero-actions .hero-btn-primary.hero-btn-register {
-        min-height: 56px;
-        padding: 0 18px;
-        font-size: 24px;
-        border-radius: 15px;
-      }
-
-      .hero-actions-bottom {
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      .hero-btn-secondary {
-        min-height: 48px;
-        padding: 0 10px;
-        font-size: 14px;
-        letter-spacing: .3px;
-        border-radius: 12px;
-      }
-
-      .hero-scroll {
-        margin-top: 24px;
-      }
-
-      .section {
-        padding: 62px 16px;
-      }
-
-      .section-title,
-      #tiers .section-title {
-        font-size: clamp(25px, 8vw, 32px);
-        overflow-wrap: anywhere;
-      }
-
-      .about-section .section-sub {
-        font-size: 13px;
-      }
-
-      .about-grid {
-        gap: 16px;
-      }
-
-      .about-card {
-        min-height: 0;
-        padding: 22px 20px;
-      }
-
-      #tiers .tier-card,
-      #tiers .tier-card:last-child {
-        min-height: 0;
-        padding: 30px 20px 26px;
-      }
-    }
-
-    @media (max-width: 430px) {
-      .topbar-logo img {
-        height: 40px;
-        max-width: 76px;
-      }
-
-      .nav-link {
-        padding: 0 5px;
-        font-size: 11px;
-      }
-
-      .hero {
-        padding-inline: 14px;
-      }
-
-      .hero-sub {
-        font-size: 12.5px;
-      }
-
-      .hero-actions .hero-btn-primary.hero-btn-register {
-        font-size: 21px;
-      }
-
-      .hero-btn-secondary {
-        font-size: 12.5px;
-      }
-    }
-
-    @media (max-width: 360px) {
-      .topbar-logo img {
-        max-width: 64px;
-      }
-
-      .nav-link {
-        padding: 0 4px;
-        font-size: 10px;
-      }
-
-      .hero-actions-bottom {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-btn-secondary {
-        font-size: 14px;
-      }
-    }
-  </style>
+/* =========================================================
+   RCL 2026 — MASTER STYLE
+   01 Variables / Reset
+   02 Global / Sections
+   03 Navigation
+   04 Dropdown
+   05 Hero
+   06 Event Date Card
+   07 About + Video
+   08 Competition Tiers
+   09 Footer
+   10 Animation
+   11 Responsive
+========================================================= */
+
+/* 01 — VARIABLES / RESET */
+:root{
+  --primary:#2563EB;
+  --primary-dark:#1D4ED8;
+  --primary-soft:#EFF6FF;
+  --cyan:#0EA5E9;
+  --navy:#0F172A;
+  --text:#1E293B;
+  --muted:#64748B;
+  --line:#E2E8F0;
+  --page:#F6F9FE;
+  --green:#16A34A;
+  --orange:#EA580C;
+  --shadow-sm:0 8px 24px rgba(15,23,42,.07);
+  --shadow-md:0 18px 45px rgba(37,99,235,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-width:320px;
+  overflow-x:hidden;
+  font-family:'Sarabun',sans-serif;
+  color:var(--text);
+  background:var(--page);
+}
+a{color:inherit;text-decoration:none}
+
+/* 02 — GLOBAL / SECTIONS */
+.section{padding:88px 24px}
+.section-inner{width:100%;max-width:1180px;margin:0 auto}
+.section-label{
+  width:max-content;margin:0 auto 14px;padding:7px 14px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:999px;background:var(--primary-soft);color:var(--primary);
+  font-size:12px;font-weight:800;letter-spacing:1.6px;text-align:center;
+}
+.section-title{
+  margin-bottom:12px;color:#054394;
+  font-family:'Kanit',sans-serif;font-size:clamp(28px,3vw,40px);
+  font-weight:600;line-height:1.2;text-align:center;
+}
+.section-sub{
+  max-width:920px;margin:0 auto 44px;
+  color:var(--muted);font-size:16px;line-height:1.8;text-align:center;
+}
+
+/* 03 — NAVIGATION */
+.topbar{
+  position:fixed;inset:0 0 auto;z-index:100;
+  height:84px;padding:0 30px;
+  display:flex;align-items:center;gap:10px;
+  background:transparent;border-bottom:1px solid transparent;
+  transition:.3s ease;
+}
+.topbar.scrolled{
+  background:rgba(255,255,255,.90);
+  border-bottom-color:rgba(226,232,240,.9);
+  box-shadow:0 4px 18px rgba(15,23,42,.04);
+  backdrop-filter:blur(16px);
+}
+.topbar-logo{flex-shrink:0;display:inline-flex;align-items:center}
+.topbar-logo img{width:auto;height:120px;object-fit:contain}
+.topbar-nav{flex:1;margin-left:18px;display:flex;align-items:center;gap:6px}
+.nav-link{
+  min-height:52px;padding:0 18px;
+  display:inline-flex;align-items:center;gap:7px;
+  border:0;border-radius:11px;background:transparent;
+  color:#334155;font-family:'Kanit',sans-serif;font-size:18px;
+  font-weight:600;letter-spacing:1.5px;cursor:pointer;transition:.2s ease;
+}
+.nav-link:hover{color:var(--primary);transform:translateY(-1px)}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn-reg,.btn-login{
+  min-height:52px;padding:0 20px;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  border-radius:11px;font:800 16px 'Sarabun',sans-serif;transition:.2s ease;
+}
+.btn-login{color:#334155;background:#fff;border:1px solid var(--line)}
+.btn-login:hover{background:#F8FAFC;transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.btn-reg{color:#fff;border:1px solid transparent;background:linear-gradient(135deg,#3478F6,#2563EB);box-shadow:0 10px 24px rgba(37,99,235,.24)}
+.btn-reg:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(37,99,235,.30)}
+
+/* 04 — DROPDOWN */
+.dropdown{position:relative}
+.dropdown-menu{
+  position:absolute;top:calc(100% + 10px);left:0;z-index:200;
+  display:none;min-width:200px;padding:8px;
+  background:rgba(255,255,255,.98);border:1px solid var(--line);
+  border-radius:14px;box-shadow:0 18px 44px rgba(15,23,42,.14);
+}
+.dropdown-item{
+  min-height:42px;padding:0 12px;
+  display:flex;align-items:center;gap:10px;
+  border-radius:10px;color:#334155;font-size:14px;font-weight:700;
+}
+.dropdown-item:hover{background:var(--primary-soft);color:var(--primary)}
+.dropdown-item i{color:#64748B;font-size:17px}
+
+/* 05 — HERO */
+.hero{
+  position:relative;overflow:hidden;min-height:100vh;
+  padding:140px 24px 84px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  background:linear-gradient(rgba(255,255,255,.20),rgba(255,255,255,.90)),url('/images/hero-bg.png') center/cover no-repeat;
+}
+.hero::before{
+  content:'';position:absolute;top:-230px;left:50%;
+  width:760px;height:760px;transform:translateX(-50%);
+  border:1px solid rgba(37,99,235,.10);border-radius:50%;
+  box-shadow:0 0 0 70px rgba(37,99,235,.025),0 0 0 150px rgba(37,99,235,.018);
+}
+.hero::after{
+  content:'';position:absolute;inset:auto 0 0;height:190px;
+  background:linear-gradient(135deg,transparent 48%,rgba(37,99,235,.04) 49%,rgba(37,99,235,.04) 51%,transparent 52%) 0 0/42px 42px;
+  mask-image:linear-gradient(to top,black,transparent);
+}
+.hero>*{position:relative;z-index:1}
+.hero-logo{
+  width:min(1000px,78vw);height:auto;margin:0 0 10px;object-fit:contain;
+  filter:drop-shadow(0 24px 40px rgba(37,99,235,.25));
+  animation:floatLogo 4s ease-in-out infinite;
+}
+.hero-title{margin-bottom:9px;color:var(--navy);font-size:clamp(42px,5vw,68px);font-weight:900;line-height:1;letter-spacing:4px}
+.hero-year{
+  margin-bottom:22px;background:linear-gradient(90deg,#1D4ED8,#2563EB 55%,#0EA5E9);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-size:clamp(40px,5.2vw,72px);font-weight:900;line-height:1.05;
+}
+.hero-sub{max-width:890px;margin-bottom:34px;color:#5B6B82;font-size:17px;line-height:1.75}
+.hero-actions{width:min(100%,760px);display:flex;flex-direction:column;align-items:center;gap:12px}
+.hero-actions .hero-btn-register{width:min(100%,520px)}
+.hero-actions-bottom{width:min(100%,520px);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hero-btn-primary,.hero-btn-secondary{
+  min-height:52px;padding:0 28px;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  border-radius:14px;font:800 15px 'Sarabun',sans-serif;transition:.22s ease;
+}
+.hero-btn-register:hover i {
+  transform: rotate(360deg);
+  transition: transform 0.8s ease;
+}
+
+.hero-btn-register i {
+  transition: transform 0.8s ease;
+}
+.hero-btn-primary{color:#fff;border:1px solid transparent;background:linear-gradient(135deg,#3478F6,#2563EB);box-shadow:0 14px 30px rgba(37,99,235,.26)}
+
+.hero-btn-primary:hover{color:rgb(52, 51, 51);transform:translateY(-3px);background:linear-gradient(135deg,#f2d13d,#e6d405);box-shadow:0 18px 38px rgba(248, 215, 28, 0.34)}
+
+.hero-actions .hero-btn-primary.hero-btn-register{
+  width:100%;min-height:72px;padding:0 36px;border-radius:18px;
+  font-family:'Kanit',sans-serif;font-size:40px;font-weight:650;letter-spacing:2px;
+}
+.hero-btn-secondary{
+  width:100%;min-height:56px;color:#334155;background:rgba(255,255,255,.84);
+  border:1px solid rgba(203,213,225,.9);box-shadow:0 8px 22px rgba(15,23,42,.06);
+  backdrop-filter:blur(10px);font-family:'Kanit',sans-serif;font-size:23px;font-weight:650;
+}
+.hero-btn-secondary:hover{color:var(--primary);border-color:#93C5FD;transform:translateY(-3px)}
+.hero-scroll{
+  position:absolute;bottom:24px;left:50%;display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:#94A3B8;font-size:12px;transform:translateX(-50%);animation:bounce 2s ease-in-out infinite;
+}
+
+/* 06 — EVENT DATE CARD */
+.event-date-card{
+  position:relative;width:min(100%,680px);min-height:205px;margin-top:10px;
+  display:grid;grid-template-columns:285px minmax(0,1fr);overflow:visible;
+  background:rgba(255,255,255,.97);border:1px solid rgba(147,197,253,.65);border-radius:27px;
+  box-shadow:0 20px 45px rgba(37,99,235,.15),0 5px 16px rgba(15,23,42,.05);
+  backdrop-filter:blur(14px);text-align:left;
+}
+.event-date-main{
+  position:relative;overflow:hidden;min-height:205px;padding:18px 20px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:#fff;border-radius:26px 0 0 26px;
+  background:radial-gradient(circle at 80% 15%,rgba(56,189,248,.28),transparent 38%),linear-gradient(145deg,#1554C7,#0B347F 55%,#08265E);
+}
+.event-date-main::before{
+  content:'';position:absolute;width:240px;height:240px;top:-95px;right:-70px;
+  border:1px solid rgba(255,255,255,.07);border-radius:50%;
+  box-shadow:0 0 0 45px rgba(255,255,255,.025),0 0 0 90px rgba(255,255,255,.015);
+}
+.event-date-icon{
+  position:relative;z-index:2;width:43px;height:43px;margin-bottom:5px;
+  display:grid;place-items:center;border-radius:50%;color:#fff;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.20);
+}
+.event-date-icon i{font-size:22px}
+.event-date-label,.event-day-number,.event-month,.event-date-range{position:relative;z-index:2;color:#fff;font-family:'Kanit',sans-serif}
+.event-date-label{margin-bottom:1px;font-size:14px;font-weight:600;line-height:1.2}
+.event-day-number{font-size:70px;font-weight:500;line-height:.84;letter-spacing:-3px;text-shadow:0 5px 15px rgba(0,0,0,.25)}
+.event-month{margin-top:6px;font-size:22px;font-weight:500;line-height:1}
+.event-date-range{margin-top:5px;color:rgba(255,255,255,.95);font-size:16px;font-weight:500;line-height:1}
+.event-date-arrow{
+  position:absolute;left:285px;top:50%;z-index:10;width:52px;height:52px;
+  display:grid;place-items:center;transform:translate(-50%,-50%);
+  border-radius:50%;color:var(--primary);background:#fff;border:1px solid #BFDBFE;
+  box-shadow:0 7px 20px rgba(37,99,235,.17),0 0 0 5px rgba(255,255,255,.62);
+}
+.event-date-arrow i{font-size:25px}
+.event-location-main{
+  position:relative;overflow:hidden;min-width:0;padding:28px 28px 26px 48px;
+  display:flex;flex-direction:column;justify-content:center;border-radius:0 26px 26px 0;
+  background:radial-gradient(circle at 100% 15%,rgba(56,189,248,.08),transparent 34%),linear-gradient(135deg,#fff,#F8FBFF);
+}
+.event-location-main::after{
+  content:'';position:absolute;top:22px;right:20px;width:70px;height:60px;opacity:.09;
+  background-image:radial-gradient(#2563EB 1.2px,transparent 1.2px);background-size:8px 8px;
+}
+.event-location-heading{position:relative;z-index:2;display:flex;align-items:center;gap:12px}
+.event-location-icon{
+  flex:0 0 auto;width:48px;height:48px;display:grid;place-items:center;border-radius:50%;
+  color:#2563EB;background:linear-gradient(145deg,#F0F7FF,#E5F1FF);border:1px solid #D5E8FF;
+}
+.event-location-icon i{font-size:23px}
+.event-location-title{color:#1452C5;font-family:'Kanit',sans-serif;font-size:22px;font-weight:600;line-height:1.2}
+.event-location-line{position:relative;z-index:2;width:100%;height:1px;margin:12px 0 14px;background:linear-gradient(90deg,#BFDBFE,#DCEBFA,transparent)}
+.event-location-name{position:relative;z-index:2;color:#102B5C;font-family:'Kanit',sans-serif;font-size:25px;font-weight:500;line-height:1.2}
+
+/* 07 — ABOUT + VIDEO */
+.about-section{
+  position:relative;overflow:hidden;padding:82px 24px 88px;
+  background:radial-gradient(circle at 12% 18%,rgba(37,99,235,.10),transparent 24%),radial-gradient(circle at 88% 78%,rgba(14,165,233,.08),transparent 24%),linear-gradient(180deg,#F7FAFF,#F3F7FC);
+  border-top:1px solid #EAF0F7;
+}
+.about-section::before{
+  content:'';position:absolute;top:-150px;left:-210px;width:420px;height:420px;
+  border:1px solid rgba(37,99,235,.10);border-radius:50%;
+  box-shadow:0 0 0 55px rgba(37,99,235,.025),0 0 0 110px rgba(37,99,235,.015);
+}
+.about-section .section-inner{position:relative;z-index:1;max-width:1180px}
+.about-heading{max-width:940px;margin:0 auto 42px;text-align:center}
+.about-section .section-title{margin-bottom:16px;font-size:clamp(30px,3.2vw,44px)}
+.about-section .section-sub{max-width:920px;margin-bottom:0;font-size:16px;line-height:1.8}
+
+.about-video-wrap{
+  max-width:960px;margin:0 auto 48px;padding:12px;
+  background:rgba(255,255,255,.84);border:1px solid rgba(191,219,254,.80);border-radius:26px;
+  box-shadow:0 24px 60px rgba(37,99,235,.11),0 4px 14px rgba(15,23,42,.04);
+}
+.about-video-head{padding:7px 8px 15px;display:flex;align-items:center;gap:12px}
+.about-video-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;color:#fff;background:linear-gradient(135deg,#2563EB,#38BDF8);box-shadow:0 8px 20px rgba(37,99,235,.25)}
+.about-video-icon i{font-size:21px}
+.about-video-kicker{margin-bottom:2px;color:#2563EB;font-size:10px;font-weight:800;letter-spacing:1.8px}
+.about-video-title{color:#0F172A;font-family:'Kanit',sans-serif;font-size:18px;font-weight:600}
+.about-video{position:relative;overflow:hidden;aspect-ratio:16/9;background:#0F172A;border-radius:18px}
+.about-video iframe{width:100%;height:100%;display:block;border:0}
+
+/* ABOUT CARDS — 1 ROW / 3 COLUMNS */
+.about-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:24px;
+}
+.about-card{
+  position:relative;overflow:hidden;min-height:280px;padding:34px 28px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;background:rgba(255,255,255,.96);
+  border:1px solid rgba(226,232,240,.95);border-radius:24px;
+  box-shadow:0 14px 36px rgba(15,23,42,.06);
+  transition:.22s ease;
+}
+.about-card::before{content:'';position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,#2563EB,#60A5FA)}
+.about-card:nth-child(2)::before{background:linear-gradient(90deg,#16A34A,#4ADE80)}
+.about-card:nth-child(3)::before{background:linear-gradient(90deg,#D97706,#FBBF24)}
+.about-card:hover{transform:translateY(-7px);border-color:#BFDBFE;box-shadow:0 24px 52px rgba(37,99,235,.12)}
+.about-icon{
+  width:68px;height:68px;margin-bottom:20px;display:grid;place-items:center;
+  border-radius:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.7);
+}
+.about-icon i{font-size:27px!important}
+.about-card-title{margin-bottom:10px;color:var(--navy);font-family:'Kanit',sans-serif;font-size:20px;font-weight:700;line-height:1.35}
+.about-card-desc{max-width:290px;color:var(--muted);font-size:14px;line-height:1.75}
+
+/* 08 — COMPETITION TIERS */
+#tiers{
+  position:relative;overflow:hidden;padding:88px 24px 96px;
+  background:radial-gradient(circle at 85% 35%,rgba(14,165,233,.07),transparent 25%),radial-gradient(circle at 10% 80%,rgba(37,99,235,.07),transparent 24%),#F3F7FC;
+}
+#tiers .section-inner{max-width:1180px}
+#tiers .section-title{margin-bottom:10px;font-size:clamp(32px,3.3vw,44px)}
+#tiers .section-sub{margin-bottom:42px}
+.tiers-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:stretch}
+.tier-card{
+  position:relative;overflow:hidden;min-height:470px;padding:42px 30px 34px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  background:#fff;border:1px solid var(--line);border-radius:26px;
+  box-shadow:0 14px 38px rgba(15,23,42,.065);transition:.24s ease;
+}
+.tier-card::before{content:'';position:absolute;inset:0 0 auto;height:6px;background:var(--tier-color,#2563EB)}
+.tier-card.t-b{--tier-color:#16A34A}.tier-card.t-i{--tier-color:#2563EB}.tier-card.t-a{--tier-color:#EA580C}
+.tier-card:hover{transform:translateY(-7px);box-shadow:0 22px 52px rgba(15,23,42,.12)}
+.tier-emoji{width:76px;height:76px;margin:0 auto 18px;display:grid;place-items:center;border-radius:22px;background:color-mix(in srgb,var(--tier-color) 9%,white);font-size:42px}
+.tier-name{margin-bottom:14px;font-size:25px;font-weight:900;line-height:1.2}
+.tier-name.green{color:#16A34A}.tier-name.blue{color:#2563EB}.tier-name.orange{color:#EA580C}
+#tiers .tier-name+.tier-desc{min-height:92px;max-width:310px;margin:0 auto 20px;color:var(--muted);font-size:14px;line-height:1.75}
+#tiers .tier-desc+.tier-desc{width:100%;margin:0 auto 26px;padding-top:18px;color:#64748B;border-top:1px solid #EEF2F7;font-size:14px;font-weight:700;line-height:1.5}
+.tier-badge{min-height:34px;margin-top:auto;padding:0 16px;display:inline-flex;align-items:center;border-radius:999px;font-size:12.5px;font-weight:800}
+.tier-badge.green{background:#F0FDF4;color:#16A34A}.tier-badge.blue{background:#EFF6FF;color:#2563EB}.tier-badge.orange{background:#FFF7ED;color:#EA580C}
+.tier-card>br{display:none}
+.tier-reg-btn{width:min(100%,168px);min-height:46px;margin-top:18px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:12px;font-size:13.5px;font-weight:800;transition:.2s ease}
+.tier-reg-btn:hover{transform:translateY(-3px)}
+.tier-reg-btn.green{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}
+.tier-reg-btn.blue{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE}
+.tier-reg-btn.orange{background:#FFF7ED;color:#EA580C;border:1px solid #FED7AA}
+
+/* 09 — FOOTER */
+.footer{padding:36px 20px;text-align:center;background:linear-gradient(135deg,#0F172A,#1E293B)}
+.footer-logo img{height:42px;margin-bottom:11px;object-fit:contain}
+.footer-name{margin-bottom:5px;color:#fff;font-size:13px;font-weight:800}
+.footer-sub{color:rgba(255,255,255,.48);font-size:12px}
+
+/* 10 — ANIMATION */
+@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+
+/* 11 — RESPONSIVE */
+
+/* Large Desktop */
+@media (min-width:1440px){
+  .topbar{padding-inline:48px}
+  .section-inner,.about-section .section-inner,#tiers .section-inner{max-width:1240px}
+  .hero-logo{width:min(1000px,62vw)}
+}
+
+/* Laptop */
+@media (min-width:901px) and (max-width:1199px){
+  .topbar{padding:0 20px}
+  .topbar-logo img{height:92px}
+  .nav-link{padding:0 12px;font-size:16px;letter-spacing:1px}
+  .btn-login{padding:0 14px;font-size:14px}
+  .hero{padding-top:125px}
+  .hero-logo{width:min(760px,78vw)}
+  .event-date-card{width:min(100%,620px);grid-template-columns:250px minmax(0,1fr)}
+  .event-date-arrow{left:250px}
+}
+
+/* Tablet */
+@media (min-width:641px) and (max-width:900px){
+  .topbar{height:72px;padding:0 16px}
+  .topbar-logo img{height:70px}
+  .topbar-nav{margin-left:4px;gap:2px}
+  .nav-link{min-height:44px;padding:0 9px;font-size:14px;letter-spacing:.5px}
+  .btn-login{min-height:44px;padding:0 12px;font-size:13px}
+  .hero{min-height:100svh;padding:108px 24px 64px}
+  .hero-logo{width:min(700px,88vw)}
+  .hero-sub{max-width:720px;font-size:16px}
+  .hero-actions{width:min(100%,500px)}
+  .hero-actions .hero-btn-primary.hero-btn-register{min-height:64px;font-size:30px}
+  .hero-btn-secondary{font-size:19px}
+  .section{padding-inline:20px}
+
+  /* About = still 3 columns */
+  .about-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .about-card{min-height:250px;padding:24px 14px}
+  .about-card-title{font-size:17px}
+  .about-card-desc{font-size:12px}
+
+  #tiers .tiers-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #tiers .tier-card:last-child{grid-column:1/-1;width:min(100%,560px);justify-self:center}
+
+  .event-date-card{width:min(100%,620px);grid-template-columns:240px minmax(0,1fr)}
+  .event-date-arrow{left:240px}
+  .event-location-main{padding-left:42px}
+  .event-location-title{font-size:20px}
+  .event-location-name{font-size:22px}
+}
+
+/* Mobile */
+@media (max-width:640px){
+  .topbar{height:60px;padding:0 12px}
+  .topbar-logo img{height:46px;max-width:92px}
+  .topbar-nav{margin-left:2px;gap:0}
+  .nav-link{min-height:40px;padding:0 7px;font-size:12px;letter-spacing:0;white-space:nowrap}
+  .topbar-actions{gap:4px}
+  .btn-login{width:40px;min-width:40px;height:40px;min-height:40px;padding:0;border-radius:10px;font-size:0}
+  .btn-login i{font-size:18px}
+  .dropdown-menu{position:fixed;top:58px;left:10px;right:10px;min-width:0}
+
+  .hero{min-height:100svh;padding:82px 16px 42px}
+  .hero::before{width:360px;height:360px;top:-130px}
+  .hero-logo{width:min(100%,520px);margin-bottom:14px}
+  .hero-sub{max-width:100%;margin-bottom:22px;font-size:13px;line-height:1.7}
+  .hero-actions{width:100%}
+  .hero-actions .hero-btn-primary.hero-btn-register{min-height:56px;padding:0 18px;border-radius:15px;font-size:24px}
+  .hero-actions-bottom{grid-template-columns:1fr 1fr;gap:8px}
+  .hero-btn-secondary{min-height:48px;padding:0 10px;border-radius:12px;font-size:14px;letter-spacing:.3px}
+  .hero-scroll{position:relative;left:auto;bottom:auto;margin-top:24px;transform:none}
+
+  /* Event = stacked */
+  .event-date-card{width:100%;grid-template-columns:1fr;min-height:auto;border-radius:22px}
+  .event-date-main{min-height:195px;border-radius:21px 21px 0 0}
+  .event-date-arrow{left:50%;top:auto;bottom:-26px;transform:translateX(-50%)}
+  .event-location-main{min-height:155px;padding:40px 22px 24px;border-radius:0 0 21px 21px}
+  .event-location-title{font-size:20px;white-space:normal}
+  .event-location-name{font-size:21px;white-space:normal}
+
+  .section{padding:62px 16px}
+  .section-title,#tiers .section-title{font-size:clamp(25px,8vw,32px);overflow-wrap:anywhere}
+
+  .about-section{padding:64px 16px 70px}
+  .about-heading{margin-bottom:32px}
+  .about-section .section-sub{font-size:13px}
+  .about-video-wrap{margin-bottom:34px;padding:8px;border-radius:20px}
+  .about-video-head{padding:7px 6px 12px}
+  .about-video-icon{width:40px;height:40px;border-radius:12px}
+  .about-video-title{font-size:15px}
+  .about-video{border-radius:15px}
+
+  /* About = 1 column only on phone */
+  .about-grid{grid-template-columns:1fr;gap:16px}
+  .about-card{min-height:0;padding:28px 20px}
+
+  #tiers{padding:70px 16px 76px}
+  #tiers .section-sub{margin-bottom:30px;font-size:14px}
+  #tiers .tiers-grid{grid-template-columns:1fr;gap:18px}
+  #tiers .tier-card,#tiers .tier-card:last-child{grid-column:auto;width:100%;min-height:0;padding:30px 20px 26px}
+  #tiers .tier-name+.tier-desc{min-height:auto}
+}
+
+/* Small phone */
+@media (max-width:430px){
+  .topbar-logo img{height:40px;max-width:76px}
+  .nav-link{padding:0 5px;font-size:11px}
+  .hero{padding-inline:14px}
+  .hero-sub{font-size:12.5px}
+  .hero-actions .hero-btn-primary.hero-btn-register{font-size:21px}
+  .hero-btn-secondary{font-size:12.5px}
+}
+
+@media (max-width:390px){
+  .event-date-main{min-height:185px}
+  .event-day-number{font-size:62px}
+  .event-month{font-size:20px}
+  .event-date-range{font-size:15px}
+  .event-location-title{font-size:18px}
+  .event-location-name{font-size:20px}
+}
+
+@media (max-width:360px){
+  .topbar-logo img{max-width:64px}
+  .nav-link{padding:0 4px;font-size:10px}
+  .hero-actions-bottom{grid-template-columns:1fr}
+  .hero-btn-secondary{font-size:14px}
+}
+</style>
 
 </head>
 
@@ -1500,42 +528,174 @@
           <i class="ti ti-trophy"></i> ดูผลคะแนน
         </a>
       </div>
+
+    <div class="event-date-card">
+    
+      <!-- DATE -->
+      <div class="event-date-main">
+        <div class="event-date-icon">
+          <i class="ti ti-calendar"></i>
+        </div>
+        <div class="event-date-label">วันแข่งขัน</div>
+        <% if (eventDate) { %>
+          <div class="event-day-number">
+            <%= new Date(eventDate).toLocaleDateString('th-TH', {day:'numeric'}) %>
+          </div>
+          <div class="event-month">
+            <%= new Date(eventDate).toLocaleDateString('th-TH', {month:'long'}) %>
+          </div>
+          <% if (eventDateEnd) { %>
+            <div style="color:rgba(255,255,255,.7);font-size:13px;margin-top:4px">ถึง</div>
+            <div class="event-date-range">
+              <%= new Date(eventDateEnd).toLocaleDateString('th-TH', {day:'numeric', month:'long', year:'numeric'}) %>
+            </div>
+            <% } else { %>
+              <div class="event-date-range">
+                <%= new Date(eventDate).toLocaleDateString('th-TH', {year:'numeric'}) %>
+              </div>
+              <% } %>
+                <% } else { %>
+                  <div class="event-day-number" style="font-size:48px;letter-spacing:0">---</div>
+                  <% } %>
+      </div>
+    
+      <!-- ARROW -->
+      <div class="event-date-arrow">
+        <i class="ti ti-chevron-right"></i>
+      </div>
+    
+      <!-- LOCATION -->
+      <div class="event-location-main">
+        <div class="event-location-heading">
+          <div class="event-location-icon">
+            <i class="ti ti-map-pin-filled"></i>
+          </div>
+          <div class="event-location-title">สถานที่จัดการแข่งขัน</div>
+        </div>
+        <div class="event-location-line"></div>
+        <div class="event-location-name">
+          <% if (eventDateLabel) { %>
+            <%= eventDateLabel %>
+              <% } else { %>
+                <span style="color:#94A3B8;font-size:18px">ยังไม่กำหนด</span>
+                <% } %>
+        </div>
+      </div>
     </div>
+  </div>
     <div class="hero-scroll">
       <span>เลื่อนลง</span>
       <i class="ti ti-chevron-down" style="font-size:18px"></i>
     </div>
   </section>
 
-  <!-- เกี่ยวกับเรา -->
+  <!-- ABOUT RCL -->
   <section class="section about-section" id="about">
     <div class="section-inner">
-      <div class="section-label">เกี่ยวกับเรา</div>
-      <div class="section-title">What is ROBO CHALLENGE LEAGUE ?</div>
-      <div class="section-sub">ROBO Challenge League (RCL) คือการแข่งขันหุ่นยนต์เชิงวิศวกรรมและการเขียนโปรแกรม
-        ที่เปิดโอกาสให้นักเรียนได้พัฒนาทักษะด้าน Coding, Robotics และการคิดแก้ปัญหา ผ่านภารกิจที่จำลองจากสถานการณ์จริง
-        ผู้เข้าแข่งขันจะต้องออกแบบ วางแผน
-        และเขียนโปรแกรมควบคุมหุ่นยนต์ให้สามารถทำภารกิจได้อย่างถูกต้อง แม่นยำ และมีประสิทธิภาพ ภายใต้เวลาที่กำหนด</div>
-      <div class="about-grid">
-        <div class="about-card">
-          <div class="about-icon" style="background:#EFF6FF"><i class="ti ti-robot"
-              style="color:#2563EB;font-size:24px"></i></div>
-          <div class="about-card-title">การแข่งขันหุ่นยนต์</div>
-          <div class="about-card-desc">การแข่งขันที่ท้าทายทักษะการเขียนโปรแกรมและการออกแบบหุ่นยนต์</div>
-        </div>
-        <div class="about-card">
-          <div class="about-icon" style="background:#F0FDF4"><i class="ti ti-users"
-              style="color:#16A34A;font-size:24px"></i></div>
-          <div class="about-card-title">3 รุ่นการแข่งขัน</div>
-          <div class="about-card-desc">แบ่งเป็น Beginner, Intermediate และ Advance เหมาะกับทุกระดับ</div>
-        </div>
-        <div class="about-card">
-          <div class="about-icon" style="background:#FFFBEB"><i class="ti ti-trophy"
-              style="color:#D97706;font-size:24px"></i></div>
-          <div class="about-card-title">รางวัลมากมาย</div>
-          <div class="about-card-desc">ถ้วยรางวัล เกียรติบัตร และของรางวัลสำหรับทีมที่ชนะเลิศ</div>
-        </div>
+  
+      <div class="about-heading">
+        <div class="section-label">เกี่ยวกับเรา</div>
+  
+        <h2 class="section-title">
+          What is ROBO CHALLENGE LEAGUE ?
+        </h2>
+  
+        <p class="section-sub">
+          ROBO Challenge League (RCL) คือการแข่งขันหุ่นยนต์เชิงวิศวกรรม
+          และการเขียนโปรแกรม ที่เปิดโอกาสให้นักเรียนได้พัฒนาทักษะด้าน
+          Coding, Robotics และการคิดแก้ปัญหา ผ่านภารกิจที่จำลองจากสถานการณ์จริง
+          ผู้เข้าแข่งขันจะต้องออกแบบ วางแผน และเขียนโปรแกรมควบคุมหุ่นยนต์
+          ให้สามารถทำภารกิจได้อย่างถูกต้อง แม่นยำ และมีประสิทธิภาพ
+          ภายใต้เวลาที่กำหนด
+        </p>
       </div>
+  
+      <!-- VIDEO -->
+      <div class="about-video-wrap">
+  
+        <div class="about-video-head">
+          <div class="about-video-icon">
+            <i class="ti ti-player-play-filled"></i>
+          </div>
+  
+          <div>
+            <div class="about-video-kicker">
+              DISCOVER RCL
+            </div>
+            <div class="about-video-title">
+              มารู้จัก ROBO Challenge League
+            </div>
+          </div>
+        </div>
+  
+        <div class="about-video">
+          <iframe src="https://www.youtube.com/embed/UUzdcdVtMcw?si=yPW45dbPXKkHV-ye" title="ROBO Challenge League" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+  
+      </div>
+  
+  
+      <!-- FEATURES -->
+      <div class="about-grid">
+  
+        <div class="about-card">
+          <div class="about-icon about-icon-blue">
+            <i class="ti ti-robot"></i>
+          </div>
+  
+          <div class="about-card-content">
+            <div class="about-card-title">
+              การแข่งขันหุ่นยนต์
+            </div>
+  
+            <div class="about-card-desc">
+              ท้าทายทักษะด้านการเขียนโปรแกรม
+              การออกแบบหุ่นยนต์ และการแก้ปัญหาเชิงวิศวกรรม
+            </div>
+          </div>
+        </div>
+  
+  
+        <div class="about-card">
+          <div class="about-icon about-icon-green">
+            <i class="ti ti-users-group"></i>
+          </div>
+  
+          <div class="about-card-content">
+            <div class="about-card-title">
+              3 รุ่นการแข่งขัน
+            </div>
+  
+            <div class="about-card-desc">
+              Beginner, Intermediate และ Advance
+              ออกแบบความท้าทายให้เหมาะสมกับผู้เข้าแข่งขันแต่ละระดับ
+            </div>
+          </div>
+        </div>
+  
+  
+        <div class="about-card">
+          <div class="about-icon about-icon-orange">
+            <i class="ti ti-trophy"></i>
+          </div>
+  
+          <div class="about-card-content">
+            <div class="about-card-title">
+              รางวัลและประสบการณ์
+            </div>
+  
+            <div class="about-card-desc">
+              รับถ้วยรางวัล เกียรติบัตร และประสบการณ์จากการแข่งขันจริง
+              ที่ช่วยพัฒนาทักษะแห่งอนาคต
+            </div>
+          </div>
+        </div>
+  
+      </div>
+  
     </div>
   </section>
 

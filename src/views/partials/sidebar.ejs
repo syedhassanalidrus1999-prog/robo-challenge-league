@@ -20,11 +20,14 @@
       <i class="ti ti-users"></i> จัดการทีม
     </a>
     <a href="/board"
-      class="sb-item <%= currentPath === '/board' || (currentPath.startsWith('/board') && !currentPath.startsWith('/board/criteria')) ? 'active' : '' %>">
+      class="sb-item <%= currentPath === '/board' ? 'active' : '' %>"
       <i class="ti ti-trophy"></i> สรุปผลคะแนน
     </a>
     <a href="/board/criteria" class="sb-item <%= currentPath.startsWith('/board/criteria') ? 'active' : '' %>">
       <i class="ti ti-settings"></i> เกณฑ์คะแนน
+    </a>
+    <a href="/board/settings" class="sb-item <%= currentPath.startsWith('/board/settings') ? 'active' : '' %>">
+      <i class="ti ti-calendar-event"></i> ตั้งค่าวันแข่งขัน
     </a>
     <% } %>
 
