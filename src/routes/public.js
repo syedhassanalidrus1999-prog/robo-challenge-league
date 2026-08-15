@@ -203,4 +203,85 @@ router.get('/competition', async (req, res) => {
     return res.redirect('/')
   }
 })
+
+// GET /preorder
+router.get('/preorder', (req, res) => {
+  res.render('preorder/index', {
+    layout: false,
+    success: false,
+    errorMsg: null,
+    formData: {}
+  })
+})
+
+router.post("/preorder", async (req, res) => {
+  const {
+    school_name,
+    contact_name,
+    phone,
+    email,
+    address,
+    district,
+    province,
+    zipcode,
+    note,
+    items_json,
+  } = req.body;
+  if (!school_name || !contact_name || !phone || !items_json) {
+    return res.render("preorder/index", {
+      layout: false,
+      success: false,
+      errorMsg: "กรุณากรอกข้อมูลให้ครบ",
+      formData: req.body,
+    });
+  }
+  var items = JSON.parse(items_json);
+  var PRICES = {
+    "beginner-full": 2500,
+    "beginner-field": 500,
+    "beginner-mission": 500,
+    "intermediate-full": 2500,
+    "intermediate-field": 500,
+    "intermediate-mission": 500,
+    "advance-full": 2500,
+    "advance-field": 500,
+    "advance-mission": 500,
+  };
+  var totalPrice = 0;
+  Object.keys(items).forEach(function (k) {
+    totalPrice += (PRICES[k] || 0) * items[k];
+  });
+  try {
+    await query(
+      `INSERT INTO preorders (school_name,contact_name,phone,email,address,district,province,zipcode,note,items_json,total_price) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      [
+        school_name,
+        contact_name,
+        phone,
+        email || null,
+        address || null,
+        district || null,
+        province || null,
+        zipcode || null,
+        note || null,
+        items_json,
+        totalPrice,
+      ],
+    );
+    res.render("preorder/index", {
+      layout: false,
+      success: true,
+      errorMsg: null,
+      formData: {},
+    });
+  } catch (err) {
+    console.error(err);
+    res.render("preorder/index", {
+      layout: false,
+      success: false,
+      errorMsg: "เกิดข้อผิดพลาด กรุณาลองใหม่",
+      formData: req.body,
+    });
+  }
+});
 module.exports = router;

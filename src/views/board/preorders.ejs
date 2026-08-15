@@ -1,0 +1,130 @@
+<div class="page-hd">
+    <div class="page-title"><span>Pre-order</span> สนามแข่งขัน</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="/board/preorders" class="btn btn-secondary btn-sm">ทั้งหมด</a>
+        <a href="/board/preorders?status=pending" class="btn btn-secondary btn-sm" style="color:#D97706">รอยืนยัน</a>
+        <a href="/board/preorders?status=confirmed" class="btn btn-secondary btn-sm"
+            style="color:#2563EB">ยืนยันแล้ว</a>
+        <a href="/board/preorders?status=shipped" class="btn btn-secondary btn-sm" style="color:#16A34A">จัดส่งแล้ว</a>
+    </div>
+</div>
+
+<div class="card">
+    <div style="overflow-x:auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>โรงเรียน</th>
+                    <th>ผู้ติดต่อ</th>
+                    <th>สินค้าที่สั่ง</th>
+                    <th>ยอดรวม</th>
+                    <th>สถานะ</th>
+                    <th>วันที่</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (preorders.length===0) { %>
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty"><i class="ti ti-inbox"></i>ยังไม่มี Pre-order</div>
+                        </td>
+                    </tr>
+                    <% } %>
+                        <% preorders.forEach(function(p) { var parsedItems={}; try { parsedItems=p.items_json ?
+                            JSON.parse(p.items_json) : {}; } catch(e) { parsedItems={}; } var
+                            itemKeys=Object.keys(parsedItems); function getItemName(k) { var names={ 'beginner-full'
+                            : 'เซตสนาม Beginner' , 'beginner-field' : 'ไฟล์สนาม Beginner' , 'beginner-mission'
+                            : 'ชิ้นส่วนภารกิจ Beginner' , 'intermediate-full' : 'เซตสนาม Intermediate'
+                            , 'intermediate-field' : 'ไฟล์สนาม Intermediate' , 'intermediate-mission'
+                            : 'ชิ้นส่วนภารกิจ Intermediate' , 'advance-full' : 'เซตสนาม Advance' , 'advance-field'
+                            : 'ไฟล์สนาม Advance' , 'advance-mission' : 'ชิ้นส่วนภารกิจ Advance' }; return names[k] || k;
+                            } function getItemColor(k) { var colors={ 'beginner-full' : '#16A34A' , 'beginner-field'
+                            : '#7C3AED' , 'beginner-mission' : '#EA580C' , 'intermediate-full' : '#2563EB'
+                            , 'intermediate-field' : '#7C3AED' , 'intermediate-mission' : '#EA580C' , 'advance-full'
+                            : '#EA580C' , 'advance-field' : '#7C3AED' , 'advance-mission' : '#EA580C' }; return
+                            colors[k] || '#475569' ; } %>
+                            <tr>
+                                <td style="color:#94A3B8;font-size:12px">#<%= p.id %>
+                                </td>
+                                <td>
+                                    <div style="font-weight:700">
+                                        <%= p.school_name %>
+                                    </div>
+                                    <% if (p.province) { %>
+                                        <div style="font-size:11px;color:#94A3B8">
+                                            <%= p.province %>
+                                        </div>
+                                        <% } %>
+                                </td>
+                                <td>
+                                    <div style="font-size:13px">
+                                        <%= p.contact_name %>
+                                    </div>
+                                    <div style="font-size:11px;color:#94A3B8">
+                                        <%= p.phone %>
+                                    </div>
+                                    <% if (p.email) { %>
+                                        <div style="font-size:11px;color:#94A3B8">
+                                            <%= p.email %>
+                                        </div>
+                                        <% } %>
+                                </td>
+                                <td style="min-width:200px">
+                                    <% if (itemKeys.length> 0) { %>
+                                        <% itemKeys.forEach(function(k) { %>
+                                            <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px">
+                                                <span
+                                                    style="font-size:12px;font-weight:700;color:<%= getItemColor(k) %>">
+                                                    <%= getItemName(k) %>
+                                                </span>
+                                                <span style="font-size:11px;color:#94A3B8">x <%= parsedItems[k] %>
+                                                        </span>
+                                            </div>
+                                            <% }); %>
+                                                <% } else { %>
+                                                    <span style="color:#CBD5E1">-</span>
+                                                    <% } %>
+                                </td>
+                                <td style="font-weight:700;color:#2563EB">
+                                    <%= (p.total_price || 0).toLocaleString() %> B
+                                </td>
+                                <td>
+                                    <% if (p.status==='pending' ) { %>
+                                        <span class="badge badge-blue badge-dot">รอยืนยัน</span>
+                                        <% } else if (p.status==='confirmed' ) { %>
+                                            <span class="badge badge-green badge-dot">ยืนยันแล้ว</span>
+                                            <% } else if (p.status==='shipped' ) { %>
+                                                <span class="badge"
+                                                    style="background:#F0FDF4;color:#16A34A">จัดส่งแล้ว</span>
+                                                <% } else { %>
+                                                    <span class="badge badge-red badge-dot">ยกเลิก</span>
+                                                    <% } %>
+                                </td>
+                                <td style="font-size:12px;color:#64748B">
+                                    <%= new Date(p.created_at).toLocaleDateString('th-TH',
+                                        {day:'numeric',month:'short',year:'numeric'}) %>
+                                </td>
+                                <td>
+                                    <form method="POST" action="/board/preorders/<%= p.id %>/status">
+                                        <select name="status" class="fi"
+                                            style="font-size:12px;padding:4px 8px;width:auto"
+                                            onchange="this.form.submit()">
+                                            <option value="pending" <%=p.status==='pending' ?'selected':'' %>>รอยืนยัน
+                                            </option>
+                                            <option value="confirmed" <%=p.status==='confirmed' ?'selected':'' %>
+                                                >ยืนยันแล้ว</option>
+                                            <option value="shipped" <%=p.status==='shipped' ?'selected':'' %>>จัดส่งแล้ว
+                                            </option>
+                                            <option value="cancelled" <%=p.status==='cancelled' ?'selected':'' %>>ยกเลิก
+                                            </option>
+                                        </select>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>

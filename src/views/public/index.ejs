@@ -324,9 +324,9 @@ a{color:inherit;text-decoration:none}
 .tier-emoji{width:76px;height:76px;margin:0 auto 18px;display:grid;place-items:center;border-radius:22px;background:color-mix(in srgb,var(--tier-color) 9%,white);font-size:42px}
 .tier-name{margin-bottom:14px;font-size:25px;font-weight:900;line-height:1.2}
 .tier-name.green{color:#16A34A}.tier-name.blue{color:#2563EB}.tier-name.orange{color:#EA580C}
-#tiers .tier-name+.tier-desc{min-height:92px;max-width:310px;margin:0 auto 20px;color:var(--muted);font-size:14px;line-height:1.75}
+#tiers .tier-name+.tier-desc{ min-height:92px;max-width:310px;margin:0 auto 5px;color:var(--muted);font-size:14px;line-height:1.75}
 #tiers .tier-desc+.tier-desc{width:100%;margin:0 auto 26px;padding-top:18px;color:#64748B;border-top:1px solid #EEF2F7;font-size:14px;font-weight:700;line-height:1.5}
-.tier-badge{min-height:34px;margin-top:auto;padding:0 16px;display:inline-flex;align-items:center;border-radius:999px;font-size:12.5px;font-weight:800}
+.tier-badge{min-height:34px;margin-top:auto;padding:0 10px;display:inline-flex;align-items:center;border-radius:999px;font-size:12.5px;font-weight:800}
 .tier-badge.green{background:#F0FDF4;color:#16A34A}.tier-badge.blue{background:#EFF6FF;color:#2563EB}.tier-badge.orange{background:#FFF7ED;color:#EA580C}
 .tier-card>br{display:none}
 .tier-reg-btn{width:min(100%,168px);min-height:46px;margin-top:18px;padding:0 20px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:12px;font-size:13.5px;font-weight:800;transition:.2s ease}
@@ -334,6 +334,387 @@ a{color:inherit;text-decoration:none}
 .tier-reg-btn.green{background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0}
 .tier-reg-btn.blue{background:#EFF6FF;color:#2563EB;border:1px solid #BFDBFE}
 .tier-reg-btn.orange{background:#FFF7ED;color:#EA580C;border:1px solid #FED7AA}
+
+/* =========================================================
+   SPONSORS & PARTNERS
+   ========================================================= */
+
+.sponsor-section {
+  position: relative;
+  padding: 72px 20px 78px;
+  background:
+    radial-gradient(
+      circle at 10% 20%,
+      rgba(37, 99, 235, .045),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(234, 88, 12, .035),
+      transparent 25%
+    ),
+    #F8FAFC;
+
+  border-top: 1px solid #E5EAF1;
+}
+
+.sponsor-container {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   Heading
+   ========================================================= */
+
+.brand-heading {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 8px;
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-family: 'Kanit', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+.partners-eyebrow {
+  color: #2563EB;
+  background: #EFF6FF;
+  border: 1px solid #DBEAFE;
+}
+
+.sponsors-eyebrow {
+  color: #EA580C;
+  background: #FFF7ED;
+  border: 1px solid #FED7AA;
+}
+
+.brand-heading h2 {
+  margin: 0;
+
+  font-family: 'Kanit', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+
+  line-height: 1.25;
+  color: #0F172A;
+}
+
+.brand-heading p {
+  max-width: 560px;
+  margin: 7px auto 0;
+
+  font-family: 'Sarabun', sans-serif;
+  font-size: 12px;
+  line-height: 1.6;
+
+  color: #7A8799;
+}
+
+
+/* =========================================================
+   Logo Grid
+   ========================================================= */
+
+.brand-grid {
+  display: grid;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+}
+
+.partners-grid {
+  grid-template-columns:
+    repeat(4, minmax(150px, 1fr));
+}
+
+.sponsors-grid {
+  grid-template-columns:
+    repeat(5, minmax(120px, 1fr));
+}
+
+
+/* =========================================================
+   Logo Card
+   ========================================================= */
+
+.brand-card {
+  position: relative;
+
+  min-height: 105px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 18px;
+
+  background: rgba(255,255,255,.92);
+
+  border: 1px solid #E2E8F0;
+  border-radius: 15px;
+
+  box-shadow:
+    0 3px 12px rgba(15,23,42,.035);
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.brand-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #CBD5E1;
+
+  box-shadow:
+    0 10px 25px rgba(15,23,42,.08);
+}
+
+
+/* Logo */
+
+.brand-card img {
+  display: block;
+
+  max-width: 100%;
+  max-height: 62px;
+
+  width: auto;
+  height: auto;
+
+  object-fit: contain;
+
+  filter: grayscale(45%);
+  opacity: .82;
+
+  transition:
+    filter .2s ease,
+    opacity .2s ease,
+    transform .2s ease;
+}
+
+.brand-card:hover img {
+  filter: grayscale(0);
+  opacity: 1;
+  transform: scale(1.03);
+}
+
+
+/* =========================================================
+   Partners
+   ========================================================= */
+
+.partners-grid .brand-card {
+  min-height: 110px;
+}
+
+.partners-grid .brand-card img {
+  max-height: 68px;
+}
+
+
+/* =========================================================
+   Sponsors
+   ========================================================= */
+
+.sponsors-grid .brand-card {
+  min-height: 92px;
+}
+
+.sponsor-card {
+  padding: 14px 18px;
+}
+
+.sponsors-grid .brand-card img {
+  max-height: 55px;
+}
+
+
+/* =========================================================
+   Add Logo Card
+   ========================================================= */
+
+.brand-add-card {
+  border-style: dashed;
+
+  background:
+    linear-gradient(
+      180deg,
+      #FFFFFF,
+      #F8FAFC
+    );
+
+  color: #94A3B8;
+
+  flex-direction: column;
+  gap: 5px;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.brand-add-card:hover {
+  border-color: #93C5FD;
+  color: #2563EB;
+
+  background: #F8FBFF;
+}
+
+.brand-add-icon {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #F1F5F9;
+  color: #94A3B8;
+
+  font-size: 19px;
+  font-weight: 400;
+
+  transition: .2s ease;
+}
+
+.brand-add-card:hover .brand-add-icon {
+  background: #DBEAFE;
+  color: #2563EB;
+}
+
+
+/* =========================================================
+   Divider
+   ========================================================= */
+
+.brand-divider {
+  position: relative;
+
+  height: 1px;
+
+  margin: 58px 0;
+
+  background: #E8EDF3;
+}
+
+.brand-divider::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 42px;
+  height: 3px;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2563EB,
+      #60A5FA
+    );
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .partners-grid {
+    grid-template-columns:
+      repeat(2, minmax(150px, 1fr));
+  }
+
+  .sponsors-grid {
+    grid-template-columns:
+      repeat(3, minmax(120px, 1fr));
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .sponsor-section {
+    padding: 52px 16px 58px;
+  }
+
+  .brand-heading {
+    margin-bottom: 24px;
+  }
+
+  .brand-heading h2 {
+    font-size: 22px;
+  }
+
+  .brand-heading p {
+    font-size: 11px;
+  }
+
+  .partners-grid,
+  .sponsors-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+  }
+
+  .brand-card {
+    min-height: 88px;
+    padding: 13px;
+    border-radius: 12px;
+  }
+
+  .partners-grid .brand-card {
+    min-height: 92px;
+  }
+
+  .sponsors-grid .brand-card {
+    min-height: 82px;
+  }
+
+  .brand-card img {
+    max-height: 48px;
+  }
+
+  .brand-divider {
+    margin: 42px 0;
+  }
+
+}
+
+
+@media (max-width: 380px) {
+
+  .partners-grid,
+  .sponsors-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
 
 /* 09 — FOOTER */
 .footer{padding:36px 20px;text-align:center;background:linear-gradient(135deg,#0F172A,#1E293B)}
@@ -449,6 +830,36 @@ a{color:inherit;text-decoration:none}
   #tiers .tier-name+.tier-desc{min-height:auto}
 }
 
+.tier-badge i {
+  font-size: 18px;
+  margin-right: 7px;
+  vertical-align: -2px;
+}
+
+.brand-placeholder {
+    border: 1px dashed #CBD5E1;
+    background: #FAFCFF;
+    color: #94A3B8;
+}
+
+.placeholder-icon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #EFF6FF;
+    color: #60A5FA;
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.placeholder-text {
+    font-size: 10px;
+    font-weight: 700;
+}
+
 /* Small phone */
 @media (max-width:430px){
   .topbar-logo img{height:40px;max-width:76px}
@@ -473,6 +884,41 @@ a{color:inherit;text-decoration:none}
   .nav-link{padding:0 4px;font-size:10px}
   .hero-actions-bottom{grid-template-columns:1fr}
   .hero-btn-secondary{font-size:14px}
+}
+
+.silver-text {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #d9d9d9 25%,
+    #8f8f8f 50%,
+    #eeeeee 72%,
+    #a6a6a6 100%
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  font-weight: 800;
+}
+
+.gold-text {
+  background: linear-gradient(
+    180deg,
+    #fff8c5 0%,
+    #ffd700 22%,
+    #f5b800 45%,
+    #fff0a3 52%,
+    #d99a00 72%,
+    #8f6000 100%
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  font-weight: 900;
 }
 </style>
 
@@ -501,6 +947,7 @@ a{color:inherit;text-decoration:none}
       </div>
 
       <a href="/docs" class="nav-link"> เอกสาร</a>
+      <a href="/preorder" class="nav-link" style="color:#EA580C"><i class="ti ti-shopping-cart"></i> Pre-order สนาม</a>
     </nav>
     <div class="topbar-actions">
       <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
@@ -710,9 +1157,10 @@ a{color:inherit;text-decoration:none}
           <span class="tier-emoji">🌱</span>
           <div class="tier-name green">Beginner</div>
           <div class="tier-desc">สำหรับผู้เริ่มต้น เหมาะกับนักเรียนที่เพิ่งเริ่มเรียนรู้การเขียนโปรแกรมและหุ่นยนต์</div>
-          <div class="tier-desc">สำหรับรุ่นอายุไม่เกิน 9 ปี</div>
-
-          <span class="tier-badge green">คะแนนรวม 50 คะแนน</span>
+          <div class="tier-desc"><div>รูปสนามแข่งขัน</div><img src="images/beginner home.png" alt="Beginner home image" style="width: 100%; max-width: 250px; margin: 10px 0;"></div>
+          <div class="tier-desc">รุ่นอายุ : ไม่เกิน 9 ปี</div>
+          <div class="tier-desc">ประเภทหุ่นยนต์ : Botzees</div>
+          <span class="tier-badge green"><i class="ti ti-trophy" aria-hidden="true"></i>คะแนนรวม 50 คะแนน</span>
           <br>
           <a href="/register/beginner" class="tier-reg-btn green"><i class="ti ti-pencil-plus"></i> สมัครรุ่นนี้</a>
         </div>
@@ -720,8 +1168,10 @@ a{color:inherit;text-decoration:none}
           <span class="tier-emoji">🔥</span>
           <div class="tier-name blue">Intermediate</div>
           <div class="tier-desc">สำหรับระดับกลาง เหมาะกับนักเรียนที่มีประสบการณ์และต้องการความท้าทายมากขึ้น</div>
-          <div class="tier-desc">สำหรับรุ่นอายุไม่เกิน 12 ปี</div>
-          <span class="tier-badge blue">คะแนนรวม 100 คะแนน</span>
+          <div class="tier-desc"><div>รูปสนามแข่งขัน</div><img src="images/intermediate home.png" alt="Intermediate home image" style="width: 100%; max-width: 250px; margin: 10px 0;"></div>
+          <div class="tier-desc">รุ่นอายุ : ไม่เกิน 12 ปี</div>
+          <div class="tier-desc">ประเภทหุ่นยนต์ : ไม่จำกัดประเภทหุ่นยนต์</div>
+          <span class="tier-badge blue"><i class="ti ti-trophy" aria-hidden="true"></i> คะแนนรวม 100 คะแนน</span>
           <br>
           <a href="/register/intermediate" class="tier-reg-btn blue"><i class="ti ti-pencil-plus"></i> สมัครรุ่นนี้</a>
         </div>
@@ -729,13 +1179,120 @@ a{color:inherit;text-decoration:none}
           <span class="tier-emoji">🚀</span>
           <div class="tier-name orange">Advance</div>
           <div class="tier-desc">สำหรับระดับสูง เหมาะกับนักเรียนที่มีทักษะและประสบการณ์สูง พร้อมรับความท้าทาย</div>
-          <div class="tier-desc">สำหรับรุ่นอายุไม่เกิน 18 ปี</div>
-          <span class="tier-badge orange">คะแนนรวม 100 คะแนน</span>
+          <div class="tier-desc"><div>รูปสนามแข่งขัน </div><img src="images/advance home.png" alt="Advance home image" style="width: 100%; max-width: 250px; margin: 10px 0;"></div>
+          <div class="tier-desc">รุ่นอายุ : ไม่เกิน 18 ปี</div>
+          <div class="tier-desc">ประเภทหุ่นยนต์ : ไม่จำกัดประเภทหุ่นยนต์</div>
+          <span class="tier-badge orange"><i class="ti ti-trophy" aria-hidden="true"></i> คะแนนรวม 100 คะแนน</span>
           <br>
           <a href="/register/advance" class="tier-reg-btn orange"><i class="ti ti-pencil-plus"></i> สมัครรุ่นนี้</a>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- =========================================================
+       SPONSORS & PARTNERS
+       ========================================================= -->
+  <section class="sponsor-section">
+  
+    <div class="sponsor-container">
+  
+      <!-- ================= PARTNERS ================= -->
+      <div class="brand-group brand-group-partners">
+  
+        <div class="brand-heading">
+          <div class="brand-eyebrow partners-eyebrow">
+            PARTNERS AND SPONSORS
+          </div>
+  
+          <h2 class="gold-text">PARTNERS</h2>
+  
+          <p>
+            หน่วยงานและองค์กรที่ร่วมสนับสนุนการจัดการแข่งขัน RCL 2026
+          </p>
+        </div>
+  
+        <div class="brand-grid partners-grid">
+  
+          <!-- Partner 1 -->
+          <div class="brand-card">
+            <img src="/images/partner-1.png" alt="Partner 1">
+          </div>
+  
+          <!-- Partner 2 -->
+          <div class="brand-card brand-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+          <!-- Partner 3 -->
+          <div class="brand-card brand-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+          <!-- Add Partner -->
+          <div class="brand-card brand-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+        </div>
+      </div>
+  
+  
+      <!-- Divider -->
+      <div class="brand-divider"></div>
+  
+  
+      <!-- ================= SPONSORS ================= -->
+      <div class="brand-group brand-group-sponsors">
+  
+        <div class="brand-heading">
+  
+          <h2 class="silver-text">SPONSORS</h2>
+  
+          <p>
+            ขอขอบคุณผู้สนับสนุนที่ร่วมเป็นส่วนหนึ่งของการแข่งขัน RCL 2026
+          </p>
+        </div>
+  
+        <div class="brand-grid sponsors-grid">
+  
+          <!-- Sponsor 1 -->
+          <div class="brand-card sponsor-card">
+            <img src="public/images/RCL Logo.png" alt="RCL">
+          </div>
+  
+          <!-- Sponsor 2 -->
+          <div class="brand-card brand-add-card sponsor-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+          <!-- Sponsor 3 -->
+          <div class="brand-card brand-add-card sponsor-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+          <!-- Sponsor 4 -->
+          <div class="brand-card brand-add-card sponsor-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+          <!-- Add Sponsor -->
+          <div class="brand-card brand-add-card sponsor-add-card">
+            <span class="brand-add-icon">+</span>
+            <span>เพิ่มโลโก้</span>
+          </div>
+  
+        </div>
+      </div>
+  
+    </div>
+  
   </section>
 
   <!-- FOOTER -->

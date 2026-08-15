@@ -1,0 +1,3395 @@
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Pre-order สนามแข่งขัน — RCL 2026</title>
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&amp;family=Kanit:wght@400;500;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background: #F4F7FB;
+      color: #1E293B;
+      min-height: 100vh
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit
+    }
+
+    .topbar {
+      height: 60px;
+      background: #fff;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .06)
+    }
+
+    .topbar-logo img {
+      height: 36px;
+      object-fit: contain
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1E293B;
+      flex: 1
+    }
+
+    .topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 100;
+
+  height: 84px;
+  padding: 0 30px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: transparent;
+  border-bottom: 1px solid transparent;
+
+  transition: .3s ease;
+}
+
+.topbar.scrolled {
+  background: rgba(255,255,255,.90);
+  border-bottom-color: rgba(226,232,240,.9);
+  box-shadow: 0 4px 18px rgba(15,23,42,.04);
+  backdrop-filter: blur(16px);
+}
+
+.topbar-logo {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.topbar-logo img {
+  width: auto;
+  height: 120px;
+  object-fit: contain;
+}
+
+.topbar-nav {
+  flex: 1;
+  margin-left: 18px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link {
+  min-height: 52px;
+  padding: 0 18px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+
+  color: #334155;
+
+  font-family: 'Kanit', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.nav-link:hover {
+  color: #2563EB;
+  transform: translateY(-1px);
+}
+
+
+/* =========================
+   Dropdown
+========================= */
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 200;
+
+  display: none;
+
+  min-width: 200px;
+  padding: 8px;
+
+  background: rgba(255,255,255,.98);
+
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+
+  box-shadow: 0 18px 44px rgba(15,23,42,.14);
+}
+
+.dropdown-item {
+  min-height: 42px;
+  padding: 0 12px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 10px;
+
+  color: #334155;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dropdown-item:hover {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.dropdown-item i {
+  color: #64748B;
+  font-size: 17px;
+}
+
+
+/* =========================
+   Login
+========================= */
+
+.topbar-actions {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-login {
+  min-height: 52px;
+  padding: 0 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  color: #334155;
+  background: #fff;
+
+  border: 1px solid #E2E8F0;
+  border-radius: 11px;
+
+  font: 800 16px 'Sarabun', sans-serif;
+
+  transition: .2s ease;
+}
+
+.btn-login:hover {
+  background: #F8FAFC;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(15,23,42,.07);
+}
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid #E2E8F0;
+      background: #fff;
+      color: #64748B;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+      transition: .15s
+    }
+
+    .btn-back:hover {
+      background: #F8FAFC
+    }
+
+    .page-hero {
+      padding: 28px 20px;
+      text-align: center;
+      background: url('/images/preorder-hero-bg.png') center/cover no-repeat;
+    }
+
+    .page-hero-eyebrow {
+      color: #60A5FA;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px
+    }
+
+    .page-hero-title {
+      font-family: 'Kanit', sans-serif;
+      font-size: clamp(20px, 4vw, 30px);
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px
+    }
+
+    .page-hero-sub {
+      color: rgba(255, 255, 255, .6);
+      font-size: 13px
+    }
+
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start
+    }
+
+    .tier-group {
+      margin-bottom: 20px
+    }
+
+    .tier-group-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 16px;
+      font-weight: 700
+    }
+
+    .product-item {
+      background: #fff;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all .18s;
+      margin-bottom: 8px
+    }
+
+    .product-item:hover {
+      box-shadow: 0 6px 18px rgba(37, 99, 235, .08)
+    }
+
+    .custom-checkbox {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid #CBD5E1;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: .15s;
+      background: #fff
+    }
+
+    .custom-checkbox i {
+      font-size: 14px;
+      color: #fff;
+      opacity: 0;
+      transition: .15s
+    }
+
+    .product-item-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 2px
+    }
+
+    .product-item-desc {
+      font-size: 11px;
+      color: #64748B;
+      line-height: 1.4
+    }
+
+    .product-item-price {
+      font-family: 'Kanit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      white-space: nowrap
+    }
+
+    .detail-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #2563EB;
+      background: #EFF6FF;
+      border: none;
+      border-radius: 6px;
+      padding: 3px 8px;
+      cursor: pointer;
+      margin-top: 5px;
+      font-family: 'Sarabun', sans-serif;
+      transition: .15s
+    }
+
+    .detail-btn:hover {
+      background: #DBEAFE
+    }
+
+    .qty-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px
+    }
+
+    .qty-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 8px;
+      overflow: hidden
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      background: #F8FAFC;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #475569;
+      transition: .15s;
+      font-family: inherit
+    }
+
+    .qty-btn:hover {
+      background: #EFF6FF;
+      color: #2563EB
+    }
+
+    .qty-num {
+      width: 32px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      border: none;
+      outline: none;
+      background: #fff;
+      font-family: inherit;
+      color: #0F172A
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .04)
+    }
+
+    .form-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #F1F5F9
+    }
+
+    .form-card-title i {
+      color: #2563EB;
+      font-size: 18px
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 12px
+    }
+
+    .fg:last-child {
+      margin-bottom: 0
+    }
+
+    .fl {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: .5px;
+      text-transform: uppercase
+    }
+
+    .fi {
+      padding: 10px 12px;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 9px;
+      font-size: 14px;
+      font-family: 'Sarabun', sans-serif;
+      color: #1E293B;
+      background: #fff;
+      outline: none;
+      width: 100%;
+      transition: border-color .15s
+    }
+
+    .fi:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .1)
+    }
+
+    .sidebar-sticky {
+      position: sticky;
+      top: 76px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    /* FIELD DETAIL SIDEBAR */
+    .field-detail-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+      transition: all .3s
+    }
+
+    .field-detail-head {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .3s
+    }
+
+    .field-detail-img {
+      width: 100%;
+      aspect-ratio: 2/1;
+      object-fit: cover;
+      display: block
+    }
+
+    .field-detail-mockup {
+      width: 100%;
+      aspect-ratio: 2/1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background .3s
+    }
+
+    .field-detail-mockup i {
+      font-size: 48px;
+      opacity: .3
+    }
+
+    .field-detail-mockup-text {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: .5;
+      text-align: center;
+      line-height: 1.5
+    }
+
+    .field-specs {
+      padding: 14px 16px
+    }
+
+    .field-spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #F8FAFC;
+      font-size: 12px
+    }
+
+    .field-spec-row:last-child {
+      border-bottom: none
+    }
+
+    .field-spec-label {
+      color: #64748B;
+      font-weight: 600
+    }
+
+    .field-spec-value {
+      color: #1E293B;
+      font-weight: 700;
+      text-align: right
+    }
+
+    .field-detail-empty {
+      padding: 32px 16px;
+      text-align: center;
+      color: #CBD5E1;
+      font-size: 13px
+    }
+
+    .field-detail-empty i {
+      font-size: 36px;
+      display: block;
+      margin-bottom: 8px
+    }
+
+    /* SUMMARY */
+    .summary-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .04)
+    }
+
+    .summary-head {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #0F172A;
+      border-bottom: 1px solid #F1F5F9;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .summary-head i {
+      color: #2563EB
+    }
+
+    .summary-body {
+      padding: 14px 16px
+    }
+
+    .summary-empty {
+      text-align: center;
+      color: #CBD5E1;
+      font-size: 12px;
+      padding: 16px 0
+    }
+
+    .summary-empty i {
+      font-size: 28px;
+      display: block;
+      margin-bottom: 6px
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid #F8FAFC;
+      font-size: 12px
+    }
+
+    .summary-line-name {
+      color: #334155;
+      font-weight: 700;
+      flex: 1
+    }
+
+    .summary-line-qty {
+      color: #94A3B8;
+      font-size: 11px
+    }
+
+    .summary-line-price {
+      font-weight: 800;
+      color: #0F172A;
+      white-space: nowrap
+    }
+
+    .summary-divider {
+      height: 1px;
+      background: #E2E8F0;
+      margin: 10px 0
+    }
+
+    .summary-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .summary-total-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0F172A
+    }
+
+    .summary-total-price {
+      font-family: 'Kanit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: #EA580C
+    }
+
+    .btn-submit {
+      width: 100%;
+      min-height: 50px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      color: #fff;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: .2s;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .28);
+      margin-top: 12px
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px)
+    }
+
+    .btn-submit:disabled {
+      background: #CBD5E1;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .trust-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #64748B
+    }
+
+    .trust-note i {
+      color: #16A34A
+    }
+
+    .footer-badges {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr)
+    }
+
+    .footer-badge {
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      text-align: center;
+      border-right: 1px solid #F1F5F9
+    }
+
+    .footer-badge:last-child {
+      border-right: none
+    }
+
+    .footer-badge-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #EFF6FF;
+      display: grid;
+      place-items: center;
+      color: #2563EB;
+      font-size: 18px
+    }
+
+    .footer-badge-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: #0F172A
+    }
+
+    .footer-badge-sub {
+      font-size: 10px;
+      color: #64748B;
+      line-height: 1.5
+    }
+
+    .alert-error {
+      background: #FEF2F2;
+      border: 1px solid #FECDD3;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      color: #DC2626;
+      font-size: 13px;
+      display: flex;
+      gap: 8px
+    }
+
+    .info-note {
+      background: #FFF7ED;
+      border: 1px solid #FED7AA;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #92400E;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px
+    }
+
+    .success-wrap {
+      max-width: 560px;
+      margin: 48px auto;
+      padding: 0 16px
+    }
+
+    .success-card {
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(15, 23, 42, .06)
+    }
+
+    .btn-outline {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1.5px solid #E2E8F0;
+      background: #fff;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .btn-solid {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      background: #2563EB;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    @media(max-width:900px) {
+      .page-wrap {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar-sticky {
+        position: static;
+        order: -1
+      }
+    }
+
+    @media(max-width:640px) {
+
+      .form-grid-2,
+      .form-grid-3 {
+        grid-template-columns: 1fr
+      }
+
+      .footer-badges {
+        grid-template-columns: 1fr
+      }
+
+      .footer-badge {
+        border-right: none;
+        border-bottom: 1px solid #F1F5F9
+      }
+
+      .footer-badge:last-child {
+        border-bottom: none
+      }
+    }
+  </style>
+  <style id="modern-ui-overrides">
+    :root {
+      --navy: #10245E;
+      --blue: #2563EB;
+      --blue-dark: #1747B5;
+      --blue-soft: #EEF4FF;
+      --bg: #F5F7FC;
+      --line: #E5EAF2;
+      --text: #172033;
+      --muted: #718096;
+      --green: #16A34A;
+      --orange: #EA580C;
+      --purple: #7C3AED;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 8% 18%, rgba(37, 99, 235, .055), transparent 24%),
+        radial-gradient(circle at 92% 32%, rgba(22, 163, 74, .04), transparent 20%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    .topbar {
+      height: 64px;
+      padding: 0 max(20px, calc((100vw - 1180px)/2));
+      gap: 13px;
+      background: rgba(255, 255, 255, .94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226, 232, 240, .9);
+      box-shadow: 0 2px 14px rgba(15, 23, 42, .05);
+    }
+
+    .topbar-logo img {
+      height: 38px
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      letter-spacing: -.15px;
+    }
+
+    .btn-back {
+      padding: 8px 15px;
+      border-radius: 10px;
+      border-color: #DCE4EF;
+      color: #475569;
+    }
+
+    .btn-back:hover {
+      border-color: #BFD0E7;
+      background: #F8FAFF;
+      color: #1D4ED8;
+    }
+
+    .page-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 38px 20px 42px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(96, 165, 250, .16), transparent 26%),
+        radial-gradient(circle at 86% 85%, rgba(59, 130, 246, .2), transparent 28%),
+        linear-gradient(135deg, #0B1738 0%, #16337E 52%, #2457C5 100%);
+    }
+
+    .page-hero:before,
+    .page-hero:after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, .09);
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .page-hero:before {
+      width: 420px;
+      height: 420px;
+      right: -130px;
+      top: -270px;
+    }
+
+    .page-hero:after {
+      width: 260px;
+      height: 260px;
+      left: -130px;
+      bottom: -205px;
+    }
+
+    .page-hero-eyebrow {
+      position: relative;
+      z-index: 1;
+      color: #7DB5FF;
+      font-size: 11px;
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+
+    .page-hero-title {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(24px, 4vw, 34px);
+      letter-spacing: -.5px;
+    }
+
+    .page-hero-sub {
+      position: relative;
+      z-index: 1;
+      color: rgba(255, 255, 255, .72);
+      font-size: 13px;
+    }
+
+    .page-wrap {
+      max-width: 1180px;
+      padding: 28px 18px 56px;
+      grid-template-columns: minmax(0, 1fr) 350px;
+      gap: 22px;
+    }
+
+    .tier-group {
+      margin-bottom: 26px;
+    }
+
+    .tier-group-header {
+      position: relative;
+      min-height: 58px;
+      padding: 11px 17px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(226, 232, 240, .75);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, .025);
+      font-size: 30px;
+    }
+
+    .tier-group-header:after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      position: absolute;
+      right: 17px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: currentColor;
+      opacity: .3;
+    }
+
+    .product-item {
+      position: relative;
+      min-height: 86px;
+      padding: 15px 17px;
+      margin-bottom: 10px;
+      border: 1.5px solid var(--line);
+      border-radius: 15px;
+      grid-template-columns: 28px minmax(0, 1fr) auto;
+      gap: 13px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .025);
+    }
+
+    .product-item:hover {
+      border-color: #C9D7EA;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(37, 99, 235, .07);
+    }
+
+    .product-item-name {
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .product-item-desc {
+      font-size: 13px;
+      color: #677180;
+    }
+
+    .product-item-price {
+      font-size: 17px;
+      align-self: center;
+    }
+
+    .custom-checkbox {
+      width: 23px;
+      height: 23px;
+      border-radius: 7px;
+      border-color: #C9D4E3;
+    }
+
+    .detail-btn {
+      padding: 4px 9px;
+      border-radius: 7px;
+      margin-top: 6px;
+      background: #F1F6FF;
+    }
+
+    .qty-wrap {
+      margin-top: 8px
+    }
+
+    .qty-control {
+      background: #fff;
+      border-color: #DCE4EF;
+      border-radius: 9px;
+    }
+
+    .qty-btn {
+      height: 29px
+    }
+
+    .qty-num {
+      height: 29px
+    }
+
+    .form-card {
+      margin-top: 6px;
+      border-radius: 16px;
+      border-color: var(--line);
+      padding: 22px;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, .035);
+    }
+
+    .form-card-title {
+      font-size: 15px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+    }
+
+    .fl {
+      font-size: 11px
+    }
+
+    .fi {
+      border-color: #DCE4EF;
+      border-radius: 10px;
+    }
+
+    .fi:hover {
+      border-color: #C5D2E3
+    }
+
+    .sidebar-sticky {
+      top: 80px;
+      gap: 14px;
+    }
+
+    .field-detail-card,
+    .summary-card {
+      border-radius: 17px;
+      border-color: var(--line);
+      box-shadow: 0 5px 20px rgba(15, 23, 42, .045);
+    }
+
+    .field-detail-head {
+      min-height: 48px;
+      padding: 13px 17px;
+      font-size: 13px;
+    }
+
+    .field-detail-img {
+      aspect-ratio: 2/1
+    }
+
+    .field-detail-mockup {
+      aspect-ratio: 2/1
+    }
+
+    .field-specs {
+      padding: 15px 17px
+    }
+
+    .field-spec-row {
+      padding: 7px 0;
+      font-size: 12px;
+    }
+
+    .field-spec-label {
+      color: #7A8799
+    }
+
+    .summary-head {
+      padding: 14px 17px;
+      font-size: 14px;
+      background: #FBFCFF;
+    }
+
+    .summary-body {
+      padding: 16px 17px
+    }
+
+    .summary-empty {
+      padding: 20px 0;
+    }
+
+    .summary-total-price {
+      font-size: 25px;
+      color: var(--blue);
+    }
+
+    .summary-line {
+      padding: 8px 0;
+    }
+
+    .btn-submit {
+      min-height: 52px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563EB, #1747B5);
+      box-shadow: 0 10px 25px rgba(37, 99, 235, .22);
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 13px 28px rgba(37, 99, 235, .28);
+    }
+
+    .footer-badges {
+      border-radius: 16px;
+      border-color: var(--line);
+      box-shadow: 0 3px 14px rgba(15, 23, 42, .025);
+    }
+
+    .footer-badge {
+      padding: 17px 12px
+    }
+
+    .footer-badge-icon {
+      width: 38px;
+      height: 38px;
+      background: #F0F5FF;
+    }
+
+    .info-note {
+      border-radius: 12px;
+      background: #F8FAFF;
+      border-color: #D9E6FF;
+      color: #42526A;
+    }
+
+    .alert-error {
+      border-radius: 12px
+    }
+
+    /* Selected product state */
+    .product-item.is-selected {
+      background: linear-gradient(90deg, #F8FBFF 0%, #FFFFFF 72%);
+      border-width: 1.5px;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, .09);
+    }
+
+    .product-item.is-selected:before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 13px;
+      bottom: 13px;
+      width: 3px;
+      border-radius: 0 4px 4px 0;
+      background: var(--selected-color, var(--blue));
+    }
+
+    .product-item.is-selected .product-item-name {
+      color: #10245E;
+    }
+
+    /* Empty detail state */
+    .field-detail-empty {
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #FCFDFF, #F8FAFD);
+    }
+
+    .field-detail-empty i {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: #EEF4FF;
+      color: #7EA1E8;
+      margin-bottom: 12px;
+    }
+
+    /* Small visual labels for the three levels */
+    .tier-group:nth-child(1) .tier-group-header:before {
+      content: "สำหรับผู้เริ่มต้น";
+    }
+
+    .tier-group:nth-child(2) .tier-group-header:before {
+      content: "สำหรับผู้มีประสบการณ์";
+    }
+
+    .tier-group:nth-child(3) .tier-group-header:before {
+      content: "ระดับสูง";
+    }
+
+    .tier-group-header:before {
+      position: absolute;
+      left: 48px;
+      bottom: 9px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      opacity: .55;
+    }
+
+    @media(max-width:900px) {
+      .page-wrap {
+        padding-top: 20px;
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar-sticky {
+        position: static;
+        order: -1;
+      }
+
+      .field-detail-card {
+        order: 0
+      }
+
+      .summary-card {
+        order: 1
+      }
+    }
+
+    @media(max-width:640px) {
+      .topbar {
+        height: 58px;
+        padding: 0 12px;
+      }
+
+      .topbar-logo img {
+        height: 32px
+      }
+
+      .topbar-title {
+        font-size: 13px
+      }
+
+      .btn-back {
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+
+      .btn-back i {
+        display: none
+      }
+
+      .page-hero {
+        padding: 28px 16px 31px;
+      }
+
+      .page-hero-title {
+        font-size: 25px
+      }
+
+      .page-wrap {
+        padding: 16px 12px 40px
+      }
+
+      .product-item {
+        grid-template-columns: 27px minmax(0, 1fr);
+        padding: 14px;
+      }
+
+      .product-item-price {
+        grid-column: 2;
+        justify-self: start;
+        margin-top: 4px;
+        font-size: 16px;
+      }
+
+      .tier-group-header {
+        min-height: 54px;
+      }
+
+      .form-card {
+        padding: 17px
+      }
+
+      .footer-badges {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-badge {
+        border-right: none;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .footer-badge:last-child {
+        border-bottom: none
+      }
+    }
+
+    /* Better keyboard focus */
+    .product-item:focus-within,
+    .btn-back:focus-visible,
+    .detail-btn:focus-visible,
+    .qty-btn:focus-visible,
+    .btn-submit:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, .16);
+      outline-offset: 2px;
+    }
+  </style>
+  <style id="shop-card-ui">
+    /* ===== Online-store style product cards ===== */
+    .product-item {
+      grid-template-columns: 28px 68px minmax(0, 1fr) auto;
+      align-items: center;
+      min-height: 112px;
+      padding: 12px 14px 12px 13px;
+      border-radius: 17px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .product-item:after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      top: 12px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #D8E0EC;
+    }
+
+    .product-item.is-selected:after {
+      background: var(--selected-color, var(--blue));
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .08);
+    }
+
+    .product-thumb {
+      position: relative;
+      width: 68px;
+      height: 68px;
+      border-radius: 13px;
+      overflow: hidden;
+      background: #EEF3F9;
+      border: 1px solid #E4EAF2;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .4);
+    }
+
+    .product-thumb img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .product-thumb:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0) 35%, rgba(15, 23, 42, .42) 100%);
+      pointer-events: none;
+    }
+
+    .product-thumb-fallback {
+      display: none;
+      position: absolute;
+      inset: 0;
+      place-items: center;
+      font-size: 27px;
+    }
+
+    .product-thumb-label {
+      position: absolute;
+      z-index: 2;
+      left: 7px;
+      bottom: 5px;
+      padding: 2px 6px;
+      border-radius: 5px;
+      color: #fff;
+      background: rgba(15, 23, 42, .58);
+      backdrop-filter: blur(4px);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .product-thumb-mission {
+      background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+    }
+
+    .product-thumb-field {
+      background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
+    }
+
+    .product-item>div:nth-child(3) {
+      min-width: 0;
+    }
+
+    .product-item-name {
+      font-size: 14px;
+      margin-bottom: 4px;
+      padding-right: 12px;
+    }
+
+    .product-item-desc {
+      max-width: 560px;
+    }
+
+    .product-item-price {
+      align-self: start;
+      padding-top: 3px;
+      min-width: 92px;
+      text-align: right;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .product-item-price span {
+      display: block;
+      margin-top: 4px;
+    }
+
+    .product-item .detail-btn {
+      margin-top: 7px;
+    }
+
+    .product-item .qty-wrap {
+      margin-top: 9px;
+    }
+
+    .product-item.is-selected {
+      background: linear-gradient(100deg, #F7FAFF, #FFFFFF);
+    }
+
+    .product-item.is-selected .product-thumb {
+      border-color: #C9D8EE;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, .09);
+    }
+
+    /* Selected state: price becomes the visual anchor */
+    .product-item.is-selected .product-item-price {
+      color: var(--selected-color, var(--blue)) !important;
+    }
+
+    /* Slightly more shop-like section headings */
+    .tier-group-header {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      line-height: 1.1;
+      padding-left: 17px;
+    }
+
+    .tier-group-header:before {
+      position: static;
+      margin-left: 31px;
+      margin-top: 3px;
+      font-size: 9px;
+      line-height: 1;
+      font-weight: 500;
+      opacity: .55;
+    }
+
+    /* Quantity control as a compact shop quantity selector */
+    .qty-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qty-label {
+      font-size: 10px;
+      color: #7A8799;
+    }
+
+    .qty-control {
+      height: 30px;
+      background: #F8FAFC;
+      border: 1px solid #DDE5EF;
+      border-radius: 9px;
+    }
+
+    .qty-btn {
+      width: 29px;
+      height: 29px;
+      background: #fff;
+    }
+
+    .qty-num {
+      width: 34px;
+      height: 29px;
+      background: #fff;
+    }
+
+    /* Mobile product cards */
+    @media(max-width:640px) {
+      .product-item {
+        grid-template-columns: 27px 58px minmax(0, 1fr);
+        min-height: 106px;
+        padding: 11px;
+        gap: 10px;
+      }
+
+      .product-thumb {
+        width: 58px;
+        height: 58px;
+      }
+
+      .product-item-price {
+        grid-column: 3;
+        grid-row: 1;
+        justify-self: end;
+        min-width: auto;
+        padding-right: 2px;
+        font-size: 16px;
+      }
+
+      .product-item>div:nth-child(3) {
+        grid-column: 3;
+        grid-row: 2;
+      }
+
+      .product-item .product-item-name {
+        font-size: 13px;
+        padding-right: 0;
+      }
+
+      .product-item .product-item-desc {
+        font-size: 10.5px;
+      }
+
+      .product-item .detail-btn {
+        font-size: 10px;
+      }
+
+      .product-item.is-selected:before {
+        top: 10px;
+        bottom: 10px;
+      }
+    }
+  </style>
+  <style>
+    .field-detail-card {
+      display: none !important
+    }
+  </style>
+  <style id="field-first-shop-ui">
+    /* =========================================================
+   FIELD-FIRST E-COMMERCE LAYOUT
+   สนาม + ข้อมูลสนาม อยู่ก่อนตัวเลือกสินค้า
+   ========================================================= */
+
+    .page-wrap {
+      max-width: 1180px;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 22px;
+    }
+
+    .tier-group {
+      margin-bottom: 30px;
+    }
+
+    .tier-group-header {
+      margin-bottom: 12px !important;
+    }
+
+    /* Main field information */
+    .field-overview {
+      display: grid;
+      grid-template-columns: minmax(300px, 1.12fr) minmax(0, 1fr);
+      gap: 0;
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(15, 23, 42, .055);
+      margin-bottom: 14px;
+      transition: .25s ease;
+    }
+
+    .field-overview.is-focused {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--tier-color) 20%, transparent), 0 12px 28px rgba(15, 23, 42, .09);
+      transform: translateY(-1px);
+    }
+
+    .field-overview-media {
+      min-height: 255px;
+      position: relative;
+      background: var(--tier-bg);
+      overflow: hidden;
+    }
+
+    .field-overview-media img {
+      width: 100%;
+      height: 100%;
+      min-height: 255px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .field-overview-media:after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0) 65%, rgba(15, 23, 42, .08));
+      pointer-events: none;
+    }
+
+    .field-overview-fallback {
+      display: none;
+      position: absolute;
+      inset: 0;
+      place-items: center;
+      font-size: 58px;
+      opacity: .35;
+    }
+
+    .field-overview-content {
+      padding: 22px 22px 20px;
+      min-width: 0;
+    }
+
+    .field-overview-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .field-overview-title {
+      font-family: 'Kanit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #10245E;
+    }
+
+    .field-overview-badge {
+      flex: 0 0 auto;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--tier-color) 35%, white);
+      color: var(--tier-color);
+      background: var(--tier-bg);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .7px;
+    }
+
+    .field-overview-sub {
+      margin-top: 3px;
+      margin-bottom: 15px;
+      color: #8A96A8;
+      font-size: 11px;
+    }
+
+    .field-overview-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 18px;
+      border-top: 1px solid #F0F3F7;
+    }
+
+    .field-overview-spec {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 9px 0;
+      border-bottom: 1px solid #F0F3F7;
+    }
+
+    .field-overview-label {
+      color: #8793A5;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .field-overview-value {
+      color: #243149;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    /* Product choices */
+    .tier-products {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .tier-products:before {
+      content: "เลือกสินค้าที่ต้องการ";
+      grid-column: 1/-1;
+      color: #64748B;
+      font-size: 11px;
+      font-weight: 800;
+      margin: 1px 2px -3px;
+    }
+
+    .tier-products .product-item {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      margin: 0;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 17px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 3px 12px rgba(15, 23, 42, .035);
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .tier-products .product-item:hover {
+      transform: translateY(-3px);
+      border-color: #C8D6E9;
+      box-shadow: 0 12px 26px rgba(15, 23, 42, .09);
+    }
+
+    .tier-products .product-item.is-selected {
+      border-color: var(--selected-color, #2563EB);
+      box-shadow: 0 10px 28px rgba(37, 99, 235, .12);
+      background: #fff;
+    }
+
+    .tier-products .product-item.is-selected:before {
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: auto;
+      width: auto;
+      height: 4px;
+      border-radius: 0;
+      background: var(--selected-color, #2563EB);
+    }
+
+    .tier-products .product-item:after {
+      display: none;
+    }
+
+    /* Product image */
+    .tier-products .product-thumb {
+      width: 100%;
+      height: 145px;
+      border: 0;
+      border-radius: 0;
+      background: #F2F5F9;
+      box-shadow: none;
+      flex: 0 0 auto;
+    }
+
+    .tier-products .product-thumb img {
+      object-fit: cover;
+    }
+
+    .tier-products .product-thumb:after {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0) 48%, rgba(15, 23, 42, .28) 100%);
+    }
+
+    .tier-products .product-thumb-label {
+      left: 10px;
+      bottom: 9px;
+      padding: 3px 7px;
+      font-size: 9px;
+    }
+
+    /* Product body */
+    .tier-products .product-item>div:nth-child(3) {
+      padding: 14px 14px 0;
+      min-width: 0;
+    }
+
+    .tier-products .product-item-name {
+      font-size: 17px;
+      color: #172033;
+      margin-bottom: 5px;
+      padding-right: 0;
+      line-height: 1.35;
+    }
+
+    .tier-products .product-item-desc {
+      font-size: 13px;
+      min-height: 31px;
+      color: #677180;
+    }
+
+    .tier-products .product-item-price {
+      order: 3;
+      align-self: auto;
+      min-width: 0;
+      padding: 9px 14px 0;
+      text-align: left;
+      font-family: 'Kanit', sans-serif;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .tier-products .product-item-price span {
+      display: inline !important;
+      margin-left: 3px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 10px !important;
+    }
+
+    .tier-products .qty-wrap {
+      order: 4;
+      margin: 12px 14px 0;
+      padding-top: 11px;
+      border-top: 1px solid #F0F3F7;
+      justify-content: space-between;
+    }
+
+    .tier-products .qty-label {
+      font-size: 10px;
+    }
+
+    .tier-products .qty-control {
+      height: 32px;
+      border-radius: 9px;
+    }
+
+    .tier-products .qty-btn {
+      width: 31px;
+      height: 31px;
+    }
+
+    .tier-products .qty-num {
+      width: 36px;
+      height: 31px;
+    }
+
+    .tier-products .detail-btn {
+      order: 5;
+      align-self: stretch;
+      justify-content: center;
+      margin: 10px 14px 14px !important;
+      padding: 7px 8px;
+      border: 1px solid #DCE7F7;
+      border-radius: 9px;
+      background: #F5F8FF;
+    }
+
+    /* Checkbox moves to the image as a floating selector */
+    .tier-products .custom-checkbox {
+      position: absolute;
+      z-index: 5;
+      left: 10px;
+      top: 10px;
+      width: 26px;
+      height: 26px;
+      border: 2px solid rgba(255, 255, 255, .95);
+      background: rgba(255, 255, 255, .94);
+      border-radius: 50%;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, .15);
+    }
+
+    .tier-products .custom-checkbox i {
+      font-size: 14px;
+    }
+
+    .tier-products .product-item.is-selected .custom-checkbox {
+      background: var(--selected-color, #2563EB);
+      border-color: var(--selected-color, #2563EB);
+    }
+
+    /* Hide legacy detail sidebar; order summary remains sticky */
+    .sidebar-sticky {
+      top: 82px;
+    }
+
+    .sidebar-sticky .field-detail-card {
+      display: none !important;
+    }
+
+    .summary-card {
+      position: sticky;
+      top: 82px;
+    }
+
+    /* Form gets separated from products */
+    .form-card {
+      margin-top: 22px;
+    }
+
+    /* Responsive */
+    @media(max-width:980px) {
+      .tier-products {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .field-overview {
+        grid-template-columns: 1fr;
+      }
+
+      .field-overview-media,
+      .field-overview-media img {
+        min-height: 220px;
+        height: 220px;
+      }
+    }
+
+    @media(max-width:900px) {
+      .page-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar-sticky {
+        order: -1;
+        position: static;
+      }
+
+      .summary-card {
+        position: static;
+      }
+    }
+
+    @media(max-width:700px) {
+      .tier-products {
+        grid-template-columns: 1fr;
+      }
+
+      .tier-products .product-item {
+        display: grid;
+        grid-template-columns: 110px minmax(0, 1fr);
+        grid-template-rows: auto auto auto auto;
+        min-height: 150px;
+        padding: 0;
+      }
+
+      .tier-products .product-thumb {
+        grid-row: 1 / span 4;
+        width: 110px;
+        height: 100%;
+        min-height: 150px;
+      }
+
+      .tier-products .product-item>div:nth-child(3) {
+        padding: 13px 13px 0;
+      }
+
+      .tier-products .product-item-price {
+        grid-column: 2;
+        grid-row: 2;
+        padding: 5px 13px 0;
+        font-size: 20px;
+      }
+
+      .tier-products .qty-wrap {
+        grid-column: 2;
+        grid-row: 3;
+        margin: 9px 13px 0;
+        padding-top: 8px;
+      }
+
+      .tier-products .detail-btn {
+        grid-column: 2;
+        grid-row: 4;
+        margin: 8px 13px 11px !important;
+      }
+
+      .tier-products .custom-checkbox {
+        left: 8px;
+        top: 8px;
+      }
+    }
+
+    @media(max-width:520px) {
+      .field-overview-content {
+        padding: 17px;
+      }
+
+      .field-overview-title {
+        font-size: 18px;
+      }
+
+      .field-overview-specs {
+        grid-template-columns: 1fr;
+      }
+
+      .field-overview-media,
+      .field-overview-media img {
+        height: 190px;
+        min-height: 190px;
+      }
+    }
+
+    /* Fallback if field image cannot load */
+    .field-overview-media img[src] {
+      background: #EEF3F9;
+    }
+  </style>
+
+  <style id="price-spacing-fix">
+    /* ===== Product Card: เพิ่มพื้นที่รอบราคา ===== */
+    .tier-products .product-item {
+      padding-bottom: 18px;
+    }
+
+    .tier-products .product-item-price {
+      padding: 12px 14px 0;
+      margin-top: 0;
+      min-height: 42px;
+      display: flex;
+      align-items: baseline;
+      gap: 3px;
+    }
+
+    .tier-products .product-item-price span {
+      margin-left: 0 !important;
+    }
+
+    /* ให้การ์ดทั้ง 3 ใบมีพื้นที่ด้านล่างเท่ากัน */
+    .tier-products .product-item {
+      min-height: 222px;
+    }
+
+    @media (max-width: 700px) {
+      .tier-products .product-item {
+        min-height: 150px;
+        padding-bottom: 12px;
+      }
+
+      .tier-products .product-item-price {
+        padding: 7px 13px 0;
+        min-height: 36px;
+      }
+    }
+  </style>
+
+
+  <style id="header-spacing-fix">
+    /* =========================================================
+     TIER HEADER — ชื่อระดับ + คำอธิบาย
+     แก้ปัญหา "Beginner" ชนกับ "สำหรับผู้เริ่มต้น"
+     ========================================================= */
+
+    .tier-group-header {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+      min-height: 64px;
+      padding: 9px 40px 8px 17px;
+      line-height: 1;
+    }
+
+    /* ชื่อระดับ เช่น Beginner */
+    .tier-group-header {
+      font-family: 'Kanit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    /* คำอธิบายใต้ชื่อ */
+    .tier-group-header::before {
+      position: static !important;
+      display: block;
+      margin: 3px 0 0 31px !important;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 9px !important;
+      font-weight: 500;
+      line-height: 1.2 !important;
+      opacity: .58;
+      white-space: nowrap;
+    }
+
+    /* จุดด้านขวา */
+    .tier-group-header::after {
+      right: 17px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .tier-group-header {
+        min-height: 58px;
+        padding: 8px 34px 8px 14px;
+        font-size: 18px;
+      }
+
+      .tier-group-header::before {
+        margin-left: 28px !important;
+        margin-top: 3px !important;
+        font-size: 8px !important;
+      }
+
+      .tier-group-header::after {
+        right: 14px;
+      }
+    }
+    /* =========================================================
+   RCL NAVIGATION — CLEAN VERSION
+   ใช้กับ Nav หน้า Pre-order
+========================================================= */
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
+    height: 72px;
+    padding: 0 32px;
+
+    display: flex;
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.topbar-logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    height: 72px;
+}
+
+.topbar-logo img {
+    width: auto;
+    height: 48px;
+
+    object-fit: contain;
+    display: block;
+}
+
+
+/* =========================
+   NAV MENU
+========================= */
+
+.topbar-nav {
+    display: flex;
+    align-items: center;
+
+    margin-left: 24px;
+    gap: 4px;
+
+    flex: 1;
+}
+
+
+/* เมนูหลัก */
+
+.nav-link {
+    position: relative;
+
+    height: 44px;
+    padding: 0 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 0 !important;
+    border-radius: 9px;
+
+    background: transparent !important;
+
+    color: #26364D;
+
+    font-family: 'Kanit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+
+    letter-spacing: .2px;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        color .2s ease,
+        background .2s ease,
+        transform .2s ease;
+}
+
+
+/* Hover */
+
+.nav-link:hover {
+    color: #1555B8;
+
+    background: #F1F6FF !important;
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================
+   ACTIVE — เอกสาร
+========================= */
+
+.nav-link.docs-active {
+    color: #1555B8 !important;
+    background: #EFF6FF !important;
+}
+
+
+/* =========================
+   PRE-ORDER
+========================= */
+
+.nav-link.preorder-active {
+    color: #EA580C !important;
+
+    font-weight: 700;
+}
+
+.nav-link.preorder-active:hover {
+    color: #EA580C !important;
+    background: #FFF7ED !important;
+}
+
+
+/* Icon Pre-order */
+
+.nav-link.preorder-active i {
+    font-size: 17px;
+}
+
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.dropdown {
+    position: relative;
+}
+
+
+/* ลูกศร */
+
+.dropdown > .nav-link i {
+    font-size: 13px;
+    transition: transform .2s ease;
+}
+
+
+/* เปิด dropdown ตอน hover */
+
+.dropdown:hover > .nav-link i {
+    transform: rotate(180deg);
+}
+
+
+/* Dropdown box */
+
+.dropdown-menu {
+    position: absolute;
+
+    top: calc(100% + 8px);
+    left: 0;
+
+    min-width: 210px;
+
+    padding: 7px;
+
+    display: none;
+
+    background: rgba(255, 255, 255, .98);
+
+    border: 1px solid #E2E8F0;
+    border-radius: 13px;
+
+    box-shadow:
+        0 16px 40px rgba(15, 23, 42, .12),
+        0 3px 10px rgba(15, 23, 42, .04);
+
+    backdrop-filter: blur(12px);
+
+    animation: navDropdown .16s ease;
+}
+
+
+/* Hover แล้วแสดง */
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
+/* Dropdown item */
+
+.dropdown-item {
+    min-height: 42px;
+
+    padding: 0 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    border-radius: 9px;
+
+    color: #334155;
+
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition: .18s ease;
+}
+
+
+.dropdown-item:hover {
+    color: #2563EB;
+    background: #EFF6FF;
+}
+
+
+/* Dropdown icon */
+
+.dropdown-item i {
+    width: 20px;
+
+    color: #64748B;
+    font-size: 17px;
+
+    text-align: center;
+}
+
+.dropdown-item:hover i {
+    color: #2563EB;
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.topbar-actions {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+}
+
+
+.btn-login {
+    height: 46px;
+
+    padding: 0 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    background: #fff;
+
+    border: 1px solid #DCE4EF;
+    border-radius: 10px;
+
+    color: #334155;
+
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+
+    text-decoration: none;
+
+    transition: .2s ease;
+}
+
+
+.btn-login:hover {
+    color: #1555B8;
+
+    border-color: #BFD0E7;
+
+    background: #F8FAFF;
+
+    box-shadow:
+        0 6px 18px rgba(37, 99, 235, .08);
+
+    transform: translateY(-1px);
+}
+
+
+.btn-login i {
+    font-size: 15px;
+}
+
+
+/* =========================
+   DROPDOWN ANIMATION
+========================= */
+
+@keyframes navDropdown {
+
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .topbar {
+        height: 64px;
+        padding: 0 18px;
+    }
+
+    .topbar-logo {
+        height: 64px;
+    }
+
+    .topbar-logo img {
+        height: 40px;
+    }
+
+    .topbar-nav {
+        margin-left: 10px;
+        gap: 2px;
+    }
+
+    .nav-link {
+        padding: 0 11px;
+        font-size: 14px;
+    }
+
+    .btn-login {
+        height: 42px;
+        padding: 0 13px;
+        font-size: 13px;
+    }
+
+}
+
+
+@media (max-width: 640px) {
+
+    .topbar {
+        height: 58px;
+        padding: 0 12px;
+    }
+
+    .topbar-logo {
+        height: 58px;
+    }
+
+    .topbar-logo img {
+        height: 34px;
+    }
+
+    .topbar-nav {
+        display: none;
+    }
+
+    .btn-login {
+        height: 40px;
+        padding: 0 12px;
+    }
+
+}
+
+/* =================================
+   DROPDOWN — STABLE HOVER
+================================= */
+
+.dropdown {
+    position: relative;
+}
+
+/* พื้นที่เชื่อมปุ่มกับ dropdown */
+.dropdown::after {
+    content: "";
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 100%;
+    height: 12px;
+
+    background: transparent;
+}
+
+/* Dropdown */
+.dropdown-menu {
+    position: absolute;
+
+    top: calc(100% + 8px) !important;
+    left: 0;
+
+    min-width: 210px;
+
+    padding: 7px;
+
+    display: none;
+
+    background: #fff;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 13px;
+
+    box-shadow:
+        0 16px 40px rgba(15, 23, 42, .12),
+        0 3px 10px rgba(15, 23, 42, .04);
+
+    z-index: 10000;
+}
+
+/* Hover ทั้งปุ่ม + พื้นที่ dropdown */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* ทำให้เมนูไม่หายตอนเลื่อนเมาส์ */
+.dropdown:hover {
+    z-index: 10001;
+}
+
+.dropdown-item {
+    position: relative;
+    z-index: 10002;
+}
+  </style>
+
+</head>
+
+<!-- TOPBAR -->
+<div class="topbar">
+
+  <!-- Logo -->
+  <a href="/" class="topbar-logo">
+    <img src="/RCL Logo.png" alt="RCL">
+  </a>
+
+  <!-- Navigation -->
+  <nav class="topbar-nav">
+
+    <a href="/" class="nav-link">
+      หน้าหลัก
+    </a>
+
+    <a href="/#about" class="nav-link">
+      เกี่ยวกับเรา
+    </a>
+
+    <!-- การแข่งขัน -->
+    <div class="dropdown">
+
+      <button class="nav-link">
+        การแข่งขัน
+        <i class="ti ti-chevron-down" style="font-size:13px"></i>
+      </button>
+
+      <div class="dropdown-menu">
+
+        <a href="/competition?view=teams" class="dropdown-item">
+          <i class="ti ti-users"></i>
+          ทีมที่สมัคร
+        </a>
+
+        <a href="/competition?view=board" class="dropdown-item">
+          <i class="ti ti-chart-bar"></i>
+          ผลสรุปคะแนน
+        </a>
+
+      </div>
+    </div>
+
+    <a href="/docs" class="nav-link">
+      เอกสาร
+    </a>
+
+    <!-- Pre-order -->
+    <a href="/preorder" class="nav-link preorder-active">
+      <i class="ti ti-shopping-cart"></i>
+      Pre-order สนาม
+    </a>
+
+  </nav>
+
+  <!-- Login -->
+  <div class="topbar-actions">
+    <a href="/auth/login" class="btn-login">
+      <i class="ti ti-lock"></i>
+      เข้าสู่ระบบ
+    </a>
+  </div>
+
+
+</div>
+
+  <% if (success) { %>
+    <div class="success-wrap">
+      <div class="success-card">
+        <div
+          style="width:80px;height:80px;border-radius:50%;background:#F0FDF4;margin:0 auto 20px;display:grid;place-items:center;font-size:40px">
+          ✅</div>
+        <div style="font-family:'Kanit',sans-serif;font-size:24px;font-weight:700;color:#0F172A;margin-bottom:8px">
+          ส่งคำสั่ง Pre-order สำเร็จ!</div>
+        <div style="font-size:14px;color:#64748B;line-height:1.7;margin-bottom:20px">
+          ขอบคุณที่ให้ความสนใจสนามแข่งขัน RCL 2026<br />
+          ทีมงานจะติดต่อกลับภายใน <strong>1-2 วันทำการ</strong>
+        </div>
+        <div
+          style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px;margin-bottom:24px;font-size:13px;color:#15803D">
+          <i class="ti ti-phone"></i> สอบถาม: <strong>081-882-0502</strong>
+          <div style="color:#64748B;font-size:12px;margin-top:2px">จันทร์ - ศุกร์ 09.00 - 17.00 น.</div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+          <a class="btn-outline" href="/preorder"><i class="ti ti-plus"></i> Pre-order เพิ่ม</a>
+          <a class="btn-solid" href="/"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
+        </div>
+      </div>
+    </div>
+
+    <% } else { %>
+
+      <div class="page-hero">
+        <div class="page-hero-eyebrow">PRE-ORDER</div>
+        <div class="page-hero-title">สนามแข่งขัน RCL 2026</div>
+        <div class="page-hero-sub">ดูภาพสนามและข้อมูลสำคัญก่อนเลือกสินค้า — เซตสนาม ไฟล์สนาม และชิ้นส่วนภารกิจ</div>
+      </div>
+
+      <% if (errorMsg) { %>
+        <div style="max-width:1100px;margin:16px auto;padding:0 16px">
+          <div class="alert-error"><i class="ti ti-alert-circle"></i>
+            <%= errorMsg %>
+          </div>
+        </div>
+        <% } %>
+
+          <form method="POST" action="/preorder" id="preorderForm">
+            <input id="items_json" name="items_json" type="hidden" value="" />
+            <div class="page-wrap">
+              <!-- LEFT -->
+              <div>
+                <!-- BEGINNER -->
+                <div class="tier-group">
+                  <div class="tier-group-header" style="background:#F0FDF4; color:#15803D">
+                    <span style="font-size:20px"></span> Beginner
+                  </div>
+                  <div class="field-overview" id="field-overview-beginner"
+                    style="--tier-color:#16A34A;--tier-bg:#F0FDF4;">
+                    <div class="field-overview-media"><img alt="สนาม Beginner 🌱" src="/images/สนาม Beginner.png" />
+                      <div class="field-overview-fallback">🗺️</div>
+                    </div>
+                    <div class="field-overview-content">
+                      <div class="field-overview-title-row">
+                        <div class="field-overview-title">สนาม Beginner รุ่นปี 2026</div><span
+                          class="field-overview-badge">BEGINNER</span>
+                      </div>
+                      <div class="field-overview-sub">ข้อมูลสนามและรายละเอียดสำคัญ</div>
+                      <div class="field-overview-specs">
+                        <div class="field-overview-spec"><span class="field-overview-label">ขนาดสนาม</span><strong
+                            class="field-overview-value">236 × 114 ซม.</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">ภารกิจ</span><strong
+                            class="field-overview-value">4 ภารกิจ</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">วัสดุ</span><strong
+                            class="field-overview-value">PPคุณภาพสูง กันน้ำ</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">คะแนนสูงสุด</span><strong
+                            class="field-overview-value">50 คะแนน</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">การใช้งาน</span><strong
+                            class="field-overview-value">ใช้ซ้ำได้ / พับเก็บง่าย</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">เหมาะสำหรับ</span><strong
+                            class="field-overview-value">รุ่นอายุไม่เกิน 9 ปี</strong></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tier-products">
+                    <div class="product-item" id="item-beginner-full" onclick="toggleItem('beginner-full',this)">
+                      <div class="custom-checkbox" id="cb-beginner-full"><i class="ti ti-check"></i>
+                      </div>
+                      <div class="product-thumb product-thumb-full">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/เซตสนาม Beginner.png" />
+                        <span class="product-thumb-fallback">🏟️</span>
+                        <span class="product-thumb-label">สนาม</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">เซตสนาม Beginner</div>
+                        <div class="product-item-desc">สนามไวนิล 236×114 ซม. + ชิ้นส่วนภารกิจครบชุด
+                        </div>
+
+                        <div class="qty-wrap" id="qty-wrap-beginner-full" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('beginner-full',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-beginner-full" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('beginner-full',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#16A34A">2,500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                    <div class="product-item" id="item-beginner-field" onclick="toggleItem('beginner-field',this)">
+                      <div class="custom-checkbox" id="cb-beginner-field"><i class="ti ti-check"></i>
+                      </div>
+                      <div class="product-thumb product-thumb-field">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/ไฟล์สนาม Beginner.png" />
+                        <span class="product-thumb-fallback">🗺️</span>
+                        <span class="product-thumb-label">ไฟล์</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">ไฟล์สนาม Beginner</div>
+                        <div class="product-item-desc">ไฟล์ความละเอียดสูงสำหรับพิมพ์เอง ส่งทางอีเมล
+                        </div>
+
+                        <div class="qty-wrap" id="qty-wrap-beginner-field" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('beginner-field',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-beginner-field" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('beginner-field',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#7C3AED">500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                    <div class="product-item" id="item-beginner-mission" onclick="toggleItem('beginner-mission',this)">
+                      <div class="custom-checkbox" id="cb-beginner-mission"><i class="ti ti-check"></i></div>
+                      <div class="product-thumb product-thumb-mission">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/ชิ้นส่วนภารกิจ Beginner.png" />
+                        <span class="product-thumb-fallback">🎯</span>
+                        <span class="product-thumb-label">ภารกิจ</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">ชิ้นส่วนภารกิจ Beginner</div>
+                        <div class="product-item-desc">ชุดอุปกรณ์ภารกิจระดับ Beginner (ไม่รวมสนาม)
+                        </div>
+                        <div class="qty-wrap" id="qty-wrap-beginner-mission" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('beginner-mission',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-beginner-mission" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('beginner-mission',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#EA580C">500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                  </div>
+
+
+
+                </div>
+                <!-- INTERMEDIATE -->
+                <div class="tier-group">
+                  <div class="tier-group-header" style="background:#EFF6FF;color:#1D4ED8">
+                    <span style="font-size:20px"></span> Intermediate
+                  </div>
+                  <div class="field-overview" id="field-overview-intermediate"
+                    style="--tier-color:#2563EB;--tier-bg:#EFF6FF;">
+                    <div class="field-overview-media"><img alt="สนาม Intermediate 🔥"
+                        src="/images/สนาม Intermediate.png" />
+                      <div class="field-overview-fallback">🗺️</div>
+                    </div>
+                    <div class="field-overview-content">
+                      <div class="field-overview-title-row">
+                        <div class="field-overview-title">สนาม Intermediate รุ่นปี 2026</div><span
+                          class="field-overview-badge">INTERMEDIATE</span>
+                      </div>
+                      <div class="field-overview-sub">ข้อมูลสนามและรายละเอียดสำคัญ</div>
+                      <div class="field-overview-specs">
+                        <div class="field-overview-spec"><span class="field-overview-label">ขนาดสนาม</span><strong
+                            class="field-overview-value">236 × 114 ซม.</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">ภารกิจ</span><strong
+                            class="field-overview-value">5 ภารกิจ</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">วัสดุ</span><strong
+                            class="field-overview-value">PPคุณภาพสูง กันน้ำ</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">คะแนนสูงสุด</span><strong
+                            class="field-overview-value">100 คะแนน</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">การใช้งาน</span><strong
+                            class="field-overview-value">ใช้ซ้ำได้ / พับเก็บง่าย</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">เหมาะสำหรับ</span><strong
+                            class="field-overview-value">รุ่นอายุไม่เกิน 12 ปี</strong></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tier-products">
+                    <div class="product-item" id="item-intermediate-full"
+                      onclick="toggleItem('intermediate-full',this)">
+                      <div class="custom-checkbox" id="cb-intermediate-full"><i class="ti ti-check"></i></div>
+                      <div class="product-thumb product-thumb-full">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/เซตสนาม Intermediate.png" />
+                        <span class="product-thumb-label">สนาม</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">เซตสนาม Intermediate</div>
+                        <div class="product-item-desc">สนามไวนิล 236×114 ซม. + ชิ้นส่วนภารกิจครบชุด
+                        </div>
+
+                        <div class="qty-wrap" id="qty-wrap-intermediate-full" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('intermediate-full',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-intermediate-full" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('intermediate-full',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#2563EB">2,500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                    <div class="product-item" id="item-intermediate-field"
+                      onclick="toggleItem('intermediate-field',this)">
+                      <div class="custom-checkbox" id="cb-intermediate-field"><i class="ti ti-check"></i></div>
+                      <div class="product-thumb product-thumb-field">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/ไฟล์สนาม Intermediate.png" />
+                        <span class="product-thumb-fallback">🗺️</span>
+                        <span class="product-thumb-label">ไฟล์</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">ไฟล์สนาม Intermediate</div>
+                        <div class="product-item-desc">ไฟล์ความละเอียดสูงสำหรับพิมพ์เอง ส่งทางอีเมล
+                        </div>
+
+                        <div class="qty-wrap" id="qty-wrap-intermediate-field" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('intermediate-field',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-intermediate-field" max="99" min="1"
+                              oninput="updateSummary()" type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('intermediate-field',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#7C3AED">500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                    <div class="product-item" id="item-intermediate-mission"
+                      onclick="toggleItem('intermediate-mission',this)">
+                      <div class="custom-checkbox" id="cb-intermediate-mission"><i class="ti ti-check"></i></div>
+                      <div class="product-thumb product-thumb-mission">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/ชิ้นส่วนภารกิจ Intermediate.png" />
+                        <span class="product-thumb-fallback">🎯</span>
+                        <span class="product-thumb-label">ภารกิจ</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">ชิ้นส่วนภารกิจ Intermediate</div>
+                        <div class="product-item-desc">ชุดอุปกรณ์ภารกิจระดับ Intermediate
+                          (ไม่รวมสนาม)</div>
+                        <div class="qty-wrap" id="qty-wrap-intermediate-mission" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('intermediate-mission',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-intermediate-mission" max="99" min="1"
+                              oninput="updateSummary()" type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('intermediate-mission',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#EA580C">500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                  </div>
+
+
+
+                </div>
+                <!-- ADVANCE -->
+                <div class="tier-group">
+                  <div class="tier-group-header" style="background:#FFF7ED;color:#C2410C">
+                    <span style="font-size:20px"></span> Advance
+                  </div>
+                  <div class="field-overview" id="field-overview-advance"
+                    style="--tier-color:#EA580C;--tier-bg:#FFF7ED;">
+                    <div class="field-overview-media"><img alt="สนาม Advance 🚀" src="/images/สนาม Advance.png" />
+                      <div class="field-overview-fallback">🗺️</div>
+                    </div>
+                    <div class="field-overview-content">
+                      <div class="field-overview-title-row">
+                        <div class="field-overview-title">สนาม Advance รุ่นปี 2026</div><span
+                          class="field-overview-badge">ADVANCE</span>
+                      </div>
+                      <div class="field-overview-sub">ข้อมูลสนามและรายละเอียดสำคัญ</div>
+                      <div class="field-overview-specs">
+                        <div class="field-overview-spec"><span class="field-overview-label">ขนาดสนาม</span><strong
+                            class="field-overview-value">236 × 114 ซม.</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">ภารกิจ</span><strong
+                            class="field-overview-value">5 ภารกิจ</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">วัสดุ</span><strong
+                            class="field-overview-value">PPคุณภาพสูง กันน้ำ</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">คะแนนสูงสุด</span><strong
+                            class="field-overview-value">100 คะแนน</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">การใช้งาน</span><strong
+                            class="field-overview-value">ใช้ซ้ำได้ / พับเก็บง่าย</strong></div>
+                        <div class="field-overview-spec"><span class="field-overview-label">เหมาะสำหรับ</span><strong
+                            class="field-overview-value">รุ่นอายุไม่เกิน 18 ปี</strong></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tier-products">
+                    <div class="product-item" id="item-advance-full" onclick="toggleItem('advance-full',this)">
+                      <div class="custom-checkbox" id="cb-advance-full"><i class="ti ti-check"></i>
+                      </div>
+                      <div class="product-thumb product-thumb-full">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/เซตสนาม Advance.png" />
+                        <span class="product-thumb-fallback">🏟️</span>
+                        <span class="product-thumb-label">สนาม</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">เซตสนาม Advance</div>
+                        <div class="product-item-desc">สนามไวนิล 236×114 ซม. + ชิ้นส่วนภารกิจครบชุด
+                        </div>
+
+                        <div class="qty-wrap" id="qty-wrap-advance-full" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('advance-full',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-advance-full" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('advance-full',1,event)" type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#EA580C">2,500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                    <div class="product-item" id="item-advance-field" onclick="toggleItem('advance-field',this)">
+                      <div class="custom-checkbox" id="cb-advance-field"><i class="ti ti-check"></i>
+                      </div>
+                      <div class="product-thumb product-thumb-field">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/ไฟล์สนาม Advance.png" />
+                        <span class="product-thumb-fallback">🗺️</span>
+                        <span class="product-thumb-label">ไฟล์</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">ไฟล์สนาม Advance</div>
+                        <div class="product-item-desc">ไฟล์ความละเอียดสูงสำหรับพิมพ์เอง ส่งทางอีเมล
+                        </div>
+
+                        <div class="qty-wrap" id="qty-wrap-advance-field" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('advance-field',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-advance-field" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('advance-field',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#7C3AED">500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                    <div class="product-item" id="item-advance-mission" onclick="toggleItem('advance-mission',this)">
+                      <div class="custom-checkbox" id="cb-advance-mission"><i class="ti ti-check"></i>
+                      </div>
+                      <div class="product-thumb product-thumb-mission">
+                        <img alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'"
+                          src="/images/ชิ้นส่วนภารกิจ Advance.png" />
+                        <span class="product-thumb-fallback">🎯</span>
+                        <span class="product-thumb-label">ภารกิจ</span>
+                      </div>
+                      <div>
+                        <div class="product-item-name">ชิ้นส่วนภารกิจ Advance</div>
+                        <div class="product-item-desc">ชุดอุปกรณ์ภารกิจระดับ Advance (ไม่รวมสนาม)
+                        </div>
+                        <div class="qty-wrap" id="qty-wrap-advance-mission" style="display:none">
+                          <span class="qty-label">จำนวน:</span>
+                          <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('advance-mission',-1,event)"
+                              type="button">−</button>
+                            <input class="qty-num" id="qty-advance-mission" max="99" min="1" oninput="updateSummary()"
+                              type="number" value="1" />
+                            <button class="qty-btn" onclick="changeQty('advance-mission',1,event)"
+                              type="button">+</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="product-item-price" style="color:#EA580C">500.-<span
+                          style="font-size:10px;font-weight:600;color:#64748B"> บาท</span></div>
+                    </div>
+                  </div>
+
+
+
+                </div>
+                <!-- FORM -->
+                <div class="form-card">
+                  <div class="form-card-title"><i class="ti ti-school"></i> ข้อมูลผู้สั่งซื้อ</div>
+                  <div class="fg">
+                    <div class="fl">ชื่อโรงเรียน / สถาบัน *</div>
+                    <input class="fi" name="school_name" placeholder="ชื่อโรงเรียนหรือสถาบัน" required=""
+                      value="<%= formData.school_name || '' %>" />
+                  </div>
+                  <div class="form-grid-2">
+                    <div class="fg" style="margin-bottom:0">
+                      <div class="fl">ชื่อผู้ติดต่อ *</div>
+                      <input class="fi" name="contact_name" placeholder="ชื่อ-นามสกุล" required=""
+                        value="<%= formData.contact_name || '' %>" />
+                    </div>
+                    <div class="fg" style="margin-bottom:0">
+                      <div class="fl">เบอร์โทรศัพท์ *</div>
+                      <input class="fi" name="phone" placeholder="0XX-XXX-XXXX" required="" type="tel"
+                        value="<%= formData.phone || '' %>" />
+                    </div>
+                  </div>
+                  <div class="fg" style="margin-top:12px">
+                    <div class="fl">อีเมล (ไม่บังคับ)</div>
+                    <input class="fi" name="email" placeholder="email@example.com" type="email"
+                      value="<%= formData.email || '' %>" />
+                  </div>
+                  <div class="fg">
+                    <div class="fl">ที่อยู่สำหรับจัดส่ง *</div>
+                    <input class="fi" name="address" placeholder="ที่อยู่ เลขที่ ซอย ถนน ตำบล/แขวง"
+                      value="<%= formData.address || '' %>" />
+                  </div>
+                  <div class="form-grid-3">
+                    <div class="fg" style="margin-bottom:0">
+                      <div class="fl">อำเภอ / เขต</div>
+                      <input class="fi" name="district" placeholder="อำเภอ / เขต"
+                        value="<%= formData.district || '' %>" />
+                    </div>
+                    <div class="fg" style="margin-bottom:0">
+                      <div class="fl">จังหวัด</div>
+                      <input class="fi" name="province" placeholder="จังหวัด" value="<%= formData.province || '' %>" />
+                    </div>
+                    <div class="fg" style="margin-bottom:0">
+                      <div class="fl">รหัสไปรษณีย์</div>
+                      <input class="fi" name="zipcode" placeholder="XXXXX" value="<%= formData.zipcode || '' %>" />
+                    </div>
+                  </div>
+                  <div class="fg" style="margin-top:12px">
+                    <div class="fl">หมายเหตุ (ไม่บังคับ)</div>
+                    <textarea class="fi" name="note" placeholder="ข้อมูลเพิ่มเติม"
+                      style="min-height:70px;resize:vertical"><%= formData.note || '' %></textarea>
+                  </div>
+                </div>
+                <div class="info-note">
+                  <i class="ti ti-info-circle" style="flex-shrink:0;margin-top:1px"></i>
+                  <span>กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน
+                    ทีมงานจะติดต่อกลับเพื่อยืนยันและแจ้งรายละเอียดการชำระเงิน</span>
+                </div>
+                <div class="footer-badges">
+                  <div class="footer-badge">
+                    <div class="footer-badge-icon"><i class="ti ti-shield-check"></i></div>
+                    <div class="footer-badge-title">สินค้าคุณภาพ</div>
+                    <div class="footer-badge-sub">PPคุณภาพสูง กันน้ำ<br />ทนทาน ใช้งานได้นาน</div>
+                  </div>
+                  <div class="footer-badge">
+                    <div class="footer-badge-icon"><i class="ti ti-truck-delivery"></i></div>
+                    <div class="footer-badge-title">จัดส่งรวดเร็ว</div>
+                    <div class="footer-badge-sub">จัดส่งทั่วประเทศ<br />ภายใน 3-5 วันทำการ</div>
+                  </div>
+                  <div class="footer-badge">
+                    <div class="footer-badge-icon"><i class="ti ti-headset"></i></div>
+                    <div class="footer-badge-title">สอบถามเพิ่มเติม</div>
+                    <div class="footer-badge-sub">081-882-0502<br />จันทร์-ศุกร์ 09.00-17.00</div>
+                  </div>
+                </div>
+              </div>
+              <!-- SIDEBAR -->
+              <div class="sidebar-sticky">
+                <!-- FIELD DETAIL -->
+                <div class="field-detail-card" id="field-detail-card">
+                  <div class="field-detail-head" id="field-detail-head" style="background:#64748B">
+                    <i class="ti ti-map" id="field-detail-icon"></i>
+                    <span id="field-detail-title">รายละเอียดสนาม</span>
+                  </div>
+                  <div id="field-detail-body">
+                    <div class="field-detail-empty">
+                      <i class="ti ti-hand-click"></i>
+                      คลิก "ดูรายละเอียดสนาม"<br />เพื่อแสดงข้อมูลสนาม
+                    </div>
+                  </div>
+                </div>
+                <!-- SUMMARY -->
+                <div class="summary-card">
+                  <div class="summary-head"><i class="ti ti-clipboard-list"></i> สรุปคำสั่งซื้อ</div>
+                  <div class="summary-body">
+                    <div id="summary-items">
+                      <div class="summary-empty"><i class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>
+                    </div>
+                    <div class="summary-divider"></div>
+                    <div class="summary-total-row">
+                      <span class="summary-total-label">ยอดรวมทั้งสิ้น</span>
+                      <span class="summary-total-price" id="summary-total">0.-</span>
+                    </div>
+                    <div style="font-size:11px;color:#EA580C;margin-top:4px;text-align:right">*
+                      ยังไม่รวมค่าจัดส่ง</div>
+                    <button class="btn-submit" disabled="" id="submitBtn" type="submit">
+                      <i class="ti ti-shopping-bag"></i> ยืนยันการสั่งซื้อ (Pre-order)
+                    </button>
+                    <div class="trust-note"><i class="ti ti-shield-check"></i> ข้อมูลของท่านปลอดภัย
+                      100%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <% } %>
+
+            <script>
+              var PRICES = {
+                'beginner-full': 2500, 'beginner-field': 500, 'beginner-mission': 500,
+                'intermediate-full': 2500, 'intermediate-field': 500, 'intermediate-mission': 500,
+                'advance-full': 2500, 'advance-field': 500, 'advance-mission': 500
+              }
+              var NAMES = {
+                'beginner-full': '🏟️ เซตสนาม Beginner', 'beginner-field': '🗺️ ไฟล์สนาม Beginner', 'beginner-mission': '🎯 ชิ้นส่วนภารกิจ Beginner',
+                'intermediate-full': '🏟️ เซตสนาม Intermediate', 'intermediate-field': '🗺️ ไฟล์สนาม Intermediate', 'intermediate-mission': '🎯 ชิ้นส่วนภารกิจ Intermediate',
+                'advance-full': '🏟️ เซตสนาม Advance', 'advance-field': '🗺️ ไฟล์สนาม Advance', 'advance-mission': '🎯 ชิ้นส่วนภารกิจ Advance'
+              }
+              var CB_COLORS = {
+                'beginner-full': '#16A34A', 'beginner-field': '#7C3AED', 'beginner-mission': '#EA580C',
+                'intermediate-full': '#2563EB', 'intermediate-field': '#7C3AED', 'intermediate-mission': '#EA580C',
+                'advance-full': '#EA580C', 'advance-field': '#7C3AED', 'advance-mission': '#EA580C'
+              }
+
+              // Field detail data per tier
+              var FIELD_DATA = {
+                beginner: {
+                  title: 'สนาม Beginner 🌱',
+                  color: '#16A34A',
+                  img: 'src/public/images/field-beginner.png', // ใส่รูปจริงภายหลัง
+                  specs: [
+                    { label: 'ระดับ', value: 'Beginner' },
+                    { label: 'ขนาดสนาม', value: '236 × 114 ซม.' },
+                    { label: 'วัสดุ', value: 'PPคุณภาพสูง กันน้ำ' },
+                    { label: 'การใช้งาน', value: 'ใช้ซ้ำได้ / พับเก็บง่าย' },
+                    { label: 'ภารกิจ', value: '4 ภารกิจ' },
+                    { label: 'คะแนนสูงสุด', value: '50 คะแนน' },
+                    { label: 'เหมาะสำหรับ', value: 'ผู้เริ่มต้น อายุ 6-10 ปี' }
+                  ]
+                },
+                intermediate: {
+                  title: 'สนาม Intermediate 🔥',
+                  color: '#2563EB',
+                  img: 'src/public/images/field-intermediate.png',
+                  specs: [
+                    { label: 'ระดับ', value: 'Intermediate' },
+                    { label: 'ขนาดสนาม', value: '236 × 114 ซม.' },
+                    { label: 'วัสดุ', value: 'PPคุณภาพสูง กันน้ำ' },
+                    { label: 'การใช้งาน', value: 'ใช้ซ้ำได้ / พับเก็บง่าย' },
+                    { label: 'ภารกิจ', value: '5 ภารกิจ' },
+                    { label: 'คะแนนสูงสุด', value: '100 คะแนน' },
+                    { label: 'เหมาะสำหรับ', value: 'ระดับกลาง อายุ 10-14 ปี' }
+                  ]
+                },
+                advance: {
+                  title: 'สนาม Advance 🚀',
+                  color: '#EA580C',
+                  img: 'src/public/images/field-advance.png',
+                  specs: [
+                    { label: 'ระดับ', value: 'Advance' },
+                    { label: 'ขนาดสนาม', value: '236 × 114 ซม.' },
+                    { label: 'วัสดุ', value: 'PPคุณภาพสูง กันน้ำ' },
+                    { label: 'การใช้งาน', value: 'ใช้ซ้ำได้ / พับเก็บง่าย' },
+                    { label: 'ภารกิจ', value: '5 ภารกิจ' },
+                    { label: 'คะแนนสูงสุด', value: '100 คะแนน' },
+                    { label: 'เหมาะสำหรับ', value: 'ระดับสูง อายุ 12 ปีขึ้นไป' }
+                  ]
+                }
+              }
+
+              var checkedItems = {}
+
+              function showDetail(tier, e) {
+                if (e) e.stopPropagation()
+                var overview = document.getElementById('field-overview-' + tier)
+                if (!overview) return
+
+                document.querySelectorAll('.field-overview.is-focused').forEach(function (el) {
+                  el.classList.remove('is-focused')
+                })
+                overview.classList.add('is-focused')
+
+                overview.scrollIntoView({
+                  behavior: 'smooth',
+                  block: window.innerWidth < 900 ? 'start' : 'nearest'
+                })
+
+                setTimeout(function () {
+                  overview.classList.remove('is-focused')
+                }, 1200)
+              }
+              function toggleItem(id, el) {
+                if (event && event.target.closest && event.target.closest('.qty-control')) return
+                if (event && event.target.closest && event.target.closest('.detail-btn')) return
+                var isChecked = checkedItems[id]
+                var cb = document.getElementById('cb-' + id)
+                var qtyWrap = document.getElementById('qty-wrap-' + id)
+                if (isChecked) {
+                  delete checkedItems[id]
+                  el.classList.remove('is-selected')
+                  el.style.borderColor = '#E2E8F0'
+                  cb.style.background = '#fff'
+                  cb.style.borderColor = '#CBD5E1'
+                  cb.querySelector('i').style.opacity = '0'
+                  qtyWrap.style.display = 'none'
+                } else {
+                  checkedItems[id] = 1
+                  el.classList.add('is-selected')
+                  var color = CB_COLORS[id]
+                  el.style.borderColor = color
+                  el.style.setProperty('--selected-color', color)
+                  cb.style.background = color
+                  cb.style.borderColor = color
+                  cb.querySelector('i').style.opacity = '1'
+                  qtyWrap.style.display = 'flex'
+                }
+                updateSummary()
+              }
+
+              function changeQty(id, delta, e) {
+                if (e) e.stopPropagation()
+                var input = document.getElementById('qty-' + id)
+                var val = Math.max(1, Math.min(99, (parseInt(input.value) || 1) + delta))
+                input.value = val
+                if (checkedItems[id]) checkedItems[id] = val
+                updateSummary()
+              }
+
+              function updateSummary() {
+                Object.keys(checkedItems).forEach(function (id) {
+                  var input = document.getElementById('qty-' + id)
+                  if (input) checkedItems[id] = parseInt(input.value) || 1
+                })
+                var keys = Object.keys(checkedItems)
+                if (keys.length === 0) {
+                  document.getElementById('summary-items').innerHTML = '<div class="summary-empty"><i class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>'
+                  document.getElementById('summary-total').textContent = '0.-'
+                  document.getElementById('submitBtn').disabled = true
+                  document.getElementById('items_json').value = ''
+                  return
+                }
+                var total = 0
+                var html = ''
+                keys.forEach(function (id) {
+                  var qty = checkedItems[id]
+                  var price = PRICES[id] * qty
+                  total += price
+                  html += '<div class="summary-line"><div><div class="summary-line-name">' + NAMES[id] + '</div>'
+                    + '<div class="summary-line-qty">' + qty + ' ชุด × ' + PRICES[id].toLocaleString() + ' บาท</div></div>'
+                    + '<div class="summary-line-price">' + price.toLocaleString() + '.-</div></div>'
+                })
+                document.getElementById('summary-items').innerHTML = html
+                document.getElementById('summary-total').textContent = total.toLocaleString() + '.-'
+                document.getElementById('submitBtn').disabled = false
+                document.getElementById('items_json').value = JSON.stringify(checkedItems)
+              }
+
+              document.getElementById('preorderForm') && document.getElementById('preorderForm').addEventListener('submit', function (e) {
+                if (Object.keys(checkedItems).length === 0) {
+                  e.preventDefault()
+                  alert('กรุณาเลือกสินค้าอย่างน้อย 1 รายการ')
+                }
+              })
+            </script>
+</body>
+
+</html>

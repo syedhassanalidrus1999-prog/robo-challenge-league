@@ -588,6 +588,173 @@
             font-size: 12px;
         }
 
+        .topbar {
+            position: fixed;
+            inset: 0 0 auto;
+            z-index: 100;
+
+            height: 84px;
+            padding: 0 30px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            background: transparent;
+            border-bottom: 1px solid transparent;
+
+            transition: .3s ease;
+        }
+
+        .topbar.scrolled {
+            background: rgba(255, 255, 255, .90);
+            border-bottom-color: rgba(226, 232, 240, .9);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
+            backdrop-filter: blur(16px);
+        }
+
+        .topbar-logo {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .topbar-logo img {
+            width: auto;
+            height: 120px;
+            object-fit: contain;
+        }
+
+        .topbar-nav {
+            flex: 1;
+            margin-left: 18px;
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            min-height: 52px;
+            padding: 0 18px;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            border: 0;
+            border-radius: 11px;
+            background: transparent;
+
+            color: #334155;
+
+            font-family: 'Kanit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .nav-link:hover {
+            color: #2563EB;
+            transform: translateY(-1px);
+        }
+
+
+        /* =========================
+   Dropdown
+========================= */
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            z-index: 200;
+
+            display: none;
+
+            min-width: 200px;
+            padding: 8px;
+
+            background: rgba(255, 255, 255, .98);
+
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+
+            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+        }
+
+        .dropdown-item {
+            min-height: 42px;
+            padding: 0 12px;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            border-radius: 10px;
+
+            color: #334155;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .dropdown-item:hover {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .dropdown-item i {
+            color: #64748B;
+            font-size: 17px;
+        }
+
+
+        /* =========================
+   Login
+========================= */
+
+        .topbar-actions {
+            margin-left: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            min-height: 52px;
+            padding: 0 20px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+
+            color: #334155;
+            background: #fff;
+
+            border: 1px solid #E2E8F0;
+            border-radius: 11px;
+
+            font: 800 16px 'Sarabun', sans-serif;
+
+            transition: .2s ease;
+        }
+
+        .btn-login:hover {
+            background: #F8FAFC;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+        }
+
         @media (max-width: 860px) {
             .content-grid {
                 grid-template-columns: 1fr;
@@ -672,20 +839,450 @@
                 padding-left: 16px;
             }
         }
+
+        /* ===== Shared RCL Homepage Navigation ===== */
+        .topbar {
+            position: fixed;
+            inset: 0 0 auto;
+            z-index: 100;
+            height: 84px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            transition: .3s ease;
+        }
+
+        .topbar.scrolled {
+            background: rgba(255, 255, 255, .90);
+            border-bottom-color: rgba(226, 232, 240, .9);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
+            backdrop-filter: blur(16px);
+        }
+
+        .topbar-logo {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .topbar-logo img {
+            width: auto;
+            height: 120px;
+            object-fit: contain;
+        }
+
+        .topbar-nav {
+            flex: 1;
+            margin-left: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            min-height: 52px;
+            padding: 0 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            border: 0;
+            border-radius: 11px;
+            background: transparent;
+            color: #334155;
+            font-family: 'Kanit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: .2s ease;
+            text-decoration: none;
+        }
+
+        .nav-link:hover {
+            color: #2563EB;
+            transform: translateY(-1px);
+        }
+
+        .docs-active {
+            color: #2563EB !important;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            z-index: 200;
+            display: none;
+            min-width: 200px;
+            padding: 8px;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+        }
+
+        .dropdown-item {
+            min-height: 42px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .dropdown-item:hover {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .dropdown-item i {
+            color: #64748B;
+            font-size: 17px;
+        }
+
+        .topbar-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            min-height: 52px;
+            padding: 0 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            color: #334155;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 11px;
+            font: 800 16px 'Sarabun', sans-serif;
+            transition: .2s ease;
+            text-decoration: none;
+        }
+
+        .btn-login:hover {
+            background: #F8FAFC;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+        }
+
+        @media (max-width: 900px) {
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .topbar-logo img {
+                height: 92px;
+            }
+
+            .nav-link {
+                padding: 0 12px;
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+
+            .btn-login {
+                padding: 0 14px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .topbar {
+                height: 60px;
+                padding: 0 12px;
+            }
+
+            .topbar-logo img {
+                height: 46px;
+                max-width: 92px;
+            }
+
+            .topbar-nav {
+                margin-left: 2px;
+                gap: 0;
+            }
+
+            .nav-link {
+                min-height: 40px;
+                padding: 0 7px;
+                font-size: 12px;
+                letter-spacing: 0;
+                white-space: nowrap;
+            }
+
+            .topbar-actions {
+                gap: 4px;
+            }
+
+            .btn-login {
+                width: 40px;
+                min-width: 40px;
+                height: 40px;
+                min-height: 40px;
+                padding: 0;
+                border-radius: 10px;
+                font-size: 0;
+            }
+
+            .btn-login i {
+                font-size: 18px;
+            }
+
+            .dropdown-menu {
+                position: fixed;
+                top: 58px;
+                left: 10px;
+                right: 10px;
+                min-width: 0;
+            }
+        }
+    /* =========================
+   RCL NAV — หน้าเอกสาร
+========================= */
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+
+    height: 72px;
+    padding: 0 30px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background: rgba(255, 255, 255, 0.82);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+    backdrop-filter: blur(16px);
+}
+
+/* Logo */
+.topbar-logo {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.topbar-logo img {
+    width: auto;
+    height: 58px;
+    object-fit: contain;
+}
+
+/* Nav */
+.topbar-nav {
+    flex: 1;
+    margin-left: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* เมนูทุกตัว */
+.nav-link {
+    min-height: 46px;
+    padding: 0 17px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 0 !important;
+    border-radius: 10px;
+
+    background: transparent !important;
+
+    color: #334155;
+    font-family: 'Kanit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: .5px;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: all .2s ease;
+}
+
+/* Hover */
+.nav-link:hover {
+    color: #2563EB;
+    background: rgba(239, 246, 255, .75) !important;
+    transform: translateY(-1px);
+}
+
+/* เอกสาร Active */
+.nav-link.docs-active {
+    color: #2563EB !important;
+    background: rgba(239, 246, 255, .9) !important;
+}
+
+/* Pre-order */
+.nav-link.preorder-active {
+    color: #EA580C !important;
+}
+
+.nav-link.preorder-active:hover {
+    color: #EA580C !important;
+    background: rgba(255, 247, 237, .9) !important;
+}
+
+/* Dropdown */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+
+    min-width: 205px;
+    padding: 7px;
+
+    display: none;
+
+    background: rgba(255, 255, 255, .98);
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+
+    box-shadow:
+        0 18px 45px rgba(15, 23, 42, .12);
+
+    backdrop-filter: blur(14px);
+}
+
+.dropdown-item {
+    min-height: 42px;
+    padding: 0 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border-radius: 9px;
+
+    color: #334155;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.dropdown-item:hover {
+    color: #2563EB;
+    background: #EFF6FF;
+}
+
+.dropdown-item i {
+    font-size: 17px;
+    color: #64748B;
+}
+
+/* Login */
+.topbar-actions {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+}
+
+.btn-login {
+    min-height: 46px;
+    padding: 0 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    color: #334155;
+    background: #fff;
+
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.btn-login:hover {
+    background: #F8FAFC;
+    border-color: #CBD5E1;
+    transform: translateY(-1px);
+    box-shadow: 0 7px 20px rgba(15, 23, 42, .07);
+}
     </style>
 </head>
 
 <body>
 
-    <header class="topbar">
-        <a href="/" class="topbar-logo" aria-label="Robo Challenge League">
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <a href="/" class="topbar-logo">
             <img src="/RCL Logo.png" alt="RCL">
         </a>
-        <nav class="topbar-nav" aria-label="เมนูหลัก">
-            <a href="/register" class="btn-reg"><i class="ti ti-pencil-plus"></i><span>สมัครแข่งขัน</span></a>
-            <a href="/"><i class="ti ti-arrow-left"></i><span>กลับหน้าหลัก</span></a>
+
+        <nav class="topbar-nav">
+            <a href="/" class="nav-link">หน้าหลัก</a>
+
+            <a href="/#about" class="nav-link">เกี่ยวกับเรา</a>
+
+            <div class="dropdown">
+                <button class="nav-link" type="button">
+                    การแข่งขัน
+                    <i class="ti ti-chevron-down" style="font-size:13px"></i>
+                </button>
+                <div class="dropdown-menu">
+                    <a href="/competition?view=teams" class="dropdown-item">
+                        <i class="ti ti-users"></i> ทีมที่สมัคร
+                    </a>
+                    <a href="/competition?view=board" class="dropdown-item">
+                        <i class="ti ti-chart-bar"></i> ผลสรุปคะแนน
+                    </a>
+                </div>
+            </div>
+
+            <a href="/docs" class="nav-link docs-active">เอกสาร</a>
+
+            <a href="/preorder" class="nav-link preorder-active">
+                <i class="ti ti-shopping-cart"></i>
+                Pre-order สนาม
+            </a>
         </nav>
-    </header>
+
+        <div class="topbar-actions">
+            <a href="/auth/login" class="btn-login">
+                <i class="ti ti-lock"></i> เข้าสู่ระบบ
+            </a>
+        </div>
+    </div>
 
     <main class="page-shell">
         <section class="hero">
@@ -876,6 +1473,41 @@
     </footer>
 
     <script>
+        document.querySelectorAll('.dropdown').forEach(function (dd) {
+            var menu = dd.querySelector('.dropdown-menu');
+            var timer;
+
+            dd.addEventListener('mouseenter', function () {
+                clearTimeout(timer);
+                menu.style.display = 'block';
+            });
+
+            dd.addEventListener('mouseleave', function () {
+                timer = setTimeout(function () {
+                    menu.style.display = 'none';
+                }, 200);
+            });
+
+            menu.addEventListener('mouseenter', function () {
+                clearTimeout(timer);
+            });
+
+            menu.addEventListener('mouseleave', function () {
+                timer = setTimeout(function () {
+                    menu.style.display = 'none';
+                }, 200);
+            });
+        });
+
+        window.addEventListener('scroll', function () {
+            var topbar = document.querySelector('.topbar');
+            if (window.scrollY > 10) {
+                topbar.classList.add('scrolled');
+            } else {
+                topbar.classList.remove('scrolled');
+            }
+        });
+
         function switchTier(tier, button) {
             document.querySelectorAll('.tier-content').forEach(function (el) {
                 el.classList.remove('active')

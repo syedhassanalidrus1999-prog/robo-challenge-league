@@ -166,6 +166,42 @@ router.post('/settings', requireLogin, async (req, res) => {
   res.redirect('/board/settings')
 })
 
+router.get("/preorders", requireLogin, async (req, res) => {
+  const status = req.query.status || "";
+  try {
+    var sql = "SELECT * FROM preorders";
+    var params = [];
+    if (status) {
+      sql += " WHERE status = $1";
+      params.push(status);
+    }
+    sql += " ORDER BY created_at DESC";
+    const result = await query(sql, params);
+    res.render("board/preorders", {
+      title: "Pre-order สนาม",
+      pageTitle: "<span>Pre-order</span> สนามแข่งขัน",
+      tierSelector: false,
+      activeTier: "",
+      preorders: result.rows,
+      status,
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "โหลดข้อมูลไม่ได้");
+    res.redirect("/board");
+  }
+});
+
+router.post("/preorders/:id/status", requireLogin, async (req, res) => {
+  const { status } = req.body;
+  await query("UPDATE preorders SET status=$1 WHERE id=$2", [
+    status,
+    req.params.id,
+  ]);
+  req.flash("success", "อัปเดตสถานะแล้ว");
+  res.redirect("/board/preorders");
+});
+
 
 
 module.exports = router
