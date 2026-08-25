@@ -708,13 +708,24 @@
                             html += '</div>';
                             html += '</div>';
                             team.cert_types.forEach(function (ct) {
-                                var ctLabel = ct === 'participation' ? 'เกียรติบัตรเข้าร่วม' : ct === '1st' ? 'เกียรติบัตรชนะเลิศ' : ct === '2nd' ? 'เกียรติบัตรรองชนะเลิศ อันดับ1' : 'เกียรติบัตรรองชนะเลิศ อันดับ2'
-                                html += '<div style="display:flex;flex-direction:column;gap:4px">'
-                                html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn btn-download">'
-                                html += '<i class="ti ti-download"></i> ' + ctLabel
-                                html += '</a>'
-                                html += '</div>'
-                            })
+                                var ctLabel, ctStyle;
+                                if (ct === 'participation') {
+                                    ctLabel = 'เกียรติบัตรเข้าร่วม';
+                                    ctStyle = 'background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0';
+                                } else if (ct === '1st') {
+                                    ctLabel = 'เกียรติบัตรชนะเลิศ';
+                                    ctStyle = 'background:linear-gradient(135deg,#FEF3C7,#FDE68A);color:#92400E;border:1px solid #F59E0B;font-weight:800';
+                                } else if (ct === '2nd') {
+                                    ctLabel = 'เกียรติบัตรรองชนะเลิศ อันดับ 1';
+                                    ctStyle = 'background:linear-gradient(135deg,#F1F5F9,#E2E8F0);color:#475569;border:1px solid #94A3B8;font-weight:800';
+                                } else if (ct === '3rd') {
+                                    ctLabel = 'เกียรติบัตรรองชนะเลิศ อันดับ 2';
+                                    ctStyle = 'background:linear-gradient(135deg,#FEF3E2,#FDE8C8);color:#92400E;border:1px solid #CD7F32;font-weight:800';
+                                }
+                                html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn btn-download" style="' + ctStyle + '">';
+                                html += '<i class="ti ti-download"></i> ' + ctLabel;
+                                html += '</a>';
+                            });
                             html += '</a>';
                             html += '</div>';
                         });
