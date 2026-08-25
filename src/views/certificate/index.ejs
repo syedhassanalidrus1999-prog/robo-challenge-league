@@ -686,7 +686,7 @@
                         if (rankLabel) {
                             html += '<span class="rank-badge" style="background:#FEF3C7;color:#D97706">' + rankEmoji + ' ' + rankLabel + '</span>';
                         } else {
-                            html += '<span class="rank-badge" style="background:#F1F5F9;color:#64748B"><i class="ti ti-certificate"></i> เข้าร่วม</span>';
+                            html += '<span class="rank-badge" style="background:#F1F5F9;color:#64748B"><i class="ti ti-certificate"></i> เกียรติบัตรเข้าร่วม</span>';
                         }
                         html += '</div>';
                         html += '<div class="team-name-big">' + team.name + '</div>';
@@ -708,14 +708,13 @@
                             html += '</div>';
                             html += '</div>';
                             team.cert_types.forEach(function (ct) {
-                                var ctLabel = ct === 'participation' ? 'เข้าร่วม' : ct === '1st' ? 'อันดับ 1' : ct === '2nd' ? 'อันดับ 2' : 'อันดับ 3'
+                                var ctLabel = ct === 'participation' ? 'เข้าร่วม' : ct === '1st' ? 'เกียรติบัตรชนะเลิศ' : ct === '2nd' ? 'เกียรติบัตรรองชนะเลิศ อันดับ1' : 'เกียรติบัตรรองชนะเลิศ อันดับ2'
                                 html += '<div style="display:flex;flex-direction:column;gap:4px">'
                                 html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn btn-download">'
                                 html += '<i class="ti ti-download"></i> ' + ctLabel
                                 html += '</a>'
                                 html += '</div>'
                             })
-                            html += '<i class="ti ti-download"></i> ดาวน์โหลด PDF';
                             html += '</a>';
                             html += '</div>';
                         });
