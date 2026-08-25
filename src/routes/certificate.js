@@ -50,11 +50,10 @@ router.get("/search", async (req, res) => {
     );
 
     var teams = teamsResult.rows.map(function (t) {
-      var rank = rankedAll[t.id] || null;
-      var certType = "participation";
-      if (rank === 1) certType = "1st";
-      else if (rank === 2) certType = "2nd";
-      else if (rank === 3) certType = "3rd";
+      var certTypes = ["participation"];
+      if (rank === 1) certTypes.push("1st");
+      else if (rank === 2) certTypes.push("2nd");
+      else if (rank === 3) certTypes.push("3rd");
 
       var students = [];
       if (t.student_1) students.push({ name: t.student_1 });
@@ -67,7 +66,7 @@ router.get("/search", async (req, res) => {
         institution: t.institution,
         tier: t.tier,
         rank: rank,
-        cert_type: certType,
+        cert_types: certTypes,
         students: students,
       };
     });

@@ -9,96 +9,222 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-soft: #EFF6FF;
+            --text: #0F172A;
+            --muted: #64748B;
+            --muted-2: #94A3B8;
+            --line: #E8EEF6;
+            --bg: #F5F8FC;
+            --card: #FFFFFF;
+            --success: #16A34A;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
-            padding: 0;
+            padding: 0
+        }
+
+        html {
+            scroll-behavior: smooth
         }
 
         body {
             font-family: 'Sarabun', sans-serif;
-            background: #F4F7FB;
-            color: #1E293B;
+            background:
+                radial-gradient(circle at 50% -10%, rgba(37, 99, 235, .10), transparent 34%),
+                linear-gradient(180deg, #F7FAFF 0%, #F4F7FB 48%, #F7F9FC 100%);
+            color: var(--text);
             min-height: 100vh;
         }
 
         a {
             text-decoration: none;
-            color: inherit;
+            color: inherit
         }
 
+        button,
+        input {
+            font: inherit
+        }
+
+        /* ---------- Top bar ---------- */
         .topbar {
-            height: 68px;
-            background: rgba(255, 255, 255, .92);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(226, 232, 240, .9);
+            height: 72px;
+            background: rgba(255, 255, 255, .88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(226, 232, 240, .85);
             display: flex;
             align-items: center;
-            padding: 0 28px;
+            padding: 0 clamp(18px, 4vw, 48px);
             gap: 14px;
             position: sticky;
             top: 0;
-            z-index: 10;
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
+            z-index: 20;
+            box-shadow: 0 5px 24px rgba(15, 23, 42, .045);
+        }
+
+        .topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
         }
 
         .topbar img {
-            height: 42px;
+            width: auto;
+            height: 40px;
             object-fit: contain;
         }
 
-        .wrap {
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 42px 20px 64px;
+        .topbar-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            white-space: nowrap;
         }
 
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            padding: 8px 13px;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #334155;
+            transition: .2s ease;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, .03);
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+            border-color: #BFDBFE;
+            background: #F8FBFF;
+            transform: translateY(-1px);
+        }
+
+        /* ---------- Main layout ---------- */
+        .wrap {
+            width: min(920px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 54px 0 80px;
+        }
+
+        /* ---------- Hero ---------- */
         .hero {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
+        }
+
+        .hero-icon {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 15px;
+            display: grid;
+            place-items: center;
+            border-radius: 16px;
+            color: var(--primary);
+            background: linear-gradient(145deg, #EFF6FF, #DBEAFE);
+            border: 1px solid #DBEAFE;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .10);
+            font-size: 25px;
         }
 
         .hero-title {
-            font-size: 28px;
+            font-size: clamp(27px, 4vw, 34px);
+            line-height: 1.2;
             font-weight: 800;
-            color: #0F172A;
-            margin-bottom: 6px;
+            color: var(--text);
+            margin-bottom: 8px;
             font-family: 'Kanit', sans-serif;
+            letter-spacing: -.3px;
         }
 
         .hero-title span {
-            color: #2563EB;
+            color: var(--primary);
         }
 
         .hero-sub {
             font-size: 14px;
-            color: #64748B;
+            color: var(--muted);
         }
 
+        /* ---------- Search ---------- */
         .search-card {
-            background: #fff;
+            background: rgba(255, 255, 255, .96);
             border: 1px solid #E2E8F0;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
-            margin-bottom: 24px;
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: 0 14px 38px rgba(15, 23, 42, .075);
+            margin-bottom: 22px;
+        }
+
+        .search-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            margin: 0 0 9px 2px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .search-label i {
+            color: var(--primary);
+        }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: 1fr 145px;
+            gap: 10px;
+        }
+
+        .input-wrap {
+            position: relative;
         }
 
         .fi {
             width: 100%;
-            padding: 12px 14px;
+            min-height: 48px;
+            padding: 12px 15px 12px 43px;
             border: 1.5px solid #CBD5E1;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 14px;
             font-family: 'Sarabun', sans-serif;
+            color: var(--text);
+            background: #fff;
             outline: none;
-            transition: .15s;
+            transition: .2s ease;
+        }
+
+        .fi::placeholder {
+            color: #A0AEC0
         }
 
         .fi:focus {
-            border-color: #2563EB;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+            border-color: #60A5FA;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94A3B8;
+            pointer-events: none;
+            font-size: 18px;
         }
 
         .btn {
@@ -106,165 +232,401 @@
             align-items: center;
             justify-content: center;
             gap: 7px;
+            min-height: 48px;
             padding: 12px 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
             font-size: 14px;
             font-weight: 700;
             font-family: 'Sarabun', sans-serif;
-            transition: .15s;
+            transition: .2s ease;
         }
 
         .btn-primary {
-            background: #2563EB;
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
             color: #fff;
-            box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+            box-shadow: 0 9px 20px rgba(37, 99, 235, .22);
             width: 100%;
         }
 
         .btn-primary:hover {
-            background: #1D4ED8;
-        }
-
-        .btn-download {
-            background: #F0FDF4;
-            color: #16A34A;
-            border: 1px solid #BBF7D0;
-            font-size: 13px;
-            padding: 8px 14px;
-        }
-
-        .btn-download:hover {
-            background: #DCFCE7;
+            filter: brightness(.98);
             transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, .27);
         }
 
+        .btn-primary:active {
+            transform: translateY(0)
+        }
+
+        /* ---------- Loading ---------- */
+        .loading {
+            text-align: center;
+            padding: 26px;
+            color: var(--muted);
+            display: none;
+        }
+
+        .loading i {
+            color: var(--primary)
+        }
+
+        /* ---------- Result card ---------- */
         .result-card {
-            background: #fff;
+            background: rgba(255, 255, 255, .97);
             border: 1px solid #E2E8F0;
-            border-radius: 18px;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+            border-radius: 22px;
+            box-shadow: 0 14px 38px rgba(15, 23, 42, .065);
             overflow: hidden;
             display: none;
         }
 
         .result-card.show {
-            display: block;
+            display: block
+        }
+
+        .result-card>#resultContent>.team-block {
+            border-bottom: 1px solid var(--line);
+        }
+
+        .result-card>#resultContent>.team-block:last-child {
+            border-bottom: none;
         }
 
         .team-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid #F1F5F9;
+            padding: 20px 22px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #FBFDFF 100%);
+            border-bottom: 1px solid var(--line);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
-        .team-badge {
-            padding: 4px 10px;
+        .team-header::before {
+            content: '';
+            width: 4px;
+            align-self: stretch;
             border-radius: 999px;
-            font-size: 11px;
-            font-weight: 800;
+            background: linear-gradient(180deg, #60A5FA, #2563EB);
         }
 
-        .team-name-big {
-            font-size: 18px;
-            font-weight: 800;
-            color: #0F172A;
+        .team-meta {
+            flex: 1;
+            min-width: 0
         }
 
-        .team-inst {
-            font-size: 12px;
-            color: #94A3B8;
-            margin-top: 2px;
+        .team-badges {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-bottom: 7px;
         }
 
+        .team-badge,
         .rank-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            padding: 4px 10px;
+            padding: 5px 10px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 800;
+            line-height: 1;
         }
 
+        .team-name-big {
+            font-size: 19px;
+            line-height: 1.3;
+            font-weight: 800;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        .team-inst {
+            font-size: 12px;
+            color: var(--muted-2);
+            margin-top: 4px;
+            word-break: break-word;
+        }
+
+        /* ---------- Student list ---------- */
         .student-list {
-            padding: 16px 20px;
+            padding: 5px 22px 7px;
         }
 
         .student-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 0;
+            min-height: 70px;
+            padding: 11px 0;
             border-bottom: 1px solid #F1F5F9;
-            gap: 12px;
+            gap: 16px;
         }
 
         .student-row:last-child {
-            border-bottom: none;
+            border-bottom: none
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .student-number {
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #F1F5F9;
+            color: #64748B;
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .student-name {
             font-size: 15px;
             font-weight: 700;
-            color: #0F172A;
+            color: var(--text);
+            word-break: break-word;
         }
 
         .student-sub {
             font-size: 11px;
-            color: #94A3B8;
+            color: var(--muted-2);
             margin-top: 2px;
         }
 
+        .btn-download {
+            flex: 0 0 auto;
+            min-height: 38px;
+            background: #F0FDF4;
+            color: var(--success);
+            border: 1px solid #BBF7D0;
+            font-size: 13px;
+            padding: 8px 13px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            background: #DCFCE7;
+            border-color: #86EFAC;
+            transform: translateY(-1px);
+        }
+
+        /* ---------- Empty / error ---------- */
         .no-result {
             text-align: center;
-            padding: 48px 24px;
-            color: #94A3B8;
+            padding: 60px 24px;
+            color: var(--muted-2);
         }
 
         .no-result i {
             display: block;
-            font-size: 40px;
-            margin-bottom: 10px;
-            opacity: .4;
+            font-size: 44px;
+            margin-bottom: 12px;
+            opacity: .45;
         }
 
-        .loading {
-            text-align: center;
-            padding: 24px;
-            color: #64748B;
-            display: none;
+        .no-result strong {
+            display: block;
+            color: #475569;
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        .no-result span {
+            font-size: 12px;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width:700px) {
+            .topbar {
+                height: 64px;
+                padding: 0 16px
+            }
+
+            .topbar img {
+                height: 34px
+            }
+
+            .topbar-title {
+                font-size: 14px
+            }
+
+            .back-btn {
+                padding: 7px 10px
+            }
+
+            .back-btn span {
+                display: none
+            }
+
+            .wrap {
+                width: min(100% - 24px, 620px);
+                padding: 38px 0 54px;
+            }
+
+            .hero {
+                margin-bottom: 22px
+            }
+
+            .hero-icon {
+                width: 46px;
+                height: 46px;
+                border-radius: 14px;
+                font-size: 22px
+            }
+
+            .hero-sub {
+                font-size: 13px
+            }
+
+            .search-card {
+                padding: 16px;
+                border-radius: 18px;
+            }
+
+            .search-row {
+                grid-template-columns: 1fr
+            }
+
+            .btn-primary {
+                min-height: 46px
+            }
+
+            .team-header {
+                padding: 17px 16px
+            }
+
+            .student-list {
+                padding-left: 16px;
+                padding-right: 16px
+            }
+
+            .student-row {
+                align-items: flex-start
+            }
+
+            .student-info {
+                align-items: flex-start
+            }
+
+            .btn-download {
+                padding: 8px 10px;
+                font-size: 12px
+            }
+        }
+
+        @media (max-width:440px) {
+            .topbar-title {
+                display: none
+            }
+
+            .topbar {
+                justify-content: space-between
+            }
+
+            .team-header {
+                gap: 9px
+            }
+
+            .team-name-big {
+                font-size: 17px
+            }
+
+            .student-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 9px;
+                padding: 13px 0;
+            }
+
+            .btn-download {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ---------- Motion ---------- */
+        @keyframes spin {
+            from {
+                transform: rotate(0deg)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .result-card.show {
+            animation: riseIn .25s ease both
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important;
+            }
         }
     </style>
+
 </head>
 
 <body>
 
     <div class="topbar">
-        <a href="/"><img src="/RCL Logo.png" alt="RCL"></a>
-        <div style="font-size:15px;font-weight:700;color:#1E293B;flex:1">ดาวน์โหลดเกียรติบัตร</div>
-        <a href="/"
-            style="font-size:12px;padding:6px 12px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;font-weight:700;color:#334155">
-            <i class="ti ti-arrow-left"></i> กลับหน้าหลัก
+        <a href="/" class="topbar-brand">
+            <img src="/RCL Logo.png" alt="RCL">
+            <div class="topbar-title">ดาวน์โหลดเกียรติบัตร</div>
+        </a>
+        <div style="flex:1"></div>
+        <a href="/" class="back-btn">
+            <i class="ti ti-arrow-left"></i><span>กลับหน้าหลัก</span>
         </a>
     </div>
 
     <div class="wrap">
         <div class="hero">
+            <div class="hero-icon"><i class="ti ti-certificate"></i></div>
             <div class="hero-title">ดาวน์โหลด<span>เกียรติบัตร</span></div>
             <div class="hero-sub">ค้นหาด้วย ID ทีม ชื่อทีม หรือชื่อโรงเรียน</div>
         </div>
 
         <div class="search-card">
-            <div style="margin-bottom:12px">
-                <input class="fi" type="text" id="searchInput" placeholder="พิมพ์ ID ทีม / ชื่อทีม / ชื่อโรงเรียน...">
+            <div class="search-label"><i class="ti ti-search"></i> ค้นหาทีม</div>
+            <div class="search-row">
+                <div class="input-wrap">
+                    <i class="ti ti-search input-icon"></i>
+                    <input class="fi" type="text" id="searchInput"
+                        placeholder="พิมพ์ ID ทีม / ชื่อทีม / ชื่อโรงเรียน...">
+                </div>
+                <button class="btn btn-primary" onclick="searchTeam()">
+                    <i class="ti ti-search"></i> ค้นหา
+                </button>
             </div>
-            <button class="btn btn-primary" onclick="searchTeam()">
-                <i class="ti ti-search"></i> ค้นหา
-            </button>
         </div>
 
         <div class="loading" id="loading">
@@ -276,18 +638,6 @@
             <div id="resultContent"></div>
         </div>
     </div>
-
-    <style>
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
 
     <script>
         var searchInput = document.getElementById('searchInput');
@@ -328,9 +678,10 @@
                         else if (team.rank === 2) { rankEmoji = '🥈'; rankLabel = 'อันดับ 2'; }
                         else if (team.rank === 3) { rankEmoji = '🥉'; rankLabel = 'อันดับ 3'; }
 
+                        html += '<div class="team-block">';
                         html += '<div class="team-header">';
-                        html += '<div style="flex:1">';
-                        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+                        html += '<div class="team-meta">';
+                        html += '<div class="team-badges">';
                         html += '<span class="team-badge" style="background:' + tierColor + '18;color:' + tierColor + '">' + tierLabel + '</span>';
                         if (rankLabel) {
                             html += '<span class="rank-badge" style="background:#FEF3C7;color:#D97706">' + rankEmoji + ' ' + rankLabel + '</span>';
@@ -349,19 +700,30 @@
                         }
                         students.forEach(function (s, idx) {
                             html += '<div class="student-row">';
+                            html += '<div class="student-info">';
+                            html += '<div class="student-number">' + (idx + 1) + '</div>';
                             html += '<div>';
                             html += '<div class="student-name">' + s.name + '</div>';
                             html += '<div class="student-sub">นักเรียนคนที่ ' + (idx + 1) + '</div>';
                             html += '</div>';
-                            html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + (team.cert_type || 'participation') + '" target="_blank" class="btn btn-download">';
+                            html += '</div>';
+                            team.cert_types.forEach(function (ct) {
+                                var ctLabel = ct === 'participation' ? 'เข้าร่วม' : ct === '1st' ? 'อันดับ 1' : ct === '2nd' ? 'อันดับ 2' : 'อันดับ 3'
+                                html += '<div style="display:flex;flex-direction:column;gap:4px">'
+                                html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn btn-download">'
+                                html += '<i class="ti ti-download"></i> ' + ctLabel
+                                html += '</a>'
+                                html += '</div>'
+                            })
                             html += '<i class="ti ti-download"></i> ดาวน์โหลด PDF';
                             html += '</a>';
                             html += '</div>';
                         });
                         html += '</div>';
+                        html += '</div>';
 
                         if (data.teams.indexOf(team) < data.teams.length - 1) {
-                            html += '<div style="height:1px;background:#F1F5F9"></div>';
+                            html += '';
                         }
                     });
 
