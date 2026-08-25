@@ -50,6 +50,7 @@ router.get("/search", async (req, res) => {
     );
 
     var teams = teamsResult.rows.map(function (t) {
+      var rank = rankedAll[t.id] || null; // ← ต้องมีบรรทัดนี้ก่อน
       var certTypes = ["participation"];
       if (rank === 1) certTypes.push("1st");
       else if (rank === 2) certTypes.push("2nd");
