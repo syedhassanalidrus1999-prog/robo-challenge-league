@@ -17,6 +17,7 @@
                     <th>#</th>
                     <th>โรงเรียน</th>
                     <th>ผู้ติดต่อ</th>
+                    <th>ที่อยู่</th>
                     <th>สินค้าที่สั่ง</th>
                     <th>ยอดรวม</th>
                     <th>สถานะ</th>
@@ -58,6 +59,7 @@
                                         </div>
                                         <% } %>
                                 </td>
+                                
                                 <td>
                                     <div style="font-size:13px">
                                         <%= p.contact_name %>
@@ -70,6 +72,21 @@
                                             <%= p.email %>
                                         </div>
                                         <% } %>
+                                </td>
+                                <td style="font-size:12px;min-width:180px">
+                                    <% if (p.address) { %>
+                                        <div>
+                                            <%= p.address %>
+                                        </div>
+                                        <% } %>
+                                            <% if (p.district || p.province) { %>
+                                                <div style="color:#64748B">
+                                                    <%= [p.district, p.province, p.zipcode].filter(Boolean).join(' ') %>
+                                        </div>
+                                    <% } %>
+                                    <% if (!p.address && !p.province) { %>
+                                        <span style="color:#CBD5E1">—</span>
+                                    <% } %>
                                 </td>
                                 <td style="min-width:200px">
                                     <% if (itemKeys.length> 0) { %>

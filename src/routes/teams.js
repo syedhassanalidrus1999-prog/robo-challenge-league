@@ -66,7 +66,7 @@ router.get("/", requireLogin, requireAdmin, async (req, res) => {
   } catch (err) {
     console.error(err);
     req.flash("error", "ไม่สามารถโหลดข้อมูลทีมได้");
-    res.redirect("/dashboard");
+    res.redirect("/board");
   }
 });
 
@@ -189,7 +189,7 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
   }
 });
 
-router.get("/dashboard", requireLogin, (req, res) => {
+router.get("/board", requireLogin, (req, res) => {
   if (req.session.user.role === "admin") return res.redirect("/teams");
   res.redirect("/scores");
 });

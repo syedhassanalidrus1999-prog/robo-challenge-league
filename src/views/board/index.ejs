@@ -29,23 +29,32 @@
             </td>
           </tr>
           <% } %>
+
             <% ranked.forEach(function(t, i) { %>
               <tr>
+
+                <!-- อันดับ -->
                 <td>
                   <div class="rank-cell">
-                    <% if (i===0) { %><span style="font-size:20px">🥇</span><span class="rank-gold">
+                    <% if (i===0) { %>
+                      <span style="font-size:20px">🥇</span><span class="rank-gold">
                         <%= i+1 %>
                       </span>
-                      <% } else if (i===1) { %><span style="font-size:20px">🥈</span><span class="rank-silver">
+                      <% } else if (i===1) { %>
+                        <span style="font-size:20px">🥈</span><span class="rank-silver">
                           <%= i+1 %>
                         </span>
-                        <% } else if (i===2) { %><span style="font-size:20px">🥉</span><span class="rank-bronze">
+                        <% } else if (i===2) { %>
+                          <span style="font-size:20px">🥉</span><span class="rank-bronze">
                             <%= i+1 %>
                           </span>
-                          <% } else { %><span class="rank-other">#<%= i+1 %></span>
+                          <% } else { %>
+                            <span class="rank-other">#<%= i+1 %></span>
                             <% } %>
                   </div>
                 </td>
+
+                <!-- ชื่อทีม -->
                 <td>
                   <div class="team-name">
                     <%= t.name %>
@@ -54,6 +63,8 @@
                     <%= t.institution || '' %>
                   </div>
                 </td>
+
+                <!-- รอบที่ 1 -->
                 <td>
                   <% if (parseFloat(t.r1_score)> 0) { %>
                     <span class="score-num">
@@ -63,9 +74,27 @@
                     <span class="score-time">
                       <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2) + ' sec' : '' %>
                     </span>
-                    <% } else { %><span style="color:#CBD5E1">—</span>
+                    <br>
+                    <form method="POST" action="/board/scores/<%= t.id %>/1/publish?tier=<%= tier %>"
+                      style="display:inline">
+                      <% if (t.r1_published) { %>
+                        <button type="submit" class="btn btn-sm"
+                          style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0">
+                          <i class="ti ti-eye"></i> เผยแพร่แล้ว
+                        </button>
+                        <% } else { %>
+                          <button type="submit" class="btn btn-sm"
+                            style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F8FAFC;color:#94A3B8;border:1px solid #E2E8F0">
+                            <i class="ti ti-eye-off"></i> ซ่อนอยู่
+                          </button>
+                          <% } %>
+                    </form>
+                    <% } else { %>
+                      <span style="color:#CBD5E1">—</span>
                       <% } %>
                 </td>
+
+                <!-- รอบที่ 2 -->
                 <td>
                   <% if (parseFloat(t.r2_score)> 0) { %>
                     <span class="score-num">
@@ -75,9 +104,27 @@
                     <span class="score-time">
                       <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2) + ' sec' : '' %>
                     </span>
-                    <% } else { %><span style="color:#CBD5E1">—</span>
+                    <br>
+                    <form method="POST" action="/board/scores/<%= t.id %>/2/publish?tier=<%= tier %>"
+                      style="display:inline">
+                      <% if (t.r2_published) { %>
+                        <button type="submit" class="btn btn-sm"
+                          style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0">
+                          <i class="ti ti-eye"></i> เผยแพร่แล้ว
+                        </button>
+                        <% } else { %>
+                          <button type="submit" class="btn btn-sm"
+                            style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F8FAFC;color:#94A3B8;border:1px solid #E2E8F0">
+                            <i class="ti ti-eye-off"></i> ซ่อนอยู่
+                          </button>
+                          <% } %>
+                    </form>
+                    <% } else { %>
+                      <span style="color:#CBD5E1">—</span>
                       <% } %>
                 </td>
+
+                <!-- คะแนนที่ดีที่สุด -->
                 <td>
                   <% if (parseFloat(t.best_score)> 0) { %>
                     <div style="display:flex;align-items:baseline;gap:6px">
@@ -94,15 +141,22 @@
                         style="width:<%= maxScore > 0 ? Math.round(parseFloat(t.best_score)/maxScore*100) : 0 %>%;background:<%= i===0?'#D97706':i===1?'#64748B':i===2?'#92400E':'#2563EB' %>">
                       </div>
                     </div>
-                    <% } else { %><span style="color:#CBD5E1">—</span>
+                    <% } else { %>
+                      <span style="color:#CBD5E1">—</span>
                       <% } %>
                 </td>
+
+                <!-- สถานะ -->
                 <td>
-                  <% if (t.status==='approved' ) { %><span class="badge badge-green badge-dot">เสร็จสิ้น</span>
-                    <% } else if (t.status==='rejected' ) { %><span class="badge badge-red badge-dot">ไม่ผ่าน</span>
-                      <% } else { %><span class="badge badge-blue badge-dot">รอพิจารณา</span>
+                  <% if (t.status==='approved' ) { %>
+                    <span class="badge badge-green badge-dot">เสร็จสิ้น</span>
+                    <% } else if (t.status==='rejected' ) { %>
+                      <span class="badge badge-red badge-dot">ไม่ผ่าน</span>
+                      <% } else { %>
+                        <span class="badge badge-blue badge-dot">รอพิจารณา</span>
                         <% } %>
                 </td>
+
               </tr>
               <% }) %>
       </tbody>

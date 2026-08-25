@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
+    <title style="font-family: Kanit;">
         <%= view==='board' ?'ผลสรุปคะแนน':'ทีมที่สมัคร' %> — Robo Challenge League
     </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,8 +12,216 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        /* =========================================================
+   RCL TOPBAR
+   ========================================================= */
+.topbar {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 1000;
+    height: 84px;
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: .3s ease;
+}
+.topbar.scrolled {
+    background: rgba(255, 255, 255, .90);
+    border-bottom-color: rgba(226, 232, 240, .9);
+    box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
+    backdrop-filter: blur(16px);
+}
+.topbar-logo {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+}
+.topbar-logo img {
+    width: auto;
+    height: 120px;
+    object-fit: contain;
+}
+.topbar-nav {
+    flex: 1;
+    margin-left: 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+
+.nav-link {
+    min-height: 52px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0 !important;
+    border-radius: 11px;
+    background: transparent !important;
+    color: #334155;
+    font-family: 'Kanit', 'Sarabun', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+.nav-link i { font-size: 17px; }
+.nav-link:hover {
+    color: #2563eb;
+    background: #f4f8ff !important;
+    transform: translateY(-1px);
+}
+.nav-link.active {
+    color: #2563eb !important;
+    background: #eff6ff !important;
+}
+.topbar-actions {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.btn-reg, .btn-login {
+    min-height: 52px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 11px;
+    font: 800 16px 'Sarabun', sans-serif;
+    transition: .2s ease;
+}
+.btn-reg {
+    color: #fff;
+    background: linear-gradient(135deg, #3478f6, #2563eb);
+    border: 1px solid transparent;
+    box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+}
+.btn-reg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, .30);
+}
+.btn-login {
+    color: #334155;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+}
+.btn-login:hover {
+    color: #2563eb;
+    background: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+}
+
+/* DROPDOWN */
+.dropdown { position: relative; }
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 1100;
+    display: none;
+    min-width: 205px;
+    padding: 8px;
+    background: rgba(255, 255, 255, .98);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+}
+.dropdown-item {
+    min-height: 42px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    color: #334155;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: .18s ease;
+}
+
+.dropdown-item:first-child:hover {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+.dropdown-item:hover, .dropdown-item.active {
+    color: #2563eb;
+    background: #eff6ff;
+}
+.dropdown-item i { font-size: 17px; color: #64748b; }
+.dropdown-item.active i { color: #2563eb; }
+
+/* Responsive — Laptop */
+@media (min-width: 901px) and (max-width: 1199px) {
+    .topbar { padding: 0 20px; }
+    .topbar-logo img { height: 92px; }
+    .nav-link { padding: 0 12px; font-size: 16px; letter-spacing: 1px; }
+    .btn-reg, .btn-login { padding: 0 14px; font-size: 14px; }
+}
+
+/* Responsive — Tablet */
+@media (min-width: 641px) and (max-width: 900px) {
+    .topbar { height: 72px; padding: 0 16px; }
+    .topbar-logo img { height: 70px; }
+    .topbar-nav { margin-left: 4px; gap: 2px; }
+    .nav-link { min-height: 44px; padding: 0 9px; font-size: 14px; letter-spacing: .5px; }
+    .btn-reg, .btn-login { min-height: 44px; padding: 0 12px; font-size: 13px; }
+}
+
+/* Responsive — Mobile */
+@media (max-width: 640px) {
+    .topbar { height: 60px; padding: 0 12px; }
+    .topbar-logo img { height: 46px; max-width: 92px; }
+    .topbar-nav { margin-left: 2px; gap: 0; }
+    .topbar-nav > a.nav-link { display: none; }
+    .nav-link { min-height: 40px; padding: 0 7px; font-size: 12px; letter-spacing: 0; }
+    .topbar-actions { gap: 4px; }
+    .btn-reg { min-height: 40px; padding: 0 10px; font-size: 12px; }
+    .btn-login {
+        width: 40px; min-width: 40px; min-height: 40px;
+        padding: 0; font-size: 0;
+    }
+    .btn-login i { font-size: 18px; }
+    .dropdown-menu { position: fixed; top: 58px; left: 10px; right: 10px; min-width: 0; }
+}
+
+@media (max-width: 430px) {
+    .topbar-logo img { height: 40px; max-width: 76px; }
+    .nav-link { padding: 0 5px; font-size: 11px; }
+}
+
+@media (max-width: 360px) {
+    .topbar-logo img { max-width: 64px; }
+    .nav-link { padding: 0 4px; font-size: 10px; }
+}
+
+        .dropdown-item:hover,
+
+
+        .btn-reg,
+
+
+
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -39,14 +247,14 @@
         }
 
         body {
-    font-family: 'Sarabun', sans-serif;
-    background: #F4F7FB;
-    color: #1E293B;
+            font-family: 'Sarabun', sans-serif;
+            background: #F4F7FB;
+            color: #1E293B;
 
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
         a {
             text-decoration: none;
@@ -58,175 +266,21 @@
             font: inherit;
         }
 
-        .topbar {
-            height: 72px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 28px;
-            background: rgba(255, 255, 255, .92);
-            border-bottom: 1px solid rgba(226, 232, 240, .9);
-            box-shadow: 0 2px 16px rgba(15, 23, 42, .04);
-            backdrop-filter: blur(14px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .topbar-logo {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 0;
-        }
-
-        .topbar-logo img {
-            height: 42px;
-            width: auto;
-            object-fit: contain;
-        }
-
-        .topbar-nav {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-            margin-left: 18px;
-        }
-
-        .nav-link {
-            min-height: 42px;
-            padding: 0 14px;
-            border-radius: 11px;
-            border: none;
-            background: transparent;
-            color: #334155;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            transition: background .18s ease, color .18s ease, transform .18s ease;
-        }
-
-        .nav-link:hover {
-            background: #F1F5F9;
-            color: var(--primary);
-            transform: translateY(-1px);
-        }
-
-        .nav-link i {
-            font-size: 17px;
-        }
-
-        .topbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-left: auto;
-        }
 
         .btn-reg,
-        .btn-login {
-            min-height: 42px;
-            padding: 0 17px;
-            border-radius: 11px;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+
+
+        .wrap {
+            width: min(1280px, 92%);
+            max-width: none;
+            margin: 40px auto;
+            padding: 70px;
+            flex: 1;
         }
 
-        .btn-reg {
-            color: #fff;
-            background: linear-gradient(135deg, #2F6FED, #2563EB);
-            border: 1px solid #2563EB;
-            box-shadow: 0 8px 18px rgba(37, 99, 235, .22);
+        .card {
+            margin-top: 22px;
         }
-
-        .btn-reg:hover {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            transform: translateY(-1px);
-            box-shadow: 0 10px 22px rgba(37, 99, 235, .28);
-        }
-
-        .btn-login {
-            color: #334155;
-            background: #fff;
-            border: 1px solid #DDE4EE;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-1px);
-            background: #F8FAFC;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            min-width: 200px;
-            padding: 8px;
-            display: none;
-            z-index: 200;
-            background: rgba(255, 255, 255, .98);
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .dropdown-item {
-            min-height: 42px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 12px;
-            border-radius: 10px;
-            color: #334155;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background .16s ease, color .16s ease;
-        }
-
-        .dropdown-item:hover {
-            background: #F8FAFC;
-            color: var(--primary);
-        }
-
-        .dropdown-item.active {
-            background: var(--primary-soft);
-            color: var(--primary);
-        }
-
-        .dropdown-item i {
-            font-size: 17px;
-            color: #64748B;
-        }
-
-        .dropdown-item.active i {
-            color: var(--primary);
-        }
-
-        .wrap{
-    width:min(1280px,92%);
-    max-width:none;
-    margin:40px auto;
-    padding:0;
-    flex:1;
-}
-
-.card{
-    margin-top:22px;
-}
 
         .page-hd {
             display: flex;
@@ -295,7 +349,7 @@
 
         .view-btn.active {
             color: #fff;
-            background: #172033;
+            background: #de8705;
             box-shadow: 0 6px 14px rgba(15, 23, 42, .18);
         }
 
@@ -308,7 +362,7 @@
             border: 1px solid #E2E8F0;
             border-radius: 16px;
             box-shadow: var(--shadow-sm);
-             margin-bottom:24px;
+            margin-bottom: 24px;
         }
 
         .tier-tab {
@@ -333,11 +387,23 @@
             background: #F8FAFC;
         }
 
-        .tier-tab.active {
-            color: #fff;
-            background: linear-gradient(135deg, #2F6FED, #2563EB);
-            box-shadow: 0 8px 18px rgba(37, 99, 235, .24);
-        }
+        .tier-tab.active-beginner {
+    color: #fff;
+    background: linear-gradient(135deg, #16A34A, #15803D);
+    box-shadow: 0 8px 18px rgba(22, 163, 74, .28);
+}
+
+.tier-tab.active-intermediate {
+    color: #fff;
+    background: linear-gradient(135deg, #2563EB, #1D4ED8);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, .28);
+}
+
+.tier-tab.active-advance {
+    color: #fff;
+    background: linear-gradient(135deg, #EA580C, #C2410C);
+    box-shadow: 0 8px 18px rgba(234, 88, 12, .28);
+}
 
         .tier-dot {
             width: 7px;
@@ -349,10 +415,31 @@
         .card {
             overflow: hidden;
             background: rgba(255, 255, 255, .97);
-            border: 1px solid #E4EAF2;
             border-radius: 18px;
-            box-shadow: 0 16px 38px rgba(15, 23, 42, .07);
+            
         }
+
+
+        thead.active-beginner th {
+    background: linear-gradient(180deg, #ECFDF5, #D1FAE5);
+    color: #16A34A;
+    font-size: 18px;
+    font-family: 'Kanit', 'Sarabun', sans-serif;
+}
+
+thead.active-intermediate th {
+    background: linear-gradient(180deg, #DBEAFE, #BFDBFE);
+    color: #2563EB;
+    font-size: 18px;
+    font-family: 'Kanit', 'Sarabun', sans-serif;
+}
+
+thead.active-advance th {
+    background: linear-gradient(180deg, #FFEDD5, #FED7AA);
+    color: #EA580C;
+    font-size: 18px;
+    font-family: 'Kanit', 'Sarabun', sans-serif;
+}
 
         .search-row {
             display: flex;
@@ -464,8 +551,9 @@
 
         .team-name {
             color: var(--text);
-            font-size: 15px;
+            font-size: 18px;
             font-weight: 800;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
         }
 
         .team-id {
@@ -473,6 +561,10 @@
             color: var(--primary);
             font-size: 11px;
             font-weight: 700;
+        }
+
+        .team-id.active-beginner {
+            color: #16A34A !important;
         }
 
         .score-num {
@@ -698,16 +790,17 @@
         }
 
         .footer {
-    background: #1E293B;
-    padding: 20px;
-    text-align: center;
-    margin-top: 32px;
-}
+            background: #1E293B;
+            padding: 20px;
+            text-align: center;
+            margin-top: 32px;
+        }
 
-       .wrap{
-    width:min(1400px,92%);
-    margin:48px auto;
-}
+        .wrap {
+            width: min(1400px, 92%);
+            margin: 48px auto;
+        }
+
         .footer img {
             height: 32px;
             margin-bottom: 9px;
@@ -729,78 +822,48 @@
             }
         }
 
-        @media (max-width: 760px) {
-            .topbar {
-                height: 64px;
-                padding: 0 14px;
-            }
+        .btn-reg,
 
-            .topbar-logo img {
-                height: 36px;
-            }
 
-            .topbar-nav {
-                margin-left: 4px;
-            }
 
-            .topbar-nav .nav-link:not(.dropdown .nav-link) {
-                display: none;
-            }
+        .btn-login i {
+            font-size: 16px;
+        }
 
-            .btn-reg,
-            .btn-login {
-                min-height: 38px;
-                padding: 0 12px;
-            }
+        .page-title {
+            font-size: 23px;
+        }
 
-            .btn-reg {
-                font-size: 12px;
-            }
+        .page-hd {
+            align-items: stretch;
+        }
 
-            .btn-login {
-                width: 40px;
-                padding: 0;
-                font-size: 0;
-            }
+        .page-hd>div:last-child {
+            width: 100%;
+        }
 
-            .btn-login i {
-                font-size: 16px;
-            }
+        .view-toggle {
+            width: 100%;
+        }
 
-            .page-title {
-                font-size: 23px;
-            }
+        .view-btn {
+            flex: 1;
+            justify-content: center;
+        }
 
-            .page-hd {
-                align-items: stretch;
-            }
+        .tier-tab {
+            min-height: 42px;
+            padding: 0 6px;
+            font-size: 11px;
+        }
 
-            .page-hd>div:last-child {
-                width: 100%;
-            }
+        .search-row {
+            padding: 13px;
+        }
 
-            .view-toggle {
-                width: 100%;
-            }
-
-            .view-btn {
-                flex: 1;
-                justify-content: center;
-            }
-
-            .tier-tab {
-                min-height: 42px;
-                padding: 0 6px;
-                font-size: 11px;
-            }
-
-            .search-row {
-                padding: 13px;
-            }
-
-            .search-box {
-                min-width: 100%;
-            }
+        .search-box {
+            min-width: 100%;
+        }
         }
 
         @media (max-width: 639px) {
@@ -821,29 +884,34 @@
 
 <body>
 
+    <!-- TOPBAR -->
     <div class="topbar">
         <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
         <nav class="topbar-nav">
-            <a href="/" class="nav-link"><i class="ti ti-home"></i> หน้าหลัก</a>
+            <a href="/" class="nav-link">หน้าหลัก</a>
+            <a href="/#about" class="nav-link"> เกี่ยวกับเรา</a>
             <div class="dropdown">
-                <button class="nav-link" style="color:#2563EB">
-                    <i class="ti ti-trophy"></i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
+                <button class="nav-link">
+                    </i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
                 </button>
                 <div class="dropdown-menu">
-                    <a href="/competition?view=teams&tier=<%= activeTier %>"
-                        class="dropdown-item <%= view==='teams'?'active':'' %>">
+                    <a href="/#tiers" class="dropdown-item" style="font-weight: 1000; font-size: larger;">
+                        <i style="font-size: larger;" class="ti ti-pencil-plus"></i> สมัครแข่งขัน
+                    </a>
+                    <a href="/competition?view=teams" class="dropdown-item" style="font-family: Kanit;">
                         <i class="ti ti-users"></i> ทีมที่สมัคร
                     </a>
-                    <a href="/competition?view=board&tier=<%= activeTier %>"
-                        class="dropdown-item <%= view==='board'?'active':'' %>">
+                    <a href="/competition?view=board" class="dropdown-item" style="font-family: Kanit;">
                         <i class="ti ti-chart-bar"></i> ผลสรุปคะแนน
                     </a>
                 </div>
             </div>
-            <a href="/docs" class="nav-link"><i class="ti ti-files"></i> เอกสาร</a>
+    
+            <a href="/docs" class="nav-link"> เอกสาร</a>
+            <a href="/preorder" class="nav-link" style="color:#EA580C"><i class="ti ti-shopping-cart"></i> Pre-order
+                สนาม</a>
         </nav>
         <div class="topbar-actions">
-            <a href="/register" class="btn-reg"><i class="ti ti-pencil-plus"></i> สมัครแข่งขัน</a>
             <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
         </div>
     </div>
@@ -856,11 +924,11 @@
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
                 <div class="view-toggle">
                     <a href="/competition?view=teams&tier=<%= activeTier %>"
-                        class="view-btn <%= view==='teams'?'active':'' %>">
+                        class="view-btn <%= view==='teams'?'active':'' %>" style="font-size: large; font-family: Kanit;">
                         <i class="ti ti-users"></i> ทีมที่สมัคร
                     </a>
                     <a href="/competition?view=board&tier=<%= activeTier %>"
-                        class="view-btn <%= view==='board'?'active':'' %>">
+                        class="view-btn <%= view==='board'?'active':'' %>" style="font-size: large; font-family: Kanit;">
                         <i class="ti ti-trophy"></i> ผลสรุปคะแนน
                     </a>
                 </div>
@@ -871,29 +939,24 @@
         <div style="margin-bottom:14px">
             <div class="tier-tabs">
                 <a href="/competition?view=<%= view %>&tier=beginner"
-                    class="tier-tab <%= activeTier==='beginner'?'active':'' %>">
-                    <span class="tier-dot"
-                        style="background:<%= activeTier==='beginner'?'#fff':'#16A34A' %>"></span>Beginner
-                    <% if (activeTier==='beginner' && teams) { %><span
-                            style="font-size:10px;background:rgba(255,255,255,.25);padding:1px 6px;border-radius:10px">
-                            <%= teams.length %>
-                        </span>
-                        <% } %>
+                    class="tier-tab <%= activeTier==='beginner' ? 'active-beginner' : '' %>" style="font-size: large; font-family: Kanit ;">
+                    <span class="tier-dot" style="background:<%= activeTier==='beginner'?'#fff':'#16A34A'%> "></span>Beginner
                 </a>
+                
                 <a href="/competition?view=<%= view %>&tier=intermediate"
-                    class="tier-tab <%= activeTier==='intermediate'?'active':'' %>">
-                    <span class="tier-dot"
-                        style="background:<%= activeTier==='intermediate'?'#fff':'#2563EB' %>"></span>Intermediate
+                    class="tier-tab <%= activeTier==='intermediate' ? 'active-intermediate' : '' %> " style="font-size: large; font-family: Kanit ;">
+                    <span class="tier-dot" style="background:<%= activeTier==='intermediate'?'#fff':'#2563EB' %>"></span>Intermediate
                 </a>
+                
                 <a href="/competition?view=<%= view %>&tier=advance"
-                    class="tier-tab <%= activeTier==='advance'?'active':'' %>">
-                    <span class="tier-dot"
-                        style="background:<%= activeTier==='advance'?'#fff':'#EA580C' %>"></span>Advance
+                    class="tier-tab <%= activeTier==='advance' ? 'active-advance' : '' %>" style="font-size: large; font-family: Kanit ;">
+                    <span class="tier-dot" style="background:<%= activeTier==='advance'?'#fff':'#EA580C' %>"></span>Advance
                 </a>
             </div>
         </div>
 
-        <div class="card">
+        <div
+            class="card <%= activeTier==='beginner'?'active-beginner':activeTier==='intermediate'?'active-intermediate':'active-advance' %>">
             <% if (view==='teams' ) { %>
                 <div class="search-row">
                     <div class="search-box">
@@ -911,9 +974,9 @@
                 <!-- Desktop table -->
                 <div class="desktop-table" style="overflow-x:auto">
                     <table>
-                        <thead>
+                        <thead class="table-head  <%= activeTier==='beginner'?'active-beginner':activeTier==='intermediate'?'active-intermediate':'active-advance' %>">
                             <tr>
-                                <th>#</th>
+                                <th >#</th>
                                 <th>ชื่อทีม</th>
                                 <th>สถาบัน</th>
                             </tr>
@@ -929,19 +992,19 @@
                                     <% if (teams) { teams.forEach(function(t, i) { %>
                                         <tr
                                             data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                                            <td style="color:#94A3B8;font-size:12px">
+                                            <td style="color:#94A3B8;font-size:18px">
                                                 <%= i+1 %>
                                             </td>
                                             <td>
-                                                <div class="team-name">
+                                                <div class="team-name" style="color:<%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
                                                     <%= t.name %>
                                                 </div>
-                                                <div class="team-id">
+                                                <div class="team-id" style="color:<%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
                                                     <%= t.id %>
                                                 </div>
                                             </td>
-                                            <td style="font-size:12px;color:#64748B"><i class="ti ti-school"
-                                                    style="font-size:12px"></i>
+                                            <td style="font-size:18px; font-family: 'Kanit', 'Sarabun', sans-serif; color:<%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>"><i class="ti ti-school"
+                                                    style="font-size:18px"></i>
                                                 <%= t.institution || '—' %>
                                             </td>
                                         </tr>
@@ -1026,7 +1089,7 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <div class="team-name">
+                                                    <div class="team-name" style="color: <%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
                                                         <%= t.name %>
                                                     </div>
                                                     <div style="font-size:11px;color:#94A3B8">
@@ -1198,6 +1261,15 @@
             menu.addEventListener('mouseleave', function () {
                 timer = setTimeout(function () { menu.style.display = 'none' }, 200)
             })
+            // Scroll effect
+            window.addEventListener('scroll', function () {
+                var topbar = document.querySelector('.topbar');
+                if (window.scrollY > 10) {
+                    topbar.classList.add('scrolled');
+                } else {
+                    topbar.classList.remove('scrolled');
+                }
+            });
         })
     </script>
 </body>

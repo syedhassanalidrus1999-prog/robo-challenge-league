@@ -55,6 +55,7 @@ app.use('/auth', require('./routes/auth'))
 app.use('/teams', require('./routes/teams'))
 app.use('/scores', require('./routes/scores'))
 app.use('/board', require('./routes/board'))
+app.use("/certificate", require("./routes/certificate"));
 
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {

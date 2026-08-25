@@ -1,0 +1,175 @@
+<style>
+    .cert-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 18px;
+        margin-top: 16px;
+    }
+
+    .cert-card {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, .05);
+    }
+
+    .cert-card-head {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        font-size: 13px;
+    }
+
+    .cert-preview {
+        position: relative;
+        aspect-ratio: 21/29.7;
+        background: #F1F5F9;
+        overflow: hidden;
+    }
+
+    .cert-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cert-preview-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #94A3B8;
+        font-size: 12px;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .cert-preview-empty i {
+        font-size: 32px;
+        opacity: .4;
+    }
+
+    .cert-body {
+        padding: 14px 16px;
+    }
+
+    .cert-name-dot {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: #EF4444;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, .3);
+    }
+</style>
+
+<div class="page-hd">
+    <div class="page-title"><span>จัดการ</span>เกียรติบัตร</div>
+</div>
+
+<% var tiers=['beginner', 'intermediate' , 'advance' ]; var tierColors={ beginner: '#16A34A' , intermediate: '#2563EB' ,
+    advance: '#EA580C' }; var tierLabels={ beginner: 'Beginner' , intermediate: 'Intermediate' , advance: 'Advance' };
+    var certTypes=[ { key: 'participation' , label: 'เข้าร่วม' , icon: 'ti-certificate' , color: '#64748B' }, {
+    key: '1st' , label: 'อันดับ 1' , icon: 'ti-trophy' , color: '#D97706' }, { key: '2nd' , label: 'อันดับ 2' ,
+    icon: 'ti-medal' , color: '#94A3B8' }, { key: '3rd' , label: 'อันดับ 3' , icon: 'ti-medal-2' , color: '#92400E' },
+    ]; %>
+
+    <% tiers.forEach(function(tier) { %>
+        <div style="margin-bottom:32px">
+            <div
+                style="font-size:18px;font-weight:800;color:<%= tierColors[tier] %>;margin-bottom:12px;display:flex;align-items:center;gap:8px">
+                <i class="ti <%= tier==='beginner'?'ti-leaf':tier==='intermediate'?'ti-flame':'ti-rocket' %>"></i>
+                <%= tierLabels[tier] %>
+            </div>
+            <div class="cert-grid">
+                <% certTypes.forEach(function(ct) { %>
+                    <% var tmpl=(templates[tier] && templates[tier][ct.key]) ? templates[tier][ct.key] : null; %>
+                        <div class="cert-card">
+
+                            <!-- Head -->
+                            <div class="cert-card-head"
+                                style="background:<%= tierColors[tier] %>18;border-bottom:1px solid <%= tierColors[tier] %>22">
+                                <i class="ti <%= ct.icon %>" style="color:<%= ct.color %>"></i>
+                                <span style="color:<%= ct.color %>">เกียรติบัตร<%= ct.label %></span>
+                                <% if (tmpl && tmpl.background_url) { %>
+                                    <span
+                                        style="margin-left:auto;font-size:10px;color:#16A34A;background:#F0FDF4;padding:2px 8px;border-radius:999px;border:1px solid #BBF7D0">
+                                        <i class="ti ti-check"></i> มี background
+                                    </span>
+                                    <% } %>
+                            </div>
+
+                            <!-- Preview -->
+                            <div class="cert-preview" id="preview-<%= tmpl ? tmpl.id : tier+'-'+ct.key %>">
+                                <% if (tmpl && tmpl.background_url) { %>
+                                    <img src="<%= tmpl.background_url %>" alt="background">
+                                    <% if (tmpl) { %>
+                                        <div class="cert-name-dot"
+                                            style="left:<%= tmpl.name_x %>%;top:<%= tmpl.name_y %>%"></div>
+                                        <% } %>
+                                            <% } else { %>
+                                                <div class="cert-preview-empty">
+                                                    <i class="ti ti-photo-off"></i>
+                                                    <span>ยังไม่มี background</span>
+                                                </div>
+                                                <% } %>
+                            </div>
+
+                            <!-- Form -->
+                            <div class="cert-body">
+                                <% if (tmpl) { %>
+                                    <form method="POST" action="/board/certificates/<%= tmpl.id %>"
+                                        enctype="multipart/form-data">
+                                        <div class="fg" style="margin-bottom:10px">
+                                            <div class="fl">Background (JPG/PNG, A4)</div>
+                                            <input class="fi" type="file" name="background" accept="image/*"
+                                                style="padding:6px">
+                                        </div>
+                                        <div
+                                            style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+                                            <div class="fg" style="margin-bottom:0">
+                                                <div class="fl">ตำแหน่ง X (%)</div>
+                                                <input class="fi" type="number" name="name_x" min="0" max="100"
+                                                    step="0.1" value="<%= tmpl.name_x || 50 %>">
+                                            </div>
+                                            <div class="fg" style="margin-bottom:0">
+                                                <div class="fl">ตำแหน่ง Y (%)</div>
+                                                <input class="fi" type="number" name="name_y" min="0" max="100"
+                                                    step="0.1" value="<%= tmpl.name_y || 45 %>">
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                                            <div class="fg" style="margin-bottom:0">
+                                                <div class="fl">ขนาด font (px)</div>
+                                                <input class="fi" type="number" name="name_font_size" min="12" max="120"
+                                                    value="<%= tmpl.name_font_size || 48 %>">
+                                            </div>
+                                            <div class="fg" style="margin-bottom:0">
+                                                <div class="fl">สีตัวอักษร</div>
+                                                <input class="fi" type="color" name="name_color"
+                                                    value="<%= tmpl.name_color || '#000000' %>"
+                                                    style="height:40px;padding:4px">
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm" style="width:100%">
+                                            <i class="ti ti-device-floppy"></i> บันทึก
+                                        </button>
+                                    </form>
+                                    <% } else { %>
+                                        <div style="text-align:center;color:#94A3B8;font-size:12px;padding:8px">
+                                            ไม่พบ template — กรุณารัน SQL เพื่อสร้างข้อมูลเริ่มต้น
+                                        </div>
+                                        <% } %>
+                            </div>
+                        </div>
+                        <% }) %>
+            </div>
+        </div>
+        <% }) %>

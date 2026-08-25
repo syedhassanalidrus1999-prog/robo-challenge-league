@@ -60,7 +60,7 @@
                                         <i class="ti ti-edit"></i> แก้ไข
                                     </button>
                                     <form method="POST"
-                                        action="/board/criteria/<%= c.id %>?_method=DELETE&tier=<%= c.tier %>"
+                                        action="/dashboard/criteria/<%= c.id %>?_method=DELETE&tier=<%= c.tier %>"
                                         onsubmit="return confirm('ลบภารกิจ <%= c.name %>?')">
                                         <button type="submit" class="btn btn-danger btn-sm"><i
                                                 class="ti ti-trash"></i></button>
@@ -92,7 +92,7 @@
                     </div>
                     <button class="modal-close" onclick="closeModal('addModal')"><i class="ti ti-x"></i></button>
                 </div>
-                <form method="POST" action="/board/criteria">
+                <form method="POST" action="/dashboard/criteria">
                     <div class="modal-body">
                         <input type="hidden" name="tier" id="add_tier">
                         <div class="fg" style="margin-bottom:12px">
@@ -212,7 +212,7 @@
                 }
 
                 function openCriteriaEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
-                    document.getElementById('editForm').action = '/board/criteria/' + id + '?_method=PUT'
+                    document.getElementById('editForm').action = '/dashboard/criteria/' + id + '?_method=PUT'
                     document.getElementById('edit_name').value = name
                     document.getElementById('edit_max').value = maxScore
                     document.getElementById('edit_tier').value = tier
@@ -228,7 +228,7 @@
                 }
 
             function openEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
-                document.getElementById('editForm').action = '/board/criteria/' + id + '?_method=PUT'
+                document.getElementById('editForm').action = '/dashboard/criteria/' + id + '?_method=PUT'
                 document.getElementById('edit_name').value = name
                 document.getElementById('edit_max').value = maxScore
                 document.getElementById('edit_tier').value = tier

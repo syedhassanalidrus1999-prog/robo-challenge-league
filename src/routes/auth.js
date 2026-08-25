@@ -5,7 +5,7 @@ const { query } = require('../config/database')
 
 // GET /auth/login
 router.get('/login', (req, res) => {
-  if (req.session.user) return res.redirect('/dashboard')
+  if (req.session.user) return res.redirect('/board')
   res.render('login', {
     layout: 'layouts/public',
     title: 'เข้าสู่ระบบ'
@@ -49,7 +49,7 @@ router.post('/login', async (req, res) => {
     }
 
     req.flash('success', `ยินดีต้อนรับ ${user.name}`)
-    res.redirect('/dashboard')
+    res.redirect('/board')
   } catch (err) {
     console.error('Login error:', err)
     req.flash('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่')

@@ -19,26 +19,38 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// GET /scores
+function handleUpload(req, res, next) {
+  upload.fields([
+    { name: "photo", maxCount: 1 },
+    { name: "signature", maxCount: 1 },
+  ])(req, res, function (err) {
+    if (err) {
+      console.error("Multer error:", err.message);
+      req.flash("error", "อัปโหลดไฟล์ไม่ได้: " + err.message);
+      return res.redirect("/scores");
+    }
+    next();
+  });
+}
+
+// ─── GET /scores ──────────────────────────────────────────────────────────────
 router.get("/", requireLogin, requireJudge, async (req, res) => {
   const user = req.session.user;
   const tier = user.role === "admin" ? req.query.tier || "beginner" : user.tier;
   try {
     const [teamsResult, criteriaResult] = await Promise.all([
       query(
-        `
-        SELECT t.*,
+        `SELECT t.*,
           s1.total_score as r1_score, s1.time_seconds as r1_time,
           s2.total_score as r2_score, s2.time_seconds as r2_time
         FROM teams t
         LEFT JOIN scores s1 ON s1.team_id = t.id AND s1.round = 1
         LEFT JOIN scores s2 ON s2.team_id = t.id AND s2.round = 2
         WHERE t.tier = $1
-        ORDER BY t.created_at ASC
-      `,
+        ORDER BY t.created_at ASC`,
         [tier],
       ),
-      query(`SELECT * FROM criteria WHERE tier = $1 ORDER BY mission`, [tier]),
+      query("SELECT * FROM criteria WHERE tier = $1 ORDER BY mission", [tier]),
     ]);
     const maxScore = criteriaResult.rows.reduce(
       (s, c) => s + parseFloat(c.max_score),
@@ -57,11 +69,11 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
   } catch (err) {
     console.error(err);
     req.flash("error", "ไม่สามารถโหลดข้อมูลได้");
-    res.redirect("/dashboard");
+    res.redirect("/board");
   }
 });
 
-// GET /scores/:teamId/:round
+// ─── GET /scores/:teamId/:round ───────────────────────────────────────────────
 router.get(
   "/:teamId/:round",
   requireLogin,
@@ -116,15 +128,12 @@ router.get(
   },
 );
 
-// POST /scores/:teamId/:round
+// ─── POST /scores/:teamId/:round ──────────────────────────────────────────────
 router.post(
   "/:teamId/:round",
   requireLogin,
   requireJudge,
-  upload.fields([
-    { name: "photo", maxCount: 1 },
-    { name: "signature", maxCount: 1 },
-  ]),
+  handleUpload,
   async (req, res) => {
     const { teamId, round } = req.params;
     const user = req.session.user;
@@ -180,8 +189,7 @@ router.post(
         sigData.startsWith("data:image")
       ) {
         try {
-          var uploadResult = await cloudinary.uploader.upload(sigData,
-             {
+          var uploadResult = await cloudinary.uploader.upload(sigData, {
             folder: "robo-league/signatures",
           });
           signatureUrl = uploadResult.secure_url;
@@ -190,36 +198,27 @@ router.post(
         }
       }
 
-      var totalScore =
-        mission1.total +
-        mission2.total +
-        mission3.total +
-        mission4.total +
-        mission5.total;
-
       await query(
-        `
-  INSERT INTO scores (
-    team_id, judge_id, round,
-    mission_1, mission_1_full, mission_1_partial,
-    mission_2, mission_2_full, mission_2_partial,
-    mission_3, mission_3_full, mission_3_partial,
-    mission_4, mission_4_full, mission_4_partial,
-    mission_5, mission_5_full, mission_5_partial,
-    time_seconds, photo_url, signature_url
-  ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
-  ON CONFLICT (team_id, round) DO UPDATE SET
-    judge_id=$2,
-    mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
-    mission_2=$7, mission_2_full=$8, mission_2_partial=$9,
-    mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
-    mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
-    mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
-    time_seconds=$19,
-    photo_url=COALESCE($20, scores.photo_url),
-    signature_url=COALESCE($21, scores.signature_url),
-    scored_at=NOW()
-`,
+        `INSERT INTO scores (
+        team_id, judge_id, round,
+        mission_1, mission_1_full, mission_1_partial,
+        mission_2, mission_2_full, mission_2_partial,
+        mission_3, mission_3_full, mission_3_partial,
+        mission_4, mission_4_full, mission_4_partial,
+        mission_5, mission_5_full, mission_5_partial,
+        time_seconds, photo_url, signature_url
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
+      ON CONFLICT (team_id, round) DO UPDATE SET
+        judge_id=$2,
+        mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
+        mission_2=$7, mission_2_full=$8, mission_2_partial=$9,
+        mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
+        mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
+        mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
+        time_seconds=$19,
+        photo_url=COALESCE($20, scores.photo_url),
+        signature_url=COALESCE($21, scores.signature_url),
+        scored_at=NOW()`,
         [
           teamId,
           parseInt(user.id),

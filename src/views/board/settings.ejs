@@ -6,7 +6,7 @@
     <div class="card-hd">
         <div class="card-title">วันแข่งขัน</div>
     </div>
-    <form method="POST" action="/board/settings">
+    <form method="POST" action="/dashboard/settings">
         <div class="card-body">
             <div class="fg" style="margin-bottom:14px">
                 <div class="fl">วันที่เริ่ม</div>
@@ -22,6 +22,72 @@
                 <div class="fl">สถานที่ (ไม่บังคับ)</div>
                 <input class="fi" type="text" name="event_date_label" value="<%= settings.event_date_label || '' %>"
                     placeholder="เช่น ณ โรงเรียน ROBO Champion Academy">
+            </div>
+        </div>
+        <div class="modal-foot" style="padding:14px 16px">
+            <button type="submit" class="btn btn-primary">
+                <i class="ti ti-device-floppy"></i> บันทึก
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="max-width:500px;margin-top:16px">
+    <div class="card-hd">
+        <div class="card-title">โปรโมชั่น Pre-order</div>
+    </div>
+    <form method="POST" action="/dashboard/settings">
+        <div class="card-body">
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">เปิดโปรโมชั่น</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                        <input type="radio" name="promo_active" value="1" <%=settings.promo_active==='1' ? 'checked'
+                            : '' %>>
+                        เปิด
+                    </label>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+                        <input type="radio" name="promo_active" value="0" <%=settings.promo_active !=='1' ? 'checked'
+                            : '' %>>
+                        ปิด
+                    </label>
+                </div>
+            </div>
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">ส่วนลด (%)</div>
+                <input class="fi" type="number" name="promo_percent" min="1" max="99"
+                    value="<%= settings.promo_percent || '10' %>" placeholder="เช่น 10">
+            </div>
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">วันหมดอายุโปรโมชั่น</div>
+                <input class="fi" type="date" name="promo_end_date" value="<%= settings.promo_end_date || '' %>">
+                <div style="font-size:11px;color:#94A3B8;margin-top:4px">ถึงวันนี้แล้วโปรโมชั่นจะหยุดแสดงอัตโนมัติ</div>
+            </div>
+        </div>
+        <div class="modal-foot" style="padding:14px 16px">
+            <button type="submit" class="btn btn-primary">
+                <i class="ti ti-device-floppy"></i> บันทึก
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="max-width:500px;margin-top:16px">
+    <div class="card-hd">
+        <div class="card-title">วันรับสมัคร</div>
+    </div>
+    <form method="POST" action="/dashboard/settings">
+        <div class="card-body">
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">วันเปิดรับสมัคร</div>
+                <input class="fi" type="datetime-local" name="registration_open_date"
+                    value="<%= settings.registration_open_date || '' %>">
+            </div>
+            <div class="fg" style="margin-bottom:14px">
+                <div class="fl">วันปิดรับสมัคร</div>
+                <input class="fi" type="datetime-local" name="registration_close_date"
+                    value="<%= settings.registration_close_date || '' %>">
+                <div style="font-size:11px;color:#94A3B8;margin-top:4px">ถึงเวลานี้แล้วปุ่มสมัครจะปิดอัตโนมัติ</div>
             </div>
         </div>
         <div class="modal-foot" style="padding:14px 16px">

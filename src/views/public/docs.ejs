@@ -8,10 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        /* =========================================================
+           VARIABLES / RESET
+        ========================================================= */
         :root {
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -48,73 +52,300 @@
             color: inherit;
         }
 
+        /* =========================================================
+           RCL TOPBAR
+        ========================================================= */
         .topbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            height: 72px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 32px;
-            background: rgba(255, 255, 255, .88);
-            border-bottom: 1px solid rgba(226, 232, 240, .85);
-            backdrop-filter: blur(14px);
-        }
-
-        .topbar-logo {
+            position: fixed;
+            inset: 0 0 auto;
+            z-index: 1000;
+            height: 84px;
+            padding: 0 30px;
             display: flex;
             align-items: center;
             gap: 10px;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            transition: .3s ease;
+        }
+
+        .topbar.scrolled {
+            background: rgba(255, 255, 255, .90);
+            border-bottom-color: rgba(226, 232, 240, .9);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
+            backdrop-filter: blur(16px);
+        }
+
+        .topbar-logo {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
         }
 
         .topbar-logo img {
-            height: 46px;
             width: auto;
-            display: block;
+            height: 120px;
             object-fit: contain;
         }
 
         .topbar-nav {
+            flex: 1;
+            margin-left: 18px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-link {
+            min-height: 52px;
+            padding: 0 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            border: 0;
+            border-radius: 11px;
+            background: transparent;
+            color: #334155;
+            font-family: 'Kanit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .nav-link:hover {
+            color: #2563EB;
+            background: rgba(239, 246, 255, .75);
+            transform: translateY(-1px);
+        }
+
+        .nav-link.docs-active {
+            color: #2563EB;
+            background: rgba(239, 246, 255, .9);
+        }
+
+        .nav-link.preorder-active {
+            color: #EA580C;
+        }
+
+        .nav-link.preorder-active:hover {
+            color: #EA580C;
+            background: rgba(255, 247, 237, .9);
+        }
+
+        .topbar-actions {
+            margin-left: auto;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .topbar-nav a {
-            min-height: 42px;
+        .btn-login {
+            min-height: 52px;
+            padding: 0 20px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 7px;
-            padding: 9px 16px;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            background: #fff;
             color: #334155;
-            font-size: 14px;
-            font-weight: 700;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 11px;
+            font: 800 16px 'Sarabun', sans-serif;
             text-decoration: none;
             transition: .2s ease;
         }
 
-        .topbar-nav a:hover {
+        .btn-login:hover {
+            background: #F8FAFC;
             transform: translateY(-1px);
-            border-color: #cbd5e1;
-            box-shadow: 0 7px 18px rgba(15, 23, 42, .08);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
         }
 
-        .topbar-nav .btn-reg {
-            color: #fff;
-            border-color: transparent;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            box-shadow: 0 8px 18px rgba(37, 99, 235, .24);
+        /* DROPDOWN */
+        .dropdown {
+            position: relative;
         }
 
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            z-index: 2000;
+            display: none;
+            min-width: 205px;
+            padding: 8px;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+        }
+
+        .dropdown-item {
+            min-height: 42px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            color: #334155;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: .18s ease;
+        }
+
+        .dropdown-item:hover {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .dropdown-item:first-child:hover {
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+        .dropdown-item i {
+            color: #64748B;
+            font-size: 17px;
+        }
+
+        /* Responsive — Laptop */
+        @media (min-width: 901px) and (max-width: 1199px) {
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .topbar-logo img {
+                height: 92px;
+            }
+
+            .nav-link {
+                padding: 0 12px;
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+
+            .btn-login {
+                padding: 0 14px;
+                font-size: 14px;
+            }
+        }
+
+        /* Responsive — Tablet */
+        @media (min-width: 641px) and (max-width: 900px) {
+            .topbar {
+                height: 72px;
+                padding: 0 16px;
+            }
+
+            .topbar-logo img {
+                height: 70px;
+            }
+
+            .topbar-nav {
+                margin-left: 4px;
+                gap: 2px;
+            }
+
+            .nav-link {
+                min-height: 44px;
+                padding: 0 9px;
+                font-size: 14px;
+                letter-spacing: .5px;
+            }
+
+            .btn-login {
+                min-height: 44px;
+                padding: 0 12px;
+                font-size: 13px;
+            }
+        }
+
+        /* Responsive — Mobile */
+        @media (max-width: 640px) {
+            .topbar {
+                height: 60px;
+                padding: 0 12px;
+            }
+
+            .topbar-logo img {
+                height: 46px;
+                max-width: 92px;
+            }
+
+            .topbar-nav {
+                margin-left: 2px;
+                gap: 0;
+            }
+
+            .nav-link {
+                min-height: 40px;
+                padding: 0 7px;
+                font-size: 12px;
+                letter-spacing: 0;
+                white-space: nowrap;
+            }
+
+            .topbar-actions {
+                gap: 4px;
+            }
+
+            .btn-login {
+                width: 40px;
+                min-width: 40px;
+                min-height: 40px;
+                padding: 0;
+                font-size: 0;
+            }
+
+            .btn-login i {
+                font-size: 18px;
+            }
+
+            .dropdown-menu {
+                position: fixed;
+                top: 58px;
+                left: 10px;
+                right: 10px;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 430px) {
+            .topbar-logo img {
+                height: 40px;
+                max-width: 76px;
+            }
+
+            .nav-link {
+                padding: 0 5px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .topbar-logo img {
+                max-width: 64px;
+            }
+
+            .nav-link {
+                padding: 0 4px;
+                font-size: 10px;
+            }
+        }
+
+        /* =========================================================
+           PAGE CONTENT
+        ========================================================= */
         .page-shell {
             width: min(1060px, calc(100% - 32px));
             margin: 0 auto;
-            padding: 42px 0 56px;
+            padding: 120px 0 56px;
         }
 
         .hero {
@@ -505,7 +736,7 @@
 
         .side-card {
             position: sticky;
-            top: 96px;
+            top: 108px;
             padding: 20px;
             border: 1px solid var(--line);
             border-radius: 20px;
@@ -588,173 +819,9 @@
             font-size: 12px;
         }
 
-        .topbar {
-            position: fixed;
-            inset: 0 0 auto;
-            z-index: 100;
-
-            height: 84px;
-            padding: 0 30px;
-
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            background: transparent;
-            border-bottom: 1px solid transparent;
-
-            transition: .3s ease;
-        }
-
-        .topbar.scrolled {
-            background: rgba(255, 255, 255, .90);
-            border-bottom-color: rgba(226, 232, 240, .9);
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
-            backdrop-filter: blur(16px);
-        }
-
-        .topbar-logo {
-            flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .topbar-logo img {
-            width: auto;
-            height: 120px;
-            object-fit: contain;
-        }
-
-        .topbar-nav {
-            flex: 1;
-            margin-left: 18px;
-
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-link {
-            min-height: 52px;
-            padding: 0 18px;
-
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-
-            border: 0;
-            border-radius: 11px;
-            background: transparent;
-
-            color: #334155;
-
-            font-family: 'Kanit', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-
-            cursor: pointer;
-            transition: .2s ease;
-        }
-
-        .nav-link:hover {
-            color: #2563EB;
-            transform: translateY(-1px);
-        }
-
-
-        /* =========================
-   Dropdown
-========================= */
-
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            z-index: 200;
-
-            display: none;
-
-            min-width: 200px;
-            padding: 8px;
-
-            background: rgba(255, 255, 255, .98);
-
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-
-            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-        }
-
-        .dropdown-item {
-            min-height: 42px;
-            padding: 0 12px;
-
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            border-radius: 10px;
-
-            color: #334155;
-
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .dropdown-item:hover {
-            background: #EFF6FF;
-            color: #2563EB;
-        }
-
-        .dropdown-item i {
-            color: #64748B;
-            font-size: 17px;
-        }
-
-
-        /* =========================
-   Login
-========================= */
-
-        .topbar-actions {
-            margin-left: auto;
-
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-login {
-            min-height: 52px;
-            padding: 0 20px;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-
-            color: #334155;
-            background: #fff;
-
-            border: 1px solid #E2E8F0;
-            border-radius: 11px;
-
-            font: 800 16px 'Sarabun', sans-serif;
-
-            transition: .2s ease;
-        }
-
-        .btn-login:hover {
-            background: #F8FAFC;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
-        }
-
+        /* =========================================================
+           RESPONSIVE — PAGE CONTENT
+        ========================================================= */
         @media (max-width: 860px) {
             .content-grid {
                 grid-template-columns: 1fr;
@@ -774,29 +841,8 @@
         }
 
         @media (max-width: 620px) {
-            .topbar {
-                height: auto;
-                min-height: 68px;
-                padding: 10px 16px;
-            }
-
-            .topbar-logo img {
-                height: 38px;
-            }
-
-            .topbar-nav a {
-                min-height: 38px;
-                padding: 8px 11px;
-                font-size: 12px;
-            }
-
-            .topbar-nav a:not(.btn-reg) span {
-                display: none;
-            }
-
             .page-shell {
-                width: min(100% - 22px, 1060px);
-                padding-top: 22px;
+                padding-top: 84px;
             }
 
             .hero {
@@ -839,405 +885,6 @@
                 padding-left: 16px;
             }
         }
-
-        /* ===== Shared RCL Homepage Navigation ===== */
-        .topbar {
-            position: fixed;
-            inset: 0 0 auto;
-            z-index: 100;
-            height: 84px;
-            padding: 0 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: transparent;
-            border-bottom: 1px solid transparent;
-            transition: .3s ease;
-        }
-
-        .topbar.scrolled {
-            background: rgba(255, 255, 255, .90);
-            border-bottom-color: rgba(226, 232, 240, .9);
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
-            backdrop-filter: blur(16px);
-        }
-
-        .topbar-logo {
-            flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .topbar-logo img {
-            width: auto;
-            height: 120px;
-            object-fit: contain;
-        }
-
-        .topbar-nav {
-            flex: 1;
-            margin-left: 18px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-link {
-            min-height: 52px;
-            padding: 0 18px;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            border: 0;
-            border-radius: 11px;
-            background: transparent;
-            color: #334155;
-            font-family: 'Kanit', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            cursor: pointer;
-            transition: .2s ease;
-            text-decoration: none;
-        }
-
-        .nav-link:hover {
-            color: #2563EB;
-            transform: translateY(-1px);
-        }
-
-        .docs-active {
-            color: #2563EB !important;
-        }
-
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            z-index: 200;
-            display: none;
-            min-width: 200px;
-            padding: 8px;
-            background: rgba(255, 255, 255, .98);
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-        }
-
-        .dropdown-item {
-            min-height: 42px;
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-radius: 10px;
-            color: #334155;
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .dropdown-item:hover {
-            background: #EFF6FF;
-            color: #2563EB;
-        }
-
-        .dropdown-item i {
-            color: #64748B;
-            font-size: 17px;
-        }
-
-        .topbar-actions {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-login {
-            min-height: 52px;
-            padding: 0 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            color: #334155;
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 11px;
-            font: 800 16px 'Sarabun', sans-serif;
-            transition: .2s ease;
-            text-decoration: none;
-        }
-
-        .btn-login:hover {
-            background: #F8FAFC;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
-        }
-
-        @media (max-width: 900px) {
-            .topbar {
-                padding: 0 20px;
-            }
-
-            .topbar-logo img {
-                height: 92px;
-            }
-
-            .nav-link {
-                padding: 0 12px;
-                font-size: 16px;
-                letter-spacing: 1px;
-            }
-
-            .btn-login {
-                padding: 0 14px;
-                font-size: 14px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .topbar {
-                height: 60px;
-                padding: 0 12px;
-            }
-
-            .topbar-logo img {
-                height: 46px;
-                max-width: 92px;
-            }
-
-            .topbar-nav {
-                margin-left: 2px;
-                gap: 0;
-            }
-
-            .nav-link {
-                min-height: 40px;
-                padding: 0 7px;
-                font-size: 12px;
-                letter-spacing: 0;
-                white-space: nowrap;
-            }
-
-            .topbar-actions {
-                gap: 4px;
-            }
-
-            .btn-login {
-                width: 40px;
-                min-width: 40px;
-                height: 40px;
-                min-height: 40px;
-                padding: 0;
-                border-radius: 10px;
-                font-size: 0;
-            }
-
-            .btn-login i {
-                font-size: 18px;
-            }
-
-            .dropdown-menu {
-                position: fixed;
-                top: 58px;
-                left: 10px;
-                right: 10px;
-                min-width: 0;
-            }
-        }
-    /* =========================
-   RCL NAV — หน้าเอกสาร
-========================= */
-
-.topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-
-    height: 72px;
-    padding: 0 30px;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    background: rgba(255, 255, 255, 0.82);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.75);
-    backdrop-filter: blur(16px);
-}
-
-/* Logo */
-.topbar-logo {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.topbar-logo img {
-    width: auto;
-    height: 58px;
-    object-fit: contain;
-}
-
-/* Nav */
-.topbar-nav {
-    flex: 1;
-    margin-left: 20px;
-
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-/* เมนูทุกตัว */
-.nav-link {
-    min-height: 46px;
-    padding: 0 17px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-
-    border: 0 !important;
-    border-radius: 10px;
-
-    background: transparent !important;
-
-    color: #334155;
-    font-family: 'Kanit', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: .5px;
-
-    text-decoration: none;
-    cursor: pointer;
-
-    transition: all .2s ease;
-}
-
-/* Hover */
-.nav-link:hover {
-    color: #2563EB;
-    background: rgba(239, 246, 255, .75) !important;
-    transform: translateY(-1px);
-}
-
-/* เอกสาร Active */
-.nav-link.docs-active {
-    color: #2563EB !important;
-    background: rgba(239, 246, 255, .9) !important;
-}
-
-/* Pre-order */
-.nav-link.preorder-active {
-    color: #EA580C !important;
-}
-
-.nav-link.preorder-active:hover {
-    color: #EA580C !important;
-    background: rgba(255, 247, 237, .9) !important;
-}
-
-/* Dropdown */
-.dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-
-    min-width: 205px;
-    padding: 7px;
-
-    display: none;
-
-    background: rgba(255, 255, 255, .98);
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-
-    box-shadow:
-        0 18px 45px rgba(15, 23, 42, .12);
-
-    backdrop-filter: blur(14px);
-}
-
-.dropdown-item {
-    min-height: 42px;
-    padding: 0 12px;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    border-radius: 9px;
-
-    color: #334155;
-    font-family: 'Sarabun', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-
-    text-decoration: none;
-    transition: .2s ease;
-}
-
-.dropdown-item:hover {
-    color: #2563EB;
-    background: #EFF6FF;
-}
-
-.dropdown-item i {
-    font-size: 17px;
-    color: #64748B;
-}
-
-/* Login */
-.topbar-actions {
-    margin-left: auto;
-
-    display: flex;
-    align-items: center;
-}
-
-.btn-login {
-    min-height: 46px;
-    padding: 0 18px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-
-    color: #334155;
-    background: #fff;
-
-    border: 1px solid #E2E8F0;
-    border-radius: 10px;
-
-    font-family: 'Sarabun', sans-serif;
-    font-size: 14px;
-    font-weight: 800;
-
-    text-decoration: none;
-    transition: .2s ease;
-}
-
-.btn-login:hover {
-    background: #F8FAFC;
-    border-color: #CBD5E1;
-    transform: translateY(-1px);
-    box-shadow: 0 7px 20px rgba(15, 23, 42, .07);
-}
     </style>
 </head>
 
@@ -1245,21 +892,18 @@
 
     <!-- TOPBAR -->
     <div class="topbar">
-        <a href="/" class="topbar-logo">
-            <img src="/RCL Logo.png" alt="RCL">
-        </a>
-
+        <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
         <nav class="topbar-nav">
             <a href="/" class="nav-link">หน้าหลัก</a>
-
-            <a href="/#about" class="nav-link">เกี่ยวกับเรา</a>
-
+            <a href="/#about" class="nav-link"> เกี่ยวกับเรา</a>
             <div class="dropdown">
-                <button class="nav-link" type="button">
-                    การแข่งขัน
-                    <i class="ti ti-chevron-down" style="font-size:13px"></i>
+                <button class="nav-link">
+                    </i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
                 </button>
                 <div class="dropdown-menu">
+                    <a href="/#tiers" class="dropdown-item" style="font-weight: 1000; font-size: larger;">
+                        <i style="font-size: larger;" class="ti ti-pencil-plus"></i> สมัครแข่งขัน
+                    </a>
                     <a href="/competition?view=teams" class="dropdown-item">
                         <i class="ti ti-users"></i> ทีมที่สมัคร
                     </a>
@@ -1268,23 +912,18 @@
                     </a>
                 </div>
             </div>
-
-            <a href="/docs" class="nav-link docs-active">เอกสาร</a>
-
-            <a href="/preorder" class="nav-link preorder-active">
-                <i class="ti ti-shopping-cart"></i>
-                Pre-order สนาม
-            </a>
+    
+            <a href="/docs" class="nav-link"> เอกสาร</a>
+            <a href="/preorder" class="nav-link" style="color:#EA580C"><i class="ti ti-shopping-cart"></i> Pre-order
+                สนาม</a>
         </nav>
-
         <div class="topbar-actions">
-            <a href="/auth/login" class="btn-login">
-                <i class="ti ti-lock"></i> เข้าสู่ระบบ
-            </a>
+            <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
         </div>
     </div>
 
     <main class="page-shell">
+
         <section class="hero">
             <div class="hero-copy">
                 <div class="eyebrow"><i class="ti ti-trophy"></i> ROBO CHALLENGE LEAGUE</div>
@@ -1305,6 +944,8 @@
 
         <div class="content-grid">
             <div class="main-column">
+
+                <!-- เอกสารทั่วไป -->
                 <section class="section">
                     <div class="section-head">
                         <div>
@@ -1360,6 +1001,7 @@
                     </div>
                 </section>
 
+                <!-- กติกาการแข่งขัน -->
                 <section class="section">
                     <div class="section-head">
                         <div>
@@ -1371,14 +1013,20 @@
 
                     <div class="tier-tabs" role="tablist" aria-label="เลือกรุ่นการแข่งขัน">
                         <button class="tier-tab t-b active" role="tab" aria-selected="true"
-                            onclick="switchTier('beginner', this)"><span class="tier-dot"></span> Beginner</button>
+                            onclick="switchTier('beginner', this)">
+                            <span class="tier-dot"></span> Beginner
+                        </button>
                         <button class="tier-tab t-i" role="tab" aria-selected="false"
-                            onclick="switchTier('intermediate', this)"><span class="tier-dot"></span>
-                            Intermediate</button>
+                            onclick="switchTier('intermediate', this)">
+                            <span class="tier-dot"></span> Intermediate
+                        </button>
                         <button class="tier-tab t-a" role="tab" aria-selected="false"
-                            onclick="switchTier('advance', this)"><span class="tier-dot"></span> Advance</button>
+                            onclick="switchTier('advance', this)">
+                            <span class="tier-dot"></span> Advance
+                        </button>
                     </div>
 
+                    <!-- Beginner -->
                     <div class="tier-content active" id="tier-beginner" role="tabpanel">
                         <% if (docs.rules_beginner) { %>
                             <a href="<%= docs.rules_beginner %>" target="_blank" class="doc-card"
@@ -1402,6 +1050,7 @@
                                 <% } %>
                     </div>
 
+                    <!-- Intermediate -->
                     <div class="tier-content" id="tier-intermediate" role="tabpanel">
                         <% if (docs.rules_intermediate) { %>
                             <a href="<%= docs.rules_intermediate %>" target="_blank" class="doc-card"
@@ -1425,6 +1074,7 @@
                                 <% } %>
                     </div>
 
+                    <!-- Advance -->
                     <div class="tier-content" id="tier-advance" role="tabpanel">
                         <% if (docs.rules_advance) { %>
                             <a href="<%= docs.rules_advance %>" target="_blank" class="doc-card"
@@ -1448,8 +1098,10 @@
                                 <% } %>
                     </div>
                 </section>
+
             </div>
 
+            <!-- Sidebar -->
             <aside class="side-card">
                 <div class="side-card-icon"><i class="ti ti-help"></i></div>
                 <h3>ต้องการความช่วยเหลือ?</h3>
@@ -1465,6 +1117,7 @@
                 </div>
             </aside>
         </div>
+
     </main>
 
     <footer class="footer">
@@ -1473,32 +1126,24 @@
     </footer>
 
     <script>
+        // Dropdown hover
         document.querySelectorAll('.dropdown').forEach(function (dd) {
             var menu = dd.querySelector('.dropdown-menu');
             var timer;
-
             dd.addEventListener('mouseenter', function () {
                 clearTimeout(timer);
                 menu.style.display = 'block';
             });
-
             dd.addEventListener('mouseleave', function () {
-                timer = setTimeout(function () {
-                    menu.style.display = 'none';
-                }, 200);
+                timer = setTimeout(function () { menu.style.display = 'none'; }, 200);
             });
-
-            menu.addEventListener('mouseenter', function () {
-                clearTimeout(timer);
-            });
-
+            menu.addEventListener('mouseenter', function () { clearTimeout(timer); });
             menu.addEventListener('mouseleave', function () {
-                timer = setTimeout(function () {
-                    menu.style.display = 'none';
-                }, 200);
+                timer = setTimeout(function () { menu.style.display = 'none'; }, 200);
             });
         });
 
+        // Scroll effect
         window.addEventListener('scroll', function () {
             var topbar = document.querySelector('.topbar');
             if (window.scrollY > 10) {
@@ -1508,19 +1153,21 @@
             }
         });
 
+        // Tier tabs
         function switchTier(tier, button) {
             document.querySelectorAll('.tier-content').forEach(function (el) {
-                el.classList.remove('active')
-            })
+                el.classList.remove('active');
+            });
             document.querySelectorAll('.tier-tab').forEach(function (el) {
-                el.classList.remove('active')
-                el.setAttribute('aria-selected', 'false')
-            })
-            document.getElementById('tier-' + tier).classList.add('active')
-            button.classList.add('active')
-            button.setAttribute('aria-selected', 'true')
+                el.classList.remove('active');
+                el.setAttribute('aria-selected', 'false');
+            });
+            document.getElementById('tier-' + tier).classList.add('active');
+            button.classList.add('active');
+            button.setAttribute('aria-selected', 'true');
         }
     </script>
+
 </body>
 
-</html>พ
+</html>
