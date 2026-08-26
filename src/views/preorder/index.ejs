@@ -53,171 +53,372 @@
     }
 
 
-   /* =========================================================
-           RCL TOPBAR
-        ========================================================= */
-        .topbar {
-            position: fixed;
-            inset: 0 0 auto;
-            z-index: 1000;
-            height: 84px;
-            padding: 0 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: transparent;
-            border-bottom: 1px solid transparent;
-            transition: .3s ease;
-        }
+    /* =========================================================
+   RCL TOPBAR
+========================================================= */
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1000;
+      height: 84px;
+      padding: 0 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: all .3s ease;
+    }
 
-        .topbar.scrolled {
-            background: rgba(255, 255, 255, .90);
-            border-bottom-color: rgba(226, 232, 240, .9);
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
-            backdrop-filter: blur(16px);
-        }
+    .topbar.scrolled {
+      background: rgba(255, 255, 255, .92);
+      border-bottom-color: rgba(226, 232, 240, .9);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+      backdrop-filter: blur(16px);
+    }
 
-        .topbar-logo {
-            flex-shrink: 0;
-            display: inline-flex;
-            align-items: center;
-        }
+    .topbar-logo {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+    }
 
-        .topbar-logo img {
-            width: auto;
-            height: 120px;
-            object-fit: contain;
-        }
+    .topbar-logo img {
+      width: auto;
+      height: 120px;
+      object-fit: contain;
+    }
 
-        .topbar-nav {
-            flex: 1;
-            margin-left: 18px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .topbar-nav {
+      flex: 1;
+      margin-left: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .nav-link {
-            min-height: 52px;
-            padding: 0 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            border: 0;
-            border-radius: 11px;
-            background: transparent;
-            color: white;
-            font-family: 'Kanit', sans-serif;
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-decoration: none;
-            cursor: pointer;
-            transition: .2s ease;
-        }
+    .nav-link {
+      min-height: 52px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      border: 0 !important;
+      border-radius: 11px;
+      background: transparent !important;
+      color: #334155;
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      line-height: 1.15;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
 
-        .topbar.scrolled .nav-link {
-  color: #334155 !important;
-}
+    .nav-link span:first-child {
+      font-size: 16px;
+      font-weight: 700;
+    }
 
-        .nav-link:hover {
-            color: #2563EB;
-            background: rgba(239, 246, 255, .75);
-            transform: translateY(-1px);
-        }
+    .nav-link span:last-child {
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
 
-        .nav-link.docs-active {
-            color: #2563EB;
-            background: rgba(239, 246, 255, .9);
-        }
+    .nav-link i {
+      font-size: 17px;
+    }
 
-        .nav-link.preorder-active {
-            color: #EA580C;
-        }
+    .nav-link:hover {
+      color: #2563EB;
+      background: #F4F8FF !important;
+      transform: translateY(-1px);
+    }
 
-        .nav-link.preorder-active:hover {
-            color: #EA580C;
-            background: rgba(255, 247, 237, .9);
-        }
+    .nav-link.active {
+      color: #2563EB !important;
+      background: #EFF6FF !important;
+    }
 
-        .topbar-actions {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    /* Certificate */
+    .certificate-btn {
+      background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
+      color: #92400E !important;
+      border: 1px solid #FCD34D !important;
+      border-radius: 90px !important;
+      box-shadow: 0 4px 12px rgba(180, 120, 20, .18);
+    }
 
-        .btn-login {
-            min-height: 52px;
-            padding: 0 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            color: #334155;
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 11px;
-            font: 800 16px 'Sarabun', sans-serif;
-            text-decoration: none;
-            transition: .2s ease;
-        }
+    .certificate-btn:hover {
+      background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
+      color: #78350F !important;
+      border-color: #F59E0B !important;
+      box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
+      transform: translateY(-2px);
+    }
 
-        .btn-login:hover {
-            background: #F8FAFC;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
-        }
+    .certificate-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(180, 120, 20, .20);
+    }
 
-        /* DROPDOWN */
-        .dropdown {
-            position: relative;
-        }
+    .topbar-actions {
+      flex: 0 0 auto;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            z-index: 2000;
-            display: none;
-            min-width: 205px;
-            padding: 8px;
-            background: rgba(255, 255, 255, .98);
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-        }
+    .btn-reg,
+    .btn-login {
+      min-height: 52px;
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 11px;
+      font: 800 16px 'Sarabun', sans-serif;
+      text-decoration: none;
+      transition: all .2s ease;
+    }
 
-        .dropdown-item {
-            min-height: 42px;
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-radius: 10px;
-            color: #334155;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: .18s ease;
-        }
+    .btn-reg {
+      color: #fff;
+      background: linear-gradient(135deg, #3478F6, #2563EB);
+      border: 1px solid transparent;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+    }
 
-        .dropdown-item:hover {
-            background: #EFF6FF;
-            color: #2563EB;
-        }
+    .btn-reg:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, .30);
+    }
 
-        .dropdown-item:first-child:hover {
-    background: #FEF2F2;
-    color: #DC2626;
-}
+    .btn-login {
+      color: #334155;
+      background: #fff;
+      border: 1px solid #E2E8F0;
+    }
 
-        .dropdown-item i {
-            color: #64748B;
-            font-size: 17px;
-        }
+    .btn-login:hover {
+      color: #2563EB;
+      background: #F8FAFC;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+    }
+
+    /* DROPDOWN */
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      z-index: 1100;
+      display: none;
+      min-width: 215px;
+      padding: 8px;
+      background: rgba(255, 255, 255, .98);
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+    }
+
+    .dropdown-item {
+      min-height: 44px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 10px;
+      color: #334155;
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .18s ease;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item.active {
+      color: #2563EB;
+      background: #EFF6FF;
+    }
+
+    .dropdown-item:first-child:hover {
+      background: #FEF2F2;
+      color: #DC2626;
+    }
+
+    .dropdown-item i {
+      font-size: 17px;
+      color: #64748B;
+    }
+
+    /* Responsive — Laptop */
+    @media (min-width:901px) and (max-width:1199px) {
+      .topbar {
+        padding: 0 20px;
+      }
+
+      .topbar-logo img {
+        height: 92px;
+      }
+
+      .nav-link {
+        padding: 0 11px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 14px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 12px;
+      }
+
+      .btn-reg,
+      .btn-login {
+        padding: 0 14px;
+        font-size: 14px;
+      }
+    }
+
+    /* Responsive — Tablet */
+    @media (min-width:641px) and (max-width:900px) {
+      .topbar {
+        height: 72px;
+        padding: 0 16px;
+      }
+
+      .topbar-logo img {
+        height: 70px;
+      }
+
+      .topbar-nav {
+        margin-left: 4px;
+        gap: 2px;
+      }
+
+      .nav-link {
+        min-height: 44px;
+        padding: 0 8px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 12px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 10px;
+      }
+
+      .btn-reg,
+      .btn-login {
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+    }
+
+    /* Responsive — Mobile */
+    @media (max-width:640px) {
+      .topbar {
+        height: 60px;
+        padding: 0 12px;
+      }
+
+      .topbar-logo img {
+        height: 46px;
+        max-width: 92px;
+      }
+
+      .topbar-nav {
+        margin-left: 2px;
+        gap: 0;
+      }
+
+      .topbar-nav>a.nav-link {
+        display: none;
+      }
+
+      .nav-link {
+        min-height: 40px;
+        padding: 0 7px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 11px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 9px;
+      }
+
+      .topbar-actions {
+        gap: 4px;
+      }
+
+      .btn-reg {
+        min-height: 40px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .btn-login {
+        width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        padding: 0;
+        font-size: 0;
+      }
+
+      .btn-login i {
+        font-size: 18px;
+      }
+
+      .dropdown-menu {
+        position: fixed;
+        top: 58px;
+        left: 10px;
+        right: 10px;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width:430px) {
+      .topbar-logo img {
+        height: 40px;
+        max-width: 76px;
+      }
+
+      .nav-link {
+        padding: 0 5px;
+      }
+    }
+
+    @media (max-width:360px) {
+      .topbar-logo img {
+        max-width: 64px;
+      }
+
+      .nav-link {
+        padding: 0 4px;
+      }
+    }
+
+
 
     /* Promotion / hero */
     .promo-banner {
@@ -958,11 +1159,12 @@
       }
 
       .topbar-logo {
-    width: 106px;
-    flex: 0 0 106px;
-    display: inline-flex;
-    align-items: center;
-}
+        width: 106px;
+        flex: 0 0 106px;
+        display: inline-flex;
+        align-items: center;
+      }
+
       .topbar-logo img {
         width: auto;
         height: 120px;
@@ -1239,34 +1441,73 @@
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
+    <a href="/" class="topbar-logo">
+      <img src="/RCL Logo.png" alt="RCL">
+    </a>
+
     <nav class="topbar-nav">
-      <a href="/" class="nav-link">หน้าหลัก</a>
-      <a href="/#about" class="nav-link"> เกี่ยวกับเรา</a>
+
+      <a href="/" class="nav-link">
+        <span>HOME</span>
+        <span>หน้าหลัก</span>
+      </a>
+
+      <a href="/#about" class="nav-link">
+        <span>ABOUT US</span>
+        <span>เกี่ยวกับเรา</span>
+      </a>
+
       <div class="dropdown">
-        <button class="nav-link">
-          </i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
+        <button class="nav-link" type="button">
+          <span>COMPETITION</span>
+          <span>
+            การแข่งขัน
+            <i class="ti ti-chevron-down"></i>
+          </span>
         </button>
+
         <div class="dropdown-menu">
-          <a href="/#tiers" class="dropdown-item" style="font-weight: 1000; font-size: larger;">
-            <i style="font-size: larger;" class="ti ti-pencil-plus"></i> สมัครแข่งขัน
+          <a href="/#tiers" class="dropdown-item">
+            <i class="ti ti-pencil-plus"></i>
+            สมัครแข่งขัน
           </a>
           <a href="/competition?view=teams" class="dropdown-item">
-            <i class="ti ti-users"></i> ทีมที่สมัคร
+            <i class="ti ti-users"></i>
+            ทีมที่สมัคร
           </a>
           <a href="/competition?view=board" class="dropdown-item">
-            <i class="ti ti-chart-bar"></i> ผลสรุปคะแนน
+            <i class="ti ti-chart-bar"></i>
+            ผลสรุปคะแนน
           </a>
         </div>
       </div>
 
-      <a href="/docs" class="nav-link"> เอกสาร</a>
-      <a href="/preorder" class="nav-link active-preorder"><i class="ti ti-shopping-cart"></i> Pre-order สนาม</a>
+      <a href="/docs" class="nav-link">
+        <span>DOCUMENT</span>
+        <span>เอกสาร</span>
+      </a>
+
+      <a href="/preorder" class="nav-link">
+        <span>PRE-ORDER MISSION</span>
+        <span>พรีออเดอร์สนามภารกิจ</span>
+      </a>
+
+      <a href="/certificate" class="nav-link certificate-btn" target="_blank">
+        <span>CERTIFICATE</span>
+        <span>เกียรติบัตร</span>
+      </a>
+
     </nav>
+
     <div class="topbar-actions">
-      <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
+      <a href="/auth/login" class="btn-login">
+        <i class="ti ti-lock"></i>
+        <span>เข้าสู่ระบบ</span>
+      </a>
     </div>
   </div>
+
+
 
   <% if (success) { %>
     <div class="success-wrap">
@@ -1291,24 +1532,24 @@
     <% } else { %>
 
 
-          <div class="page-hero">
-            <div class="page-hero-eyebrow">PRE-ORDER</div>
-            <div class="page-hero-title">สนามแข่งขัน RCL 2026</div>
-            <div class="page-hero-sub">เลือกได้หลายรายการ — คลิกสินค้าเพื่อดูรายละเอียดสนาม</div>
-          </div>
+      <div class="page-hero">
+        <div class="page-hero-eyebrow">PRE-ORDER</div>
+        <div class="page-hero-title">สนามแข่งขัน RCL 2026</div>
+        <div class="page-hero-sub">เลือกได้หลายรายการ — คลิกสินค้าเพื่อดูรายละเอียดสนาม</div>
+      </div>
 
-          <% if (promoActive) { %>
-          
-            <div class="promo-banner">
-              <div class="promo-banner-text"><i class="ti ti-tag"></i> โปรโมชั่นพิเศษ! ลด <%= promoPercent %>% ทุกรายการ
-              </div>
-              <% if (promoEndDate) { %>
-                <div class="promo-countdown"><i class="ti ti-clock"></i> <span>หมดเขต: <%= new
-                      Date(promoEndDate).toLocaleDateString('th-TH', {day:'numeric',month:'long',year:'numeric'}) %></span>
-                </div>
-                <% } %>
+      <% if (promoActive) { %>
+
+        <div class="promo-banner">
+          <div class="promo-banner-text"><i class="ti ti-tag"></i> โปรโมชั่นพิเศษ! ลด <%= promoPercent %>% ทุกรายการ
+          </div>
+          <% if (promoEndDate) { %>
+            <div class="promo-countdown"><i class="ti ti-clock"></i> <span>หมดเขต: <%= new
+                  Date(promoEndDate).toLocaleDateString('th-TH', {day:'numeric',month:'long',year:'numeric'}) %></span>
             </div>
             <% } %>
+        </div>
+        <% } %>
 
           <% if (errorMsg) { %>
             <div style="max-width:1100px;margin:16px auto;padding:0 16px">
@@ -1422,8 +1663,8 @@
                                   <div class="product-item" id="item-<%= item.key %>"
                                     onclick="toggleItem('<%= item.key %>',this)">
                                     <div class="product-thumb">
-                                      <img src="<%= '/images/product/product-' + item.key + '.png' %>" alt="<%= item.name %>"
-                                        onerror="this.style.display='none'">
+                                      <img src="<%= '/images/product/product-' + item.key + '.png' %>"
+                                        alt="<%= item.name %>" onerror="this.style.display='none'">
                                     </div>
                                     <div class="custom-checkbox" id="cb-<%= item.key %>"><i class="ti ti-check"></i>
                                     </div>

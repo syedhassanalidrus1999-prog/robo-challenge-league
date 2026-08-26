@@ -174,6 +174,37 @@
       letter-spacing: 1.5px;
       cursor: pointer;
       transition: .2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.2;
+    }
+
+    .certificate-btn {
+      transition: all 0.2s ease;
+    }
+
+    .certificate-btn:hover {
+      background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
+      border-color: #F59E0B !important;
+      color: #78350F !important;
+      box-shadow: 0 6px 16px rgba(180, 120, 20, 0.28);
+      transform: translateY(-2px);
+    }
+
+    .certificate-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(180, 120, 20, 0.20);
+    }
+
+    .nav-link span:first-child {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .nav-link span:last-child {
+      font-size: 15px;
+      margin-top: 2px;
     }
 
     .nav-link:hover {
@@ -2623,6 +2654,823 @@
         font-size: 14px
       }
     }
+
+
+    /* =========================================================
+       RCL MASTER TOPBAR — Based on Competition
+       This block intentionally overrides the original topbar CSS.
+    ========================================================= */
+    /* =========================================================
+   RCL TOPBAR
+========================================================= */
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 1000;
+      height: 84px;
+      padding: 0 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: all .3s ease;
+    }
+
+    .topbar.scrolled {
+      background: rgba(255, 255, 255, .92);
+      border-bottom-color: rgba(226, 232, 240, .9);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-logo {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .topbar-logo img {
+      width: auto;
+      height: 120px;
+      object-fit: contain;
+    }
+
+    .topbar-nav {
+      flex: 1;
+      margin-left: 18px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link {
+      min-height: 52px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      border: 0 !important;
+      border-radius: 11px;
+      background: transparent !important;
+      color: #334155;
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      line-height: 1.15;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+
+    .nav-link span:first-child {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .nav-link span:last-child {
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    .nav-link i {
+      font-size: 17px;
+    }
+
+    .nav-link:hover {
+      color: #2563EB;
+      background: #F4F8FF !important;
+      transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+      color: #2563EB !important;
+      background: #EFF6FF !important;
+    }
+
+    /* Certificate */
+    .certificate-btn {
+      background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
+      color: #92400E !important;
+      border: 1px solid #FCD34D !important;
+      border-radius: 90px !important;
+      box-shadow: 0 4px 12px rgba(180, 120, 20, .18);
+    }
+
+    .certificate-btn:hover {
+      background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
+      color: #78350F !important;
+      border-color: #F59E0B !important;
+      box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
+      transform: translateY(-2px);
+    }
+
+    .certificate-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(180, 120, 20, .20);
+    }
+
+    .topbar-actions {
+      flex: 0 0 auto;
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-reg,
+    .btn-login {
+      min-height: 52px;
+      padding: 0 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 11px;
+      font: 800 16px 'Sarabun', sans-serif;
+      text-decoration: none;
+      transition: all .2s ease;
+    }
+
+    .btn-reg {
+      color: #fff;
+      background: linear-gradient(135deg, #3478F6, #2563EB);
+      border: 1px solid transparent;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+    }
+
+    .btn-reg:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(37, 99, 235, .30);
+    }
+
+    .btn-login {
+      color: #334155;
+      background: #fff;
+      border: 1px solid #E2E8F0;
+    }
+
+    .btn-login:hover {
+      color: #2563EB;
+      background: #F8FAFC;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+    }
+
+    /* DROPDOWN */
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      z-index: 1100;
+      display: none;
+      min-width: 215px;
+      padding: 8px;
+      background: rgba(255, 255, 255, .98);
+      border: 1px solid #E2E8F0;
+      border-radius: 14px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+    }
+
+    .dropdown-item {
+      min-height: 44px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: 10px;
+      color: #334155;
+      font-family: 'Kanit', 'Sarabun', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all .18s ease;
+    }
+
+    .dropdown-item:hover,
+    .dropdown-item.active {
+      color: #2563EB;
+      background: #EFF6FF;
+    }
+
+    .dropdown-item:first-child:hover {
+      background: #FEF2F2;
+      color: #DC2626;
+    }
+
+    .dropdown-item i {
+      font-size: 17px;
+      color: #64748B;
+    }
+
+    /* Responsive — Laptop */
+    @media (min-width:901px) and (max-width:1199px) {
+      .topbar {
+        padding: 0 20px;
+      }
+
+      .topbar-logo img {
+        height: 92px;
+      }
+
+      .nav-link {
+        padding: 0 11px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 14px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 12px;
+      }
+
+      .btn-reg,
+      .btn-login {
+        padding: 0 14px;
+        font-size: 14px;
+      }
+    }
+
+    /* Responsive — Tablet */
+    @media (min-width:641px) and (max-width:900px) {
+      .topbar {
+        height: 72px;
+        padding: 0 16px;
+      }
+
+      .topbar-logo img {
+        height: 70px;
+      }
+
+      .topbar-nav {
+        margin-left: 4px;
+        gap: 2px;
+      }
+
+      .nav-link {
+        min-height: 44px;
+        padding: 0 8px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 12px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 10px;
+      }
+
+      .btn-reg,
+      .btn-login {
+        min-height: 44px;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+    }
+
+    /* Responsive — Mobile */
+    @media (max-width:640px) {
+      .topbar {
+        height: 60px;
+        padding: 0 12px;
+      }
+
+      .topbar-logo img {
+        height: 46px;
+        max-width: 92px;
+      }
+
+      .topbar-nav {
+        margin-left: 2px;
+        gap: 0;
+      }
+
+      .topbar-nav>a.nav-link {
+        display: none;
+      }
+
+      .nav-link {
+        min-height: 40px;
+        padding: 0 7px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 11px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 9px;
+      }
+
+      .topbar-actions {
+        gap: 4px;
+      }
+
+      .btn-reg {
+        min-height: 40px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .btn-login {
+        width: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        padding: 0;
+        font-size: 0;
+      }
+
+      .btn-login i {
+        font-size: 18px;
+      }
+
+      .dropdown-menu {
+        position: fixed;
+        top: 58px;
+        left: 10px;
+        right: 10px;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width:430px) {
+      .topbar-logo img {
+        height: 40px;
+        max-width: 76px;
+      }
+
+      .nav-link {
+        padding: 0 5px;
+      }
+    }
+
+    @media (max-width:360px) {
+      .topbar-logo img {
+        max-width: 64px;
+      }
+
+      .nav-link {
+        padding: 0 4px;
+      }
+    }
+
+    /* =========================================================
+       ABOUT FEATURE CARDS — POLISHED LAYOUT
+       Get to Know Us + Competition Categories
+    ========================================================= */
+    .about-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .about-card.about-card-robo,
+    .about-card.about-card-tiers {
+      min-height: 610px;
+      padding: 30px 30px 26px;
+      justify-content: flex-start;
+      border-radius: 28px;
+      box-shadow: 0 18px 48px rgba(37, 99, 235, .08);
+    }
+
+    .about-card.about-card-robo {
+      background:
+        radial-gradient(circle at 8% 55%, rgba(37, 99, 235, .10), transparent 25%),
+        linear-gradient(135deg, #fff 0%, #f7faff 100%);
+    }
+
+    .about-card.about-card-tiers {
+      background:
+        radial-gradient(circle at 92% 18%, rgba(74, 222, 128, .10), transparent 25%),
+        linear-gradient(135deg, #fff 0%, #fbfff9 100%);
+    }
+
+    .about-card.about-card-robo::before {
+      height: 6px;
+      background: linear-gradient(90deg, #2563EB, #60A5FA);
+    }
+
+    .about-card.about-card-tiers::before {
+      height: 6px;
+      background: linear-gradient(90deg, #16A34A, #86EFAC);
+    }
+
+    .about-card-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .about-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 225px;
+      margin: -3px auto 4px;
+    }
+
+    .about-visual::before {
+      content: "";
+      position: absolute;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, .08), transparent 68%);
+    }
+
+    .about-visual-green::before {
+      background: radial-gradient(circle, rgba(34, 197, 94, .10), transparent 68%);
+    }
+
+    .about-visual img {
+      position: relative;
+      z-index: 2;
+      width: auto;
+      height: 205px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 18px rgba(15, 23, 42, .10));
+      transition: transform .25s ease;
+    }
+
+    .about-card:hover .about-visual img {
+      transform: translateY(-4px) scale(1.025);
+    }
+
+    .about-spark {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: #60A5FA;
+      opacity: .65;
+    }
+
+    .about-spark::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 1px;
+      background: inherit;
+      top: 18px;
+      left: 18px;
+    }
+
+    .spark-1 {
+      left: 13%;
+      top: 27%
+    }
+
+    .spark-2 {
+      right: 16%;
+      top: 20%
+    }
+
+    .spark-3 {
+      left: 18%;
+      bottom: 19%
+    }
+
+    .spark-4 {
+      right: 9%;
+      top: 22%;
+      background: #4ADE80
+    }
+
+    .spark-5 {
+      right: 18%;
+      bottom: 18%;
+      background: #86EFAC
+    }
+
+    .about-card-title {
+      margin-bottom: 10px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 35px;
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .about-title-blue {
+      color: #2563EB;
+      background: linear-gradient(90deg, #2563EB, #60A5FA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .about-title-green {
+      color: #15803D;
+      background: linear-gradient(90deg, #15803D, #4ADE80);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .about-card-robo .about-card-title {
+      text-align: center;
+      font-size: 37px;
+    }
+
+    .about-card-robo .about-card-desc {
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+
+    .about-feature-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 22px;
+    }
+
+    .about-feature {
+      min-height: 112px;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-align: center;
+      background: rgba(255, 255, 255, .78);
+      border: 1px solid #DCE8F8;
+      border-radius: 16px;
+      box-shadow: 0 5px 14px rgba(37, 99, 235, .035);
+    }
+
+    .about-feature i {
+      font-size: 28px;
+      color: #2563EB;
+    }
+
+    .about-feature:nth-child(2) i {
+      color: #F59E0B
+    }
+
+    .about-feature:nth-child(3) i {
+      color: #16A34A
+    }
+
+    .about-feature:nth-child(4) i {
+      color: #8B5CF6
+    }
+
+    .about-feature span {
+      color: #334155;
+      font-family: 'Kanit', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .about-category-head {
+      min-height: 225px;
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .about-category-head .about-card-title {
+      margin-bottom: 10px;
+      font-size: 36px;
+      text-align: left;
+    }
+
+    .about-category-line {
+      width: 48px;
+      height: 4px;
+      margin-bottom: 16px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #16A34A, #4ADE80);
+    }
+
+    .about-category-intro {
+      color: #334155;
+      font-family: 'Kanit', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+
+    .about-category-head .about-visual {
+      height: 215px;
+      margin: 0;
+    }
+
+    .about-category-head .about-visual img {
+      height: 200px;
+    }
+
+    .about-tier-summary {
+      width: 100%;
+      max-width: none;
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .about-tier-item {
+      position: relative;
+      min-width: 0;
+      min-height: 205px;
+      padding: 16px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      border: 1px solid #E2E8F0;
+      border-radius: 18px;
+      background: #fff;
+      text-align: center;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .about-tier-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, .08);
+    }
+
+    .about-tier-icon {
+      width: 42px;
+      height: 42px;
+      margin: -37px auto 9px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 20px;
+      box-shadow: 0 5px 12px rgba(15, 23, 42, .12);
+    }
+
+    .about-tier-beginner {
+      border-top: 4px solid #16A34A;
+      background: #F8FEFA
+    }
+
+    .about-tier-intermediate {
+      border-top: 4px solid #2563EB;
+      background: #F8FAFF
+    }
+
+    .about-tier-advance {
+      border-top: 4px solid #EA580C;
+      background: #FFFBF7
+    }
+
+    .about-tier-beginner .about-tier-icon {
+      background: #16A34A
+    }
+
+    .about-tier-intermediate .about-tier-icon {
+      background: #2563EB
+    }
+
+    .about-tier-advance .about-tier-icon {
+      background: #EA580C
+    }
+
+    .about-tier-name {
+      margin-bottom: 7px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .about-tier-beginner .about-tier-name {
+      color: #16A34A
+    }
+
+    .about-tier-intermediate .about-tier-name {
+      color: #2563EB
+    }
+
+    .about-tier-advance .about-tier-name {
+      color: #EA580C
+    }
+
+    .about-tier-info {
+      color: #64748B;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .about-tier-btn {
+      width: calc(100% - 10px);
+      min-height: 40px;
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .72);
+      font-family: 'Kanit', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      transition: .2s ease;
+    }
+
+    .about-tier-beginner .about-tier-btn {
+      color: #16A34A
+    }
+
+    .about-tier-intermediate .about-tier-btn {
+      color: #2563EB
+    }
+
+    .about-tier-advance .about-tier-btn {
+      color: #EA580C
+    }
+
+    .about-tier-btn:hover {
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .about-tier-beginner .about-tier-btn:hover {
+      background: #16A34A
+    }
+
+    .about-tier-intermediate .about-tier-btn:hover {
+      background: #2563EB
+    }
+
+    .about-tier-advance .about-tier-btn:hover {
+      background: #EA580C
+    }
+
+    @media (max-width:900px) {
+
+      .about-card.about-card-robo,
+      .about-card.about-card-tiers {
+        min-height: 0
+      }
+
+      .about-category-head {
+        grid-template-columns: 1fr 180px
+      }
+
+      .about-feature-row {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media (max-width:640px) {
+      .about-grid {
+        grid-template-columns: 1fr
+      }
+
+      .about-visual {
+        height: 190px
+      }
+
+      .about-visual img {
+        height: 175px
+      }
+
+      .about-card-robo .about-card-title,
+      .about-category-head .about-card-title {
+        font-size: 30px
+      }
+
+      .about-category-head {
+        grid-template-columns: 1fr 145px;
+        min-height: 190px
+      }
+
+      .about-category-head .about-visual {
+        height: 180px
+      }
+
+      .about-category-head .about-visual img {
+        height: 160px
+      }
+
+      .about-tier-summary {
+        grid-template-columns: 1fr
+      }
+
+      .about-tier-item {
+        min-height: 175px
+      }
+    }
   </style>
 
 </head>
@@ -2631,39 +3479,73 @@
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
+    <a href="/" class="topbar-logo">
+      <img src="/RCL Logo.png" alt="RCL">
+    </a>
+
     <nav class="topbar-nav">
-      <a href="/" class="nav-link">หน้าหลัก</a>
-      <a href="/#about" class="nav-link"> เกี่ยวกับเรา</a>
+
+      <a href="/" class="nav-link">
+        <span>HOME</span>
+        <span>หน้าหลัก</span>
+      </a>
+
+      <a href="/#about" class="nav-link">
+        <span>ABOUT US</span>
+        <span>เกี่ยวกับเรา</span>
+      </a>
+
       <div class="dropdown">
-        <button class="nav-link">
-          </i> การแข่งขัน <i class="ti ti-chevron-down" style="font-size:13px"></i>
+        <button class="nav-link" type="button">
+          <span>COMPETITION</span>
+          <span>
+            การแข่งขัน
+            <i class="ti ti-chevron-down"></i>
+          </span>
         </button>
+
         <div class="dropdown-menu">
-          <a href="/#tiers" class="dropdown-item" style="font-weight: 1000; font-size: larger;">
-            <i class="ti ti-pencil-plus"></i> สมัครแข่งขัน
+          <a href="/#tiers" class="dropdown-item">
+            <i class="ti ti-pencil-plus"></i>
+            สมัครแข่งขัน
           </a>
           <a href="/competition?view=teams" class="dropdown-item">
-            <i class="ti ti-users"></i> ทีมที่สมัคร
+            <i class="ti ti-users"></i>
+            ทีมที่สมัคร
           </a>
           <a href="/competition?view=board" class="dropdown-item">
-            <i class="ti ti-chart-bar"></i> ผลสรุปคะแนน
+            <i class="ti ti-chart-bar"></i>
+            ผลสรุปคะแนน
           </a>
         </div>
       </div>
 
-      <a href="/docs" class="nav-link"> เอกสาร</a>
-      <a href="/preorder" class="nav-link" style="color:#EA580C"><i class="ti ti-shopping-cart"></i> Pre-order สนาม</a>
-
-      <a href="/certificate" class="nav-link" target="_blank">
-        <i class="ti ti-download"></i> ดาวน์โหลดเกียรติบัตร
+      <a href="/docs" class="nav-link">
+        <span>DOCUMENT</span>
+        <span>เอกสาร</span>
       </a>
+
+      <a href="/preorder" class="nav-link">
+        <span>PRE-ORDER MISSION</span>
+        <span>พรีออเดอร์สนามภารกิจ</span>
+      </a>
+
+      <a href="/certificate" class="nav-link certificate-btn" target="_blank">
+        <span>CERTIFICATE</span>
+        <span>เกียรติบัตร</span>
+      </a>
+
     </nav>
-   
+
     <div class="topbar-actions">
-      <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i> เข้าสู่ระบบ</a>
+      <a href="/auth/login" class="btn-login">
+        <i class="ti ti-lock"></i>
+        <span>เข้าสู่ระบบ</span>
+      </a>
     </div>
   </div>
+
+
 
   <!-- HERO -->
   <section class="hero" id="home">
@@ -2814,10 +3696,14 @@
         <div class="about-card about-card-robo">
 
           <div class="about-card-content">
-            <img src="images/icon/what is rcl icon.png" alt="trophy"
-              style="width: auto; height: 200px; margin-bottom: 10px;">
-            <div class="about-card-title" style="background: linear-gradient(90deg, #2563EB, #60A5FA);   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;">
+            <div class="about-visual about-visual-blue">
+              <span class="about-spark spark-1"></span>
+              <span class="about-spark spark-2"></span>
+              <span class="about-spark spark-3"></span>
+              <img src="images/icon/what is rcl icon.png" alt="ROBO Challenge League">
+            </div>
+
+            <div class="about-card-title about-title-blue">
               Get to Know Us
             </div>
 
@@ -2827,37 +3713,73 @@
               ทำให้ผู้เข้าแข่งขันต้องออกแบบหุ่นยนต์ เขียนโปรแกรม
               และวางกลยุทธ์ให้เหมาะกับโจทย์ของปีนั้น
             </div>
+
+            <div class="about-feature-row">
+              <div class="about-feature">
+                <i class="ti ti-users"></i>
+                <span>พัฒนาทักษะ<br>รอบด้าน</span>
+              </div>
+              <div class="about-feature">
+                <i class="ti ti-bulb"></i>
+                <span>จุดประกาย<br>ความคิดสร้างสรรค์</span>
+              </div>
+              <div class="about-feature">
+                <i class="ti ti-puzzle"></i>
+                <span>เรียนรู้การทำงาน<br>เป็นทีม</span>
+              </div>
+              <div class="about-feature">
+                <i class="ti ti-rocket"></i>
+                <span>ก้าวทัน<br>โลกอนาคต</span>
+              </div>
+            </div>
           </div>
         </div>
 
 
         <div class="about-card about-card-tiers">
           <div class="about-card-content">
-            <img src="images/icon/categorie icon.png" alt="trophy"
-              style="width: auto; height: 200px; margin-bottom: 10px;">
+            <div class="about-category-head">
+              <div>
+                <div class="about-card-title about-title-green">
+                  Competition<br>Categories
+                </div>
+                <div class="about-category-line"></div>
+                <p class="about-category-intro">
+                  แบ่งการแข่งขันออกเป็น 3 ระดับ<br>
+                  ครอบคลุมทุกช่วงวัยและทักษะ
+                </p>
+              </div>
 
-            <div class="about-card-title" style="background: linear-gradient(90deg, #16A34A, #4ade806a); -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;">
-              Competition Categories
+              <div class="about-visual about-visual-green">
+                <span class="about-spark spark-4"></span>
+                <span class="about-spark spark-5"></span>
+                <img src="images/icon/categorie icon.png" alt="Competition Categories">
+              </div>
             </div>
 
             <div class="about-tier-summary">
               <div class="about-tier-item about-tier-beginner">
+                <div class="about-tier-icon"><i class="ti ti-leaf"></i></div>
                 <div class="about-tier-name">Beginner</div>
                 <div class="about-tier-info">อายุไม่เกิน 9 ปี</div>
                 <div class="about-tier-info">หุ่นยนต์ : Botzees</div>
+                <a href="#tiers" class="about-tier-btn">ดูรายละเอียด <i class="ti ti-arrow-right"></i></a>
               </div>
 
               <div class="about-tier-item about-tier-intermediate">
+                <div class="about-tier-icon"><i class="ti ti-chart-bar"></i></div>
                 <div class="about-tier-name">Intermediate</div>
                 <div class="about-tier-info">อายุไม่เกิน 12 ปี</div>
                 <div class="about-tier-info">หุ่นยนต์ : ไม่จำกัดประเภท</div>
+                <a href="#tiers" class="about-tier-btn">ดูรายละเอียด <i class="ti ti-arrow-right"></i></a>
               </div>
 
               <div class="about-tier-item about-tier-advance">
+                <div class="about-tier-icon"><i class="ti ti-trophy"></i></div>
                 <div class="about-tier-name">Advance</div>
                 <div class="about-tier-info">อายุไม่เกิน 18 ปี</div>
                 <div class="about-tier-info">หุ่นยนต์ : ไม่จำกัดประเภท</div>
+                <a href="#tiers" class="about-tier-btn">ดูรายละเอียด <i class="ti ti-arrow-right"></i></a>
               </div>
             </div>
           </div>
@@ -3213,12 +4135,16 @@
     border: 1px solid #a5e4bc;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(15, 23, 42, .06);">
-                    <div style="font-size: 20px; font-family: kanit; color:#16A34A;">รูปสนามแข่งขัน</div><img src="images/beginner home.png" alt="Beginner home image"
+                    <div style="font-size: 20px; font-family: kanit; color:#16A34A;">รูปสนามแข่งขัน</div><img
+                      src="images/beginner home.png" alt="Beginner home image"
                       style="width: 100%; max-width: 250px; margin: 10px 0;">
                   </div>
-                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#16A34A;">รุ่นอายุ : ไม่เกิน 9 ปี</div>
-                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#16A34A;">ประเภทหุ่นยนต์ : Botzees</div>
-                  <span class="tier-badge green" style="font-size: 15px; font-family: kanit; color:#16A34A;"><i class="ti ti-trophy" aria-hidden="true"></i>คะแนนรวม 50 คะแนน</span>
+                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#16A34A;">รุ่นอายุ : ไม่เกิน
+                    9 ปี</div>
+                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#16A34A;">ประเภทหุ่นยนต์ :
+                    Botzees</div>
+                  <span class="tier-badge green" style="font-size: 15px; font-family: kanit; color:#16A34A;"><i
+                      class="ti ti-trophy" aria-hidden="true"></i>คะแนนรวม 50 คะแนน</span>
                   <br>
                   <% if (regNotYet) { %>
                     <span class="tier-reg-btn green" style="opacity:.5;cursor:not-allowed;pointer-events:none">
@@ -3230,7 +4156,8 @@
                         <i class="ti ti-x"></i> หมดเขตการสมัคร
                       </span>
                       <% } else { %>
-                        <a href="/register/beginner" class="tier-reg-btn green" style="font-family: kanit; font-size: 20px;"><i class="ti ti-pencil-plus"></i>
+                        <a href="/register/beginner" class="tier-reg-btn green"
+                          style="font-family: kanit; font-size: 20px;"><i class="ti ti-pencil-plus"></i>
                           สมัครรุ่นนี้</a>
                         <% } %>
                 </div>
@@ -3245,12 +4172,16 @@
     border: 1px solid #E2E8F0;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(15, 23, 42, .06);">
-                    <div style="font-size: 20px; font-family: kanit; color:#2563EB;">รูปสนามแข่งขัน</div><img src="images/intermediate home.png" alt="Intermediate home image"
+                    <div style="font-size: 20px; font-family: kanit; color:#2563EB;">รูปสนามแข่งขัน</div><img
+                      src="images/intermediate home.png" alt="Intermediate home image"
                       style="width: 100%; max-width: 250px; margin: 10px 0;">
                   </div>
-                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#2563EB;">รุ่นอายุ : ไม่เกิน 12 ปี</div>
-                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#2563EB;">ประเภทหุ่นยนต์ : ไม่จำกัดประเภทหุ่นยนต์</div>
-                  <span class="tier-badge blue" style="font-size: 15px; font-family: kanit; color:#2563EB;"><i class="ti ti-trophy" aria-hidden="true"></i> คะแนนรวม 100
+                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#2563EB;">รุ่นอายุ : ไม่เกิน
+                    12 ปี</div>
+                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#2563EB;">ประเภทหุ่นยนต์ :
+                    ไม่จำกัดประเภทหุ่นยนต์</div>
+                  <span class="tier-badge blue" style="font-size: 15px; font-family: kanit; color:#2563EB;"><i
+                      class="ti ti-trophy" aria-hidden="true"></i> คะแนนรวม 100
                     คะแนน</span>
                   <br>
                   <% if (regNotYet) { %>
@@ -3263,7 +4194,8 @@
                         <i class="ti ti-x"></i> หมดเขตการสมัคร
                       </span>
                       <% } else { %>
-                        <a href="/register/intermediate" class="tier-reg-btn blue" style="font-family: kanit; font-size: 20px;"><i class="ti ti-pencil-plus"></i>
+                        <a href="/register/intermediate" class="tier-reg-btn blue"
+                          style="font-family: kanit; font-size: 20px;"><i class="ti ti-pencil-plus"></i>
                           สมัครรุ่นนี้</a>
                         <% } %>
                 </div>
@@ -3278,12 +4210,16 @@
     border: 1px solid #E2E8F0;
     border-radius: 18px;
     box-shadow: 0 10px 30px rgba(15, 23, 42, .06);">
-                    <div style="font-size: 20px; font-family: kanit; color:#EA580C;">รูปสนามแข่งขัน</div><img src="images/advance home.png" alt="Advance home image"
+                    <div style="font-size: 20px; font-family: kanit; color:#EA580C;">รูปสนามแข่งขัน</div><img
+                      src="images/advance home.png" alt="Advance home image"
                       style="width: 100%; max-width: 250px; margin: 10px 0;">
                   </div>
-                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#EA580C;">รุ่นอายุ : ไม่เกิน 18 ปี</div>
-                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#EA580C;">ประเภทหุ่นยนต์ : ไม่จำกัดประเภทหุ่นยนต์</div>
-                  <span class="tier-badge orange" style="font-size: 15px; font-family: kanit; color:#EA580C;"><i class="ti ti-trophy" aria-hidden="true"></i> คะแนนรวม 100
+                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#EA580C;">รุ่นอายุ : ไม่เกิน
+                    18 ปี</div>
+                  <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#EA580C;">ประเภทหุ่นยนต์ :
+                    ไม่จำกัดประเภทหุ่นยนต์</div>
+                  <span class="tier-badge orange" style="font-size: 15px; font-family: kanit; color:#EA580C;"><i
+                      class="ti ti-trophy" aria-hidden="true"></i> คะแนนรวม 100
                     คะแนน</span>
                   <br>
                   <% if (regNotYet) { %>
@@ -3296,7 +4232,8 @@
                         <i class="ti ti-x"></i> หมดเขตการสมัคร
                       </span>
                       <% } else { %>
-                        <a href="/register/advance" class="tier-reg-btn orange" style="font-family: kanit; font-size: 20px;"><i class="ti ti-pencil-plus"></i>
+                        <a href="/register/advance" class="tier-reg-btn orange"
+                          style="font-family: kanit; font-size: 20px;"><i class="ti ti-pencil-plus"></i>
                           สมัครรุ่นนี้</a>
                         <% } %>
                 </div>
