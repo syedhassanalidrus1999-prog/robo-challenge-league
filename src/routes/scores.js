@@ -110,6 +110,7 @@ router.get(
       );
       res.render("scores/form", {
         layout: "layouts/main",
+        layout: false,
         title: "ลงคะแนน " + team.name + " รอบ " + round,
         pageTitle: "<span>ลงคะแนน</span> — รอบที่ " + round,
         tierSelector: false,

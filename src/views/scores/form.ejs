@@ -1,857 +1,561 @@
-<style>
-  .score-page {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --primary-soft: #eff6ff;
-    --orange: #ea580c;
-    --orange-soft: #fff7ed;
-    --ink: #0f172a;
-    --muted: #64748b;
-    --line: #e2e8f0;
-    --surface: #ffffff;
-    --surface-soft: #f8fafc;
-    --success: #16a34a;
-    color: var(--ink);
-  }
-
-  .score-page * {
-    box-sizing: border-box;
-  }
-
-  .score-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 18px;
-  }
-
-  .score-head-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .score-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 12px;
-    border-radius: 10px;
-    color: var(--primary);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 700;
-    background: var(--primary-soft);
-    transition: .18s ease;
-  }
-
-  .score-back:hover {
-    background: #dbeafe;
-    transform: translateX(-2px);
-  }
-
-  .score-title {
-    font-size: 21px;
-    font-weight: 800;
-    color: var(--ink);
-  }
-
-  .score-title span {
-    color: var(--primary);
-  }
-
-  .score-round {
-    display: inline-flex;
-    align-items: center;
-    min-height: 30px;
-    padding: 5px 11px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    background: #f3e8ff;
-    color: #7c3aed;
-  }
-
-  .score-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 330px;
-    gap: 18px;
-    align-items: start;
-  }
-
-  .score-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    box-shadow: 0 8px 28px rgba(15, 23, 42, .06);
-    overflow: hidden;
-  }
-
-  .score-card-head {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--line);
-  }
-
-  .score-head-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: var(--primary-soft);
-    color: var(--primary);
-    font-size: 22px;
-    flex: 0 0 auto;
-  }
-
-  .score-card-title {
-    font-size: 16px;
-    font-weight: 800;
-  }
-
-  .score-card-sub {
-    margin-top: 2px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .score-card-body {
-    padding: 16px;
-  }
-
-  .mission-card {
-    border: 1px solid #dbe3ee;
-    border-radius: 14px;
-    background: var(--surface);
-    margin-bottom: 14px;
-    overflow: hidden;
-  }
-
-  .mission-card:last-child {
-    margin-bottom: 0;
-  }
-
-  .mission-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 15px 16px;
-    background: linear-gradient(180deg, #fbfdff 0%, #f4f8ff 100%);
-    border-bottom: 1px solid #e6edf7;
-  }
-
-  .mission-name {
-    font-size: 18px;
-    font-weight: 800;
-  }
-
-  .mission-rule {
-    margin-top: 3px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .mission-total {
-    white-space: nowrap;
-    padding: 7px 11px;
-    border-radius: 999px;
-    background: var(--primary-soft);
-    color: var(--primary);
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .mission-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .score-option {
-    padding: 18px;
-  }
-
-  .score-option+.score-option {
-    border-left: 1px solid var(--line);
-  }
-
-  .score-option-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    font-weight: 800;
-  }
-
-  .option-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 18px;
-  }
-
-  .full .score-option-label {
-    color: var(--primary);
-  }
-
-  .full .option-icon {
-    background: var(--primary-soft);
-    color: var(--primary);
-  }
-
-  .partial .score-option-label {
-    color: var(--orange);
-  }
-
-  .partial .option-icon {
-    background: var(--orange-soft);
-    color: var(--orange);
-  }
-
-  .score-option.disabled {
-    opacity: .45;
-  }
-
-  .score-number {
-    width: 100%;
-    height: 52px;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 11px;
-    background: #fff;
-    text-align: center;
-    font-size: 21px;
-    font-weight: 800;
-    font-family: inherit;
-    outline: none;
-    transition: .18s ease;
-  }
-
-  .score-number:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
-  }
-
-  .full .score-number {
-    color: var(--primary);
-  }
-
-  .partial .score-number {
-    color: var(--orange);
-  }
-
-  .score-number:disabled {
-    background: #f1f5f9;
-    cursor: not-allowed;
-  }
-
-  .score-calc {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .score-tip {
-    display: flex;
-    gap: 12px;
-    padding: 15px 16px;
-    margin-top: 14px;
-    border: 1px solid #ddd6fe;
-    border-radius: 14px;
-    background: #f5f3ff;
-    color: #5b21b6;
-  }
-
-  .score-tip i {
-    font-size: 22px;
-    margin-top: 1px;
-  }
-
-  .score-tip strong {
-    display: block;
-    margin-bottom: 2px;
-    font-size: 13px;
-  }
-
-  .score-tip span {
-    font-size: 12px;
-    color: #6d5da8;
-  }
-
-  .score-side {
-    display: grid;
-    gap: 14px;
-    position: sticky;
-    top: 82px;
-  }
-
-  .total-card {
-    position: relative;
-    padding: 20px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    border: 1px solid #bfdbfe;
-    overflow: hidden;
-  }
-
-  .total-card::after {
-    content: '\ea88';
-    font-family: 'tabler-icons';
-    position: absolute;
-    right: 12px;
-    bottom: -12px;
-    font-size: 86px;
-    color: rgba(37, 99, 235, .08);
-  }
-
-  .total-label {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    color: var(--primary);
-    font-size: 12px;
-    font-weight: 800;
-  }
-
-  .total-value {
-    margin-top: 8px;
-    font-size: 42px;
-    line-height: 1;
-    font-weight: 900;
-    letter-spacing: -.5px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .total-meta {
-    margin-top: 7px;
-    font-size: 12px;
-    color: var(--muted);
-    position: relative;
-    z-index: 1;
-  }
-
-  .side-card {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 6px 20px rgba(15, 23, 42, .05);
-    overflow: hidden;
-  }
-
-  .side-card-title {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--line);
-    font-size: 14px;
-    font-weight: 800;
-  }
-
-  .side-card-body {
-    padding: 14px;
-  }
-
-  .field-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-bottom: 7px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #475569;
-  }
-
-  .time-input {
-    width: 100%;
-    height: 48px;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 10px;
-    text-align: center;
-    font-size: 19px;
-    font-weight: 800;
-    outline: none;
-  }
-
-  .time-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
-  }
-
-  .upload-box {
-    display: block;
-    border: 1.5px dashed #bfdbfe;
-    border-radius: 11px;
-    background: #f8fbff;
-    padding: 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: .18s ease;
-  }
-
-  .upload-box:hover {
-    background: #eff6ff;
-    border-color: var(--primary);
-  }
-
-  .upload-box i {
-    display: block;
-    font-size: 27px;
-    color: var(--primary);
-    margin-bottom: 5px;
-  }
-
-  .upload-box strong {
-    display: block;
-    font-size: 13px;
-    color: var(--primary);
-  }
-
-  .upload-box span {
-    display: block;
-    margin-top: 2px;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .upload-box input {
-    display: none;
-  }
-
-  .preview-image {
-    width: 100%;
-    max-height: 150px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 8px;
-  }
-
-  .signature-wrap {
-    position: relative;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 11px;
-    overflow: hidden;
-    background: #fff;
-  }
-
-  #sigCanvas {
-    display: block;
-    width: 100%;
-    height: 130px;
-    cursor: crosshair;
-    touch-action: none;
-  }
-
-  .sig-clear {
-    position: absolute;
-    top: 7px;
-    right: 7px;
-    border: 1px solid var(--line);
-    background: #fff;
-    color: var(--muted);
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 7px;
-    cursor: pointer;
-  }
-
-  .sig-hint {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    color: #cbd5e1;
-    font-size: 12px;
-    pointer-events: none;
-  }
-
-  .sig-status {
-    margin-top: 5px;
-    font-size: 11px;
-    color: #94a3b8;
-  }
-
-  .save-score-btn {
-    width: 100%;
-    min-height: 50px;
-    border: 0;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    color: #fff;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 10px 20px rgba(37, 99, 235, .22);
-    transition: .18s ease;
-  }
-
-  .save-score-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 13px 24px rgba(37, 99, 235, .28);
-  }
-
-  @media (max-width: 1050px) {
-    .score-layout {
-      grid-template-columns: 1fr;
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %> — RCL
+  </title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .score-form-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
     }
 
-    .score-side {
-      position: static;
+    @media(max-width:900px) {
+      .score-form-wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .mission-card {
+      background: #fff;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+    }
+
+    .mission-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 3px;
+    }
+
+    .mission-sub {
+      font-size: 12px;
+      color: #94A3B8;
+      margin-bottom: 14px;
+    }
+
+    .mission-row {
+      display: grid;
       grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
-    .score-side .total-card,
-    .score-side .save-score-btn {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (max-width: 680px) {
-    .score-head {
-      align-items: flex-start;
+    @media(max-width:600px) {
+      .mission-row {
+        grid-template-columns: 1fr;
+      }
     }
 
-    .score-title {
-      font-size: 18px;
+    .score-input-box {
+      border: 1.5px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: #F8FAFC;
     }
 
-    .score-card-head {
-      padding: 15px;
+    .score-input-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748B;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    .score-card-body {
-      padding: 12px;
+    .score-input-label.full {
+      color: #2563EB;
     }
 
-    .mission-top {
-      align-items: flex-start;
-      flex-direction: column;
+    .score-input-label.partial {
+      color: #F59E0B;
     }
 
-    .mission-inputs {
-      grid-template-columns: 1fr;
+    .score-num-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 28px;
+      font-weight: 900;
+      color: #0F172A;
+      text-align: center;
+      outline: none;
+      font-family: 'Sarabun', sans-serif;
     }
 
-    .score-option+.score-option {
-      border-left: 0;
-      border-top: 1px solid var(--line);
+    .score-calc {
+      font-size: 11px;
+      color: #94A3B8;
+      text-align: center;
+      margin-top: 4px;
     }
 
-    .score-side {
-      grid-template-columns: 1fr;
+    .mission-total {
+      text-align: right;
+      font-size: 13px;
+      font-weight: 700;
+      color: #2563EB;
+      margin-top: 10px;
     }
 
-    .score-side .total-card,
-    .score-side .save-score-btn {
-      grid-column: auto;
+    .side-card {
+      background: #fff;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+      margin-bottom: 14px;
     }
-  }
-</style>
 
-<div class="score-page">
-  <div class="score-head">
-    <div class="score-head-left">
-      <a href="/scores" class="score-back"><i class="ti ti-arrow-left"></i> กลับ</a>
-      <div class="score-title">ลงคะแนน — <span>
-          <%= team.name %>
-        </span></div>
-      <span class="score-round">รอบที่ <%= round %></span>
-    </div>
+    .side-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #64748B;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sig-canvas-wrap {
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      position: relative;
+    }
+
+    #sigCanvas {
+      display: block;
+      width: 100%;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .sig-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .photo-preview {
+      width: 100%;
+      border-radius: 10px;
+      cursor: zoom-in;
+      border: 1px solid #E2E8F0;
+      display: block;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Sarabun', sans-serif;
+      transition: .15s;
+    }
+
+    .btn-primary {
+      background: #2563EB;
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(37, 99, 235, .22);
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #64748B;
+      border: 1.5px solid #E2E8F0;
+    }
+
+    .btn-outline:hover {
+      background: #F8FAFC;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .btn-danger-sm {
+      background: #FEF2F2;
+      color: #DC2626;
+      border: 1px solid #FECACA;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+
+    #lightbox.show {
+      display: flex;
+    }
+
+    #lightboxImg {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    }
+
+    #lightboxClose {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, .15);
+      border: none;
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <%- include('../partials/sidebar') %>
+      <div class="content">
+        <%- include('../partials/topbar') %>
+          <main class="main">
+            <%- include('../partials/alert') %>
+
+              <div class="page-hd">
+                <div>
+                  <div class="page-title">ลงคะแนน — <span>รอบที่ <%= round %></span></div>
+                  <div style="font-size:13px;color:#64748B;margin-top:4px">
+                    <span style="font-weight:700;color:#0F172A">
+                      <%= team.name %>
+                    </span>
+                    · <%= team.institution %>
+                      · <span
+                        style="color:<%= team.tier==='beginner'?'#16A34A':team.tier==='intermediate'?'#2563EB':'#EA580C' %>;font-weight:700">
+                        <%= team.tier==='beginner' ?'Beginner':team.tier==='intermediate' ?'Intermediate':'Advance' %>
+                      </span>
+                  </div>
+                </div>
+                <a href="/scores" class="btn btn-outline btn-sm"><i class="ti ti-arrow-left"></i> กลับ</a>
+              </div>
+
+              <form method="POST" action="/scores/<%= team.id %>/<%= round %>" enctype="multipart/form-data"
+                id="scoreForm">
+
+                <div class="score-form-wrap">
+
+                  <!-- LEFT: missions -->
+                  <div>
+                    <% for (var i=0; i < criteria.length; i++) { %>
+                      <% var c=criteria[i]; var n=i + 1; %>
+                        <% var prevFull=existing && existing['mission_' + n + '_full' ] ? parseFloat(existing['mission_'
+                          + n + '_full' ]) : 0; %>
+                          <% var prevPartial=existing && existing['mission_' + n + '_partial' ] ?
+                            parseFloat(existing['mission_' + n + '_partial' ]) : 0; %>
+                            <div class="mission-card">
+                              <div class="mission-title">
+                                <%= n %>. <%= c.name %>
+                              </div>
+                              <div class="mission-sub">
+                                เข้าเต็ม <%= parseFloat(c.max_score) %> คะแนน/ชิ้น
+                                  <% if (c.score_type==='both' ) { %> · เข้าบางส่วน <%= parseFloat(c.score_partial) %>
+                                      คะแนน/ชิ้น<% } %>
+                              </div>
+                              <div class="mission-row">
+                                <div class="score-input-box">
+                                  <div class="score-input-label full"><i class="ti ti-trophy"></i> เข้าเต็ม (ชิ้น)</div>
+                                  <input type="number" name="mission_<%= n %>_full" class="score-num-input full-input"
+                                    data-max="<%= parseFloat(c.max_score) %>" data-n="<%= n %>" value="<%= prevFull %>"
+                                    min="0" step="1">
+                                  <div class="score-calc" id="calc_full_<%= n %>">
+                                    <%= prevFull %> × <%= parseFloat(c.max_score) %> = <strong>
+                                          <%= (prevFull * parseFloat(c.max_score)).toFixed(1) %>
+                                        </strong> คะแนน
+                                  </div>
+                                </div>
+                                <div class="score-input-box"
+                                  style="<%= c.score_type !== 'both' ? 'opacity:.4;pointer-events:none' : '' %>">
+                                  <div class="score-input-label partial"><i class="ti ti-star-half"></i> เข้าบางส่วน
+                                    (ชิ้น)</div>
+                                  <input type="number" name="mission_<%= n %>_partial"
+                                    class="score-num-input partial-input"
+                                    data-partial="<%= parseFloat(c.score_partial || 0) %>" data-n="<%= n %>"
+                                    value="<%= prevPartial %>" min="0" step="1" <%=c.score_type !=='both' ? 'disabled'
+                                    : '' %>>
+                                  <div class="score-calc" id="calc_partial_<%= n %>">
+                                    <%= prevPartial %> × <%= parseFloat(c.score_partial || 0) %> = <strong>
+                                          <%= (prevPartial * parseFloat(c.score_partial || 0)).toFixed(1) %>
+                                        </strong> คะแนน
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="mission-total" id="mission_total_<%= n %>">
+                                รวม <span>
+                                  <%= ((prevFull * parseFloat(c.max_score)) + (prevPartial * parseFloat(c.score_partial
+                                    || 0))).toFixed(1) %>
+                                </span> คะแนน
+                              </div>
+                            </div>
+                            <% } %>
+                  </div>
+
+                  <!-- RIGHT: sidebar -->
+                  <div>
+
+                    <!-- เวลา -->
+                    <div class="side-card">
+                      <div class="side-title"><i class="ti ti-clock"></i> เวลา (วินาที)</div>
+                      <input type="number" name="time_seconds" class="fi" step="0.01" min="0"
+                        value="<%= existing && existing.time_seconds ? parseFloat(existing.time_seconds).toFixed(2) : '' %>"
+                        placeholder="เช่น 45.30">
+                    </div>
+
+                    <!-- รูปภาพ -->
+                    <div class="side-card">
+                      <div class="side-title"><i class="ti ti-photo"></i> รูปภาพสนาม</div>
+                      <% if (existing && existing.photo_url) { %>
+                        <img src="<%= existing.photo_url %>" class="photo-preview"
+                          onclick="openLightbox('<%= existing.photo_url %>')" style="margin-bottom:10px">
+                        <% } %>
+                          <input type="file" name="photo" accept="image/*" class="fi" style="padding:6px">
+                    </div>
+
+                    <!-- ลายเซ็น -->
+                    <div class="side-card">
+                      <div class="side-title"><i class="ti ti-signature"></i> ลายเซ็นผู้แข่งขัน</div>
+
+                      <% if (existing && existing.signature_url) { %>
+                        <div style="margin-bottom:10px">
+                          <img src="<%= existing.signature_url %>"
+                            onclick="openLightbox('<%= existing.signature_url %>')"
+                            style="width:100%;border-radius:8px;border:1px solid #E2E8F0;cursor:zoom-in;background:#fff">
+                          <div style="font-size:11px;color:#94A3B8;margin-top:4px;text-align:center">ลายเซ็นเดิม
+                            (วาดใหม่เพื่อเปลี่ยน)</div>
+                        </div>
+                        <% } %>
+
+                          <div class="sig-canvas-wrap">
+                            <canvas id="sigCanvas" width="280" height="140"></canvas>
+                          </div>
+                          <div class="sig-actions">
+                            <button type="button" class="btn btn-outline btn-sm" onclick="clearSig()">
+                              <i class="ti ti-eraser"></i> ล้าง
+                            </button>
+                            <span id="sigStatus"
+                              style="font-size:11px;color:#94A3B8;align-self:center">ยังไม่ได้เซ็น</span>
+                          </div>
+                          <input type="hidden" name="signature_data" id="sigData">
+                    </div>
+
+                    <!-- Total -->
+                    <div class="side-card"
+                      style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-color:#BFDBFE">
+                      <div class="side-title" style="color:#1D4ED8"><i class="ti ti-calculator"></i> คะแนนรวม</div>
+                      <div style="font-size:36px;font-weight:900;color:#1D4ED8;text-align:center" id="totalScore">0.0
+                      </div>
+                      <div style="text-align:center;font-size:12px;color:#64748B">จาก <%= maxScore %> คะแนน</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px"
+                      onclick="prepareSubmit()">
+                      <i class="ti ti-device-floppy"></i> บันทึกคะแนนรอบที่ <%= round %>
+                    </button>
+
+                  </div>
+                </div>
+              </form>
+          </main>
+      </div>
   </div>
 
-  <form method="POST" action="/scores/<%= team.id %>/<%= round %>" enctype="multipart/form-data">
-    <div class="score-layout">
-      <main>
-        <section class="score-card">
-          <div class="score-card-head">
-            <div class="score-head-icon"><i class="ti ti-clipboard-check"></i></div>
-            <div>
-              <div class="score-card-title">คะแนนแต่ละภารกิจ</div>
-              <div class="score-card-sub">กรอกจำนวนชิ้นที่ทำสำเร็จ ระบบจะคำนวณคะแนนให้อัตโนมัติ</div>
-            </div>
-          </div>
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="closeLightbox()">
+    <img id="lightboxImg">
+    <button id="lightboxClose" onclick="closeLightbox()">✕</button>
+  </div>
 
-          <div class="score-card-body">
-            <% criteria.forEach(function(c, i) { var n=i + 1; var fullKey='mission_' + n + '_full' ; var
-              partKey='mission_' + n + '_partial' ; var existingFull=existing ? (parseFloat(existing[fullKey]) || 0) :
-              0; var existingPartial=existing ? (parseFloat(existing[partKey]) || 0) : 0; var
-              isBoth=c.score_type==='both' ; var scorePerFull=parseFloat(c.max_score); var
-              scorePerPartial=parseFloat(c.score_partial) || 0; %>
-              <div class="mission-card" data-mission="<%= n %>" data-score-full="<%= scorePerFull %>"
-                data-score-partial="<%= scorePerPartial %>">
-                <div class="mission-top">
-                  <div>
-                    <div class="mission-name">
-                      <%= c.name %>
-                    </div>
-                    <div class="mission-rule">เข้าเต็ม <%= scorePerFull %> คะแนน/ชิ้น <% if (isBoth) { %>· เข้าบางส่วน
-                          <%= scorePerPartial %> คะแนน/ชิ้น<% } %>
-                    </div>
-                  </div>
-                  <div class="mission-total">รวม <span id="m<%= n %>_total">0.0</span> คะแนน</div>
-                </div>
-
-                <div class="mission-inputs">
-                  <div class="score-option full">
-                    <div class="score-option-label"><span class="option-icon"><i class="ti ti-trophy"></i></span>
-                      เข้าเต็ม (ชิ้น)</div>
-                    <input class="score-number mission-input" type="number" name="<%= fullKey %>"
-                      data-mission="<%= n %>" data-type="full" min="0" step="1" value="<%= existingFull %>"
-                      oninput="updateMission(<%= n %>)">
-                    <div class="score-calc">คะแนน: <span id="m<%= n %>_full_calc">0</span></div>
-                  </div>
-
-                  <div class="score-option partial <%= isBoth ? '' : 'disabled' %>">
-                    <div class="score-option-label"><span class="option-icon"><i class="ti ti-star"></i></span>
-                      เข้าบางส่วน (ชิ้น)</div>
-                    <input class="score-number mission-input" type="number" name="<%= partKey %>"
-                      data-mission="<%= n %>" data-type="partial" min="0" step="1" value="<%= existingPartial %>"
-                      <%=isBoth ? '' : 'disabled' %> oninput="updateMission(<%= n %>)">
-                      <div class="score-calc">คะแนน: <span id="m<%= n %>_partial_calc">0</span></div>
-                  </div>
-                </div>
-              </div>
-              <% }) %>
-          </div>
-        </section>
-
-        <div class="score-tip">
-          <i class="ti ti-bulb"></i>
-          <div><strong>วิธีการให้คะแนน</strong><span>ตรวจสอบผลงานของทีมตามเกณฑ์ในแต่ละภารกิจ
-              ก่อนบันทึกคะแนนและลายเซ็น</span></div>
-        </div>
-      </main>
-
-      <aside class="score-side">
-        <div class="total-card">
-          <div class="total-label"><i class="ti ti-medal"></i> คะแนนรวม</div>
-          <div id="totalScore" class="total-value">
-            <%= existing ? parseFloat(existing.total_score || 0) : 0 %>
-          </div>
-          <div class="total-meta">จาก <%= maxScore %> คะแนน · <span id="totalPct">
-                <%= existing && maxScore> 0 ? Math.round(parseFloat(existing.total_score || 0) / maxScore * 100) : 0 %>
-              </span>%</div>
-        </div>
-
-        <div class="side-card">
-          <div class="side-card-body">
-            <label class="field-label" for="time_seconds"><i class="ti ti-clock"></i> เวลาที่ใช้ (วินาที)</label>
-            <input id="time_seconds" class="time-input" type="number" name="time_seconds" step="0.01"
-              value="<%= existing ? existing.time_seconds || '' : '' %>" placeholder="เช่น 77.65">
-          </div>
-        </div>
-
-        <div class="side-card">
-          <div class="side-card-title">รูปภาพและลายเซ็น</div>
-          <div class="side-card-body">
-            <div style="margin-bottom:15px">
-              <div class="field-label"><i class="ti ti-camera"></i> รูปภาพสนาม</div>
-              <% if (existing && existing.photo_url) { %>
-                <img src="<%= existing.photo_url %>" alt="field photo" class="preview-image">
-                <% } %>
-                  <label class="upload-box">
-                    <i class="ti ti-cloud-upload"></i>
-                    <strong>เลือกไฟล์รูปภาพ</strong>
-                    <span id="photoFileName">รองรับไฟล์ภาพจากอุปกรณ์</span>
-                    <input id="photoInput" type="file" name="photo" accept="image/*">
-                  </label>
-            </div>
-
-            <div>
-                  <div>
-                    <div class="field-label"><i class="ti ti-signature"></i> ลายเซ็นผู้แข่งขัน</div>
-                    <% if (existing && existing.signature_url) { %>
-                      <img src="<%= existing.signature_url %>" alt="signature" class="preview-image"
-                        style="object-fit:contain;background:#f8fafc">
-                      <% } %>
-                        <div class="signature-wrap">
-                          <canvas id="sigCanvas"></canvas>
-                          <button type="button" class="sig-clear" onclick="clearSig()">ล้าง</button>
-                          <div id="sigHint" class="sig-hint">เซ็นชื่อที่นี่</div>
-                        </div>
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;margin-bottom:40px">
-                          <div id="sigStatus" class="sig-status">ยังไม่ได้เซ็นชื่อ</div>
-                          <button type="button" onclick="openSigModal()"
-                            style="font-size:11px;padding:4px 10px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;color:#475569;cursor:pointer;display:flex;align-items:center;gap:4px">
-                            <i class="ti ti-arrows-maximize" style="font-size:13px"></i> ขยาย
-                          </button>
-                        </div>
-                        <input type="hidden" name="signature_data" id="sigData">
-                  </div>
-                  
-                  <!-- Signature Modal -->
-                  <div id="sigModal"
-                    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
-                    <div
-                      style="background:#fff;border-radius:16px;padding:20px;width:min(700px,95vw);box-shadow:0 20px 60px rgba(0,0,0,.3)">
-                      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-                        <div style="font-size:16px;font-weight:800;color:#0f172a">เซ็นลายเซ็น</div>
-                        <button type="button" onclick="closeSigModal(false)"
-                          style="border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px;padding:6px 10px;cursor:pointer;color:#64748b">
-                          <i class="ti ti-x"></i>
-                        </button>
-                      </div>
-                      <div style="border:1.5px solid #cbd5e1;border-radius:12px;overflow:hidden;background:#fff;position:relative">
-                        <canvas id="sigModalCanvas"
-                          style="display:block;width:100%;height:300px;cursor:crosshair;touch-action:none"></canvas>
-                        <div id="sigModalHint"
-                          style="position:absolute;inset:0;display:grid;place-items:center;color:#cbd5e1;font-size:14px;pointer-events:none">
-                          เซ็นชื่อที่นี่
-                        </div>
-                      </div>
-                      <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
-                        <button type="button" onclick="clearModalSig()"
-                          style="padding:9px 16px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc;color:#64748b;font-size:13px;font-weight:700;cursor:pointer">
-                          <i class="ti ti-trash"></i> ล้าง
-                        </button>
-                        <button type="button" onclick="closeSigModal(true)"
-                          style="padding:9px 20px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-size:13px;font-weight:800;cursor:pointer">
-                          <i class="ti ti-check"></i> ยืนยันลายเซ็น
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <input type="hidden" name="signature_data" id="sigData">
-        </div>
-
-        <button type="submit" class="save-score-btn"><i class="ti ti-device-floppy"></i> บันทึกคะแนนรอบที่ <%= round %>
-            </button>
-      </aside>
-    </div>
-  </form>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-<script>
-  const maxScore = <%= maxScore %>;
-  var criteriaData = <%- JSON.stringify(criteria.map(function (c, i) {
-    return { n: i + 1, scorePerFull: parseFloat(c.max_score), scorePerPartial: parseFloat(c.score_partial) || 0 }
-  })) %>;
-
-  function updateMission(n) {
-    var c = criteriaData.find(function (x) { return x.n === n });
-    if (!c) return;
-    var fullEl = document.querySelector('[name="mission_' + n + '_full"]');
-    var partEl = document.querySelector('[name="mission_' + n + '_partial"]');
-    var fullVal = fullEl ? (parseFloat(fullEl.value) || 0) : 0;
-    var partVal = partEl ? (parseFloat(partEl.value) || 0) : 0;
-    var fullScore = fullVal * c.scorePerFull;
-    var partialScore = partVal * c.scorePerPartial;
-    var mTotal = fullScore + partialScore;
-    document.getElementById('m' + n + '_total').textContent = mTotal.toFixed(1);
-    document.getElementById('m' + n + '_full_calc').textContent = fullVal + ' × ' + c.scorePerFull + ' = ' + fullScore.toFixed(1) + ' คะแนน';
-    document.getElementById('m' + n + '_partial_calc').textContent = partVal + ' × ' + c.scorePerPartial + ' = ' + partialScore.toFixed(1) + ' คะแนน';
-    updateTotal();
-  }
-
-  function updateTotal() {
-    var total = 0;
-    criteriaData.forEach(function (c) {
-      var fullEl = document.querySelector('[name="mission_' + c.n + '_full"]');
-      var partEl = document.querySelector('[name="mission_' + c.n + '_partial"]');
-      var fullVal = fullEl ? (parseFloat(fullEl.value) || 0) : 0;
-      var partVal = partEl ? (parseFloat(partEl.value) || 0) : 0;
-      total += (fullVal * c.scorePerFull) + (partVal * c.scorePerPartial);
+  <script src="/js/main.js"></script>
+  <script>
+    // ── Score calculation ────────────────────────────────────────────────────────
+    document.querySelectorAll('.full-input').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var n = this.dataset.n;
+        var max = parseFloat(this.dataset.max);
+        var val = parseFloat(this.value) || 0;
+        var score = val * max;
+        document.getElementById('calc_full_' + n).innerHTML =
+          val + ' × ' + max + ' = <strong>' + score.toFixed(1) + '</strong> คะแนน';
+        updateMissionTotal(n);
+      });
     });
-    document.getElementById('totalScore').textContent = total.toFixed(1);
-    document.getElementById('totalPct').textContent = maxScore > 0 ? Math.round(total / maxScore * 100) : 0;
-  }
 
-  // ── Signature small canvas ──
-  var canvas = document.getElementById('sigCanvas');
-  var sigPad;
-
-  function resizeSignatureCanvas() {
-    var ratio = Math.max(window.devicePixelRatio || 1, 1);
-    var data = sigPad && !sigPad.isEmpty() ? sigPad.toData() : null;
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext('2d').scale(ratio, ratio);
-    if (sigPad && data) sigPad.fromData(data);
-  }
-
-  resizeSignatureCanvas();
-  sigPad = new SignaturePad(canvas, { minWidth: 1.5, maxWidth: 3, penColor: '#1E293B' });
-
-  sigPad.addEventListener('beginStroke', function () {
-    document.getElementById('sigHint').style.display = 'none';
-  });
-  sigPad.addEventListener('endStroke', function () {
-    if (!sigPad.isEmpty()) {
-      document.getElementById('sigData').value = sigPad.toDataURL('image/png');
-      document.getElementById('sigStatus').textContent = '✓ เซ็นชื่อแล้ว';
-      document.getElementById('sigStatus').style.color = '#16A34A';
-    }
-  });
-
-  function clearSig() {
-    sigPad.clear();
-    document.getElementById('sigData').value = '';
-    document.getElementById('sigHint').style.display = 'grid';
-    document.getElementById('sigStatus').textContent = 'ยังไม่ได้เซ็นชื่อ';
-    document.getElementById('sigStatus').style.color = '#94A3B8';
-  }
-
-  // ── Signature modal canvas ──
-  var sigModalPad;
-
-  function openSigModal() {
-    document.getElementById('sigModal').style.display = 'flex';
-    var mc = document.getElementById('sigModalCanvas');
-    var ratio = Math.max(window.devicePixelRatio || 1, 1);
-    mc.width = mc.offsetWidth * ratio;
-    mc.height = mc.offsetHeight * ratio;
-    mc.getContext('2d').scale(ratio, ratio);
-    sigModalPad = new SignaturePad(mc, { minWidth: 1.5, maxWidth: 4, penColor: '#1E293B' });
-    if (!sigPad.isEmpty()) {
-      sigModalPad.fromDataURL(sigPad.toDataURL());
-      document.getElementById('sigModalHint').style.display = 'none';
-    }
-    sigModalPad.addEventListener('beginStroke', function () {
-      document.getElementById('sigModalHint').style.display = 'none';
+    document.querySelectorAll('.partial-input').forEach(function (input) {
+      input.addEventListener('input', function () {
+        var n = this.dataset.n;
+        var partial = parseFloat(this.dataset.partial) || 0;
+        var val = parseFloat(this.value) || 0;
+        var score = val * partial;
+        document.getElementById('calc_partial_' + n).innerHTML =
+          val + ' × ' + partial + ' = <strong>' + score.toFixed(1) + '</strong> คะแนน';
+        updateMissionTotal(n);
+      });
     });
-  }
 
-  function clearModalSig() {
-    sigModalPad.clear();
-    document.getElementById('sigModalHint').style.display = 'grid';
-  }
-
-  function closeSigModal(save) {
-    if (save && sigModalPad && !sigModalPad.isEmpty()) {
-      var dataUrl = sigModalPad.toDataURL('image/png');
-      sigPad.fromDataURL(dataUrl);
-      document.getElementById('sigData').value = dataUrl;
-      document.getElementById('sigHint').style.display = 'none';
-      document.getElementById('sigStatus').textContent = '✓ เซ็นชื่อแล้ว';
-      document.getElementById('sigStatus').style.color = '#16A34A';
+    function updateMissionTotal(n) {
+      var fullInput = document.querySelector('.full-input[data-n="' + n + '"]');
+      var partialInput = document.querySelector('.partial-input[data-n="' + n + '"]');
+      var max = parseFloat(fullInput.dataset.max) || 0;
+      var partial = parseFloat(partialInput.dataset.partial) || 0;
+      var fullVal = parseFloat(fullInput.value) || 0;
+      var partialVal = parseFloat(partialInput.value) || 0;
+      var total = (fullVal * max) + (partialVal * partial);
+      document.getElementById('mission_total_' + n).innerHTML =
+        'รวม <span>' + total.toFixed(1) + '</span> คะแนน';
+      updateGrandTotal();
     }
-    document.getElementById('sigModal').style.display = 'none';
-  }
 
-  // ── Photo input ──
-  document.getElementById('photoInput').addEventListener('change', function () {
-    document.getElementById('photoFileName').textContent = this.files && this.files[0] ? this.files[0].name : 'รองรับไฟล์ภาพจากอุปกรณ์';
-  });
+    function updateGrandTotal() {
+      var total = 0;
+      document.querySelectorAll('.full-input').forEach(function (input) {
+        var n = input.dataset.n;
+        var max = parseFloat(input.dataset.max) || 0;
+        var partialInput = document.querySelector('.partial-input[data-n="' + n + '"]');
+        var partial = parseFloat(partialInput.dataset.partial) || 0;
+        total += (parseFloat(input.value) || 0) * max;
+        total += (parseFloat(partialInput.value) || 0) * partial;
+      });
+      document.getElementById('totalScore').textContent = total.toFixed(1);
+    }
 
-  // ── Submit ──
-  document.querySelector('.score-page form').addEventListener('submit', function () {
-    if (!sigPad.isEmpty()) document.getElementById('sigData').value = sigPad.toDataURL('image/png');
-  });
+    updateGrandTotal();
 
-  window.addEventListener('resize', resizeSignatureCanvas);
+    // ── Signature pad ────────────────────────────────────────────────────────────
+    var canvas = document.getElementById('sigCanvas');
+    var ctx = canvas.getContext('2d');
+    var drawing = false;
+    var hasSig = false;
 
-  setTimeout(function () {
-    criteriaData.forEach(function (c) { updateMission(c.n); });
-  }, 500);
-</script>
+    canvas.style.height = '140px';
+
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var scaleX = canvas.width / rect.width;
+      var scaleY = canvas.height / rect.height;
+      if (e.touches) {
+        return {
+          x: (e.touches[0].clientX - rect.left) * scaleX,
+          y: (e.touches[0].clientY - rect.top) * scaleY
+        };
+      }
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    canvas.addEventListener('mousedown', function (e) {
+      drawing = true;
+      var pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    });
+    canvas.addEventListener('mousemove', function (e) {
+      if (!drawing) return;
+      var pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = '#0F172A';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      hasSig = true;
+      document.getElementById('sigStatus').textContent = 'มีลายเซ็น';
+      document.getElementById('sigStatus').style.color = '#16A34A';
+    });
+    canvas.addEventListener('mouseup', function () { drawing = false; });
+    canvas.addEventListener('mouseleave', function () { drawing = false; });
+
+    canvas.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      drawing = true;
+      var pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    });
+    canvas.addEventListener('touchmove', function (e) {
+      e.preventDefault();
+      if (!drawing) return;
+      var pos = getPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = '#0F172A';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      hasSig = true;
+      document.getElementById('sigStatus').textContent = 'มีลายเซ็น';
+      document.getElementById('sigStatus').style.color = '#16A34A';
+    });
+    canvas.addEventListener('touchend', function () { drawing = false; });
+
+    function clearSig() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSig = false;
+      document.getElementById('sigData').value = '';
+      document.getElementById('sigStatus').textContent = 'ยังไม่ได้เซ็น';
+      document.getElementById('sigStatus').style.color = '#94A3B8';
+    }
+
+    function prepareSubmit() {
+      if (hasSig) {
+        document.getElementById('sigData').value = canvas.toDataURL('image/png');
+      }
+    }
+
+    // ── Lightbox ─────────────────────────────────────────────────────────────────
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+
+</html>
