@@ -25,6 +25,7 @@ document.querySelectorAll(".alert").forEach((el) => {
 });
 
 // ── Teams: Edit Modal ────────────────────────
+// ── Teams: Edit Modal ────────────────────────
 function openEditModal(team) {
   document.getElementById("editForm").action =
     "/teams/" + team.id + "?_method=PUT&tier=" + team.tier;
@@ -32,22 +33,16 @@ function openEditModal(team) {
   document.getElementById("edit_name").value = team.name || "";
   document.getElementById("edit_institution").value = team.institution || "";
   document.getElementById("edit_tier").value = team.tier || "beginner";
-  document.getElementById("edit_tier_hidden").value = team.tier || "beginner";
   document.getElementById("edit_status").value = team.status || "pending";
   document.getElementById("edit_s1").value = team.student_1 || "";
   document.getElementById("edit_s2").value = team.student_2 || "";
   document.getElementById("edit_s3").value = team.student_3 || "";
   document.getElementById("edit_coach").value = team.coach || "";
   document.getElementById("edit_note").value = team.note || "";
-  document.getElementById("edit_s1_dob").value = team.student_1_dob
-    ? team.student_1_dob.split("T")[0]
-    : "";
-  document.getElementById("edit_s2_dob").value = team.student_2_dob
-    ? team.student_2_dob.split("T")[0]
-    : "";
-  document.getElementById("edit_s3_dob").value = team.student_3_dob
-    ? team.student_3_dob.split("T")[0]
-    : "";
+  document.getElementById("edit_phone").value = team.phone || "";
+  document.getElementById("edit_s1_dob").value = team.student_1_dob ? team.student_1_dob.split("T")[0] : "";
+  document.getElementById("edit_s2_dob").value = team.student_2_dob ? team.student_2_dob.split("T")[0] : "";
+  document.getElementById("edit_s3_dob").value = team.student_3_dob ? team.student_3_dob.split("T")[0] : "";
   openModal("editModal");
 }
 

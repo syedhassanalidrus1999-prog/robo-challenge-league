@@ -42,7 +42,11 @@ router.get("/search", async (req, res) => {
 
     // ค้นหาทีม
     var teamsResult = await query(
-      `SELECT * FROM teams
+      `SELECT id, name, institution, tier,
+        student_1, student_1_checked_in,
+        student_2, student_2_checked_in,
+        student_3, student_3_checked_in
+       FROM teams
        WHERE status = 'approved'
        AND (id ILIKE $1 OR name ILIKE $1 OR institution ILIKE $1)
        ORDER BY created_at ASC`,
@@ -50,16 +54,31 @@ router.get("/search", async (req, res) => {
     );
 
     var teams = teamsResult.rows.map(function (t) {
-      var rank = rankedAll[t.id] || null; // ← ต้องมีบรรทัดนี้ก่อน
-      var certTypes = ["participation"];
-      if (rank === 1) certTypes.push("1st");
-      else if (rank === 2) certTypes.push("2nd");
-      else if (rank === 3) certTypes.push("3rd");
+      var rank = rankedAll[t.id] || null;
 
+      // cert types สำหรับทีม (อันดับ)
+      var teamCertTypes = [];
+      if (rank === 1) teamCertTypes.push("1st");
+      else if (rank === 2) teamCertTypes.push("2nd");
+      else if (rank === 3) teamCertTypes.push("3rd");
+
+      // students พร้อม checked_in
       var students = [];
-      if (t.student_1) students.push({ name: t.student_1 });
-      if (t.student_2) students.push({ name: t.student_2 });
-      if (t.student_3) students.push({ name: t.student_3 });
+      if (t.student_1)
+        students.push({
+          name: t.student_1,
+          checked_in: t.student_1_checked_in,
+        });
+      if (t.student_2)
+        students.push({
+          name: t.student_2,
+          checked_in: t.student_2_checked_in,
+        });
+      if (t.student_3)
+        students.push({
+          name: t.student_3,
+          checked_in: t.student_3_checked_in,
+        });
 
       return {
         id: t.id,
@@ -67,7 +86,7 @@ router.get("/search", async (req, res) => {
         institution: t.institution,
         tier: t.tier,
         rank: rank,
-        cert_types: certTypes,
+        team_cert_types: teamCertTypes,
         students: students,
       };
     });
@@ -82,12 +101,10 @@ router.get("/search", async (req, res) => {
 // ─── GET /certificate/download ────────────────────────────────────────────────
 router.get("/download", async (req, res) => {
   var { teamId, studentName, certType } = req.query;
-  if (!teamId || !studentName || !certType) {
+  if (!teamId || !studentName || !certType)
     return res.status(400).send("ข้อมูลไม่ครบ");
-  }
 
   try {
-    // ดึง team
     var teamResult = await query(
       "SELECT * FROM teams WHERE id = $1 AND status = $2",
       [teamId, "approved"],
@@ -95,7 +112,6 @@ router.get("/download", async (req, res) => {
     var team = teamResult.rows[0];
     if (!team) return res.status(404).send("ไม่พบทีม");
 
-    // ดึง template
     var tmplResult = await query(
       "SELECT * FROM certificate_templates WHERE tier = $1 AND cert_type = $2",
       [team.tier, certType],
@@ -107,7 +123,6 @@ router.get("/download", async (req, res) => {
         .send("ยังไม่มี template เกียรติบัตร กรุณาติดต่อผู้จัดงาน");
     }
 
-    // สร้าง HTML สำหรับ print
     var nameX = tmpl.name_x || 50;
     var nameY = tmpl.name_y || 45;
     var fontSize = tmpl.name_font_size || 48;
@@ -119,37 +134,20 @@ router.get("/download", async (req, res) => {
   <meta charset="UTF-8">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 21cm; height: 29.7cm; overflow: hidden; }
-    .cert-page {
-      position: relative;
-      width: 21cm;
-      height: 29.7cm;
-      overflow: hidden;
-    }
-    .cert-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width:21cm; height:29.7cm; overflow:hidden; }
+    .cert-page { position:relative; width:21cm; height:29.7cm; overflow:hidden; }
+    .cert-bg { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
     .cert-name {
-      position: absolute;
-      left: ${nameX}%;
-      top: ${nameY}%;
-      transform: translate(-50%, -50%);
-      font-family: 'Kanit', sans-serif;
-      font-size: ${fontSize}px;
-      font-weight: 700;
-      color: ${nameColor};
-      white-space: nowrap;
-      text-align: center;
-      z-index: 10;
+      position:absolute; left:${nameX}%; top:${nameY}%;
+      transform:translate(-50%,-50%);
+      font-family:'Kanit',sans-serif; font-size:${fontSize}px;
+      font-weight:700; color:${nameColor};
+      white-space:nowrap; text-align:center; z-index:10;
     }
     @media print {
-      @page { size: A4 portrait; margin: 0; }
-      html, body { width: 21cm; height: 29.7cm; }
+      @page { size:A4 portrait; margin:0; }
+      html, body { width:21cm; height:29.7cm; }
     }
   </style>
 </head>
@@ -162,7 +160,6 @@ router.get("/download", async (req, res) => {
 </body>
 </html>`;
 
-    // ส่ง HTML กลับ — browser จะ print เป็น PDF
     res.setHeader("Content-Type", "text/html; charset=utf-8");
     res.send(html);
   } catch (err) {

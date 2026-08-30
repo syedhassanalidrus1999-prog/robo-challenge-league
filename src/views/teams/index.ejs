@@ -1,274 +1,542 @@
-<% var TIER_COLOR={ beginner: 'green' , intermediate: 'blue' , advance: 'amber' } %>
-  <% var STATUS_LABEL={ approved: 'อนุมัติแล้ว' , pending: 'รอพิจารณา' , rejected: 'ไม่ผ่าน' } %>
-    <% var STATUS_BADGE={ approved: 'badge-green' , pending: 'badge-blue' , rejected: 'badge-red' } %>
+<% var tierColor=activeTier==='beginner' ? '#16A34A' : activeTier==='intermediate' ? '#2563EB' : '#EA580C' ; var
+  tierLabel=activeTier==='beginner' ? 'Beginner' : activeTier==='intermediate' ? 'Intermediate' : 'Advance' ; var
+  tierIcon=activeTier==='beginner' ? 'ti-leaf' : activeTier==='intermediate' ? 'ti-flame' : 'ti-rocket' ; %>
 
-  <div class="stat-grid">
-    <% ['beginner','intermediate','advance'].forEach(function(t) { %>
-      <div class="stat-card">
-        <div class="stat-top">
-          <div>
-            <div class="stat-lbl">
-              <%= t==='beginner' ?'Beginner':t==='intermediate' ?'Intermediate':'Advance' %>
-            </div>
-            <div class="stat-num">
-              <%= counts[t] || 0 %>
-            </div>
-          </div>
-          <div class="stat-icon"
-            style="background:<%= t==='beginner'?'#F0FDF4':t==='intermediate'?'#EFF6FF':'#FFF7ED' %>">
-            <i class="ti <%= t==='beginner'?'ti-leaf':t==='intermediate'?'ti-flame':'ti-rocket' %>"
-              style="color:<%= t==='beginner'?'#16A34A':t==='intermediate'?'#2563EB':'#EA580C' %>"></i>
-          </div>
-        </div>
-        <div class="stat-lbl" style="margin-top:2px">ทีม</div>
-      </div>
-      <% }) %>
-        <div class="stat-card">
-          <div class="stat-top">
-            <div>
-              <div class="stat-lbl">ทั้งหมด</div>
-              <div class="stat-num">
-                <%= counts.total || 0 %>
-              </div>
-            </div>
-            <div class="stat-icon" style="background:#F5F3FF"><i class="ti ti-users" style="color:#7C3AED"></i></div>
-          </div>
-          <div class="stat-lbl" style="margin-top:2px">ทีม</div>
-        </div>
+  <style>
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    @media(max-width:700px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+      cursor: pointer;
+      transition: .15s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .stat-card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, .08);
+      transform: translateY(-1px);
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .stat-num {
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .stat-lbl {
+      font-size: 11px;
+      color: #94A3B8;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .section-hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 8px 14px;
+      min-width: 220px;
+    }
+
+    .search-wrap input {
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+      background: transparent;
+      flex: 1;
+    }
+
+    .tbl-wrap {
+      background: #fff;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 16px;
+      overflow: auto;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, .04);
+    }
+
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    .tbl th {
+      background: #F8FAFC;
+      font-size: 11px;
+      font-weight: 800;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 11px 14px;
+      border-bottom: 1.5px solid #E2E8F0;
+      white-space: nowrap;
+    }
+
+    .tbl td {
+      padding: 11px 14px;
+      border-bottom: 1px solid #F1F5F9;
+      vertical-align: top;
+    }
+
+    .tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tbl tr:hover td {
+      background: #FAFBFC;
+    }
+
+    .stu-name {
+      font-size: 13px;
+      color: #334155;
+      font-weight: 600;
+    }
+
+    .stu-dob {
+      font-size: 10px;
+      color: #94A3B8;
+      margin-top: 1px;
+      margin-bottom: 4px;
+    }
+
+    .checkin-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: .15s;
+      white-space: nowrap;
+    }
+
+    .checkin-btn.on {
+      background: #F0FDF4;
+      color: #16A34A;
+      border: 1.5px solid #BBF7D0;
+    }
+
+    .checkin-btn.off {
+      background: #F8FAFC;
+      color: #94A3B8;
+      border: 1.5px solid #E2E8F0;
+    }
+
+    .checkin-btn:hover {
+      opacity: .75;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-green {
+      background: #F0FDF4;
+      color: #16A34A;
+    }
+
+    .badge-yellow {
+      background: #FFFBEB;
+      color: #D97706;
+    }
+
+    .badge-red {
+      background: #FEF2F2;
+      color: #DC2626;
+    }
+
+    .act-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1.5px solid #E2E8F0;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #64748B;
+      font-size: 15px;
+      transition: .15s;
+    }
+
+    .btn-icon:hover {
+      background: #F1F5F9;
+      color: #0F172A;
+    }
+
+    .btn-icon.danger:hover {
+      background: #FEF2F2;
+      color: #DC2626;
+      border-color: #FECACA;
+    }
+
+    .empty-row td {
+      padding: 48px 24px;
+      text-align: center;
+      color: #94A3B8;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      transition: .15s;
+    }
+
+    .btn-primary {
+      background: #2563EB;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, .2);
+    }
+
+    .btn-primary:hover {
+      background: #1D4ED8;
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #64748B;
+      border: 1.5px solid #E2E8F0;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .fi {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: .15s;
+      box-sizing: border-box;
+    }
+
+    .fi:focus {
+      border-color: #2563EB;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+    }
+
+    .fl {
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748B;
+      margin-bottom: 5px;
+    }
+
+    .fg {
+      margin-bottom: 12px;
+    }
+  </style>
+
+  <div class="page-hd">
+    <div class="page-title"><span>จัดการ</span>ทีมที่สมัคร</div>
+    <button class="btn btn-primary btn-sm" onclick="openModal('addModal')">
+      <i class="ti ti-plus"></i> เพิ่มทีม
+    </button>
   </div>
 
-  <div class="card">
-    <div class="card-hd">
-      <div class="card-title">รุ่น <span
-          style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
-          <%= TIER_LABEL[tier] %>
-        </span></div>
-      <button class="btn btn-primary btn-sm" onclick="openModal('addModal')"><i class="ti ti-plus"></i>
-        เพิ่มทีม</button>
+  <!-- Stats -->
+  <div class="stats-grid">
+    <a href="/teams?tier=beginner" class="stat-card"
+      style="border-color:<%= activeTier==='beginner'?'#16A34A':'#E2E8F0' %>">
+      <div class="stat-icon" style="background:#F0FDF4">🌱</div>
+      <div>
+        <div class="stat-num" style="color:#16A34A">
+          <%= counts.beginner||0 %>
+        </div>
+        <div class="stat-lbl">Beginner</div>
+      </div>
+    </a>
+    <a href="/teams?tier=intermediate" class="stat-card"
+      style="border-color:<%= activeTier==='intermediate'?'#2563EB':'#E2E8F0' %>">
+      <div class="stat-icon" style="background:#EFF6FF">🔥</div>
+      <div>
+        <div class="stat-num" style="color:#2563EB">
+          <%= counts.intermediate||0 %>
+        </div>
+        <div class="stat-lbl">Intermediate</div>
+      </div>
+    </a>
+    <a href="/teams?tier=advance" class="stat-card"
+      style="border-color:<%= activeTier==='advance'?'#EA580C':'#E2E8F0' %>">
+      <div class="stat-icon" style="background:#FFF7ED">🚀</div>
+      <div>
+        <div class="stat-num" style="color:#EA580C">
+          <%= counts.advance||0 %>
+        </div>
+        <div class="stat-lbl">Advance</div>
+      </div>
+    </a>
+    <a href="/teams" class="stat-card">
+      <div class="stat-icon" style="background:#F8FAFC"><i class="ti ti-users" style="color:#64748B"></i></div>
+      <div>
+        <div class="stat-num" style="color:#0F172A">
+          <%= (counts.beginner||0)+(counts.intermediate||0)+(counts.advance||0) %>
+        </div>
+        <div class="stat-lbl">ทั้งหมด</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Section header -->
+  <div class="section-hd">
+    <div style="font-size:16px;font-weight:800;color:<%= tierColor %>;display:flex;align-items:center;gap:8px">
+      <i class="ti <%= tierIcon %>"></i> รุ่น <%= tierLabel %>
+        <span style="font-size:12px;color:#94A3B8;font-weight:600">
+          <%= teams.length %> ทีม
+        </span>
     </div>
-    <div class="toolbar">
-      <form method="GET" action="/teams" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1">
-        <input type="hidden" name="tier" value="<%= tier %>">
-        <div class="search-wrap"><i class="ti ti-search"></i><input type="text" name="search"
-            placeholder="ค้นหาชื่อทีม / สถาบัน" value="<%= search %>"></div>
-        <button type="submit" class="btn btn-secondary btn-sm">ค้นหา</button>
-        <% if (search) { %><a href="/teams?tier=<%= tier %>" class="btn btn-ghost btn-sm">ล้าง</a>
-          <% } %>
-      </form>
+    <div class="search-wrap">
+      <i class="ti ti-search" style="color:#94A3B8"></i>
+      <input type="text" id="teamSearch" placeholder="ค้นหาชื่อทีม / สถาบัน..." oninput="filterTeams()">
     </div>
-    <div style="overflow-x:auto">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>ชื่อทีม</th>
-            <th>สถาบัน</th>
-            <th>นักเรียน 1</th>
-            <th>นักเรียน 2</th>
-            <th>นักเรียน 3</th>
-            <th>โคช</th>
-            <th>เบอร์โทร</th>
-            <th>สถานะ</th>
-            <th>โน้ต</th>
-            <th>จัดการ</th>
+  </div>
+
+  <!-- Table -->
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ชื่อทีม</th>
+          <th>สถาบัน</th>
+          <th>นักเรียน 1</th>
+          <th>นักเรียน 2</th>
+          <th>นักเรียน 3</th>
+          <th>โค้ช</th>
+          <th>เบอร์โทร</th>
+          <th>สถานะ</th>
+          <th>โน้ต</th>
+          <th>จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="teamTableBody">
+        <% if (!teams || teams.length===0) { %>
+          <tr class="empty-row">
+            <td colspan="11">
+              <i class="ti ti-users-off" style="font-size:36px;opacity:.3;display:block;margin-bottom:8px"></i>
+              ยังไม่มีทีมในรุ่นนี้
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          <% if (teams.length===0) { %>
-            <tr>
-              <td colspan="11">
-                <div class="empty"><i class="ti ti-users-minus"></i>ยังไม่มีทีมในรุ่น <%= TIER_LABEL[tier] %>
-                </div>
-              </td>
-            </tr>
-            <% } %>
-              <% teams.forEach(function(t) { %>
-                <tr>
-                  <td><span class="team-id">
+          <% } else { %>
+            <% for (var i=0; i < teams.length; i++) { %>
+              <% var t=teams[i]; %>
+                <tr class="team-row" data-name="<%= (t.name||'').toLowerCase() %>"
+                  data-inst="<%= (t.institution||'').toLowerCase() %>">
+
+                  <td><span style="font-size:12px;font-weight:700;color:<%= tierColor %>">
                       <%= t.id %>
                     </span></td>
-                  <td><span class="team-name">
-                      <%= t.name %>
-                    </span></td>
-                  <td>
+                  <td style="font-weight:700;font-size:14px;color:#0F172A">
+                    <%= t.name %>
+                  </td>
+                  <td style="font-size:13px;color:#334155">
                     <%= t.institution || '—' %>
                   </td>
-                  <td style="font-size:12px">
-                    <%= t.student_1 || '—' %>
+
+                  <!-- นักเรียน 1 -->
+                  <td>
+                    <% if (t.student_1) { %>
+                      <div class="stu-name">
+                        <%= t.student_1 %>
+                      </div>
                       <% if (t.student_1_dob) { %>
-                        <div style="font-size:10px;color:#94A3B8">
+                        <div class="stu-dob">
                           <%= new Date(t.student_1_dob).toLocaleDateString('th-TH') %>
-                            (อายุ <%= new Date().getFullYear() - new Date(t.student_1_dob).getFullYear() %> ปี)
                         </div>
                         <% } %>
+                          <form method="POST" action="/teams/<%= t.id %>/checkin/1?tier=<%= activeTier %>"
+                            style="display:inline">
+                            <button type="submit" class="checkin-btn <%= t.student_1_checked_in ? 'on' : 'off' %>">
+                              <i
+                                class="ti ti-<%= t.student_1_checked_in ? 'circle-check-filled' : 'circle-dashed' %>"></i>
+                              <%= t.student_1_checked_in ? 'มาแล้ว' : 'ยังไม่มา' %>
+                            </button>
+                          </form>
+                          <% } else { %><span style="color:#CBD5E1">—</span>
+                            <% } %>
                   </td>
-                  <td style="font-size:12px">
-                    <%= t.student_2 || '—' %>
+
+                  <!-- นักเรียน 2 -->
+                  <td>
+                    <% if (t.student_2) { %>
+                      <div class="stu-name">
+                        <%= t.student_2 %>
+                      </div>
                       <% if (t.student_2_dob) { %>
-                        <div style="font-size:10px;color:#94A3B8">
+                        <div class="stu-dob">
                           <%= new Date(t.student_2_dob).toLocaleDateString('th-TH') %>
-                            (อายุ <%= new Date().getFullYear() - new Date(t.student_2_dob).getFullYear() %> ปี)
                         </div>
                         <% } %>
+                          <form method="POST" action="/teams/<%= t.id %>/checkin/2?tier=<%= activeTier %>"
+                            style="display:inline">
+                            <button type="submit" class="checkin-btn <%= t.student_2_checked_in ? 'on' : 'off' %>">
+                              <i
+                                class="ti ti-<%= t.student_2_checked_in ? 'circle-check-filled' : 'circle-dashed' %>"></i>
+                              <%= t.student_2_checked_in ? 'มาแล้ว' : 'ยังไม่มา' %>
+                            </button>
+                          </form>
+                          <% } else { %><span style="color:#CBD5E1">—</span>
+                            <% } %>
                   </td>
-                  <td style="font-size:12px">
-                    <%= t.student_3 || '—' %>
+
+                  <!-- นักเรียน 3 -->
+                  <td>
+                    <% if (t.student_3) { %>
+                      <div class="stu-name">
+                        <%= t.student_3 %>
+                      </div>
                       <% if (t.student_3_dob) { %>
-                        <div style="font-size:10px;color:#94A3B8">
+                        <div class="stu-dob">
                           <%= new Date(t.student_3_dob).toLocaleDateString('th-TH') %>
-                            (อายุ <%= new Date().getFullYear() - new Date(t.student_3_dob).getFullYear() %> ปี)
                         </div>
                         <% } %>
+                          <form method="POST" action="/teams/<%= t.id %>/checkin/3?tier=<%= activeTier %>"
+                            style="display:inline">
+                            <button type="submit" class="checkin-btn <%= t.student_3_checked_in ? 'on' : 'off' %>">
+                              <i
+                                class="ti ti-<%= t.student_3_checked_in ? 'circle-check-filled' : 'circle-dashed' %>"></i>
+                              <%= t.student_3_checked_in ? 'มาแล้ว' : 'ยังไม่มา' %>
+                            </button>
+                          </form>
+                          <% } else { %><span style="color:#CBD5E1">—</span>
+                            <% } %>
                   </td>
-                  <td style="font-size:12px">
+
+                  <td style="font-size:13px;color:#334155">
                     <%= t.coach || '—' %>
                   </td>
-                  <td style="font-size:12px">
+                  <td style="font-size:13px;color:#334155">
                     <%= t.phone || '—' %>
                   </td>
-                  <td><span class="badge <%= STATUS_BADGE[t.status] %> badge-dot">
-                      <%= STATUS_LABEL[t.status] %>
-                    </span></td>
-                  <td
-                    style="font-size:12px;color:#64748B;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                  <td>
+                    <% if (t.status==='approved' ) { %>
+                      <span class="badge badge-green"><i class="ti ti-point-filled"></i> อนุมัติแล้ว</span>
+                      <% } else if (t.status==='rejected' ) { %>
+                        <span class="badge badge-red"><i class="ti ti-point-filled"></i> ไม่อนุมัติ</span>
+                        <% } else { %>
+                          <span class="badge badge-yellow"><i class="ti ti-point-filled"></i> รอพิจารณา</span>
+                          <% } %>
+                  </td>
+                  <td style="font-size:12px;color:#64748B;max-width:100px">
                     <%= t.note || '—' %>
                   </td>
                   <td>
-                    <div class="action-row">
-                      <button class="btn btn-icon btn-secondary" onclick="openEditModal(<%= JSON.stringify(t) %>)"
-                        title="แก้ไข"><i class="ti ti-edit" style="font-size:15px"></i></button>
-                      <form method="POST" action="/teams/<%= t.id %>?_method=DELETE&tier=<%= tier %>"
-                        style="display:inline" onsubmit="return confirm('ยืนยันการลบทีม <%= t.name %>?')">
-                        <button type="submit" class="btn btn-icon btn-danger" title="ลบ"><i class="ti ti-trash"
-                            style="font-size:15px"></i></button>
+                    <div class="act-wrap">
+                      <button class="btn-icon" onclick='openEditModal(<%= JSON.stringify(t) %>)' title="แก้ไข">
+                        <i class="ti ti-pencil"></i>
+                      </button>
+                      <form method="POST" action="/teams/<%= t.id %>?_method=DELETE&tier=<%= activeTier %>"
+                        style="display:inline" onsubmit="return confirm('ลบทีม <%= t.name %> ใช่ไหม?')">
+                        <button type="submit" class="btn-icon danger" title="ลบ">
+                          <i class="ti ti-trash"></i>
+                        </button>
                       </form>
                     </div>
                   </td>
                 </tr>
-                <% }) %>
-        </tbody>
-      </table>
-    </div>
+                <% } %>
+                  <% } %>
+      </tbody>
+    </table>
   </div>
 
-  <!-- Modal: เพิ่มทีม -->
-  <div id="addModal" class="modal-backdrop" style="display:none">
-    <div class="modal">
-      <div class="modal-hd">
-        <div>
-          <div class="modal-title">เพิ่มทีมใหม่</div>
-          <div class="modal-sub">ระบบจะกำหนด ID อัตโนมัติ</div>
-        </div>
-        <button class="modal-close" onclick="closeModal('addModal')"><i class="ti ti-x"></i></button>
-      </div>
-      <form method="POST" action="/teams">
-        <div class="modal-body">
-          <div class="form-grid">
-            <div class="fg">
-              <div class="fl">ชื่อทีม *</div><input class="fi" name="name" placeholder="ชื่อทีม" required>
-            </div>
-            <div class="fg">
-              <div class="fl">สถาบัน *</div><input class="fi" name="institution" placeholder="โรงเรียน / สถาบัน"
-                required>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="fg">
-              <div class="fl">รุ่น *</div>
-              <select class="fi" name="tier">
-                <option value="beginner" <%=tier==='beginner' ?'selected':'' %>>Beginner</option>
-                <option value="intermediate" <%=tier==='intermediate' ?'selected':'' %>>Intermediate</option>
-                <option value="advance" <%=tier==='advance' ?'selected':'' %>>Advance</option>
-              </select>
-            </div>
-            <div class="fg">
-              <div class="fl">สถานะ</div>
-              <select class="fi" name="status">
-                <option value="pending">รอพิจารณา</option>
-                <option value="approved">อนุมัติแล้ว</option>
-                <option value="rejected">ไม่ผ่าน</option>
-              </select>
-            </div>
-          </div>
-          <div class="section-div"></div>
-          <div
-            style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">
-            สมาชิกทีม</div>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
-              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 1</div>
-              <div class="form-grid" style="margin-bottom:0">
-                <div class="fg">
-                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_1" placeholder="ชื่อ-นามสกุล">
-                </div>
-                <div class="fg">
-                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_1_dob">
-                </div>
-              </div>
-            </div>
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
-              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 2</div>
-              <div class="form-grid" style="margin-bottom:0">
-                <div class="fg">
-                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_2" placeholder="ชื่อ-นามสกุล">
-                </div>
-                <div class="fg">
-                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_2_dob">
-                </div>
-              </div>
-            </div>
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
-              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 3</div>
-              <div class="form-grid" style="margin-bottom:0">
-                <div class="fg">
-                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_3" placeholder="ชื่อ-นามสกุล">
-                </div>
-                <div class="fg">
-                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_3_dob">
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="fg">
-              <div class="fl">ชื่อโคช</div><input class="fi" name="coach" placeholder="ชื่อโคช">
-            </div>
-          </div>
-          <div class="fg">
-            <div class="fl">โน้ต</div><textarea class="fi" name="note" placeholder="หมายเหตุ..."></textarea>
-          </div>
-        </div>
-        <div class="modal-foot">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">ยกเลิก</button>
-          <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal: แก้ไขทีม -->
-  <div id="editModal" class="modal-backdrop" style="display:none">
-    <div class="modal">
-      <div class="modal-hd">
+  <!-- Edit Modal -->
+  <div class="modal-backdrop" id="editModal" style="display:none">
+    <div class="modal" style="max-width:560px;width:100%">
+      <div class="modal-head">
         <div>
           <div class="modal-title">แก้ไขข้อมูลทีม</div>
-          <div class="modal-sub" id="editModalSub"></div>
+          <div id="editModalSub" style="font-size:12px;color:#94A3B8"></div>
         </div>
         <button class="modal-close" onclick="closeModal('editModal')"><i class="ti ti-x"></i></button>
       </div>
-      <form id="editForm" method="POST">
-        <input type="hidden" name="_method" value="PUT">
-        <input type="hidden" name="tier" id="edit_tier_hidden">
+      <form method="POST" id="editForm">
         <div class="modal-body">
-          <div class="form-grid">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="fg">
-              <div class="fl">ชื่อทีม *</div><input class="fi" name="name" id="edit_name" required>
+              <div class="fl">ชื่อทีม *</div><input class="fi" type="text" name="name" id="edit_name" required>
             </div>
             <div class="fg">
-              <div class="fl">สถาบัน *</div><input class="fi" name="institution" id="edit_institution" required>
+              <div class="fl">สถาบัน / โรงเรียน *</div><input class="fi" type="text" name="institution"
+                id="edit_institution" required>
             </div>
           </div>
-          <div class="form-grid">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
             <div class="fg">
               <div class="fl">รุ่น</div>
               <select class="fi" name="tier" id="edit_tier">
@@ -282,62 +550,130 @@
               <select class="fi" name="status" id="edit_status">
                 <option value="pending">รอพิจารณา</option>
                 <option value="approved">อนุมัติแล้ว</option>
-                <option value="rejected">ไม่ผ่าน</option>
+                <option value="rejected">ไม่อนุมัติ</option>
               </select>
             </div>
           </div>
-          <div class="section-div"></div>
-          <div
-            style="font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">
-            สมาชิกทีม</div>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
-              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 1</div>
-              <div class="form-grid" style="margin-bottom:0">
-                <div class="fg">
-                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_1" id="edit_s1">
+          <div style="font-weight:700;font-size:12px;color:#64748B;margin-bottom:10px">สมาชิกทีม</div>
+          <% for (var mi=1; mi <=3; mi++) { %>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px;margin-bottom:10px">
+              <div style="font-size:12px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ <%= mi %>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="fg" style="margin-bottom:0">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" type="text" name="student_<%= mi %>"
+                    id="edit_s<%= mi %>">
                 </div>
-                <div class="fg">
-                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_1_dob" id="edit_s1_dob">
+                <div class="fg" style="margin-bottom:0">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_<%= mi %>_dob"
+                    id="edit_s<%= mi %>_dob">
                 </div>
               </div>
             </div>
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
-              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 2</div>
-              <div class="form-grid" style="margin-bottom:0">
-                <div class="fg">
-                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_2" id="edit_s2">
+            <% } %>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="fg" style="margin-bottom:0">
+                  <div class="fl">ชื่อโค้ช</div><input class="fi" type="text" name="coach" id="edit_coach">
                 </div>
-                <div class="fg">
-                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_2_dob" id="edit_s2_dob">
-                </div>
-              </div>
-            </div>
-            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px 12px">
-              <div style="font-size:11px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ 3</div>
-              <div class="form-grid" style="margin-bottom:0">
-                <div class="fg">
-                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_3" id="edit_s3">
-                </div>
-                <div class="fg">
-                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_3_dob" id="edit_s3_dob">
+                <div class="fg" style="margin-bottom:0">
+                  <div class="fl">เบอร์โทร</div><input class="fi" type="text" name="phone" id="edit_phone">
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="form-grid">
-            <div class="fg">
-              <div class="fl">ชื่อโคช</div><input class="fi" name="coach" id="edit_coach">
-            </div>
-          </div>
-          <div class="fg">
-            <div class="fl">โน้ต</div><textarea class="fi" name="note" id="edit_note"></textarea>
-          </div>
+              <div class="fg" style="margin-top:12px">
+                <div class="fl">โน้ต</div><input class="fi" type="text" name="note" id="edit_note">
+              </div>
         </div>
         <div class="modal-foot">
-          <button type="button" class="btn btn-secondary" onclick="closeModal('editModal')">ยกเลิก</button>
+          <button type="button" class="btn btn-outline" onclick="closeModal('editModal')">ยกเลิก</button>
           <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy"></i> บันทึก</button>
         </div>
       </form>
     </div>
   </div>
+
+  <!-- Add Modal -->
+  <div class="modal-backdrop" id="addModal" style="display:none">
+    <div class="modal" style="max-width:560px;width:100%">
+      <div class="modal-head">
+        <div class="modal-title">เพิ่มทีมใหม่</div>
+        <button class="modal-close" onclick="closeModal('addModal')"><i class="ti ti-x"></i></button>
+      </div>
+      <form method="POST" action="/teams">
+        <div class="modal-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg">
+              <div class="fl">ชื่อทีม *</div><input class="fi" type="text" name="name" required>
+            </div>
+            <div class="fg">
+              <div class="fl">สถาบัน / โรงเรียน *</div><input class="fi" type="text" name="institution" required>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg">
+              <div class="fl">รุ่น</div>
+              <select class="fi" name="tier">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advance">Advance</option>
+              </select>
+            </div>
+            <div class="fg">
+              <div class="fl">เบอร์โทร *</div><input class="fi" type="text" name="phone" required>
+            </div>
+          </div>
+          <% for (var ai=1; ai <=3; ai++) { %>
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:12px;margin-bottom:10px">
+              <div style="font-size:12px;font-weight:700;color:#2563EB;margin-bottom:8px">นักเรียนคนที่ <%= ai %>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <div class="fg" style="margin-bottom:0">
+                  <div class="fl">ชื่อ-นามสกุล</div><input class="fi" type="text" name="student_<%= ai %>">
+                </div>
+                <div class="fg" style="margin-bottom:0">
+                  <div class="fl">วันเกิด</div><input class="fi" type="date" name="student_<%= ai %>_dob">
+                </div>
+              </div>
+            </div>
+            <% } %>
+              <div class="fg">
+                <div class="fl">ชื่อโค้ช</div><input class="fi" type="text" name="coach">
+              </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addModal')">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary"><i class="ti ti-plus"></i> เพิ่มทีม</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function filterTeams() {
+      var q = document.getElementById('teamSearch').value.toLowerCase();
+      var rows = document.querySelectorAll('.team-row');
+      for (var i = 0; i < rows.length; i++) {
+        var name = rows[i].dataset.name || '';
+        var inst = rows[i].dataset.inst || '';
+        rows[i].style.display = (!q || name.indexOf(q) > -1 || inst.indexOf(q) > -1) ? '' : 'none';
+      }
+    }
+
+    function openEditModal(team) {
+      document.getElementById('editForm').action = '/teams/' + team.id + '?_method=PUT&tier=' + team.tier;
+      document.getElementById('editModalSub').textContent = 'ID: ' + team.id;
+      document.getElementById('edit_name').value = team.name || '';
+      document.getElementById('edit_institution').value = team.institution || '';
+      document.getElementById('edit_tier').value = team.tier || 'beginner';
+      document.getElementById('edit_status').value = team.status || 'pending';
+      document.getElementById('edit_s1').value = team.student_1 || '';
+      document.getElementById('edit_s2').value = team.student_2 || '';
+      document.getElementById('edit_s3').value = team.student_3 || '';
+      document.getElementById('edit_coach').value = team.coach || '';
+      document.getElementById('edit_phone').value = team.phone || '';
+      document.getElementById('edit_note').value = team.note || '';
+      document.getElementById('edit_s1_dob').value = team.student_1_dob ? team.student_1_dob.split('T')[0] : '';
+      document.getElementById('edit_s2_dob').value = team.student_2_dob ? team.student_2_dob.split('T')[0] : '';
+      document.getElementById('edit_s3_dob').value = team.student_3_dob ? team.student_3_dob.split('T')[0] : '';
+      openModal('editModal');
+    }
+  </script>

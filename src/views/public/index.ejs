@@ -58,9 +58,9 @@
     body {
       min-width: 320px;
       overflow-x: hidden;
-      font-family: 'Sarabun', sans-serif;
       color: var(--text);
       background: var(--page);
+      font-family: 'Kanit', sans-serif;
     }
 
     a {
@@ -98,8 +98,7 @@
     .section-title {
       margin-bottom: 12px;
       color: #054394;
-      font-family: 'Kanit', sans-serif;
-      font-size: clamp(28px, 3vw, 40px);
+      font-size: clamp(40px, 3vw, 40px);
       font-weight: 600;
       line-height: 1.2;
       text-align: center;
@@ -112,167 +111,171 @@
       font-size: 18px;
       line-height: 1.8;
       text-align: center;
-      font-family: 'Kanit', sans-serif;
       font-weight: 700;
     }
 
-    /* 03 — NAVIGATION */
+    /* 03 — MASTER TOPBAR */
     .topbar {
       position: fixed;
       inset: 0 0 auto;
-      z-index: 100;
-      height: 84px;
+      z-index: 1000;
+      height: 82px;
       padding: 0 30px;
       display: flex;
       align-items: center;
       gap: 10px;
       background: transparent;
       border-bottom: 1px solid transparent;
-      transition: .3s ease;
+      transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
     }
 
     .topbar.scrolled {
-      background: rgba(255, 255, 255, .90);
+      background: rgba(255, 255, 255, .92);
       border-bottom-color: rgba(226, 232, 240, .9);
-      box-shadow: 0 4px 18px rgba(15, 23, 42, .04);
+      box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     .topbar-logo {
-      flex-shrink: 0;
+      flex: 0 0 auto;
       display: inline-flex;
-      align-items: center
+      align-items: center;
     }
 
     .topbar-logo img {
+      display: block;
       width: auto;
-      height: 120px;
-      object-fit: contain
+      height: 58px;
+      max-width: 150px;
+      object-fit: contain;
     }
 
     .topbar-nav {
-      flex: 1;
+      flex: 1 1 auto;
+      min-width: 0;
       margin-left: 18px;
       display: flex;
       align-items: center;
-      gap: 6px
+      gap: 2px;
     }
 
     .nav-link {
+      font-family: Kanit;
       min-height: 52px;
-      padding: 0 18px;
-      display: inline-flex;
+      padding: 0 14px;
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 7px;
+      justify-content: center;
+      gap: 2px;
       border: 0;
       border-radius: 11px;
       background: transparent;
       color: #334155;
-      font-family: 'Kanit', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      letter-spacing: 1.5px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      line-height: 1.15;
+      white-space: nowrap;
       cursor: pointer;
-      transition: .2s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      line-height: 1.2;
-    }
-
-    .certificate-btn {
-      transition: all 0.2s ease;
-    }
-
-    .certificate-btn:hover {
-      background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
-      border-color: #F59E0B !important;
-      color: #78350F !important;
-      box-shadow: 0 6px 16px rgba(180, 120, 20, 0.28);
-      transform: translateY(-2px);
-    }
-
-    .certificate-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 3px 8px rgba(180, 120, 20, 0.20);
+      transition: color .2s ease, background .2s ease, transform .2s ease;
     }
 
     .nav-link span:first-child {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.1;
     }
 
     .nav-link span:last-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-top: 1px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .2px;
+    }
+
+    .nav-link i {
       font-size: 15px;
-      margin-top: 2px;
     }
 
     .nav-link:hover {
       color: var(--primary);
-      transform: translateY(-1px)
+      transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+      color: var(--primary);
+    }
+
+    .certificate-btn {
+      min-width: 150px;
+      padding: 8px 16px;
+      border: 1px solid #F6D365;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #FFF8D8, #FFF0B8);
+      color: #92400E;
+      box-shadow: 0 6px 16px rgba(180, 120, 20, .12);
+    }
+
+    .certificate-btn:hover {
+      background: linear-gradient(135deg, #FDE68A, #FCD34D);
+      border-color: #F59E0B;
+      color: #78350F;
+      box-shadow: 0 8px 20px rgba(180, 120, 20, .22);
     }
 
     .topbar-actions {
+      flex: 0 0 auto;
       margin-left: auto;
       display: flex;
       align-items: center;
-      gap: 10px
+      gap: 10px;
     }
 
-    .btn-reg,
     .btn-login {
       min-height: 52px;
-      padding: 0 20px;
+      padding: 0 18px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
+      border: 1px solid var(--line);
       border-radius: 11px;
-      font: 800 16px 'Sarabun', sans-serif;
-      transition: .2s ease;
-    }
-
-    .btn-login {
       color: #334155;
       background: #fff;
-      border: 1px solid var(--line)
+      white-space: nowrap;
+      transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
     }
 
     .btn-login:hover {
       background: #F8FAFC;
       transform: translateY(-1px);
-      box-shadow: var(--shadow-sm)
+      box-shadow: var(--shadow-sm);
     }
 
-    .btn-reg {
-      color: #fff;
-      border: 1px solid transparent;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      box-shadow: 0 10px 24px rgba(37, 99, 235, .24)
-    }
-
-    .btn-reg:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
-    }
-
-    /* 04 — DROPDOWN */
     .dropdown {
-      position: relative
+      position: relative;
     }
 
     .dropdown-menu {
       position: absolute;
-      top: calc(100% + 10px);
+      top: calc(100% + 8px);
       left: 0;
-      z-index: 200;
+      z-index: 1100;
       display: none;
-      min-width: 200px;
+      min-width: 205px;
       padding: 8px;
       background: rgba(255, 255, 255, .98);
       border: 1px solid var(--line);
       border-radius: 14px;
       box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
     .dropdown-item {
@@ -285,16 +288,17 @@
       color: #334155;
       font-size: 14px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .dropdown-item:hover {
       background: var(--primary-soft);
-      color: var(--primary)
+      color: var(--primary);
     }
 
     .dropdown-item i {
       color: #64748B;
-      font-size: 17px
+      font-size: 17px;
     }
 
     .dropdown-item:first-child:hover {
@@ -439,7 +443,7 @@
       min-height: 72px;
       padding: 0 36px;
       border-radius: 18px;
-      font-family: 'Kanit', sans-serif;
+      font-family: Kanit;
       font-size: 40px;
       font-weight: 650;
       letter-spacing: 2px;
@@ -453,7 +457,7 @@
       border: 1px solid rgba(203, 213, 225, .9);
       box-shadow: 0 8px 22px rgba(15, 23, 42, .06);
       backdrop-filter: blur(10px);
-      font-family: 'Kanit', sans-serif;
+      font-family: Kanit;
       font-size: 23px;
       font-weight: 650;
     }
@@ -546,12 +550,11 @@
       position: relative;
       z-index: 2;
       color: #fff;
-      font-family: 'Kanit', sans-serif
     }
 
     .event-date-label {
       margin-bottom: 1px;
-      font-size: 14px;
+      font-size: 20px;
       font-weight: 600;
       line-height: 1.2
     }
@@ -573,31 +576,10 @@
 
     .event-date-range {
       margin-top: 5px;
-      color: rgba(255, 255, 255, .95);
+      color: #acd6ff;
       font-size: 16px;
       font-weight: 500;
       line-height: 1
-    }
-
-    .event-date-arrow {
-      position: absolute;
-      left: 285px;
-      top: 50%;
-      z-index: 10;
-      width: 52px;
-      height: 52px;
-      display: grid;
-      place-items: center;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      color: var(--primary);
-      background: #fff;
-      border: 1px solid #BFDBFE;
-      box-shadow: 0 7px 20px rgba(37, 99, 235, .17), 0 0 0 5px rgba(255, 255, 255, .62);
-    }
-
-    .event-date-arrow i {
-      font-size: 25px
     }
 
     .event-location-main {
@@ -650,7 +632,6 @@
 
     .event-location-title {
       color: #1452C5;
-      font-family: 'Kanit', sans-serif;
       font-size: 22px;
       font-weight: 600;
       line-height: 1.2
@@ -669,7 +650,6 @@
       position: relative;
       z-index: 2;
       color: #102B5C;
-      font-family: 'Kanit', sans-serif;
       font-size: 25px;
       font-weight: 500;
       line-height: 1.2
@@ -710,7 +690,7 @@
 
     .about-section .section-title {
       margin-bottom: 16px;
-      font-size: clamp(30px, 3.2vw, 44px)
+      font-size: clamp(50px, 3.2vw, 44px)
     }
 
     .about-section .section-sub {
@@ -925,7 +905,6 @@
 
     .about-tier-name {
       margin-bottom: 5px;
-      font-family: 'Kanit', sans-serif;
       font-size: 17px;
       font-weight: 800;
     }
@@ -1016,7 +995,7 @@
 
     .award-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: 1.18fr repeat(3, minmax(0, 1fr));
       gap: 12px;
     }
 
@@ -1062,7 +1041,9 @@
       font-family: 'Kanit', sans-serif;
       font-size: 26px;
       font-weight: 800;
-      line-height: 1.2
+      line-height: 1.2;
+
+
     }
 
     .award-item:first-child .award-item-value {
@@ -1181,7 +1162,7 @@
 
     #tiers .section-title {
       margin-bottom: 10px;
-      font-size: clamp(32px, 3.3vw, 44px)
+      font-size: clamp(50px, 3.3vw, 44px)
     }
 
     #tiers .section-sub {
@@ -1725,8 +1706,6 @@
       min-height: 100px;
     }
 
-
-
     .sponsor-card {
       padding: 14px 18px;
     }
@@ -1905,394 +1884,213 @@
     }
 
     /* =========================================================
-       CONTACT — MODERN RCL
+       CONTACT + FOOTER
+       Dark footer layout inspired by the reference design
        ========================================================= */
     .contact-section {
       position: relative;
       overflow: hidden;
-      padding: 92px 24px 86px;
-      background:
-        radial-gradient(circle at 8% 18%, rgba(37, 99, 235, .10), transparent 25%),
-        radial-gradient(circle at 92% 78%, rgba(14, 165, 233, .09), transparent 27%),
-        linear-gradient(180deg, #F8FBFF 0%, #F3F7FC 100%);
-      border-top: 1px solid #E5EAF1;
-    }
-
-    .contact-section::before,
-    .contact-section::after {
-      content: '';
-      position: absolute;
-      border: 1px solid rgba(37, 99, 235, .08);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-
-    .contact-section::before {
-      width: 420px;
-      height: 420px;
-      left: -250px;
-      top: 80px;
-      box-shadow: 0 0 0 55px rgba(37, 99, 235, .025), 0 0 0 110px rgba(37, 99, 235, .015);
-    }
-
-    .contact-section::after {
-      width: 360px;
-      height: 360px;
-      right: -220px;
-      bottom: -180px;
-      border-color: rgba(14, 165, 233, .08);
+      padding: 72px 24px 28px;
+      background: radial-gradient(circle at 15% 20%, rgba(96, 165, 250, .18), transparent 28%), radial-gradient(circle at 85% 80%, rgba(37, 99, 235, .22), transparent 30%), linear-gradient(135deg, #0B1220 0%, #172554 58%, #1554C7 100%);
+      color: #fff;
     }
 
     .contact-inner {
       position: relative;
       z-index: 1;
-      width: 100%;
-      max-width: 1180px;
+      width: min(1180px, 100%);
       margin: 0 auto;
-      text-align: center;
     }
 
-    .contact-section .section-label {
-      margin-bottom: 12px;
-      padding: 7px 15px;
-      color: #2563EB;
-      background: linear-gradient(135deg, #EFF6FF, #E7F2FF);
-      border: 1px solid #D8E9FF;
-      box-shadow: 0 6px 18px rgba(37, 99, 235, .07);
+    .contact-heading {
+      display: none;
     }
 
-    .contact-section .section-title {
-      margin-bottom: 14px;
-      color: #064A9B;
-      font-family: 'Kanit', sans-serif;
-      font-size: clamp(34px, 4vw, 48px);
-      font-weight: 800;
-      line-height: 1.1;
-    }
-
-    .contact-section .section-title::after {
-      content: '';
-      display: block;
-      width: 210px;
-      height: 3px;
-      margin: 14px auto 0;
-      border-radius: 999px;
-      background: linear-gradient(90deg, transparent, #2563EB, #38BDF8, transparent);
-    }
-
-    .contact-sub {
-      max-width: 820px;
-      margin: 0 auto 42px;
-      color: #64748B;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 16px;
-      line-height: 1.85;
-    }
-
-    .contact-grid {
+    .contact-footer-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 22px;
-      text-align: left;
+      grid-template-columns: 1.35fr 1fr 1.15fr 1.15fr;
+      gap: 52px;
+      align-items: start;
     }
 
-    .contact-card {
-      position: relative;
-      min-height: 255px;
-      padding: 30px 28px 26px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      color: inherit;
-      background:
-        radial-gradient(circle at 100% 0%, rgba(37, 99, 235, .055), transparent 35%),
-        rgba(255, 255, 255, .96);
-      border: 1px solid #DCE6F2;
-      border-radius: 22px;
-      box-shadow: 0 14px 34px rgba(15, 23, 42, .055), 0 3px 10px rgba(37, 99, 235, .025);
-      overflow: hidden;
-      transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
-    }
-
-    .contact-card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #2563EB, #38BDF8);
-      transform: scaleX(.25);
-      transform-origin: left;
-      transition: transform .28s ease;
-    }
-
-    .contact-card:hover {
-      transform: translateY(-7px);
-      border-color: #BBD7FF;
-      box-shadow: 0 24px 50px rgba(37, 99, 235, .12), 0 5px 14px rgba(15, 23, 42, .05);
-    }
-
-    .contact-card:hover::before {
-      transform: scaleX(1);
-    }
-
-    .contact-icon {
-      width: 62px;
-      height: 62px;
-      margin-bottom: 22px;
-      display: grid;
-      place-items: center;
-      border-radius: 18px;
-      color: #2563EB;
-      background: linear-gradient(145deg, #F1F7FF, #E4F0FF);
-      border: 1px solid #D2E5FF;
-      box-shadow: 0 8px 20px rgba(37, 99, 235, .10), inset 0 0 0 5px rgba(255, 255, 255, .55);
-      transition: transform .24s ease, box-shadow .24s ease;
-    }
-
-    .contact-card:hover .contact-icon {
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 12px 25px rgba(37, 99, 235, .16), inset 0 0 0 5px rgba(255, 255, 255, .62);
-    }
-
-    .contact-icon i {
-      font-size: 29px;
-    }
-
-    .contact-content {
-      width: 100%;
+    .contact-brand {
       min-width: 0;
     }
 
-    .contact-label {
-      margin-bottom: 5px;
-      color: #64748B;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .contact-value {
-      color: #0F172A;
-      font-family: 'Kanit', sans-serif;
-      font-size: 21px;
-      font-weight: 700;
-      line-height: 1.45;
-      word-break: break-word;
-    }
-
-    .contact-card:first-child .contact-value {
-      color: #1452C5;
-      font-size: 27px;
-    }
-
-    .contact-card:nth-child(2) .contact-value {
-      color: #1452C5;
-    }
-
-    .contact-card:nth-child(3) .contact-value {
-      font-size: 18px;
-      line-height: 1.65;
-    }
-
-    .contact-action {
-      margin-top: 18px;
+    .contact-brand-logo {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      color: #2563EB;
+      margin-bottom: 0px;
+    }
+
+    .contact-brand-logo:hover{
+    transform: translateY(-2px);
+    transition: .2s ease;
+    filter: drop-shadow(0 0 10px rgba(126, 194, 242, 0.5));
+    }
+
+    .contact-brand-logo img {
+      display: block;
+      width: auto;
+      height: 150px;
+      max-width: 190px;
+      object-fit: contain;
+    }
+
+    .contact-brand-title {
+      margin-bottom: 6px;
+      color: #fff;
       font-family: 'Kanit', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .contact-action i {
-      font-size: 17px;
-      transition: transform .2s ease;
-    }
-
-    .contact-card:hover .contact-action i {
-      transform: translateX(4px);
-    }
-
-    .contact-support {
-      margin-top: 24px;
-      padding: 22px 28px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(230px, .85fr) auto;
-      align-items: center;
-      gap: 24px;
-      text-align: left;
-      background: linear-gradient(135deg, rgba(255, 255, 255, .94), rgba(239, 246, 255, .94));
-      border: 1px solid #D5E5F8;
-      border-radius: 22px;
-      box-shadow: 0 12px 30px rgba(37, 99, 235, .07);
-    }
-
-    .contact-support-main {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .contact-support-icon {
-      flex: 0 0 auto;
-      width: 48px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border-radius: 15px;
-      color: #2563EB;
-      background: #EFF6FF;
-      border: 1px solid #D8E9FF;
-    }
-
-    .contact-support-icon i {
-      font-size: 23px;
-    }
-
-    .contact-support-title {
-      color: #1452C5;
-      font-family: 'Kanit', sans-serif;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
     }
 
-    .contact-support-text,
-    .contact-hours-text {
-      color: #64748B;
+    .contact-brand-text {
+      max-width: 320px;
+      color: #8f88a8;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.7;
     }
 
-    .contact-hours {
-      padding-left: 24px;
-      border-left: 1px solid #D6E2F0;
+    .contact-socials {
+      display: flex;
+      gap: 10px;
+      margin-top: -15px;
     }
 
-    .contact-hours-title {
-      color: #334155;
-      font-family: 'Kanit', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .contact-message-btn {
-      min-height: 48px;
-      padding: 0 22px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      white-space: nowrap;
-      color: #fff;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      border-radius: 999px;
-      box-shadow: 0 10px 24px rgba(37, 99, 235, .22);
-      font-family: 'Kanit', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      transition: .22s ease;
-    }
-
-    .contact-message-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 15px 30px rgba(37, 99, 235, .30);
-      background: linear-gradient(135deg, #2563EB, #0EA5E9);
-    }
-
-    .contact-message-btn i {
+    .contact-social {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgb(0 136 248 / 55%);
+      border-radius: 50%;
+      color: #8bc8fa;
+      background: rgba(42, 58, 122, 0.45);
       font-size: 18px;
+      transition: .2s ease;
+    }
+
+    .contact-social:hover {
+      color: #fff;
+      background: rgba(58, 115, 237, 0.35);
+      border-color: #5c8df6;
+      transform: translateY(-2px);
+    }
+
+    .contact-column-title {
+      margin: 2px 0 18px;
+      color: #a6c6fc;
+      font-family: 'Kanit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .contact-links,
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .contact-link,
+    .contact-detail {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #acd6ff;
+      font-size: 17px;
+      line-height: 1.55;
+      font-family: Kanit;
+      transition: color .2s ease;
+    }
+
+    .contact-link:hover {
+      color: #fff;
+    }
+
+    .contact-link i,
+    .contact-detail i {
+      flex: 0 0 18px;
+      margin-top: 2px;
+      color: #70b9ff;
+      font-size: 25px;
+      text-align: center;
+    }
+
+    .contact-detail strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #e9e4f5;
+      font-family: 'Kanit', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .contact-detail span {
+      display: block;
+    }
+
+    .contact-footer-bottom {
+      margin-top: 52px;
+      padding-top: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-top: 1px solid rgba(148, 163, 184, .12);
+    }
+
+    .contact-copyright {
+      color: #817a98;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .contact-organizer {
+      color: #a99fc4;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .footer {
+      display: none;
     }
 
     @media (max-width: 900px) {
-      .contact-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .contact-card {
-        min-height: 185px;
-      }
-
-      .contact-support {
-        grid-template-columns: 1fr;
-      }
-
-      .contact-hours {
-        padding: 16px 0 0;
-        border-left: 0;
-        border-top: 1px solid #D6E2F0;
-      }
-
-      .contact-message-btn {
-        width: 100%;
+      .contact-footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 36px 28px;
       }
     }
 
     @media (max-width: 640px) {
       .contact-section {
-        padding: 68px 16px 64px;
+        padding: 56px 18px 22px;
       }
 
-      .contact-sub {
-        margin-bottom: 28px;
-        font-size: 14px;
+      .contact-footer-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
       }
 
-      .contact-card {
-        min-height: 0;
-        padding: 24px 22px 22px;
-        border-radius: 19px;
+      .contact-brand-logo img {
+        height: 50px;
+        max-width: 165px;
       }
 
-      .contact-icon {
-        width: 56px;
-        height: 56px;
-        margin-bottom: 18px;
-      }
-
-      .contact-value,
-      .contact-card:first-child .contact-value {
-        font-size: 20px;
-      }
-
-      .contact-card:nth-child(3) .contact-value {
-        font-size: 16px;
-      }
-
-      .contact-support {
-        padding: 20px;
-        border-radius: 19px;
-      }
-
-      .contact-support-main {
+      .contact-footer-bottom {
+        margin-top: 36px;
+        flex-direction: column;
         align-items: flex-start;
+        gap: 8px;
       }
-    }
 
-    /* 09 — FOOTER */
-    .footer {
-      padding: 36px 20px;
-      text-align: center;
-      background: linear-gradient(135deg, #0F172A, #1E293B)
-    }
-
-    .footer-logo img {
-      height: 42px;
-      margin-bottom: 11px;
-      object-fit: contain
-    }
-
-    .footer-name {
-      margin-bottom: 5px;
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800
-    }
-
-    .footer-sub {
-      color: rgba(255, 255, 255, .48);
-      font-size: 12px
+      .contact-organizer {
+        text-align: left;
+      }
     }
 
     /* 10 — ANIMATION */
@@ -2324,9 +2122,6 @@
 
     /* Large Desktop */
     @media (min-width:1440px) {
-      .topbar {
-        padding-inline: 48px
-      }
 
       .section-inner,
       .about-section .section-inner,
@@ -2341,25 +2136,6 @@
 
     /* Laptop */
     @media (min-width:901px) and (max-width:1199px) {
-      .topbar {
-        padding: 0 20px
-      }
-
-      .topbar-logo img {
-        height: 92px
-      }
-
-      .nav-link {
-        padding: 0 12px;
-        font-size: 16px;
-        letter-spacing: 1px
-      }
-
-      .btn-login {
-        padding: 0 14px;
-        font-size: 14px
-      }
-
       .hero {
         padding-top: 125px
       }
@@ -2373,40 +2149,10 @@
         grid-template-columns: 250px minmax(0, 1fr)
       }
 
-      .event-date-arrow {
-        left: 250px
-      }
     }
 
     /* Tablet */
     @media (min-width:641px) and (max-width:900px) {
-      .topbar {
-        height: 72px;
-        padding: 0 16px
-      }
-
-      .topbar-logo img {
-        height: 70px
-      }
-
-      .topbar-nav {
-        margin-left: 4px;
-        gap: 2px
-      }
-
-      .nav-link {
-        min-height: 44px;
-        padding: 0 9px;
-        font-size: 14px;
-        letter-spacing: .5px
-      }
-
-      .btn-login {
-        min-height: 44px;
-        padding: 0 12px;
-        font-size: 13px
-      }
-
       .hero {
         min-height: 100svh;
         padding: 108px 24px 64px
@@ -2503,9 +2249,6 @@
         grid-template-columns: 240px minmax(0, 1fr)
       }
 
-      .event-date-arrow {
-        left: 240px
-      }
 
       .event-location-main {
         padding-left: 42px
@@ -2522,55 +2265,6 @@
 
     /* Mobile */
     @media (max-width:640px) {
-      .topbar {
-        height: 60px;
-        padding: 0 12px
-      }
-
-      .topbar-logo img {
-        height: 46px;
-        max-width: 92px
-      }
-
-      .topbar-nav {
-        margin-left: 2px;
-        gap: 0
-      }
-
-      .nav-link {
-        min-height: 40px;
-        padding: 0 7px;
-        font-size: 12px;
-        letter-spacing: 0;
-        white-space: nowrap
-      }
-
-      .topbar-actions {
-        gap: 4px
-      }
-
-      .btn-login {
-        width: 40px;
-        min-width: 40px;
-        height: 40px;
-        min-height: 40px;
-        padding: 0;
-        border-radius: 10px;
-        font-size: 0
-      }
-
-      .btn-login i {
-        font-size: 18px
-      }
-
-      .dropdown-menu {
-        position: fixed;
-        top: 58px;
-        left: 10px;
-        right: 10px;
-        min-width: 0
-      }
-
       .hero {
         min-height: 100svh;
         padding: 82px 16px 42px
@@ -2639,12 +2333,6 @@
         border-radius: 21px 21px 0 0
       }
 
-      .event-date-arrow {
-        left: 50%;
-        top: auto;
-        bottom: -26px;
-        transform: translateX(-50%)
-      }
 
       .event-location-main {
         min-height: 155px;
@@ -2832,11 +2520,6 @@
 
     /* Small phone */
     @media (max-width:430px) {
-      .topbar-logo img {
-        height: 40px;
-        max-width: 76px
-      }
-
       .award-grid {
         grid-template-columns: 1fr 1fr
       }
@@ -2849,10 +2532,6 @@
         font-size: 16px
       }
 
-      .nav-link {
-        padding: 0 5px;
-        font-size: 11px
-      }
 
       .hero {
         padding-inline: 14px
@@ -2898,15 +2577,6 @@
     }
 
     @media (max-width:360px) {
-      .topbar-logo img {
-        max-width: 64px
-      }
-
-      .nav-link {
-        padding: 0 4px;
-        font-size: 10px
-      }
-
       .hero-actions-bottom {
         grid-template-columns: 1fr
       }
@@ -2917,374 +2587,6 @@
     }
 
 
-    /* =========================================================
-       RCL MASTER TOPBAR — Based on Competition
-       This block intentionally overrides the original topbar CSS.
-    ========================================================= */
-    /* =========================================================
-   RCL TOPBAR
-========================================================= */
-    .topbar {
-      position: fixed;
-      inset: 0 0 auto;
-      z-index: 1000;
-      height: 84px;
-      padding: 0 30px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: transparent;
-      border-bottom: 1px solid transparent;
-      transition: all .3s ease;
-    }
-
-    .topbar.scrolled {
-      background: rgba(255, 255, 255, .92);
-      border-bottom-color: rgba(226, 232, 240, .9);
-      box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
-      backdrop-filter: blur(16px);
-    }
-
-    .topbar-logo {
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .topbar-logo img {
-      width: auto;
-      height: 120px;
-      object-fit: contain;
-    }
-
-    .topbar-nav {
-      flex: 1;
-      margin-left: 18px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .nav-link {
-      min-height: 52px;
-      padding: 0 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 5px;
-      border: 0 !important;
-      border-radius: 11px;
-      background: transparent !important;
-      color: #334155;
-      font-family: 'Kanit', 'Sarabun', sans-serif;
-      font-size: 17px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      line-height: 1.15;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: all .2s ease;
-    }
-
-    .nav-link span:first-child {
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .nav-link span:last-child {
-      font-family: 'Kanit', 'Sarabun', sans-serif;
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0;
-    }
-
-    .nav-link i {
-      font-size: 17px;
-    }
-
-    .nav-link:hover {
-      color: #2563EB;
-      background: #F4F8FF !important;
-      transform: translateY(-1px);
-    }
-
-    .nav-link.active {
-      color: #2563EB !important;
-      background: #EFF6FF !important;
-    }
-
-    /* Certificate */
-    .certificate-btn {
-      background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
-      color: #92400E !important;
-      border: 1px solid #FCD34D !important;
-      border-radius: 90px !important;
-      box-shadow: 0 4px 12px rgba(180, 120, 20, .18);
-    }
-
-    .certificate-btn:hover {
-      background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
-      color: #78350F !important;
-      border-color: #F59E0B !important;
-      box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
-      transform: translateY(-2px);
-    }
-
-    .certificate-btn:active {
-      transform: translateY(0);
-      box-shadow: 0 3px 8px rgba(180, 120, 20, .20);
-    }
-
-    .topbar-actions {
-      flex: 0 0 auto;
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .btn-reg,
-    .btn-login {
-      min-height: 52px;
-      padding: 0 20px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      border-radius: 11px;
-      font: 800 16px 'Sarabun', sans-serif;
-      text-decoration: none;
-      transition: all .2s ease;
-    }
-
-    .btn-reg {
-      color: #fff;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      border: 1px solid transparent;
-      box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
-    }
-
-    .btn-reg:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, .30);
-    }
-
-    .btn-login {
-      color: #334155;
-      background: #fff;
-      border: 1px solid #E2E8F0;
-    }
-
-    .btn-login:hover {
-      color: #2563EB;
-      background: #F8FAFC;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
-    }
-
-    /* DROPDOWN */
-    .dropdown {
-      position: relative;
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 0;
-      z-index: 1100;
-      display: none;
-      min-width: 215px;
-      padding: 8px;
-      background: rgba(255, 255, 255, .98);
-      border: 1px solid #E2E8F0;
-      border-radius: 14px;
-      box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-    }
-
-    .dropdown-item {
-      min-height: 44px;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: 10px;
-      color: #334155;
-      font-family: 'Kanit', 'Sarabun', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all .18s ease;
-    }
-
-    .dropdown-item:hover,
-    .dropdown-item.active {
-      color: #2563EB;
-      background: #EFF6FF;
-    }
-
-    .dropdown-item:first-child:hover {
-      background: #FEF2F2;
-      color: #DC2626;
-    }
-
-    .dropdown-item i {
-      font-size: 17px;
-      color: #64748B;
-    }
-
-    /* Responsive — Laptop */
-    @media (min-width:901px) and (max-width:1199px) {
-      .topbar {
-        padding: 0 20px;
-      }
-
-      .topbar-logo img {
-        height: 92px;
-      }
-
-      .nav-link {
-        padding: 0 11px;
-      }
-
-      .nav-link span:first-child {
-        font-size: 14px;
-      }
-
-      .nav-link span:last-child {
-        font-size: 12px;
-      }
-
-      .btn-reg,
-      .btn-login {
-        padding: 0 14px;
-        font-size: 14px;
-      }
-    }
-
-    /* Responsive — Tablet */
-    @media (min-width:641px) and (max-width:900px) {
-      .topbar {
-        height: 72px;
-        padding: 0 16px;
-      }
-
-      .topbar-logo img {
-        height: 70px;
-      }
-
-      .topbar-nav {
-        margin-left: 4px;
-        gap: 2px;
-      }
-
-      .nav-link {
-        min-height: 44px;
-        padding: 0 8px;
-      }
-
-      .nav-link span:first-child {
-        font-size: 12px;
-      }
-
-      .nav-link span:last-child {
-        font-size: 10px;
-      }
-
-      .btn-reg,
-      .btn-login {
-        min-height: 44px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
-    }
-
-    /* Responsive — Mobile */
-    @media (max-width:640px) {
-      .topbar {
-        height: 60px;
-        padding: 0 12px;
-      }
-
-      .topbar-logo img {
-        height: 46px;
-        max-width: 92px;
-      }
-
-      .topbar-nav {
-        margin-left: 2px;
-        gap: 0;
-      }
-
-      .topbar-nav>a.nav-link {
-        display: none;
-      }
-
-      .nav-link {
-        min-height: 40px;
-        padding: 0 7px;
-      }
-
-      .nav-link span:first-child {
-        font-size: 11px;
-      }
-
-      .nav-link span:last-child {
-        font-size: 9px;
-      }
-
-      .topbar-actions {
-        gap: 4px;
-      }
-
-      .btn-reg {
-        min-height: 40px;
-        padding: 0 10px;
-        font-size: 12px;
-      }
-
-      .btn-login {
-        width: 40px;
-        min-width: 40px;
-        min-height: 40px;
-        padding: 0;
-        font-size: 0;
-      }
-
-      .btn-login i {
-        font-size: 18px;
-      }
-
-      .dropdown-menu {
-        position: fixed;
-        top: 58px;
-        left: 10px;
-        right: 10px;
-        min-width: 0;
-      }
-    }
-
-    @media (max-width:430px) {
-      .topbar-logo img {
-        height: 40px;
-        max-width: 76px;
-      }
-
-      .nav-link {
-        padding: 0 5px;
-      }
-    }
-
-    @media (max-width:360px) {
-      .topbar-logo img {
-        max-width: 64px;
-      }
-
-      .nav-link {
-        padding: 0 4px;
-      }
-    }
 
     /* =========================================================
        ABOUT FEATURE CARDS — POLISHED LAYOUT
@@ -3757,7 +3059,7 @@
     #tiers .section-title {
       margin-bottom: 7px;
       color: #0b4aa2;
-      font-size: clamp(34px, 3.6vw, 46px);
+      font-size: clamp(30px, 3.6vw, 46px);
       letter-spacing: -.5px;
     }
 
@@ -3975,7 +3277,7 @@
 
     #tiers .section-title {
       margin-bottom: 4px !important;
-      font-size: clamp(30px, 3.2vw, 42px) !important;
+      font-size: clamp(50px, 3.2vw, 42px) !important;
       letter-spacing: -.4px;
     }
 
@@ -4665,6 +3967,1688 @@
         margin: 2px auto 0 !important;
       }
     }
+
+
+    /* ---------- Very small phones: 360px and below ---------- */
+    @media (max-width: 360px) {
+
+
+      .hero {
+        padding-top: 76px !important;
+      }
+
+      .hero-actions-bottom {
+        grid-template-columns: 1fr !important;
+      }
+
+      .hero-btn-secondary {
+        min-height: 44px !important;
+        font-size: 12px !important;
+      }
+
+      .event-day-number {
+        font-size: 56px !important;
+      }
+
+      .event-month {
+        font-size: 18px !important;
+      }
+
+      .event-date-range {
+        font-size: 13px !important;
+      }
+
+      .event-location-title {
+        font-size: 17px !important;
+      }
+
+      .event-location-name {
+        font-size: 18px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-unit {
+        width: 45px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-number {
+        font-size: 19px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-unit-label {
+        font-size: 7px !important;
+      }
+
+      .partners-grid,
+      .sponsors-grid {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
+
+    /* ---------- Landscape phones ---------- */
+    @media (max-width: 900px) and (orientation: landscape) {
+      .hero {
+        min-height: auto !important;
+        padding-top: 78px !important;
+      }
+
+      .hero-logo {
+        width: min(55vw, 430px) !important;
+      }
+
+      .event-date-card {
+        max-width: 680px !important;
+      }
+    }
+
+
+    /* =========================================================
+       FINAL MOBILE BALANCED LAYOUT — RCL 2026
+       ปรับเฉพาะ Layout / CSS สำหรับมือถือ
+       ไม่แก้ HTML / JavaScript / เนื้อหา
+    ========================================================= */
+    @media (max-width: 640px) {
+      #tiers {
+        padding: 52px 14px 64px !important;
+      }
+
+      #tiers .section-inner {
+        width: 100% !important;
+        max-width: 430px !important;
+        margin: 0 auto !important;
+      }
+
+      #tiers .section-label {
+        margin-bottom: 9px !important;
+      }
+
+      #tiers .section-title {
+        font-size: 28px !important;
+        line-height: 1.2 !important;
+        margin-bottom: 7px !important;
+      }
+
+      #tiers .section-sub {
+        margin: 0 auto 22px !important;
+        max-width: 340px !important;
+        font-size: 12px !important;
+        line-height: 1.65 !important;
+      }
+
+      /* Countdown: Robot → Status → Timer → Message */
+      #tiers .registration-countdown {
+        width: 100% !important;
+        max-width: 430px !important;
+        margin: 0 auto 20px !important;
+        padding: 17px 10px 15px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 7px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 14px 34px rgba(37, 99, 235, .08) !important;
+      }
+
+      #tiers .registration-countdown>img {
+        width: 150px !important;
+        height: 150px !important;
+        max-width: 150px !important;
+        object-fit: contain !important;
+        margin: -2px auto 0 !important;
+      }
+
+      #tiers .registration-countdown .reg-status-label {
+        width: auto !important;
+        max-width: 90% !important;
+        margin: 0 auto 4px !important;
+        padding: 5px 13px !important;
+        font-size: 18px !important;
+        line-height: 1.25 !important;
+        white-space: nowrap !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown {
+        width: 100% !important;
+        max-width: 330px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        margin: 0 auto !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-unit {
+        flex: 0 0 auto !important;
+        width: 56px !important;
+        min-width: 56px !important;
+        padding: 9px 3px 8px !important;
+        border-radius: 11px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-number {
+        font-size: 25px !important;
+        line-height: 1 !important;
+        font-weight: 900 !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-unit-label {
+        margin-top: 5px !important;
+        font-size: 8px !important;
+        line-height: 1.2 !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-separator {
+        flex: 0 0 auto !important;
+        padding-top: 0 !important;
+        font-size: 15px !important;
+        line-height: 1 !important;
+      }
+
+      #tiers .registration-countdown .reg-status-msg {
+        width: 100% !important;
+        margin: 1px auto 0 !important;
+        padding: 3px 4px !important;
+        font-size: 10px !important;
+        line-height: 1.5 !important;
+        text-align: center !important;
+        white-space: normal !important;
+      }
+
+      /* Category cards */
+      #tiers .tiers-grid {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      #tiers .tier-card {
+        width: 100% !important;
+        min-height: 0 !important;
+        padding: 24px 16px 22px !important;
+        border-radius: 19px !important;
+      }
+
+      #tiers .tier-emoji {
+        width: 58px !important;
+        height: 58px !important;
+        margin-bottom: 11px !important;
+        border-radius: 17px !important;
+        font-size: 31px !important;
+      }
+
+      #tiers .tier-name {
+        margin-bottom: 8px !important;
+        font-size: 24px !important;
+        line-height: 1.2 !important;
+      }
+
+      #tiers .tier-card .tier-desc {
+        font-size: 12px !important;
+        line-height: 1.7 !important;
+      }
+
+      #tiers .tier-card .tier-desc[style] {
+        margin: 12px auto !important;
+        padding: 8px !important;
+        font-size: 15px !important;
+        line-height: 1.5 !important;
+      }
+
+      #tiers .tier-card .tier-desc[style] img {
+        width: 100% !important;
+        max-width: 270px !important;
+        margin: 7px auto 0 !important;
+        display: block !important;
+      }
+
+      #tiers .tier-badge {
+        min-height: 29px !important;
+        font-size: 11px !important;
+      }
+
+      #tiers .tier-reg-btn {
+        width: min(100%, 190px) !important;
+        min-height: 42px !important;
+        margin-top: 12px !important;
+        font-size: 15px !important;
+        border-radius: 11px !important;
+      }
+
+      /* Organizer / Partners: one column on phone, avoiding 2+1 imbalance */
+      .sponsor-section {
+        padding: 48px 14px 58px !important;
+      }
+
+      .sponsor-container {
+        width: 100% !important;
+        max-width: 430px !important;
+        margin: 0 auto !important;
+      }
+
+      .brand-group {
+        width: 100% !important;
+      }
+
+      .brand-heading {
+        margin-bottom: 18px !important;
+        text-align: center !important;
+      }
+
+      .brand-eyebrow {
+        margin-bottom: 8px !important;
+        padding: 5px 9px !important;
+        font-size: 8px !important;
+        letter-spacing: 1.4px !important;
+      }
+
+      .brand-heading h2,
+      .brand-heading h2[style] {
+        font-size: 26px !important;
+        line-height: 1.2 !important;
+        text-align: center !important;
+      }
+
+      .brand-heading p {
+        max-width: 340px !important;
+        font-size: 11px !important;
+        line-height: 1.6 !important;
+      }
+
+      .partners-grid,
+      .sponsors-grid {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        justify-items: stretch !important;
+      }
+
+      .partners-grid .brand-card,
+      .sponsors-grid .brand-card,
+      .brand-card {
+        width: 100% !important;
+        min-height: 100px !important;
+        height: 100px !important;
+        padding: 12px 18px !important;
+        margin: 0 !important;
+        border-radius: 16px !important;
+      }
+
+      .brand-group-partners .partners-grid {
+        max-width: 360px !important;
+        margin: 0 auto !important;
+      }
+
+      .brand-card img,
+      .partners-grid .brand-card img,
+      .sponsors-grid .brand-card img {
+        display: block !important;
+        width: auto !important;
+        max-width: 82% !important;
+        max-height: 68px !important;
+        min-height: 0 !important;
+        object-fit: contain !important;
+        margin: auto !important;
+      }
+
+      .partners-grid .brand-card img {
+        max-height: 72px !important;
+      }
+
+      .sponsors-grid .brand-card img {
+        max-height: 65px !important;
+      }
+
+      .brand-divider {
+        margin: 42px auto !important;
+      }
+
+    }
+
+    @media (max-width:380px) {
+      #tiers .registration-countdown>img {
+        width: 135px !important;
+        height: 135px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-unit {
+        width: 52px !important;
+        min-width: 52px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-number {
+        font-size: 23px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown-separator {
+        font-size: 13px !important;
+      }
+
+      .partners-grid .brand-card,
+      .sponsors-grid .brand-card,
+      .brand-card {
+        height: 92px !important;
+        min-height: 92px !important;
+      }
+    }
+
+
+
+    /* =========================================================
+       MASTER TOPBAR — RESPONSIVE
+       One source of truth for all breakpoints.
+    ========================================================= */
+    @media (min-width: 1440px) {
+      .topbar {
+        padding-inline: 48px;
+      }
+
+      .topbar-logo img {
+        height: 60px;
+        max-width: 156px;
+      }
+
+      .topbar-nav {
+        margin-left: 22px;
+        gap: 4px;
+      }
+
+      .nav-link {
+        padding-inline: 16px;
+      }
+    }
+
+    @media (min-width: 901px) and (max-width: 1199px) {
+      .topbar {
+        height: 78px;
+        padding-inline: 20px;
+      }
+
+      .topbar-logo img {
+        height: 54px;
+        max-width: 136px;
+      }
+
+      .topbar-nav {
+        margin-left: 10px;
+        gap: 0;
+      }
+
+      .nav-link {
+        min-height: 48px;
+        padding-inline: 9px;
+        font-size: 13px;
+        letter-spacing: .5px;
+      }
+
+      .nav-link span:first-child {
+        font-size: 15px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 10px;
+      }
+
+      .certificate-btn {
+        min-width: 126px;
+        padding-inline: 12px;
+      }
+
+      .btn-login {
+        min-height: 48px;
+        padding-inline: 13px;
+        font-size: 14px;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 900px) {
+      .topbar {
+        height: 72px;
+        padding-inline: 16px;
+      }
+
+      .topbar-logo img {
+        height: 50px;
+        max-width: 120px;
+      }
+
+      .topbar-nav {
+        margin-left: 4px;
+        gap: 0;
+      }
+
+      .nav-link {
+        min-height: 46px;
+        padding-inline: 7px;
+        font-size: 12px;
+        letter-spacing: 0;
+      }
+
+      .nav-link span:first-child {
+        font-size: 13px;
+      }
+
+      .nav-link span:last-child {
+        font-size: 9px;
+      }
+
+      .certificate-btn {
+        min-width: 106px;
+        padding-inline: 8px;
+      }
+
+      .btn-login {
+        min-height: 46px;
+        padding-inline: 10px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar {
+        height: 60px;
+        padding: 0 12px;
+      }
+
+      .topbar-logo img {
+        height: 46px;
+        max-width: 92px;
+      }
+
+      .topbar-nav,
+      .topbar-actions {
+        display: none;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .topbar-logo img {
+        height: 40px;
+        max-width: 76px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .topbar-logo img {
+        max-width: 64px;
+      }
+    }
+
+    /* =========================================================
+       MOBILE HAMBURGER MENU — RCL 2026
+       Mobile only: Logo + Hamburger, dropdown navigation
+    ========================================================= */
+    .mobile-menu-toggle {
+      display: none;
+    }
+
+    .mobile-menu {
+      display: none;
+    }
+
+    @media (max-width: 640px) {
+
+      /* ปุ่ม 3 ขีด */
+      .mobile-menu-toggle {
+        margin-left: auto;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex: 0 0 44px;
+        border: 1px solid rgba(148, 163, 184, .35);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, .92);
+        color: #1E3A8A;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, .08);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: .2s ease;
+      }
+
+      .mobile-menu-toggle:hover {
+        background: #EFF6FF;
+      }
+
+      .mobile-menu-toggle span {
+        width: 21px;
+        height: 2px;
+        border-radius: 999px;
+        background: currentColor;
+        transition: transform .22s ease, opacity .18s ease;
+      }
+
+      .mobile-menu-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      .mobile-menu-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      /* Dropdown หลัก */
+      .mobile-menu {
+        position: fixed;
+        top: 70px;
+        left: 12px;
+        right: 12px;
+        z-index: 999;
+        display: block;
+        max-height: calc(100vh - 84px);
+        overflow-y: auto;
+        padding: 8px;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-8px) scale(.985);
+        transform-origin: top right;
+        background: rgba(255, 255, 255, .98);
+        border: 1px solid #DBEAFE;
+        border-radius: 18px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, .18);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      }
+
+      .mobile-menu.is-open {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+
+      .mobile-menu-link,
+      .mobile-menu-competition-toggle {
+        width: 100%;
+        min-height: 50px;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+        color: #334155;
+        font-family: 'Kanit', 'Sarabun', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: left;
+        text-decoration: none;
+        cursor: pointer;
+        transition: .18s ease;
+      }
+
+      .mobile-menu-link:hover,
+      .mobile-menu-competition-toggle:hover {
+        color: #2563EB;
+        background: #EFF6FF;
+      }
+
+      .mobile-menu-link i,
+      .mobile-menu-competition-toggle>i:first-child {
+        width: 28px;
+        flex: 0 0 28px;
+        display: grid;
+        place-items: center;
+        color: #2563EB;
+        font-size: 19px;
+      }
+
+      .mobile-menu-link-text {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+      }
+
+      .mobile-menu-link-text strong {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: .2px;
+      }
+
+      .mobile-menu-link-text small {
+        margin-top: 2px;
+        color: #64748B;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .mobile-menu-competition-toggle {
+        justify-content: flex-start;
+      }
+
+      .mobile-menu-competition-toggle .mobile-chevron {
+        width: auto;
+        margin-left: auto;
+        color: #64748B;
+        font-size: 17px;
+        transition: transform .2s ease;
+      }
+
+      .mobile-menu-competition-toggle.is-open .mobile-chevron {
+        transform: rotate(180deg);
+      }
+
+      .mobile-submenu {
+        display: none;
+        margin: 0 8px 6px 51px;
+        padding: 5px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+      }
+
+      .mobile-submenu.is-open {
+        display: block;
+      }
+
+      .mobile-submenu a {
+        min-height: 42px;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border-radius: 9px;
+        color: #475569;
+        font-family: 'Kanit', 'Sarabun', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .mobile-submenu a:hover {
+        color: #2563EB;
+        background: #EFF6FF;
+      }
+
+      .mobile-submenu a i {
+        color: #64748B;
+        font-size: 16px;
+      }
+
+      .mobile-menu-divider {
+        height: 1px;
+        margin: 6px 4px;
+        background: #E2E8F0;
+      }
+
+      .mobile-login {
+        color: #334155;
+      }
+
+      .mobile-login i {
+        color: #475569;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .mobile-menu {
+        left: 8px;
+        right: 8px;
+      }
+
+      .mobile-menu-link,
+      .mobile-menu-competition-toggle {
+        min-height: 47px;
+        font-size: 14px;
+      }
+    }
+
+    /* =========================================================
+       FINAL RESPONSIVE SYSTEM — RCL 2026
+       Balanced layout for desktop / tablet / mobile
+       Keep content + JS unchanged
+    ========================================================= */
+
+    :root {
+      --content-max: 1180px;
+      --page-gutter: 24px;
+      --section-gap: 84px;
+    }
+
+    /* ---------- Global responsive foundation ---------- */
+    img,
+    video,
+    iframe {
+      max-width: 100%;
+    }
+
+    .section-inner,
+    .sponsor-container,
+    .contact-container,
+    .footer-inner {
+      width: min(var(--content-max), calc(100% - (var(--page-gutter) * 2)));
+    }
+
+    .section,
+    .about-section,
+    #tiers,
+    .sponsor-section,
+    .contact-section {
+      scroll-margin-top: 88px;
+    }
+
+    /* ---------- Laptop / small desktop ---------- */
+    @media (min-width: 901px) and (max-width: 1199px) {
+      :root {
+        --page-gutter: 20px;
+      }
+
+
+      .hero {
+        padding: 124px 20px 72px !important;
+      }
+
+      .hero-logo {
+        width: min(760px, 78vw) !important;
+      }
+
+      .hero>.section-sub {
+        width: min(920px, 100%) !important;
+      }
+
+      .about-section,
+      #tiers,
+      .sponsor-section,
+      .contact-section {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+      }
+
+      .about-grid {
+        gap: 20px !important;
+      }
+
+      .about-card.award-card {
+        grid-template-columns: 240px minmax(0, 1fr) !important;
+        gap: 24px !important;
+      }
+
+      .award-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      #tiers .tiers-grid {
+        gap: 18px !important;
+      }
+
+      #tiers .tier-card {
+        padding: 34px 22px 28px !important;
+      }
+
+      .sponsors-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      }
+    }
+
+    /* ---------- Tablet ---------- */
+    @media (min-width: 641px) and (max-width: 900px) {
+      :root {
+        --page-gutter: 18px;
+      }
+
+
+      .hero {
+        min-height: auto !important;
+        padding: 112px 18px 66px !important;
+      }
+
+      .hero-logo {
+        width: min(650px, 86vw) !important;
+        margin-bottom: 6px !important;
+      }
+
+      .hero>.section-sub {
+        width: min(760px, 100%) !important;
+        font-size: 16px !important;
+        line-height: 1.75 !important;
+      }
+
+      .hero>.section-sub span:last-of-type {
+        font-size: 22px !important;
+      }
+
+      .hero-actions {
+        width: min(100%, 620px) !important;
+      }
+
+      .hero-actions .hero-btn-primary.hero-btn-register {
+        font-size: 32px !important;
+        min-height: 66px !important;
+      }
+
+      .event-date-card {
+        width: min(100%, 620px) !important;
+        grid-template-columns: 220px minmax(0, 1fr) !important;
+      }
+
+
+      .event-location-main {
+        padding-left: 40px !important;
+      }
+
+      .section,
+      .about-section,
+      #tiers,
+      .sponsor-section,
+      .contact-section {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+      }
+
+      .about-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+      }
+
+      .about-card {
+        min-height: 230px !important;
+        padding: 26px 18px !important;
+      }
+
+      .about-card-title {
+        font-size: 24px !important;
+      }
+
+      .about-card-desc {
+        font-size: 13px !important;
+      }
+
+      .about-card.award-card {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+      }
+
+      .award-intro {
+        padding: 0 0 18px !important;
+        border-right: 0 !important;
+        border-bottom: 1px solid #F1E8D2 !important;
+      }
+
+      .award-intro .about-card-desc {
+        max-width: 560px !important;
+      }
+
+      .award-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+      }
+
+      .award-note {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+
+      #tiers .section-title {
+        font-size: 34px !important;
+      }
+
+      #tiers .section-sub {
+        max-width: 700px !important;
+        font-size: 14px !important;
+      }
+
+      #tiers .tiers-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 16px !important;
+      }
+
+      #tiers .tier-card:last-child {
+        grid-column: 1 / -1 !important;
+        width: min(100%, 520px) !important;
+        justify-self: center !important;
+      }
+
+      #tiers .tier-card {
+        min-height: 410px !important;
+        padding: 32px 20px 28px !important;
+      }
+
+      #tiers .registration-countdown {
+        flex-direction: row !important;
+        min-height: 250px !important;
+        gap: 22px !important;
+        padding: 18px 22px !important;
+      }
+
+      #tiers .registration-countdown>img {
+        width: 180px !important;
+        height: 180px !important;
+        flex-basis: 180px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown {
+        gap: 5px !important;
+      }
+
+      #tiers .reg-countdown-unit {
+        min-width: 60px !important;
+      }
+
+      #tiers .reg-countdown-number {
+        font-size: 26px !important;
+      }
+
+      #tiers .reg-countdown-unit-label {
+        font-size: 10px !important;
+      }
+
+      .partners-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+
+      .sponsors-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      }
+    }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 640px) {
+      :root {
+        --page-gutter: 14px;
+      }
+
+      html {
+        font-size: 16px;
+      }
+
+      body {
+        width: 100%;
+        overflow-x: hidden;
+      }
+
+      .section,
+      .about-section,
+      #tiers,
+      .sponsor-section,
+      .contact-section {
+        padding-left: var(--page-gutter) !important;
+        padding-right: var(--page-gutter) !important;
+      }
+
+      .section-inner,
+      .sponsor-container,
+      .contact-container,
+      .footer-inner {
+        width: 100% !important;
+        max-width: 430px !important;
+      }
+
+      /* HERO */
+      .hero {
+        min-height: auto !important;
+        padding: 88px 14px 54px !important;
+      }
+
+      .hero-logo {
+        width: min(92vw, 430px) !important;
+        margin-bottom: 4px !important;
+      }
+
+      .hero>.section-sub {
+        width: 100% !important;
+        max-width: 430px !important;
+        margin: 10px auto 20px !important;
+        padding: 18px 14px !important;
+        border-radius: 16px !important;
+        font-size: 0 !important;
+        line-height: 1.7 !important;
+      }
+
+      .hero>.section-sub span:first-child {
+        display: block !important;
+        font-size: 14px !important;
+        line-height: 1.75 !important;
+      }
+
+      .hero>.section-sub br {
+        display: none !important;
+      }
+
+      .hero>.section-sub span:last-child {
+        display: block !important;
+        margin-top: 10px !important;
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+        font-weight: 800 !important;
+      }
+
+      .hero-actions {
+        width: 100% !important;
+        max-width: 430px !important;
+        gap: 10px !important;
+      }
+
+      .hero-actions .hero-btn-primary.hero-btn-register {
+        width: 100% !important;
+        min-height: 60px !important;
+        border-radius: 16px !important;
+        padding: 0 20px !important;
+        font-size: 27px !important;
+        letter-spacing: 1px !important;
+      }
+
+      .hero-actions-bottom {
+        width: 100% !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+      }
+
+      .hero-btn-secondary {
+        min-height: 50px !important;
+        padding: 0 10px !important;
+        border-radius: 13px !important;
+        font-size: 15px !important;
+      }
+
+      .hero-scroll {
+        display: none !important;
+      }
+
+      /* EVENT CARD */
+      .event-date-card {
+        width: 100% !important;
+        max-width: 430px !important;
+        margin-top: 4px !important;
+        display: grid !important;
+        grid-template-columns: 42% 58% !important;
+        min-height: 170px !important;
+        border-radius: 20px !important;
+      }
+
+      .event-date-main {
+        min-height: 170px !important;
+        padding: 14px 10px !important;
+        border-radius: 19px 0 0 19px !important;
+      }
+
+
+      .event-date-icon {
+        width: 36px !important;
+        height: 36px !important;
+      }
+
+      .event-date-icon i {
+        font-size: 18px !important;
+      }
+
+      .event-date-label {
+        font-size: 11px !important;
+      }
+
+      .event-day-number {
+        font-size: 48px !important;
+      }
+
+      .event-month {
+        font-size: 16px !important;
+      }
+
+      .event-date-range {
+        font-size: 11px !important;
+      }
+
+      .event-location-main {
+        padding: 18px 14px 18px 28px !important;
+        border-radius: 0 19px 19px 0 !important;
+      }
+
+      .event-location-heading {
+        gap: 8px !important;
+      }
+
+      .event-location-icon {
+        width: 38px !important;
+        height: 38px !important;
+      }
+
+      .event-location-icon i {
+        font-size: 18px !important;
+      }
+
+      .event-location-title {
+        font-size: 15px !important;
+      }
+
+      .event-location-name {
+        font-size: 17px !important;
+        line-height: 1.35 !important;
+      }
+
+      .event-location-line {
+        margin: 8px 0 10px !important;
+      }
+
+      /* SECTION HEADINGS */
+      .section {
+        padding-top: 58px !important;
+        padding-bottom: 62px !important;
+      }
+
+      .section-label {
+        margin-bottom: 9px !important;
+        font-size: 10px !important;
+        padding: 6px 11px !important;
+      }
+
+      .section-title {
+        font-size: 28px !important;
+        line-height: 1.25 !important;
+      }
+
+      .section-sub {
+        max-width: 400px !important;
+        margin-bottom: 28px !important;
+        font-size: 13px !important;
+        line-height: 1.7 !important;
+      }
+
+      /* ABOUT */
+      .about-section {
+        padding-top: 60px !important;
+        padding-bottom: 66px !important;
+      }
+
+      .about-heading {
+        margin-bottom: 26px !important;
+      }
+
+      .about-section .section-title {
+        font-size: 29px !important;
+      }
+
+      .about-section .section-sub {
+        font-size: 13px !important;
+      }
+
+      .about-video-wrap {
+        margin-bottom: 28px !important;
+        padding: 8px !important;
+        border-radius: 18px !important;
+      }
+
+      .about-video-head {
+        padding: 5px 6px 10px !important;
+      }
+
+      .about-video-icon {
+        width: 38px !important;
+        height: 38px !important;
+        border-radius: 11px !important;
+      }
+
+      .about-video-icon i {
+        font-size: 18px !important;
+      }
+
+      .about-video-title {
+        font-size: 15px !important;
+      }
+
+      .about-video {
+        border-radius: 13px !important;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      .about-card {
+        min-height: 0 !important;
+        padding: 24px 18px !important;
+        border-radius: 18px !important;
+      }
+
+      .about-card-title {
+        font-size: 24px !important;
+      }
+
+      .about-card-desc {
+        max-width: 360px !important;
+        font-size: 12px !important;
+        line-height: 1.7 !important;
+      }
+
+      .about-category-head {
+        grid-template-columns: 1fr !important;
+        min-height: 0 !important;
+        gap: 8px !important;
+      }
+
+      .about-category-head .about-visual {
+        order: -1 !important;
+        height: 150px !important;
+      }
+
+      .about-category-head .about-visual img {
+        height: 140px !important;
+      }
+
+      .about-feature-row {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+
+      .about-tier-summary {
+        grid-template-columns: 1fr !important;
+        gap: 9px !important;
+      }
+
+      .about-tier-item {
+        min-height: 0 !important;
+        padding: 14px !important;
+      }
+
+      .about-card.award-card {
+        grid-column: 1 / -1 !important;
+        grid-template-columns: 1fr !important;
+        gap: 18px !important;
+        padding: 20px 16px !important;
+      }
+
+      .award-intro {
+        padding: 0 0 18px !important;
+        border-right: 0 !important;
+        border-bottom: 1px solid #F1E8D2 !important;
+      }
+
+      .award-intro .about-card-title {
+        font-size: 23px !important;
+      }
+
+      .award-intro .about-card-desc {
+        max-width: 350px !important;
+        font-size: 12px !important;
+      }
+
+      .award-content-title {
+        font-size: 17px !important;
+      }
+
+      .award-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 9px !important;
+      }
+
+      .award-item {
+        min-height: 90px !important;
+        padding: 10px 7px !important;
+        border-radius: 13px !important;
+      }
+
+      .award-item-label {
+        font-size: 13px !important;
+      }
+
+      .award-item-value {
+        font-size: 20px !important;
+      }
+
+      .award-item:first-child .award-item-value {
+        font-size: 27px !important;
+      }
+
+      .award-item:nth-child(2) .award-item-value,
+      .award-item:nth-child(3) .award-item-value {
+        font-size: 25px !important;
+      }
+
+      .award-note {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        padding: 12px !important;
+      }
+
+      .award-note-title {
+        font-size: 15px !important;
+      }
+
+      .award-note-item {
+        font-size: 12px !important;
+      }
+
+      /* COMPETITION */
+      #tiers {
+        padding-top: 60px !important;
+        padding-bottom: 68px !important;
+      }
+
+      #tiers .section-inner {
+        max-width: 430px !important;
+      }
+
+      #tiers .section-title {
+        font-size: 29px !important;
+      }
+
+      #tiers .section-sub {
+        max-width: 380px !important;
+        font-size: 13px !important;
+        margin-bottom: 22px !important;
+      }
+
+      #tiers .registration-countdown {
+        width: 100% !important;
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 9px !important;
+        padding: 18px 12px !important;
+        border-radius: 18px !important;
+      }
+
+      #tiers .registration-countdown>img {
+        width: 150px !important;
+        height: 150px !important;
+        flex: 0 0 auto !important;
+      }
+
+      #tiers .registration-countdown .reg-status-label {
+        font-size: 17px !important;
+        padding: 6px 11px !important;
+        margin: 0 auto 2px !important;
+      }
+
+      #tiers .registration-countdown .reg-countdown {
+        width: 100% !important;
+        gap: 3px !important;
+      }
+
+      #tiers .reg-countdown-unit {
+        min-width: 0 !important;
+        width: 54px !important;
+        padding: 8px 4px !important;
+      }
+
+      #tiers .reg-countdown-number {
+        font-size: 23px !important;
+      }
+
+      #tiers .reg-countdown-unit-label {
+        font-size: 8px !important;
+      }
+
+      #tiers .reg-countdown-separator {
+        padding-top: 11px !important;
+        font-size: 15px !important;
+      }
+
+      #tiers .registration-countdown .reg-status-msg {
+        width: 100% !important;
+        font-size: 11px !important;
+        line-height: 1.55 !important;
+        padding: 4px 8px !important;
+      }
+
+      #tiers .tiers-grid {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+      }
+
+      #tiers .tier-card,
+      #tiers .tier-card:last-child {
+        grid-column: auto !important;
+        width: 100% !important;
+        min-height: 0 !important;
+        padding: 28px 18px 24px !important;
+        border-radius: 20px !important;
+      }
+
+      #tiers .tier-emoji {
+        width: 62px !important;
+        height: 62px !important;
+        font-size: 34px !important;
+        margin-bottom: 14px !important;
+      }
+
+      #tiers .tier-name {
+        font-size: 23px !important;
+      }
+
+      #tiers .tier-name+.tier-desc {
+        min-height: 0 !important;
+        max-width: 350px !important;
+        font-size: 13px !important;
+      }
+
+      #tiers .tier-desc+.tier-desc {
+        margin-bottom: 18px !important;
+        font-size: 12px !important;
+      }
+
+      #tiers .tier-reg-btn {
+        width: min(100%, 190px) !important;
+        min-height: 43px !important;
+      }
+
+      /* SPONSORS / PARTNERS */
+      .sponsor-section {
+        padding-top: 56px !important;
+        padding-bottom: 62px !important;
+      }
+
+      .brand-heading {
+        margin-bottom: 22px !important;
+      }
+
+      .brand-heading h2 {
+        font-size: 23px !important;
+      }
+
+      .brand-heading p {
+        font-size: 11px !important;
+      }
+
+      .brand-grid {
+        gap: 9px !important;
+      }
+
+      .partners-grid,
+      .sponsors-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 9px !important;
+      }
+
+      .brand-card,
+      .partners-grid .brand-card,
+      .sponsors-grid .brand-card {
+        min-height: 82px !important;
+        padding: 10px !important;
+        border-radius: 12px !important;
+      }
+
+      .brand-card img {
+        max-height: 48px !important;
+      }
+
+      .partners-grid .brand-card img {
+        max-height: 68px !important;
+      }
+
+      .sponsors-grid .brand-card img {
+        max-height: 44px !important;
+        min-height: 0 !important;
+      }
+
+    }
+
+    /* ---------- Small phones ---------- */
+    @media (max-width: 430px) {
+      .hero {
+        padding-top: 84px !important;
+      }
+
+      .hero-logo {
+        width: min(94vw, 390px) !important;
+      }
+
+      .hero>.section-sub {
+        padding: 16px 12px !important;
+      }
+
+      .hero>.section-sub span:first-child {
+        font-size: 13px !important;
+      }
+
+      .hero>.section-sub span:last-child {
+        font-size: 16px !important;
+      }
+
+      .hero-actions .hero-btn-primary.hero-btn-register {
+        font-size: 25px !important;
+        min-height: 58px !important;
+      }
+
+      .hero-btn-secondary {
+        font-size: 14px !important;
+      }
+
+      .event-date-card {
+        grid-template-columns: 40% 60% !important;
+      }
+
+
+      .event-location-main {
+        padding-left: 24px !important;
+      }
+
+      .event-location-title {
+        font-size: 14px !important;
+      }
+
+      .event-location-name {
+        font-size: 16px !important;
+      }
+
+      #tiers .registration-countdown>img {
+        width: 135px !important;
+        height: 135px !important;
+      }
+
+      #tiers .reg-countdown-unit {
+        width: 50px !important;
+      }
+
+      #tiers .reg-countdown-number {
+        font-size: 21px !important;
+      }
+
+      .award-grid {
+        gap: 7px !important;
+      }
+    }
+
+    /* ---------- Very small phones ---------- */
+    @media (max-width: 380px) {
+      :root {
+        --page-gutter: 10px;
+      }
+
+
+      .hero {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+      }
+
+      .hero-actions-bottom {
+        gap: 7px !important;
+      }
+
+      .hero-btn-secondary {
+        padding: 0 7px !important;
+        font-size: 13px !important;
+      }
+
+      .event-date-card {
+        min-height: 155px !important;
+      }
+
+      .event-date-main {
+        min-height: 155px !important;
+      }
+
+      .event-day-number {
+        font-size: 42px !important;
+      }
+
+      .event-month {
+        font-size: 14px !important;
+      }
+
+      .event-location-main {
+        padding-left: 20px !important;
+      }
+
+      .event-location-icon {
+        width: 34px !important;
+        height: 34px !important;
+      }
+
+      .event-location-title {
+        font-size: 13px !important;
+      }
+
+      .event-location-name {
+        font-size: 15px !important;
+      }
+
+      #tiers .reg-countdown-unit {
+        width: 46px !important;
+      }
+
+      #tiers .reg-countdown-number {
+        font-size: 19px !important;
+      }
+
+      #tiers .reg-countdown-unit-label {
+        font-size: 7px !important;
+      }
+
+      #tiers .reg-countdown-separator {
+        font-size: 13px !important;
+      }
+
+      .partners-grid,
+      .sponsors-grid {
+        gap: 7px !important;
+      }
+    }
+
+    /* ---------- Landscape phones ---------- */
+    @media (max-width: 900px) and (orientation: landscape) {
+      .hero {
+        padding-top: 82px !important;
+        padding-bottom: 46px !important;
+      }
+
+      .hero-logo {
+        width: min(48vw, 430px) !important;
+      }
+
+      .hero>.section-sub {
+        max-width: 760px !important;
+      }
+
+      .event-date-card {
+        max-width: 650px !important;
+      }
+
+      .mobile-menu {
+        max-height: calc(100dvh - 76px) !important;
+      }
+    }
+
+    /* Event card arrow: always centered */
   </style>
 
 </head>
@@ -4676,6 +5660,12 @@
     <a href="/" class="topbar-logo">
       <img src="/RCL Logo.png" alt="RCL">
     </a>
+
+    <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
 
     <nav class="topbar-nav">
 
@@ -4724,7 +5714,7 @@
         <span>พรีออเดอร์สนามภารกิจ</span>
       </a>
 
-      <a href="/certificate" class="nav-link certificate-btn" target="_blank">
+      <a href="/certificate" class="nav-link certificate-btn">
         <span>CERTIFICATE</span>
         <span>เกียรติบัตร</span>
       </a>
@@ -4737,9 +5727,54 @@
         <span>เข้าสู่ระบบ</span>
       </a>
     </div>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" aria-hidden="true">
+      <a href="/" class="mobile-menu-link">
+        <i class="ti ti-home"></i>
+        <span class="mobile-menu-link-text"><strong>HOME</strong><small>หน้าหลัก</small></span>
+      </a>
+
+      <a href="/#about" class="mobile-menu-link">
+        <i class="ti ti-info-circle"></i>
+        <span class="mobile-menu-link-text"><strong>ABOUT US</strong><small>เกี่ยวกับเรา</small></span>
+      </a>
+
+      <button class="mobile-menu-competition-toggle" type="button" aria-expanded="false">
+        <i class="ti ti-trophy"></i>
+        <span class="mobile-menu-link-text"><strong>COMPETITION</strong><small>การแข่งขัน</small></span>
+        <i class="ti ti-chevron-down mobile-chevron"></i>
+      </button>
+
+      <div class="mobile-submenu">
+        <a href="/#tiers"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+        <a href="/competition?view=teams"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+        <a href="/competition?view=board"><i class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+      </div>
+
+      <a href="/docs" class="mobile-menu-link">
+        <i class="ti ti-file-text"></i>
+        <span class="mobile-menu-link-text"><strong>DOCUMENT</strong><small>เอกสาร</small></span>
+      </a>
+
+      <a href="/preorder" class="mobile-menu-link">
+        <i class="ti ti-shopping-cart"></i>
+        <span class="mobile-menu-link-text"><strong>PRE-ORDER MISSION</strong><small>พรีออเดอร์สนามภารกิจ</small></span>
+      </a>
+
+      <a href="/certificate" class="mobile-menu-link" target="_blank">
+        <i class="ti ti-certificate"></i>
+        <span class="mobile-menu-link-text"><strong>CERTIFICATE</strong><small>เกียรติบัตร</small></span>
+      </a>
+
+      <div class="mobile-menu-divider"></div>
+
+      <a href="/auth/login" class="mobile-menu-link mobile-login">
+        <i class="ti ti-lock"></i>
+        <span class="mobile-menu-link-text"><strong>เข้าสู่ระบบ</strong><small>Login</small></span>
+      </a>
+    </div>
   </div>
-
-
 
   <!-- HERO -->
   <section class="hero" id="home">
@@ -4802,11 +5837,6 @@
                   <% } else { %>
                     <div class="event-day-number" style="font-size:48px;letter-spacing:0">---</div>
                     <% } %>
-        </div>
-
-        <!-- ARROW -->
-        <div class="event-date-arrow">
-          <i class="ti ti-chevron-right"></i>
         </div>
 
         <!-- LOCATION -->
@@ -4998,7 +6028,7 @@
             <div class="award-grid">
               <div class="award-item">
                 <img src="images/icon/first place.png" alt="First Place"
-                  style="width: auto; height: 90px; margin-bottom: 10px;">
+                  style="width: auto; height: 100px; margin-bottom: 10px;">
                 <div class="award-item-label">รางวัลชนะเลิศ</div>
                 <div class="award-item-value">4,000 บาท</div>
                 <small>พร้อมถ้วยรางวัล เหรียญรางวัล
@@ -5060,8 +6090,6 @@
 
     </div>
   </section>
-
-
 
   <!-- ประเภทการแข่งขัน -->
   <section class="section" id="tiers">
@@ -5553,82 +6581,161 @@
   <!-- CONTACT + FOOTER -->
   <section class="contact-section" id="contact">
     <div class="contact-inner">
-      <div class="section-label">ติดต่อเรา</div>
-      <h2 class="section-title">Contact Us</h2>
-      <p class="contact-sub">
-        สอบถามรายละเอียดการแข่งขัน สมัครแข่งขัน หรือข้อมูลเพิ่มเติม
-        ติดต่อทีมงาน ROBO Challenge League ได้ตามช่องทางด้านล่าง
-      </p>
+      <div class="contact-footer-grid">
 
-      <div class="contact-grid">
+        <div class="contact-brand">
+          <a href="/" class="contact-brand-logo">
+            <img src="/RCL Logo.png" alt="ROBO Challenge League">
+          </a>
+          <div class="contact-socials">
+            <a class="contact-social" href="https://www.facebook.com/robo.challenge.league" target="_blank"
+              rel="noopener" aria-label="Facebook">
+              <i class="ti ti-brand-facebook"></i>
+            </a>
+            <a class="contact-social" href="tel:0818820502" aria-label="โทรศัพท์">
+              <i class="ti ti-phone"></i>
+            </a>
+            <a class="contact-social" href="https://www.youtube.com/channel/UCcJGMXm7mCM4-ZMJi5MWETg" aria-label="youtube">
+              <i class="ti ti-brand-youtube"></i>
+            </a>
+            <a class="contact-social" href="https://line.me/R/ti/p/@robochampion" aria-label="line">
+              <i class="ti ti-brand-line"></i>
+            </a>
+          </div>
+        </div>
 
-        <a class="contact-card" href="tel:0818820502">
-          <div class="contact-icon"><i class="ti ti-phone"></i></div>
-          <div class="contact-content">
-            <div class="contact-label">โทรศัพท์</div>
-            <div class="contact-value">081-882-0502</div>
-            <div class="contact-action">
-              โทรหาเรา <i class="ti ti-arrow-up-right"></i>
+        <div>
+          <div class="contact-column-title">Quick Links</div>
+          <nav class="contact-links" aria-label="Footer navigation">
+            <a class="contact-link" href="/"><i class="ti ti-home"></i><span>HOME</span></a>
+            <a class="contact-link" href="/#about"><i class="ti ti-info-circle"></i><span>ABOUT US</span></a>
+            <a class="contact-link" href="/#tiers"><i class="ti ti-trophy"></i><span>COMPETITION</span></a>
+            <a class="contact-link" href="/docs"><i class="ti ti-file-text"></i><span>DOCUMENT</span></a>
+            <a class="contact-link" href="/preorder"><i class="ti ti-shopping-bag"></i><span>PRE-ORDER</span></a>
+          </nav>
+        </div>
+
+        <div>
+          <div class="contact-column-title">Contact</div>
+          <div class="contact-details">
+            <a class="contact-detail" href="https://www.facebook.com/robo.challenge.league" target="_blank"
+              rel="noopener">
+              <i class="ti ti-brand-facebook"></i>
+              <span>RCL - ROBO Challenge League</span>
+            </a>
+            <a class="contact-detail" href="tel:0818820502">
+              <i class="ti ti-phone"></i>
+              <span>081-882-0502</span>
+            </a>
+            <div class="contact-detail">
+              <i class="ti ti-mail"></i>
+              <span>growth.power.th@gmail.com</span>
             </div>
           </div>
-        </a>
+        </div>
 
-        <a class="contact-card" href="https://www.facebook.com/robo.challenge.league" target="_blank" rel="noopener">
-          <div class="contact-icon"><i class="ti ti-brand-facebook"></i></div>
-          <div class="contact-content">
-            <div class="contact-label">Facebook</div>
-            <div class="contact-value">RCL - ROBO Challenge League</div>
-            <div class="contact-action">
-              เยี่ยมชมเพจ <i class="ti ti-arrow-up-right"></i>
+        <div>
+          <div class="contact-column-title">Event Details</div>
+          <div class="contact-details">
+            <div class="contact-detail">
+              <i class="ti ti-calendar-event"></i>
+              <span><strong>วันแข่งขัน</strong><% if (eventDate) { const startDate=new Date(eventDate); const endDate=eventDateEnd ? new Date(eventDateEnd) : null; %>
+              
+                <div class="event-date-range">
+                  <% if (endDate) { %>
+                    <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                      -
+                      <%= endDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                        <% } else { %>
+                          <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                            <% } %>
+                </div>
+              
+                <% } else { %>
+                    ยังไม่กำหนด
+           
+              
+                  <% } %></span>
             </div>
-          </div>
-        </a>
-
-        <div class="contact-card">
-          <div class="contact-icon"><i class="ti ti-map-pin"></i></div>
-          <div class="contact-content">
-            <div class="contact-label">ที่อยู่</div>
-            <div class="contact-value">
-              108/76 หมู่ 6 ต.รูสะมิแล<br>
-              อ.เมือง จ.ปัตตานี 94000
+            <div class="contact-detail">
+              <i class="ti ti-map-2"></i>
+              <span><strong>สถานที่จัดการแข่งขัน</strong><% if (eventDateLabel) { %>
+                <%= eventDateLabel %>
+                  <% } else { %>
+                    <span>ยังไม่กำหนด</span>
+                    <% } %></span>
             </div>
-            <div class="contact-action">
-              ดูแผนที่ <i class="ti ti-arrow-up-right"></i>
+            <div class="contact-detail">
+              <i class="ti ti-clock"></i>
+              <span><strong>ที่อยู่สำนักงาน</strong>ปัตตานี ประเทศไทย</span>
             </div>
           </div>
         </div>
 
       </div>
 
-      <div class="contact-support">
-        <div class="contact-support-main">
-          <div class="contact-support-icon"><i class="ti ti-headset"></i></div>
-          <div>
-            <div class="contact-support-title">ต้องการความช่วยเหลือด่วน?</div>
-            <div class="contact-support-text">ทีมงานพร้อมตอบคำถามเกี่ยวกับการแข่งขัน</div>
-          </div>
+      <div class="contact-footer-bottom">
+        <div class="contact-copyright">
+          © 2026 ROBO Challenge League. All rights reserved.<br>
+          Organized by Growth Power Co., Ltd.
         </div>
-
-        <div class="contact-hours">
-          <div class="contact-hours-title">เวลาทำการ</div>
-          <div class="contact-hours-text">จันทร์ - ศุกร์ 08:30 - 17:30 น.</div>
+        <div class="contact-organizer">
+          สร้างสรรค์นวัตกรรม พัฒนาทักษะ สู่อนาคต
         </div>
-
-        <a class="contact-message-btn" href="tel:0818820502">
-          <i class="ti ti-send"></i>
-          ติดต่อทีมงาน
-        </a>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    <div class="footer-logo"><img src="/RCL Logo.png" alt="RCL"></div>
-    <div class="footer-name">ROBO CHALLENGE LEAGUE 2026</div>
-    <div class="footer-sub">สร้างสรรค์นวัตกรรม พัฒนาทักษะ สู่อนาคต</div>
-  </div>
   <script>
+    /* Mobile hamburger menu */
+    (function () {
+      var toggle = document.querySelector('.mobile-menu-toggle');
+      var mobileMenu = document.querySelector('.mobile-menu');
+      var competitionToggle = document.querySelector('.mobile-menu-competition-toggle');
+      var subMenu = document.querySelector('.mobile-submenu');
+
+      if (!toggle || !mobileMenu) return;
+
+      function closeMobileMenu() {
+        toggle.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'เปิดเมนู');
+        mobileMenu.classList.remove('is-open');
+        mobileMenu.setAttribute('aria-hidden', 'true');
+      }
+
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var isOpen = mobileMenu.classList.toggle('is-open');
+        toggle.classList.toggle('is-open', isOpen);
+        toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'ปิดเมนู' : 'เปิดเมนู');
+        mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+      });
+
+      if (competitionToggle && subMenu) {
+        competitionToggle.addEventListener('click', function () {
+          var isOpen = subMenu.classList.toggle('is-open');
+          competitionToggle.classList.toggle('is-open', isOpen);
+          competitionToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+      }
+
+      mobileMenu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeMobileMenu);
+      });
+
+      document.addEventListener('click', function (e) {
+        if (!mobileMenu.contains(e.target) && !toggle.contains(e.target)) {
+          closeMobileMenu();
+        }
+      });
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 640) closeMobileMenu();
+      });
+    })();
+
     document.querySelectorAll('.dropdown').forEach(function (dd) {
       var menu = dd.querySelector('.dropdown-menu')
       var timer
@@ -5643,7 +6750,7 @@
       menu.addEventListener('mouseleave', function () {
         timer = setTimeout(function () { menu.style.display = 'none' }, 200)
       })
-    })
+    });
 
     window.addEventListener('scroll', function () {
       var topbar = document.querySelector('.topbar');

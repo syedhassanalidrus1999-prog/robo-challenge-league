@@ -16,47 +16,56 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         /* =========================================================
-   RCL TOPBAR
+   RCL 2026 — MASTER TOPBAR
+   SINGLE SOURCE OF TRUTH — use on every page
 ========================================================= */
         .topbar {
             position: fixed;
-            inset: 0 0 auto;
+            inset: 0 0 auto 0;
             z-index: 1000;
+            width: 100%;
             height: 84px;
             padding: 0 30px;
             display: flex;
             align-items: center;
             gap: 10px;
+            box-sizing: border-box;
             background: transparent;
             border-bottom: 1px solid transparent;
-            transition: all .3s ease;
+            transition: background .25s ease, border-color .25s ease, box-shadow .25s ease
         }
 
-        .topbar.scrolled {
+        .topbar.scrolled{
             background: rgba(255, 255, 255, .92);
             border-bottom-color: rgba(226, 232, 240, .9);
             box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px)
         }
 
         .topbar-logo {
-            flex-shrink: 0;
+            flex: 0 0 auto;
+            width: auto;
             display: inline-flex;
             align-items: center;
+            justify-content: center
         }
 
         .topbar-logo img {
+            display: block;
             width: auto;
+            max-width: 130px;
             height: 120px;
-            object-fit: contain;
+            object-fit: contain
         }
 
         .topbar-nav {
-            flex: 1;
+            flex: 1 1 auto;
+            min-width: 0;
             margin-left: 18px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 6px
         }
 
         .nav-link {
@@ -66,56 +75,55 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
+            flex: 0 0 auto;
             border: 0 !important;
             border-radius: 11px;
             background: transparent !important;
             color: #334155;
             font-family: 'Kanit', 'Sarabun', sans-serif;
-            font-size: 17px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            line-height: 1.15;
             text-decoration: none;
             white-space: nowrap;
             cursor: pointer;
-            transition: all .2s ease;
+            transition: color .2s ease, background .2s ease, transform .2s ease
         }
 
         .nav-link span:first-child {
             font-size: 16px;
+            line-height: 1.05;
             font-weight: 700;
+            letter-spacing: 1px
         }
 
         .nav-link span:last-child {
             font-family: 'Kanit', 'Sarabun', sans-serif;
             font-size: 13px;
+            line-height: 1.05;
             font-weight: 500;
-            letter-spacing: 0;
+            letter-spacing: 0
         }
 
         .nav-link i {
-            font-size: 17px;
+            font-size: 17px
         }
 
         .nav-link:hover {
             color: #2563EB;
             background: #F4F8FF !important;
-            transform: translateY(-1px);
+            transform: translateY(-1px)
         }
 
         .nav-link.active {
             color: #2563EB !important;
-            background: #EFF6FF !important;
+            background: #EFF6FF !important
         }
 
-        /* Certificate */
         .certificate-btn {
             background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
             color: #92400E !important;
             border: 1px solid #FCD34D !important;
             border-radius: 90px !important;
-            box-shadow: 0 4px 12px rgba(180, 120, 20, .18);
+            box-shadow: 0 4px 12px rgba(180, 120, 20, .18)
         }
 
         .certificate-btn:hover {
@@ -123,12 +131,7 @@
             color: #78350F !important;
             border-color: #F59E0B !important;
             box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
-            transform: translateY(-2px);
-        }
-
-        .certificate-btn:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 8px rgba(180, 120, 20, .20);
+            transform: translateY(-2px)
         }
 
         .topbar-actions {
@@ -136,7 +139,7 @@
             margin-left: auto;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 10px
         }
 
         .btn-reg,
@@ -150,37 +153,42 @@
             border-radius: 11px;
             font: 800 16px 'Sarabun', sans-serif;
             text-decoration: none;
-            transition: all .2s ease;
+            white-space: nowrap;
+            box-sizing: border-box;
+            transition: all .2s ease
         }
 
         .btn-reg {
             color: #fff;
             background: linear-gradient(135deg, #3478F6, #2563EB);
             border: 1px solid transparent;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, .24);
+            box-shadow: 0 10px 24px rgba(37, 99, 235, .24)
         }
 
         .btn-reg:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(37, 99, 235, .30);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
         }
 
         .btn-login {
             color: #334155;
             background: #fff;
-            border: 1px solid #E2E8F0;
+            border: 1px solid #E2E8F0
         }
 
         .btn-login:hover {
             color: #2563EB;
             background: #F8FAFC;
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .07)
         }
 
-        /* DROPDOWN */
+        .btn-login i {
+            font-size: 16px
+        }
+
         .dropdown {
-            position: relative;
+            position: relative
         }
 
         .dropdown-menu {
@@ -195,6 +203,8 @@
             border: 1px solid #E2E8F0;
             border-radius: 14px;
             box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px)
         }
 
         .dropdown-item {
@@ -209,176 +219,378 @@
             font-size: 14px;
             font-weight: 700;
             text-decoration: none;
-            transition: all .18s ease;
+            transition: color .18s ease, background .18s ease
         }
 
         .dropdown-item:hover,
         .dropdown-item.active {
             color: #2563EB;
-            background: #EFF6FF;
+            background: #EFF6FF
         }
 
         .dropdown-item:first-child:hover {
             background: #FEF2F2;
-            color: #DC2626;
+            color: #DC2626
         }
 
         .dropdown-item i {
             font-size: 17px;
-            color: #64748B;
+            color: #64748B
         }
 
-        /* Responsive — Laptop */
+        .mobile-menu-toggle {
+            display: none;
+            position: relative;
+            z-index: 1202;
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            margin-left: auto;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(148, 163, 184, .35);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .96);
+            color: #334155;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, .07);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent
+        }
+
+        .mobile-menu-toggle i {
+            font-size: 25px;
+            line-height: 1
+        }
+
+        .mobile-menu-toggle.is-open {
+            color: #2563EB;
+            background: #EFF6FF;
+            border-color: #BFDBFE
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 94px;
+            left: 12px;
+            right: 12px;
+            z-index: 1201;
+            max-height: calc(100dvh - 106px);
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding: 8px;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #DBEAFE;
+            border-radius: 17px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, .16);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px) scale(.985);
+            transform-origin: top center;
+            transition: opacity .18s ease, transform .18s ease, visibility .18s ease
+        }
+
+        .mobile-menu.is-open {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: translateY(0) scale(1)
+        }
+
+        .mobile-menu-item {
+            width: 100%;
+            min-height: 52px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            box-sizing: border-box;
+            border: 0;
+            border-radius: 11px;
+            background: transparent;
+            color: #334155;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
+            text-decoration: none;
+            text-align: left;
+            cursor: pointer
+        }
+
+        .mobile-menu-item:hover,
+        .mobile-menu-item:active {
+            background: #F4F8FF;
+            color: #2563EB
+        }
+
+        .mobile-menu-item>i:first-child {
+            width: 28px;
+            min-width: 28px;
+            text-align: center;
+            font-size: 20px;
+            color: #64748B
+        }
+
+        .mobile-menu-item>span {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1
+        }
+
+        .mobile-menu-item b {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: .2px
+        }
+
+        .mobile-menu-item small {
+            margin-top: 3px;
+            font-size: 11px;
+            font-weight: 500;
+            color: #94A3B8
+        }
+
+        .mobile-menu-arrow {
+            width: auto !important;
+            min-width: 0 !important;
+            font-size: 18px !important;
+            color: #94A3B8 !important;
+            transition: transform .2s ease
+        }
+
+        .mobile-competition-toggle.is-open {
+            background: #EFF6FF;
+            color: #2563EB
+        }
+
+        .mobile-competition-toggle.is-open .mobile-menu-arrow {
+            transform: rotate(180deg)
+        }
+
+        .mobile-submenu {
+            display: none;
+            margin: 0 8px 6px 51px;
+            padding: 5px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px
+        }
+
+        .mobile-submenu.is-open {
+            display: block
+        }
+
+        .mobile-submenu-item {
+            min-height: 42px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            border-radius: 8px;
+            color: #475569;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none
+        }
+
+        .mobile-submenu-item:hover {
+            color: #2563EB;
+            background: #EFF6FF
+        }
+
+        .mobile-submenu-item i {
+            font-size: 16px;
+            color: #64748B
+        }
+
+        .mobile-login-item {
+            margin-top: 4px;
+            border-top: 1px solid #EEF2F6;
+            border-radius: 0 0 11px 11px
+        }
+
         @media (min-width:901px) and (max-width:1199px) {
             .topbar {
+                height: 78px;
                 padding: 0 20px;
+                gap: 7px
             }
 
             .topbar-logo img {
-                height: 92px;
+                height: 96px;
+                max-width: 112px
+            }
+
+            .topbar-nav {
+                margin-left: 8px;
+                gap: 2px
             }
 
             .nav-link {
-                padding: 0 11px;
+                min-height: 48px;
+                padding: 0 10px
             }
 
             .nav-link span:first-child {
                 font-size: 14px;
+                letter-spacing: .7px
             }
 
             .nav-link span:last-child {
-                font-size: 12px;
+                font-size: 11px
             }
 
             .btn-reg,
             .btn-login {
+                min-height: 48px;
                 padding: 0 14px;
-                font-size: 14px;
+                font-size: 14px
             }
         }
 
-        /* Responsive — Tablet */
         @media (min-width:641px) and (max-width:900px) {
             .topbar {
                 height: 72px;
                 padding: 0 16px;
+                gap: 6px
             }
 
             .topbar-logo img {
-                height: 70px;
+                height: 76px;
+                max-width: 92px
             }
 
             .topbar-nav {
                 margin-left: 4px;
-                gap: 2px;
+                gap: 1px
             }
 
             .nav-link {
-                min-height: 44px;
-                padding: 0 8px;
+                min-height: 46px;
+                padding: 0 8px
             }
 
             .nav-link span:first-child {
                 font-size: 12px;
+                letter-spacing: .4px
             }
 
             .nav-link span:last-child {
-                font-size: 10px;
+                font-size: 10px
             }
 
             .btn-reg,
             .btn-login {
                 min-height: 44px;
-                padding: 0 12px;
-                font-size: 13px;
+                padding: 0 11px;
+                font-size: 13px
+            }
+
+            .mobile-menu-toggle,
+            .mobile-menu {
+                display: none !important
             }
         }
 
-        /* Responsive — Mobile */
         @media (max-width:640px) {
             .topbar {
-                height: 60px;
+                height: 62px;
                 padding: 0 12px;
+                gap: 8px;
+                background: rgba(255, 255, 255, .94);
+                border-bottom-color: rgba(226, 232, 240, .9);
+                box-shadow: 0 4px 18px rgba(15, 23, 42, .07);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px)
             }
 
             .topbar-logo img {
-                height: 46px;
-                max-width: 92px;
+                height: 44px;
+                max-width: 86px
             }
 
-            .topbar-nav {
-                margin-left: 2px;
-                gap: 0;
-            }
-
-            .topbar-nav>a.nav-link {
-                display: none;
-            }
-
-            .nav-link {
-                min-height: 40px;
-                padding: 0 7px;
-            }
-
-            .nav-link span:first-child {
-                font-size: 11px;
-            }
-
-            .nav-link span:last-child {
-                font-size: 9px;
-            }
-
+            .topbar-nav,
             .topbar-actions {
-                gap: 4px;
+                display: none !important
             }
 
-            .btn-reg {
-                min-height: 40px;
-                padding: 0 10px;
-                font-size: 12px;
+            .mobile-menu-toggle {
+                display: inline-flex !important
             }
 
-            .btn-login {
-                width: 40px;
-                min-width: 40px;
-                min-height: 40px;
-                padding: 0;
-                font-size: 0;
-            }
-
-            .btn-login i {
-                font-size: 18px;
-            }
-
-            .dropdown-menu {
-                position: fixed;
-                top: 58px;
-                left: 10px;
-                right: 10px;
-                min-width: 0;
+            .mobile-menu {
+                top: 72px;
+                left: 12px;
+                right: 12px;
+                max-height: calc(100dvh - 84px)
             }
         }
 
         @media (max-width:430px) {
+            .topbar {
+                height: 60px;
+                padding: 0 9px
+            }
+
             .topbar-logo img {
                 height: 40px;
-                max-width: 76px;
+                max-width: 76px
             }
 
-            .nav-link {
-                padding: 0 5px;
+            .mobile-menu-toggle {
+                flex-basis: 42px;
+                width: 42px;
+                height: 42px
+            }
+
+            .mobile-menu {
+                top: 70px;
+                left: 9px;
+                right: 9px;
+                max-height: calc(100dvh - 80px)
             }
         }
 
-        @media (max-width:360px) {
+        @media (max-width:380px) {
+            .topbar {
+                height: 58px;
+                padding: 0 8px
+            }
+
             .topbar-logo img {
-                max-width: 64px;
+                height: 38px;
+                max-width: 72px
             }
 
-            .nav-link {
-                padding: 0 4px;
+            .mobile-menu-toggle {
+                flex-basis: 40px;
+                width: 40px;
+                height: 40px
+            }
+
+            .mobile-menu {
+                top: 67px;
+                left: 8px;
+                right: 8px
+            }
+
+            .mobile-menu-item {
+                min-height: 48px
             }
         }
+
+        @media (max-width:900px) and (orientation:landscape) {
+            .mobile-menu {
+                max-height: calc(100dvh - 76px)
+            }
+        }
+
 
         * {
             box-sizing: border-box;
@@ -405,10 +617,9 @@
         }
 
         body {
-            font-family: 'Sarabun', sans-serif;
+            font-family: Kanit;
             background: #F4F7FB;
             color: #1E293B;
-
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -423,9 +634,6 @@
         input {
             font: inherit;
         }
-
-
-        .btn-reg,
 
 
         .wrap {
@@ -980,13 +1188,6 @@
             }
         }
 
-        .btn-reg,
-
-
-
-        .btn-login i {
-            font-size: 16px;
-        }
 
         .page-title {
             font-size: 23px;
@@ -1024,17 +1225,423 @@
         }
         }
 
+
         @media (max-width: 639px) {
-            .desktop-table {
-                display: none;
+
+            html,
+            body {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: hidden;
             }
 
+            /* ---------- PAGE ---------- */
+            .wrap {
+                width: calc(100% - 20px) !important;
+                max-width: 100% !important;
+                margin: 84px auto 24px !important;
+                padding: 0 !important;
+            }
+
+            .page-hd {
+                display: block !important;
+                margin-bottom: 18px !important;
+            }
+
+            .page-title {
+                margin-bottom: 16px;
+                padding-left: 14px;
+                font-size: 27px !important;
+                line-height: 1.2;
+            }
+
+            .page-title::before {
+                width: 4px;
+            }
+
+            .page-hd>div:last-child {
+                width: 100% !important;
+            }
+
+            /* ---------- VIEW TOGGLE ---------- */
+            .view-toggle {
+                width: 100% !important;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                padding: 4px !important;
+                gap: 4px;
+                border-radius: 14px;
+            }
+
+            .view-btn {
+                min-height: 48px !important;
+                padding: 0 8px !important;
+                font-size: 16px !important;
+                gap: 7px;
+            }
+
+            /* ---------- TIER TABS ---------- */
+            .tier-tabs {
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 5px !important;
+                padding: 5px !important;
+                margin-bottom: 18px !important;
+                border-radius: 14px;
+            }
+
+            .tier-tab {
+                min-height: 48px !important;
+                padding: 0 4px !important;
+                gap: 5px;
+                font-size: 13px !important;
+                white-space: nowrap;
+            }
+
+            .tier-dot {
+                width: 6px;
+                height: 6px;
+            }
+
+            /* ---------- MAIN CARD ---------- */
             .card {
-                border-radius: 15px;
+                margin-top: 0 !important;
+                border-radius: 16px !important;
+                overflow: hidden;
             }
 
-            .footer {
-                margin-top: 0;
+            /* ---------- SEARCH ---------- */
+            .search-row {
+                padding: 14px !important;
+                gap: 9px !important;
+                flex-wrap: wrap !important;
+            }
+
+            .search-box {
+                width: 100% !important;
+                min-width: 0 !important;
+                min-height: 50px !important;
+            }
+
+            .count-badge {
+                min-height: 32px;
+                font-size: 12px;
+            }
+
+            .time-info {
+                font-size: 11px;
+            }
+
+            /* =====================================================
+       TEAM VIEW — KEEP A REAL TABLE ON MOBILE
+       Do NOT convert # / ชื่อทีม / สถาบัน into cards.
+    ===================================================== */
+
+            .desktop-table {
+                display: block !important;
+                width: 100% !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .desktop-table table {
+                width: 100% !important;
+                min-width: 620px !important;
+                table-layout: fixed;
+            }
+
+            .desktop-table th,
+            .desktop-table td {
+                white-space: normal;
+            }
+
+            .desktop-table th {
+                padding: 13px 12px !important;
+                font-size: 12px !important;
+            }
+
+            .desktop-table td {
+                padding: 15px 12px !important;
+                font-size: 13px !important;
+            }
+
+            .desktop-table th:nth-child(1),
+            .desktop-table td:nth-child(1) {
+                width: 62px;
+                text-align: center;
+            }
+
+            .desktop-table th:nth-child(2),
+            .desktop-table td:nth-child(2) {
+                width: 235px;
+            }
+
+            .desktop-table th:nth-child(3),
+            .desktop-table td:nth-child(3) {
+                width: 323px;
+            }
+
+            .desktop-table .team-name {
+                font-size: 17px !important;
+                line-height: 1.2;
+            }
+
+            .desktop-table .team-id {
+                font-size: 11px !important;
+            }
+
+            .desktop-table td:nth-child(3) {
+                font-size: 16px !important;
+                line-height: 1.35;
+            }
+
+            .mobile-list {
+                display: none !important;
+            }
+
+            /* ---------- TEAM VIEW: REAL TABLE ---------- */
+            .view-teams .desktop-table {
+                display: block !important;
+            }
+
+            .view-teams .mobile-list {
+                display: none !important;
+            }
+
+            /* ---------- BOARD VIEW: MOBILE CARDS ---------- */
+            .view-board .desktop-table {
+                display: none !important;
+            }
+
+            .view-board #boardMobile {
+                display: block !important;
+                padding: 8px !important;
+            }
+
+            .view-board .board-mobile-item {
+                display: block !important;
+                margin: 0 0 10px !important;
+                padding: 15px !important;
+                border: 1px solid #E2E8F0;
+                border-radius: 15px;
+                background: #fff;
+                box-shadow: 0 5px 16px rgba(15, 23, 42, .045);
+            }
+
+            .view-board .board-mobile-item:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .view-board .board-top {
+                margin-bottom: 12px !important;
+            }
+
+            .view-board .board-name {
+                font-size: 16px !important;
+            }
+
+            .view-board .board-inst {
+                margin-top: 3px;
+                font-size: 11px !important;
+            }
+
+            .view-board .board-best-score {
+                font-size: 30px !important;
+                line-height: 1;
+            }
+
+            .view-board .board-best-time {
+                margin-top: 4px;
+                font-size: 10px !important;
+            }
+
+            .view-board .board-rounds {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 8px !important;
+                margin-top: 12px !important;
+            }
+
+            .view-board .board-round {
+                min-height: 76px;
+                padding: 11px 8px !important;
+            }
+
+            .view-board .board-round-label {
+                font-size: 10px !important;
+            }
+
+            .view-board .board-round-score {
+                font-size: 20px !important;
+            }
+        }
+
+        .wrap {
+            width: min(94%, 900px) !important;
+            margin-top: 96px !important;
+            padding: 0 !important;
+        }
+
+        .desktop-table {
+            display: block !important;
+            overflow-x: auto !important;
+        }
+
+        .mobile-list {
+            display: none !important;
+        }
+        }
+
+
+        /* PAGE RESPONSIVE — Competition content only. Master Topbar above owns all Topbar rules. */
+        @media (min-width:640px) {
+
+            .mobile-list,
+            #boardMobile,
+            .mobile-item,
+            .board-mobile-item {
+                display: none !important
+            }
+        }
+
+        @media (max-width:639px) {
+            .body {
+                padding-top: 0
+            }
+
+            .wrap {
+                width: calc(100% - 20px);
+                max-width: 100%;
+                margin: 84px auto 24px;
+                padding: 0
+            }
+        }
+
+        @media (max-width:430px) {
+            .wrap {
+                width: calc(100% - 16px) !important;
+                margin-top: 80px !important
+            }
+
+            .page-title {
+                font-size: 25px !important
+            }
+
+            .view-btn {
+                min-height: 46px !important;
+                font-size: 15px !important
+            }
+
+            .tier-tab {
+                min-height: 46px !important;
+                font-size: 12px !important
+            }
+
+            .desktop-table table {
+                min-width: 570px !important
+            }
+
+            .desktop-table th:nth-child(1),
+            .desktop-table td:nth-child(1) {
+                width: 54px
+            }
+
+            .desktop-table th:nth-child(2),
+            .desktop-table td:nth-child(2) {
+                width: 215px
+            }
+
+            .desktop-table th:nth-child(3),
+            .desktop-table td:nth-child(3) {
+                width: 301px
+            }
+        }
+
+        @media (max-width:380px) {
+            .wrap {
+                margin-top: 76px !important
+            }
+
+            .page-title {
+                font-size: 23px !important
+            }
+
+            .view-btn {
+                font-size: 14px !important
+            }
+
+            .tier-tab {
+                font-size: 11px !important
+            }
+
+            .desktop-table table {
+                min-width: 540px !important
+            }
+        }
+
+        @media (min-width:641px) and (max-width:900px) {
+            .wrap {
+                width: min(94%, 900px) !important;
+                margin-top: 96px !important;
+                padding: 0 !important
+            }
+
+            .desktop-table {
+                display: block !important;
+                overflow-x: auto !important
+            }
+
+            .mobile-list {
+                display: none !important
+            }
+        }
+
+        /* =========================================================
+           RCL 2026 — BOARD MOBILE / TABLE OVERLAP FIX
+           Only one board representation is visible at a time.
+        ========================================================= */
+        @media (max-width: 639px) {
+            .view-board .desktop-table {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+
+            .view-board #boardMobile {
+                display: block !important;
+                visibility: visible !important;
+                height: auto !important;
+                overflow: visible !important;
+                padding: 8px !important;
+            }
+
+            .view-board #boardMobile .board-mobile-item {
+                display: block !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 0 10px !important;
+                clear: both !important;
+            }
+
+            .view-board #boardMobile .board-mobile-item:last-child {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        @media (min-width: 640px) {
+            .view-board .desktop-table {
+                display: block !important;
+                visibility: visible !important;
+                height: auto !important;
+                overflow-x: auto !important;
+            }
+
+            .view-board #boardMobile {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                overflow: hidden !important;
             }
         }
     </style>
@@ -1095,12 +1702,67 @@
                 <span>พรีออเดอร์สนามภารกิจ</span>
             </a>
 
-            <a href="/certificate" class="nav-link certificate-btn" target="_blank">
+            <a href="/certificate" class="nav-link certificate-btn">
                 <span>CERTIFICATE</span>
                 <span>เกียรติบัตร</span>
             </a>
 
         </nav>
+
+        <!-- MOBILE HAMBURGER -->
+        <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false"
+            onclick="(function(b){var m=document.getElementById('mobileMenu');var o=m.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');b.setAttribute('aria-label',o?'ปิดเมนู':'เปิดเมนู');b.innerHTML=o?'<i class=&quot;ti ti-x&quot;></i>':'<i class=&quot;ti ti-menu-2&quot;></i>';})(this)">
+            <i class="ti ti-menu-2"></i>
+        </button>
+
+        <!-- MOBILE MENU -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/" class="mobile-menu-item">
+                <i class="ti ti-home-2"></i>
+                <span><b>HOME</b><small>หน้าหลัก</small></span>
+            </a>
+            <a href="/#about" class="mobile-menu-item">
+                <i class="ti ti-users"></i>
+                <span><b>ABOUT US</b><small>เกี่ยวกับเรา</small></span>
+            </a>
+
+            <button class="mobile-menu-item mobile-competition-toggle" type="button" aria-expanded="false"
+                aria-controls="mobileCompetitionSubmenu"
+                onclick="(function(b,e){e.preventDefault();e.stopPropagation();var s=document.getElementById('mobileCompetitionSubmenu');if(!s)return;var o=s.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');})(this,event)">
+                <i class="ti ti-trophy"></i>
+                <span><b>COMPETITION</b><small>การแข่งขัน</small></span>
+                <i class="ti ti-chevron-down mobile-menu-arrow"></i>
+            </button>
+
+            <div class="mobile-submenu" id="mobileCompetitionSubmenu">
+                <a href="/#tiers" class="mobile-submenu-item">
+                    <i class="ti ti-pencil-plus"></i>สมัครแข่งขัน
+                </a>
+                <a href="/competition?view=teams" class="mobile-submenu-item">
+                    <i class="ti ti-users"></i>ทีมที่สมัคร
+                </a>
+                <a href="/competition?view=board" class="mobile-submenu-item">
+                    <i class="ti ti-chart-bar"></i>ผลสรุปคะแนน
+                </a>
+            </div>
+
+            <a href="/docs" class="mobile-menu-item">
+                <i class="ti ti-file-text"></i>
+                <span><b>DOCUMENT</b><small>เอกสาร</small></span>
+            </a>
+            <a href="/preorder" class="mobile-menu-item">
+                <i class="ti ti-shopping-cart"></i>
+                <span><b>PRE-ORDER MISSION</b><small>พรีออเดอร์สนามภารกิจ</small></span>
+            </a>
+            <a href="/certificate" class="mobile-menu-item" target="_blank">
+                <i class="ti ti-award"></i>
+                <span><b>CERTIFICATE</b><small>เกียรติบัตร</small></span>
+            </a>
+            <a href="/auth/login" class="mobile-menu-item mobile-login-item">
+                <i class="ti ti-lock"></i>
+                <span><b>LOGIN</b><small>เข้าสู่ระบบ</small></span>
+            </a>
+        </div>
 
         <div class="topbar-actions">
             <a href="/auth/login" class="btn-login">
@@ -1158,7 +1820,7 @@
         </div>
 
         <div
-            class="card <%= activeTier==='beginner'?'active-beginner':activeTier==='intermediate'?'active-intermediate':'active-advance' %>">
+            class="card view-<%= view==='teams'?'teams':'board' %> <%= activeTier==='beginner'?'active-beginner':activeTier==='intermediate'?'active-intermediate':'active-advance' %>">
             <% if (view==='teams' ) { %>
                 <div class="search-row">
                     <div class="search-box">
@@ -1432,9 +2094,14 @@
 
     <script>
         (function () {
+            var bm = document.getElementById('boardMobile')
+            var dt = document.querySelector('.view-board .desktop-table')
             if (window.innerWidth < 640) {
-                var bm = document.getElementById('boardMobile')
                 if (bm) bm.style.display = 'block'
+                if (dt) dt.style.display = 'none'
+            } else {
+                if (bm) bm.style.display = 'none'
+                if (dt) dt.style.display = 'block'
             }
             var input = document.getElementById('teamSearch')
             if (!input) return
@@ -1452,32 +2119,57 @@
                 if (noResult) noResult.style.display = visible === 0 ? '' : 'none'
                 if (noMobile) noMobile.style.display = visible === 0 ? 'block' : 'none'
             })
-        })()
+        })();
 
-        document.querySelectorAll('.dropdown').forEach(function (dd) {
-            var menu = dd.querySelector('.dropdown-menu')
-            var timer
-            dd.addEventListener('mouseenter', function () {
-                clearTimeout(timer)
-                menu.style.display = 'block'
-            })
-            dd.addEventListener('mouseleave', function () {
-                timer = setTimeout(function () { menu.style.display = 'none' }, 200)
-            })
-            menu.addEventListener('mouseenter', function () { clearTimeout(timer) })
-            menu.addEventListener('mouseleave', function () {
-                timer = setTimeout(function () { menu.style.display = 'none' }, 200)
-            })
-            // Scroll effect
-            window.addEventListener('scroll', function () {
-                var topbar = document.querySelector('.topbar');
-                if (window.scrollY > 10) {
-                    topbar.classList.add('scrolled');
-                } else {
-                    topbar.classList.remove('scrolled');
+            /* MASTER TOPBAR JS — single controller */
+            (function () {
+                var dropdowns = document.querySelectorAll('.dropdown')
+                for (var i = 0; i < dropdowns.length; i++) {
+                    (function (dd) {
+                        var menu = dd.querySelector('.dropdown-menu'), trigger = dd.querySelector('.nav-link'), timer
+                        if (!menu || !trigger) return
+                        trigger.addEventListener('click', function (e) {
+                            if (window.innerWidth <= 640) { e.preventDefault(); e.stopPropagation(); return }
+                            e.preventDefault(); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'
+                        })
+                        dd.addEventListener('mouseenter', function () { if (window.innerWidth > 640) { clearTimeout(timer); menu.style.display = 'block' } })
+                        dd.addEventListener('mouseleave', function () { if (window.innerWidth > 640) { timer = setTimeout(function () { menu.style.display = 'none' }, 200) } })
+                    })(dropdowns[i])
                 }
-            });
-        })
+            })();
+
+            (function () {
+                var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
+                if (!toggle || !menu) return
+                function setOpen(open) {
+                    menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
+                    toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
+                    if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
+                }
+                toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
+                var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
+                document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
+                window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
+            })();
+
+            // Scroll effect
+            (function () {
+                var topbar = document.querySelector('.topbar')
+                if (!topbar) return
+
+                function updateTopbar() {
+                    if (window.scrollY > 10) {
+                        topbar.classList.add('scrolled')
+                    } else {
+                        topbar.classList.remove('scrolled')
+                    }
+                }
+
+                window.addEventListener('scroll', updateTopbar, { passive: true })
+                updateTopbar()
+            })()
+
     </script>
 </body>
 

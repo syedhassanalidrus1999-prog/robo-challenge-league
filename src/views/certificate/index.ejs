@@ -9,1027 +9,902 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
-
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap');
-
-        :root {
-            --primary: #2563EB;
-            --primary-dark: #1D4ED8;
-            --primary-soft: #EFF6FF;
-            --text: #0F172A;
-            --muted: #64748B;
-            --muted-2: #94A3B8;
-            --line: #E8EEF6;
-            --bg: #F5F8FC;
-            --card: #FFFFFF;
-            --success: #16A34A;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
-            padding: 0
-        }
-
-        html {
-            scroll-behavior: smooth
+            padding: 0;
         }
 
         body {
-            font-family: 'Sarabun', sans-serif;
-            background:
-                radial-gradient(circle at 50% -10%, rgba(37, 99, 235, .10), transparent 34%),
-                linear-gradient(180deg, #F7FAFF 0%, #F4F7FB 48%, #F7F9FC 100%);
-            color: var(--text);
+            font-family: Kanit;
+            background: radial-gradient(circle at 12% 18%, rgba(37, 99, 235, .10), transparent 24%), radial-gradient(circle at 88% 78%, rgba(14, 165, 233, .08), transparent 24%), linear-gradient(180deg, #F7FAFF, #F3F7FC);
+            color: #1E293B;
             min-height: 100vh;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit
-        }
-
-        button,
-        input {
-            font: inherit
-        }
-
-        /* ---------- Top bar ---------- */
+        /* RCL 2026 — MASTER TOPBAR */
         .topbar {
-            height: 72px;
-            background: rgba(255, 255, 255, .88);
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 1000;
+            width: 100%;
+            height: 84px;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-sizing: border-box;
+            background: transparent;
+            border-bottom: 1px solid transparent;
+            transition: background .25s ease, border-color .25s ease, box-shadow .25s ease
+        }
+
+        .topbar.scrolled {
+            background: #fff;
+            border-bottom-color: #E2E8F0;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(226, 232, 240, .85);
-            display: flex;
-            align-items: center;
-            padding: 0 clamp(18px, 4vw, 48px);
-            gap: 14px;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            box-shadow: 0 5px 24px rgba(15, 23, 42, .045);
+            -webkit-backdrop-filter: blur(16px)
         }
 
-        .topbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .topbar img {
-            width: auto;
-            height: 40px;
-            object-fit: contain;
-        }
-
-        .topbar-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: #1E293B;
-            white-space: nowrap;
-        }
-
-        .back-btn {
+        .topbar-logo {
+            flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 12px;
-            padding: 8px 13px;
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            font-weight: 700;
-            color: #334155;
-            transition: .2s ease;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, .03);
+            justify-content: center
         }
 
-        .back-btn:hover {
-            color: var(--primary);
-            border-color: #BFDBFE;
-            background: #F8FBFF;
-            transform: translateY(-1px);
+        .topbar-logo img {
+            display: block;
+            width: auto;
+            max-width: 130px;
+            height: 120px;
+            object-fit: contain
         }
 
-        /* ---------- Main layout ---------- */
-        .wrap {
-            width: min(920px, calc(100% - 32px));
-            margin: 0 auto;
-            padding: 54px 0 80px;
-        }
-
-        /* ---------- Hero ---------- */
-        .hero {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .hero-icon {
-            width: 52px;
-            height: 52px;
-            margin: 0 auto 15px;
-            display: grid;
-            place-items: center;
-            border-radius: 16px;
-            color: var(--primary);
-            background: linear-gradient(145deg, #EFF6FF, #DBEAFE);
-            border: 1px solid #DBEAFE;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, .10);
-            font-size: 25px;
-        }
-
-        .hero-title {
-            font-size: clamp(27px, 4vw, 34px);
-            line-height: 1.2;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 8px;
-            font-family: 'Kanit', sans-serif;
-            letter-spacing: -.3px;
-        }
-
-        .hero-title span {
-            color: var(--primary);
-        }
-
-        .hero-sub {
-            font-size: 14px;
-            color: var(--muted);
-        }
-
-        /* ---------- Search ---------- */
-        .search-card {
-            background: rgba(255, 255, 255, .96);
-            border: 1px solid #E2E8F0;
-            border-radius: 22px;
-            padding: 22px;
-            box-shadow: 0 14px 38px rgba(15, 23, 42, .075);
-            margin-bottom: 22px;
-        }
-
-        .search-label {
+        .topbar-nav {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-left: 18px;
             display: flex;
             align-items: center;
-            gap: 7px;
-            margin: 0 0 9px 2px;
-            font-size: 13px;
-            font-weight: 700;
+            gap: 6px
+        }
+
+        .nav-link {
+            min-height: 52px;
+            padding: 0 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 4px;
+            flex: 0 0 auto;
+            border: 0 !important;
+            border-radius: 11px;
+            background: transparent !important;
             color: #334155;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
+            text-decoration: none;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: color .2s ease, background .2s ease, transform .2s ease
         }
 
-        .search-label i {
-            color: var(--primary);
+        .nav-link span:first-child {
+            font-size: 16px;
+            line-height: 1.05;
+            font-weight: 700;
+            letter-spacing: 1px
         }
 
-        .search-row {
-            display: grid;
-            grid-template-columns: 1fr 145px;
-            gap: 10px;
+        .nav-link span:last-child {
+            font-size: 13px;
+            line-height: 1.05;
+            font-weight: 500
         }
 
-        .input-wrap {
-            position: relative;
+        .nav-link i {
+            font-size: 17px
         }
 
-        .fi {
-            width: 100%;
-            min-height: 48px;
-            padding: 12px 15px 12px 43px;
-            border: 1.5px solid #CBD5E1;
-            border-radius: 12px;
-            font-size: 14px;
-            font-family: 'Sarabun', sans-serif;
-            color: var(--text);
-            background: #fff;
-            outline: none;
-            transition: .2s ease;
+        .nav-link:hover {
+            color: #2563EB;
+            background: #F4F8FF !important;
+            transform: translateY(-1px)
         }
 
-        .fi::placeholder {
-            color: #A0AEC0
+        .certificate-btn {
+            background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
+            color: #92400E !important;
+            border: 1px solid #FCD34D !important;
+            border-radius: 90px !important;
+            box-shadow: 0 4px 12px rgba(180, 120, 20, .18)
         }
 
-        .fi:focus {
-            border-color: #60A5FA;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+        .topbar-actions {
+            flex: 0 0 auto;
+            margin-left: auto;
+            display: flex;
+            align-items: center
         }
 
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94A3B8;
-            pointer-events: none;
-            font-size: 18px;
-        }
-
-        .btn {
+        .btn-login {
+            min-height: 52px;
+            padding: 0 20px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 7px;
-            min-height: 48px;
-            padding: 12px 20px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
+            border-radius: 11px;
+            font: 800 16px 'Sarabun', sans-serif;
+            text-decoration: none;
+            white-space: nowrap;
+            color: #334155;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            transition: all .2s ease
+        }
+
+        .btn-login:hover {
+            color: #2563EB;
+            background: #F8FAFC;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .07)
+        }
+
+        .dropdown {
+            position: relative
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            z-index: 1100;
+            display: none;
+            min-width: 215px;
+            padding: 8px;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+            backdrop-filter: blur(14px)
+        }
+
+        .dropdown-item {
+            min-height: 44px;
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            color: #334155;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
             font-size: 14px;
             font-weight: 700;
-            font-family: 'Sarabun', sans-serif;
-            transition: .2s ease;
+            text-decoration: none
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            color: #fff;
-            box-shadow: 0 9px 20px rgba(37, 99, 235, .22);
+        .dropdown-item:hover {
+            color: #2563EB;
+            background: #EFF6FF
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: relative;
+            z-index: 1202;
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            margin-left: auto;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(148, 163, 184, .35);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .96);
+            color: #334155;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, .07);
+            cursor: pointer
+        }
+
+        .mobile-menu-toggle i {
+            font-size: 25px
+        }
+
+        .mobile-menu-toggle.is-open {
+            color: #2563EB;
+            background: #EFF6FF;
+            border-color: #BFDBFE
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 94px;
+            left: 12px;
+            right: 12px;
+            z-index: 1201;
+            max-height: calc(100dvh - 106px);
+            overflow-y: auto;
+            padding: 8px;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #DBEAFE;
+            border-radius: 17px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, .16);
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px) scale(.985);
+            transition: .18s ease
+        }
+
+        .mobile-menu.is-open {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: none
+        }
+
+        .mobile-menu-item {
             width: 100%;
+            min-height: 52px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            border: 0;
+            border-radius: 11px;
+            background: transparent;
+            color: #334155;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
+            text-decoration: none;
+            text-align: left;
+            cursor: pointer
         }
 
-        .btn-primary:hover {
-            filter: brightness(.98);
-            transform: translateY(-1px);
-            box-shadow: 0 12px 24px rgba(37, 99, 235, .27);
+        .mobile-menu-item:hover {
+            background: #F4F8FF;
+            color: #2563EB
         }
 
-        .btn-primary:active {
-            transform: translateY(0)
-        }
-
-        /* ---------- Loading ---------- */
-        .loading {
+        .mobile-menu-item>i:first-child {
+            width: 28px;
+            min-width: 28px;
             text-align: center;
-            padding: 26px;
-            color: var(--muted);
+            font-size: 20px;
+            color: #64748B
+        }
+
+        .mobile-menu-item>span {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1
+        }
+
+        .mobile-menu-item b {
+            font-size: 15px;
+            font-weight: 800
+        }
+
+        .mobile-menu-item small {
+            margin-top: 3px;
+            font-size: 11px;
+            color: #94A3B8
+        }
+
+        .mobile-menu-arrow {
+            font-size: 18px !important;
+            color: #94A3B8 !important;
+            transition: transform .2s
+        }
+
+        .mobile-competition-toggle.is-open {
+            background: #EFF6FF;
+            color: #2563EB
+        }
+
+        .mobile-competition-toggle.is-open .mobile-menu-arrow {
+            transform: rotate(180deg)
+        }
+
+        .mobile-submenu {
             display: none;
-        }
-
-        .loading i {
-            color: var(--primary)
-        }
-
-        /* ---------- Result card ---------- */
-        .result-card {
-            background: rgba(255, 255, 255, .97);
+            margin: 0 8px 6px 51px;
+            padding: 5px;
+            background: #F8FAFC;
             border: 1px solid #E2E8F0;
-            border-radius: 22px;
-            box-shadow: 0 14px 38px rgba(15, 23, 42, .065);
-            overflow: hidden;
-            display: none;
+            border-radius: 12px
         }
 
-        .result-card.show {
+        .mobile-submenu.is-open {
             display: block
         }
 
-        .result-card>#resultContent>.team-block {
-            border-bottom: 1px solid var(--line);
+        .mobile-submenu-item {
+            min-height: 42px;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            border-radius: 8px;
+            color: #475569;
+            font: 700 13px 'Kanit', 'Sarabun', sans-serif;
+            text-decoration: none
         }
 
-        .result-card>#resultContent>.team-block:last-child {
-            border-bottom: none;
+        .mobile-submenu-item:hover {
+            color: #2563EB;
+            background: #EFF6FF
+        }
+
+        .mobile-login-item {
+            margin-top: 4px;
+            border-top: 1px solid #EEF2F6
+        }
+
+        @media (min-width:901px) and (max-width:1199px) {
+            .topbar {
+                height: 78px;
+                padding: 0 20px
+            }
+
+            .topbar-logo img {
+                height: 96px;
+                max-width: 112px
+            }
+
+            .topbar-nav {
+                margin-left: 8px;
+                gap: 2px
+            }
+
+            .nav-link {
+                min-height: 48px;
+                padding: 0 10px
+            }
+
+            .nav-link span:first-child {
+                font-size: 14px
+            }
+
+            .nav-link span:last-child {
+                font-size: 11px
+            }
+
+            .btn-login {
+                min-height: 48px;
+                padding: 0 14px;
+                font-size: 14px
+            }
+        }
+
+        @media (min-width:641px) and (max-width:900px) {
+            .topbar {
+                height: 72px;
+                padding: 0 16px
+            }
+
+            .topbar-logo img {
+                height: 76px;
+                max-width: 92px
+            }
+
+            .topbar-nav {
+                margin-left: 4px;
+                gap: 1px
+            }
+
+            .nav-link {
+                min-height: 46px;
+                padding: 0 8px
+            }
+
+            .nav-link span:first-child {
+                font-size: 12px
+            }
+
+            .nav-link span:last-child {
+                font-size: 10px
+            }
+
+            .btn-login {
+                min-height: 44px;
+                padding: 0 11px;
+                font-size: 13px
+            }
+        }
+
+        @media (max-width:640px) {
+            .topbar {
+                height: 62px;
+                padding: 0 12px;
+                background: rgba(255, 255, 255, .94);
+                border-bottom-color: #E2E8F0;
+                box-shadow: 0 4px 18px rgba(15, 23, 42, .07)
+            }
+
+            .topbar-logo img {
+                height: 44px;
+                max-width: 86px
+            }
+
+            .topbar-nav,
+            .topbar-actions {
+                display: none !important
+            }
+
+            .mobile-menu-toggle {
+                display: inline-flex !important
+            }
+
+            .mobile-menu {
+                top: 72px
+            }
+        }
+
+        @media (max-width:430px) {
+            .topbar {
+                height: 60px;
+                padding: 0 9px
+            }
+
+            .topbar-logo img {
+                height: 40px;
+                max-width: 76px
+            }
+
+            .mobile-menu-toggle {
+                width: 42px;
+                height: 42px
+            }
+
+            .mobile-menu {
+                top: 70px;
+                left: 9px;
+                right: 9px
+            }
+        }
+
+        .wrap {
+            width: min(900px, 92%);
+            margin: 0 auto;
+            padding: 118px 0 72px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .hero-title {
+            font-size: 40px;
+            font-weight: 900;
+            color: #0F172A;
+            font-family: 'Kanit', sans-serif;
+            margin-bottom: 6px;
+        }
+
+        .hero-title span {
+            color: #2563EB;
+        }
+
+        .hero-sub {
+            font-size: 18px;
+            color: #64748B;
+        }
+
+        .hero-line {
+            width: 48px;
+            height: 3px;
+            background: linear-gradient(90deg, #2563EB, #7C3AED);
+            border-radius: 999px;
+            margin: 12px auto 0;
+        }
+
+        .search-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+            margin-bottom: 22px
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            background: #F8FAFC;
+            transition: .15s;
+        }
+
+        .search-input-wrap:focus-within {
+            border-color: #2563EB;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+        }
+
+        .search-input-wrap i {
+            color: #94A3B8;
+            font-size: 18px;
+        }
+
+        .search-input-wrap input {
+            border: none;
+            outline: none;
+            font-size: 14px;
+            font-family: 'Sarabun', sans-serif;
+            background: transparent;
+            flex: 1;
+        }
+
+        .btn-search {
+            background: #2563EB;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            transition: .15s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, .25);
+        }
+
+        .btn-search:hover {
+            background: #1D4ED8;
+        }
+
+        .result-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 18px;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+            overflow: hidden;
+            display: none
+        }
+
+        .result-card.show {
+            display: block;
         }
 
         .team-header {
-            padding: 20px 22px;
-            background: linear-gradient(180deg, #FFFFFF 0%, #FBFDFF 100%);
-            border-bottom: 1px solid var(--line);
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .team-header::before {
-            content: '';
-            width: 4px;
-            align-self: stretch;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #60A5FA, #2563EB);
-        }
-
-        .team-meta {
-            flex: 1;
-            min-width: 0
+            padding: 16px 20px;
+            border-bottom: 1px solid #F1F5F9;
         }
 
         .team-badges {
             display: flex;
             align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
-            gap: 7px;
-            margin-bottom: 7px;
         }
 
-        .team-badge,
-        .rank-badge {
+        .badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 5px 10px;
+            gap: 4px;
+            padding: 3px 10px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 800;
-            line-height: 1;
         }
 
-        .team-name-big {
-            font-size: 19px;
-            line-height: 1.3;
-            font-weight: 800;
-            color: var(--text);
-            word-break: break-word;
+        .team-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #0F172A;
         }
 
-        .team-inst {
+        .team-sub {
             font-size: 12px;
-            color: var(--muted-2);
-            margin-top: 4px;
-            word-break: break-word;
+            color: #94A3B8;
+            margin-top: 2px;
         }
 
-        /* ---------- Student list ---------- */
         .student-list {
-            padding: 5px 22px 7px;
+            padding: 4px 0;
         }
 
         .student-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            min-height: 70px;
-            padding: 11px 0;
-            border-bottom: 1px solid #F1F5F9;
-            gap: 16px;
+            padding: 14px 20px;
+            border-bottom: 1px solid #F8FAFC;
+            gap: 14px;
         }
 
         .student-row:last-child {
-            border-bottom: none
+            border-bottom: none;
+        }
+
+        .student-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #F1F5F9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #64748B;
+            flex-shrink: 0;
         }
 
         .student-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .student-number {
-            width: 34px;
-            height: 34px;
-            flex: 0 0 34px;
-            display: grid;
-            place-items: center;
-            border-radius: 10px;
-            background: #F1F5F9;
-            color: #64748B;
-            font-size: 12px;
-            font-weight: 800;
+            flex: 1;
         }
 
         .student-name {
             font-size: 15px;
             font-weight: 700;
-            color: var(--text);
-            word-break: break-word;
+            color: #0F172A;
         }
 
         .student-sub {
             font-size: 11px;
-            color: var(--muted-2);
-            margin-top: 2px;
+            color: #94A3B8;
+            margin-top: 1px;
         }
 
-        .btn-download {
-            flex: 0 0 auto;
-            min-height: 38px;
-            background: #F0FDF4;
-            color: var(--success);
-            border: 1px solid #BBF7D0;
-            font-size: 13px;
-            padding: 8px 13px;
+        .cert-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn-cert {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 14px;
             border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: 'Sarabun', sans-serif;
+            text-decoration: none;
+            transition: .15s;
+            border: none;
+            cursor: pointer;
             white-space: nowrap;
         }
 
-        .btn-download:hover {
+        .btn-participation {
+            font-family: Kanit;
+            background: #F0FDF4;
+            color: #16A34A;
+            border: 1.5px solid #BBF7D0;
+        }
+
+        .btn-participation:hover {
             background: #DCFCE7;
-            border-color: #86EFAC;
             transform: translateY(-1px);
         }
 
-        /* ---------- Empty / error ---------- */
+        .btn-1st {
+            background: linear-gradient(135deg, #FEF9C3, #FDE68A);
+            color: #92400E;
+            border: 1.5px solid #F59E0B;
+        }
+
+        .btn-1st:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .btn-2nd {
+            font-family: Kanit;
+            background: linear-gradient(135deg, #F1F5F9, #E2E8F0);
+            color: #475569;
+            border: 1.5px solid #94A3B8;
+        }
+
+        .btn-2nd:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .btn-3rd {
+            background: linear-gradient(135deg, #FEF3E2, #FDE8C8);
+            color: #92400E;
+            border: 1.5px solid #CD7F32;
+        }
+
+        .btn-3rd:hover {
+            opacity: .85;
+            transform: translateY(-1px);
+        }
+
+        .not-checked {
+            font: size 15px;
+            px;
+            color: #94A3B8;
+            font-style: italic;
+        }
+
         .no-result {
             text-align: center;
-            padding: 60px 24px;
-            color: var(--muted-2);
+            padding: 48px 24px;
+            color: #94A3B8;
         }
 
         .no-result i {
             display: block;
-            font-size: 44px;
-            margin-bottom: 12px;
-            opacity: .45;
+            font-size: 40px;
+            margin-bottom: 10px;
+            opacity: .3;
         }
 
-        .no-result strong {
-            display: block;
-            color: #475569;
-            font-size: 15px;
-            margin-bottom: 3px;
+        .loading {
+            text-align: center;
+            padding: 28px;
+            color: #64748B;
+            display: none;
         }
 
-        .no-result span {
-            font-size: 12px;
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        /* ---------- Responsive ---------- */
-        @media (max-width:700px) {
-            .topbar {
-                height: 64px;
-                padding: 0 16px
-            }
-
-            .topbar img {
-                height: 34px
-            }
-
-            .topbar-title {
-                font-size: 14px
-            }
-
-            .back-btn {
-                padding: 7px 10px
-            }
-
-            .back-btn span {
-                display: none
-            }
-
+        @media (max-width:640px) {
             .wrap {
-                width: min(100% - 24px, 620px);
-                padding: 38px 0 54px;
+                width: calc(100% - 24px);
+                padding: 92px 0 48px
             }
 
             .hero {
                 margin-bottom: 22px
             }
 
-            .hero-icon {
-                width: 46px;
-                height: 46px;
-                border-radius: 14px;
-                font-size: 22px
-            }
-
-            .hero-sub {
-                font-size: 13px
+            .hero-title {
+                font-size: 27px
             }
 
             .search-card {
-                padding: 16px;
-                border-radius: 18px;
+                padding: 14px
             }
 
             .search-row {
-                grid-template-columns: 1fr
+                flex-direction: column
             }
 
-            .btn-primary {
-                min-height: 46px
+            .search-input-wrap,
+            .btn-search {
+                width: 100%
             }
 
-            .team-header {
-                padding: 17px 16px
-            }
-
-            .student-list {
-                padding-left: 16px;
-                padding-right: 16px
-            }
-
-            .student-row {
-                align-items: flex-start
-            }
-
-            .student-info {
-                align-items: flex-start
-            }
-
-            .btn-download {
-                padding: 8px 10px;
-                font-size: 12px
-            }
-        }
-
-        @media (max-width:440px) {
-            .topbar-title {
-                display: none
-            }
-
-            .topbar {
-                justify-content: space-between
-            }
-
-            .team-header {
-                gap: 9px
-            }
-
-            .team-name-big {
-                font-size: 17px
-            }
-
-            .student-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 9px;
-                padding: 13px 0;
-            }
-
-            .btn-download {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* ---------- Motion ---------- */
-        @keyframes spin {
-            from {
-                transform: rotate(0deg)
-            }
-
-            to {
-                transform: rotate(360deg)
-            }
-        }
-
-        @keyframes riseIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        .result-card.show {
-            animation: riseIn .25s ease both
-        }
-
-        @media (prefers-reduced-motion:reduce) {
-
-            *,
-            *::before,
-            *::after {
-                animation-duration: .01ms !important;
-                transition-duration: .01ms !important;
-            }
-        }
-
-
-        /* ===== RCL CERTIFICATE — LAYOUT + CSS ONLY ===== */
-        body {
-            overflow-x: hidden;
-            background:
-                radial-gradient(circle at 8% 12%, rgba(59, 130, 246, .11), transparent 25%),
-                radial-gradient(circle at 92% 22%, rgba(14, 165, 233, .08), transparent 24%),
-                radial-gradient(circle at 50% 100%, rgba(37, 99, 235, .07), transparent 32%),
-                linear-gradient(180deg, #F8FBFF 0%, #F2F6FC 52%, #F8FAFD 100%);
-        }
-
-        body::before,
-        body::after {
-            content: "";
-            position: fixed;
-            pointer-events: none;
-            z-index: -1;
-            border-radius: 50%;
-        }
-
-        body::before {
-            width: 420px;
-            height: 420px;
-            left: -260px;
-            top: 180px;
-            border: 1px solid rgba(37, 99, 235, .08);
-            box-shadow: 0 0 0 55px rgba(37, 99, 235, .025), 0 0 0 110px rgba(37, 99, 235, .018);
-        }
-
-        body::after {
-            width: 360px;
-            height: 360px;
-            right: -240px;
-            top: 330px;
-            border: 1px solid rgba(14, 165, 233, .08);
-            box-shadow: 0 0 0 48px rgba(14, 165, 233, .025), 0 0 0 96px rgba(14, 165, 233, .016);
-        }
-
-        .topbar {
-            height: 78px;
-            padding: 0 clamp(22px, 5vw, 64px);
-            gap: 18px;
-            background: rgba(255, 255, 255, .90);
-            border-bottom: 1px solid rgba(226, 232, 240, .9);
-            box-shadow: 0 5px 24px rgba(15, 23, 42, .045), 0 1px 0 rgba(255, 255, 255, .9) inset;
-        }
-
-        .topbar-brand {
-            gap: 14px
-        }
-
-        .topbar img {
-            height: 42px;
-            filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .08))
-        }
-
-        .topbar-title {
-            position: relative;
-            padding-left: 15px;
-            font-size: 16px;
-            font-weight: 800;
-        }
-
-        .topbar-title::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 1px;
-            height: 26px;
-            background: #D8E1EE;
-        }
-
-        .back-btn {
-            min-height: 40px;
-            padding: 9px 15px;
-            border-radius: 12px;
-            background: linear-gradient(180deg, #fff, #F8FAFC);
-            box-shadow: 0 4px 12px rgba(15, 23, 42, .045), inset 0 1px 0 #fff;
-        }
-
-        .back-btn:hover {
-            box-shadow: 0 8px 20px rgba(37, 99, 235, .10), inset 0 1px 0 #fff;
-        }
-
-        .wrap {
-            width: min(1080px, calc(100% - 40px));
-            padding: 68px 0 100px;
-        }
-
-        .hero {
-            position: relative;
-            margin-bottom: 34px
-        }
-
-        .hero::after {
-            content: "";
-            width: 70px;
-            height: 4px;
-            display: block;
-            margin: 15px auto 0;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #60A5FA, #2563EB, #38BDF8);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, .20);
-        }
-
-        .hero-icon {
-            width: 68px;
-            height: 68px;
-            margin: 0 auto 18px;
-            border-radius: 20px;
-            background: linear-gradient(145deg, rgba(255, 255, 255, .98), #EAF3FF);
-            border: 1px solid #D7E7FF;
-            box-shadow: 0 18px 38px rgba(37, 99, 235, .13), 0 4px 10px rgba(15, 23, 42, .04), inset 0 1px 0 rgba(255, 255, 255, .95);
-            font-size: 30px;
-        }
-
-        .hero-icon i {
-            filter: drop-shadow(0 4px 8px rgba(37, 99, 235, .16))
-        }
-
-        .hero-title {
-            font-size: clamp(32px, 4vw, 42px);
-            letter-spacing: -.6px;
-            text-shadow: 0 4px 16px rgba(15, 23, 42, .04);
-        }
-
-        .hero-sub {
-            margin-top: 4px;
-            font-size: 15px
-        }
-
-        .search-card {
-            position: relative;
-            padding: 26px;
-            margin-bottom: 28px;
-            border-radius: 24px;
-            border: 1px solid rgba(219, 228, 240, .95);
-            background: rgba(255, 255, 255, .91);
-            box-shadow: 0 24px 55px rgba(15, 23, 42, .075), 0 7px 20px rgba(37, 99, 235, .045), inset 0 1px 0 rgba(255, 255, 255, .95);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-        }
-
-        .search-card::before {
-            content: "";
-            position: absolute;
-            left: 24px;
-            right: 24px;
-            top: 0;
-            height: 2px;
-            border-radius: 0 0 99px 99px;
-            background: linear-gradient(90deg, transparent, #60A5FA, #2563EB, #38BDF8, transparent);
-        }
-
-        .search-label {
-            font-size: 14px;
-            margin-bottom: 11px
-        }
-
-        .search-label i {
-            width: 26px;
-            height: 26px;
-            display: grid;
-            place-items: center;
-            border-radius: 8px;
-            background: #EFF6FF;
-            color: #2563EB;
-        }
-
-        .search-row {
-            grid-template-columns: minmax(0, 1fr) 150px;
-            gap: 12px
-        }
-
-        .fi {
-            min-height: 56px;
-            border-radius: 14px;
-            border-color: #C8D6E8;
-            padding-left: 48px;
-            box-shadow: inset 0 2px 5px rgba(15, 23, 42, .025), 0 1px 0 rgba(255, 255, 255, .9);
-        }
-
-        .fi:hover {
-            border-color: #AFC4DE
-        }
-
-        .fi:focus {
-            border-color: #3B82F6;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, .09), 0 7px 18px rgba(37, 99, 235, .06);
-        }
-
-        .input-icon {
-            left: 17px;
-            font-size: 20px;
-            color: #8AA0BC
-        }
-
-        .btn {
-            min-height: 56px;
-            border-radius: 14px
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
-            box-shadow: 0 12px 25px rgba(37, 99, 235, .24), inset 0 1px 0 rgba(255, 255, 255, .16);
-        }
-
-        .btn-primary:hover {
-            filter: none;
-            transform: translateY(-2px);
-            box-shadow: 0 17px 32px rgba(37, 99, 235, .30), inset 0 1px 0 rgba(255, 255, 255, .18);
-        }
-
-        .result-card {
-            border-radius: 24px;
-            border: 1px solid rgba(219, 228, 240, .95);
-            box-shadow: 0 22px 50px rgba(15, 23, 42, .07), 0 5px 16px rgba(37, 99, 235, .035);
-            background: rgba(255, 255, 255, .94);
-            backdrop-filter: blur(12px);
-        }
-
-        .team-header {
-            padding: 21px 25px;
-            background: linear-gradient(135deg, #FFFFFF 0%, #F8FBFF 100%);
-        }
-
-        .team-header::before {
-            width: 5px;
-            background: linear-gradient(180deg, #3B82F6, #2563EB, #38BDF8);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, .20);
-        }
-
-        .team-name-big {
-            font-size: 20px
-        }
-
-        .team-badge,
-        .rank-badge {
-            padding: 6px 11px;
-            box-shadow: 0 2px 7px rgba(15, 23, 42, .035);
-        }
-
-        .student-list {
-            padding: 7px 25px 9px
-        }
-
-        .student-row {
-            min-height: 74px;
-            padding: 13px 0;
-            transition: .18s ease
-        }
-
-        .student-row:hover {
-            padding-left: 7px;
-            padding-right: 7px;
-            background: #FBFDFF;
-        }
-
-        .student-number {
-            width: 38px;
-            height: 38px;
-            flex-basis: 38px;
-            border: 1px solid #E2E8F0;
-            background: linear-gradient(145deg, #F8FAFC, #EEF3F8);
-        }
-
-        .btn-download {
-            min-height: 40px;
-            border-radius: 11px;
-            box-shadow: 0 3px 9px rgba(15, 23, 42, .035);
-            transition: .18s ease;
-        }
-
-        .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 16px rgba(15, 23, 42, .08);
-        }
-
-        .no-result {
-            padding: 72px 24px
-        }
-
-        .no-result i {
-            width: 72px;
-            height: 72px;
-            margin: 0 auto 16px;
-            display: grid;
-            place-items: center;
-            border-radius: 22px;
-            background: #F1F5F9;
-            border: 1px solid #E2E8F0;
-            color: #94A3B8;
-            font-size: 34px;
-        }
-
-        @media(max-width:700px) {
-            .topbar {
-                height: 68px;
-                padding: 0 16px
-            }
-
-            .topbar img {
-                height: 36px
-            }
-
-            .topbar-title {
-                font-size: 14px;
-                padding-left: 12px
-            }
-
-            .wrap {
-                width: min(100% - 24px, 620px);
-                padding: 45px 0 65px
-            }
-
-            .hero {
-                margin-bottom: 25px
-            }
-
-            .hero-icon {
-                width: 58px;
-                height: 58px;
-                border-radius: 18px;
-                font-size: 26px
-            }
-
-            .hero-title {
-                font-size: 29px
-            }
-
-            .hero-sub {
-                font-size: 13px
-            }
-
-            .search-card {
-                padding: 19px;
-                border-radius: 19px
-            }
-
-            .search-card::before {
-                left: 18px;
-                right: 18px
-            }
-
-            .search-row {
-                grid-template-columns: 1fr
-            }
-
-            .fi,
-            .btn {
-                min-height: 52px
-            }
-
-            .result-card {
-                border-radius: 19px
-            }
-
-            .team-header {
-                padding: 18px
-            }
-
-            .student-list {
-                padding-left: 18px;
-                padding-right: 18px
-            }
-        }
-
-        @media(max-width:440px) {
-            .topbar-title {
-                display: none
-            }
-
-            .topbar {
-                justify-content: space-between
-            }
-
-            .hero-title {
-                font-size: 26px
-            }
-
-            .search-card {
-                padding: 15px
-            }
-
-            .student-row {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px
-            }
-
-            .btn-download {
-                width: 100%;
+            .btn-search {
                 justify-content: center
+            }
+
+            .team-header {
+                padding: 16px
+            }
+
+            .student-row {
+                align-items: flex-start;
+                padding: 14px 16px;
+                gap: 10px;
+                flex-wrap: wrap
+            }
+
+            .cert-btns {
+                width: 100%;
+                justify-content: flex-start;
+                padding-left: 40px
+            }
+
+            .btn-cert {
+                white-space: normal;
+                text-align: left
             }
         }
     </style>
-
 </head>
 
 <body>
-
     <div class="topbar">
-        <a href="/" class="topbar-brand">
-            <img src="/RCL Logo.png" alt="RCL">
-            <div class="topbar-title">ดาวน์โหลดเกียรติบัตร</div>
-        </a>
-        <div style="flex:1"></div>
-        <a href="/" class="back-btn">
-            <i class="ti ti-arrow-left"></i><span>กลับหน้าหลัก</span>
-        </a>
+        <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
+        <nav class="topbar-nav">
+            <a href="/" class="nav-link"><span>HOME</span><span>หน้าหลัก</span></a>
+            <a href="/#about" class="nav-link"><span>ABOUT US</span><span>เกี่ยวกับเรา</span></a>
+            <div class="dropdown">
+                <button class="nav-link" type="button"><span>COMPETITION</span><span>การแข่งขัน <i
+                            class="ti ti-chevron-down"></i></span></button>
+                <div class="dropdown-menu">
+                    <a href="/#tiers" class="dropdown-item"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+                    <a href="/competition?view=teams" class="dropdown-item"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+                    <a href="/competition?view=board" class="dropdown-item"><i
+                            class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+                </div>
+            </div>
+            <a href="/docs" class="nav-link"><span>DOCUMENT</span><span>เอกสาร</span></a>
+            <a href="/preorder" class="nav-link"><span>PRE-ORDER MISSION</span><span>พรีออเดอร์สนามภารกิจ</span></a>
+            <a href="/certificate" class="nav-link certificate-btn"
+                target="_blank"><span>CERTIFICATE</span><span>เกียรติบัตร</span></a>
+        </nav>
+        <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false"><i
+                class="ti ti-menu-2"></i></button>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="/" class="mobile-menu-item"><i
+                    class="ti ti-home-2"></i><span><b>HOME</b><small>หน้าหลัก</small></span></a>
+            <a href="/#about" class="mobile-menu-item"><i class="ti ti-users"></i><span><b>ABOUT
+                        US</b><small>เกี่ยวกับเรา</small></span></a>
+            <button class="mobile-menu-item mobile-competition-toggle" type="button" aria-expanded="false"><i
+                    class="ti ti-trophy"></i><span><b>COMPETITION</b><small>การแข่งขัน</small></span><i
+                    class="ti ti-chevron-down mobile-menu-arrow"></i></button>
+            <div class="mobile-submenu" id="mobileCompetitionSubmenu">
+                <a href="/#tiers" class="mobile-submenu-item"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+                <a href="/competition?view=teams" class="mobile-submenu-item"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+                <a href="/competition?view=board" class="mobile-submenu-item"><i
+                        class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+            </div>
+            <a href="/docs" class="mobile-menu-item"><i
+                    class="ti ti-file-text"></i><span><b>DOCUMENT</b><small>เอกสาร</small></span></a>
+            <a href="/preorder" class="mobile-menu-item"><i class="ti ti-shopping-cart"></i><span><b>PRE-ORDER
+                        MISSION</b><small>พรีออเดอร์สนามภารกิจ</small></span></a>
+            <a href="/certificate" class="mobile-menu-item" target="_blank"><i
+                    class="ti ti-award"></i><span><b>CERTIFICATE</b><small>เกียรติบัตร</small></span></a>
+            <a href="/auth/login" class="mobile-menu-item mobile-login-item"><i
+                    class="ti ti-lock"></i><span><b>LOGIN</b><small>เข้าสู่ระบบ</small></span></a>
+        </div>
+        <div class="topbar-actions"><a href="/auth/login" class="btn-login"><i
+                    class="ti ti-lock"></i><span>เข้าสู่ระบบ</span></a></div>
     </div>
 
     <div class="wrap">
         <div class="hero">
-            <div class="hero-icon"><i class="ti ti-certificate"></i></div>
             <div class="hero-title">ดาวน์โหลด<span>เกียรติบัตร</span></div>
             <div class="hero-sub">ค้นหาด้วย ID ทีม ชื่อทีม หรือชื่อโรงเรียน</div>
+            <div class="hero-line"></div>
         </div>
 
         <div class="search-card">
-            <div class="search-label"><i class="ti ti-search"></i> ค้นหาทีม</div>
             <div class="search-row">
-                <div class="input-wrap">
-                    <i class="ti ti-search input-icon"></i>
-                    <input class="fi" type="text" id="searchInput"
-                        placeholder="พิมพ์ ID ทีม / ชื่อทีม / ชื่อโรงเรียน...">
+                <div class="search-input-wrap">
+                    <i class="ti ti-search"></i>
+                    <input type="text" id="searchInput" placeholder="พิมพ์ ID ทีม / ชื่อทีม / ชื่อโรงเรียน...">
                 </div>
-                <button class="btn btn-primary" onclick="searchTeam()">
+                <button class="btn-search" onclick="searchTeam()">
                     <i class="ti ti-search"></i> ค้นหา
                 </button>
             </div>
         </div>
 
         <div class="loading" id="loading">
-            <i class="ti ti-loader-2" style="font-size:24px;animation:spin 1s linear infinite"></i>
-            <div style="margin-top:8px">กำลังค้นหา...</div>
+            <i class="ti ti-loader-2"
+                style="font-size:28px;animation:spin 1s linear infinite;display:block;margin-bottom:8px"></i>
+            กำลังค้นหา...
         </div>
 
         <div class="result-card" id="resultCard">
@@ -1038,15 +913,13 @@
     </div>
 
     <script>
-        var searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('keydown', function (e) {
+        document.getElementById('searchInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') searchTeam();
         });
 
         function searchTeam() {
-            var q = searchInput.value.trim();
+            var q = document.getElementById('searchInput').value.trim();
             if (!q) return;
-
             var loading = document.getElementById('loading');
             var resultCard = document.getElementById('resultCard');
             var resultContent = document.getElementById('resultContent');
@@ -1066,7 +939,8 @@
                     }
 
                     var html = '';
-                    data.teams.forEach(function (team) {
+                    for (var ti = 0; ti < data.teams.length; ti++) {
+                        var team = data.teams[ti];
                         var tierColor = team.tier === 'beginner' ? '#16A34A' : team.tier === 'intermediate' ? '#2563EB' : '#EA580C';
                         var tierLabel = team.tier === 'beginner' ? 'Beginner' : team.tier === 'intermediate' ? 'Intermediate' : 'Advance';
 
@@ -1076,64 +950,62 @@
                         else if (team.rank === 2) { rankEmoji = '🥈'; rankLabel = 'อันดับ 2'; }
                         else if (team.rank === 3) { rankEmoji = '🥉'; rankLabel = 'อันดับ 3'; }
 
-                        html += '<div class="team-block">';
+                        // Team header
                         html += '<div class="team-header">';
-                        html += '<div class="team-meta">';
                         html += '<div class="team-badges">';
-                        html += '<span class="team-badge" style="background:' + tierColor + '18;color:' + tierColor + '">' + tierLabel + '</span>';
+                        html += '<span class="badge" style="background:' + tierColor + '18;color:' + tierColor + '">' + tierLabel + '</span>';
                         if (rankLabel) {
-                            html += '<span class="rank-badge" style="background:#FEF3C7;color:#D97706">' + rankEmoji + ' ' + rankLabel + '</span>';
-                        } else {
-                            html += '<span class="rank-badge" style="background:#F1F5F9;color:#64748B"><i class="ti ti-certificate"></i> เข้าร่วม</span>';
+                            html += '<span class="badge" style="background:#FEF3C7;color:#D97706">' + rankEmoji + ' ' + rankLabel + '</span>';
                         }
                         html += '</div>';
-                        html += '<div class="team-name-big">' + team.name + '</div>';
-                        html += '<div class="team-inst">' + (team.institution || '') + ' · ' + team.id + '</div>';
-                        html += '</div></div>';
+                        html += '<div class="team-name">' + team.name + '</div>';
+                        html += '<div class="team-sub">' + (team.institution || '') + ' · ' + team.id + '</div>';
+                        html += '</div>';
 
+                        // Students
                         html += '<div class="student-list">';
                         var students = team.students || [];
+
                         if (students.length === 0) {
-                            html += '<div style="color:#94A3B8;font-size:12px;text-align:center;padding:12px">ไม่มีรายชื่อนักเรียน</div>';
+                            html += '<div style="padding:20px;text-align:center;color:#94A3B8;font-size:13px">ไม่มีรายชื่อนักเรียน</div>';
                         }
-                        students.forEach(function (s, idx) {
+
+                        for (var si = 0; si < students.length; si++) {
+                            var s = students[si];
                             html += '<div class="student-row">';
-                            html += '<div class="student-info">';
-                            html += '<div class="student-number">' + (idx + 1) + '</div>';
-                            html += '<div>';
-                            html += '<div class="student-name">' + s.name + '</div>';
-                            html += '<div class="student-sub">นักเรียนคนที่ ' + (idx + 1) + '</div>';
-                            html += '</div>';
-                            html += '</div>';
-                            team.cert_types.forEach(function (ct) {
-                                var ctLabel, ctStyle;
-                                if (ct === 'participation') {
-                                    ctLabel = 'เกียรติบัตรเข้าร่วม';
-                                    ctStyle = 'background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0';
-                                } else if (ct === '1st') {
-                                    ctLabel = 'เกียรติบัตรชนะเลิศ';
-                                    ctStyle = 'background:linear-gradient(135deg,#FEF3C7,#FDE68A);color:#92400E;border:1px solid #F59E0B;font-weight:800';
-                                } else if (ct === '2nd') {
-                                    ctLabel = 'เกียรติบัตรรองชนะเลิศ อันดับ 1';
-                                    ctStyle = 'background:linear-gradient(135deg,#F1F5F9,#E2E8F0);color:#475569;border:1px solid #94A3B8;font-weight:800';
-                                } else if (ct === '3rd') {
-                                    ctLabel = 'เกียรติบัตรรองชนะเลิศ อันดับ 2';
-                                    ctStyle = 'background:linear-gradient(135deg,#FEF3E2,#FDE8C8);color:#92400E;border:1px solid #CD7F32;font-weight:800';
-                                }
-                                html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn btn-download" style="' + ctStyle + '">';
-                                html += '<i class="ti ti-download"></i> ' + ctLabel;
+                            html += '<div class="student-num">' + (si + 1) + '</div>';
+                            html += '<div class="student-info"><div class="student-name">' + s.name + '</div><div class="student-sub">นักเรียนคนที่ ' + (si + 1) + '</div></div>';
+                            html += '<div class="cert-btns">';
+
+                            if (s.checked_in) {
+                                // เกียรติบัตรเข้าร่วม (เฉพาะคนที่เช็คชื่อ)
+                                html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=participation" target="_blank" class="btn-cert btn-participation">';
+                                html += '<i class="ti ti-download"></i> เกียรติบัตรเข้าร่วม';
                                 html += '</a>';
-                            });
-                            html += '</a>';
-                            html += '</div>';
-                        });
-                        html += '</div>';
+                                for (var ci = 0; ci < team.team_cert_types.length; ci++) {
+                                    var ct = team.team_cert_types[ci];
+                                    var ctClass = ct === '1st' ? 'btn-1st' : ct === '2nd' ? 'btn-2nd' : 'btn-3rd';
+                                    var ctLabel = ct === '1st' ? '🥇 เกียรติบัตรชนะเลิศ' : ct === '2nd' ? '🥈 รองชนะเลิศ อันดับ 1' : '🥉 รองชนะเลิศ อันดับ 2';
+                                    html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn-cert ' + ctClass + '">';
+                                    html += '<i class="ti ti-download"></i> ' + ctLabel;
+                                    html += '</a>';
+                                }
+                            } else {
+                                html += '<span class="not-checked"><i class="ti ti-clock"></i>ไม่ได้เข้ารวมงานแข่งขัน</span>';
+                            }
+
+                            // เกียรติบัตรอันดับ (ทุกคนในทีมได้)
+
+
+                            html += '</div></div>';
+                        }
+
                         html += '</div>';
 
-                        if (data.teams.indexOf(team) < data.teams.length - 1) {
-                            html += '';
+                        if (ti < data.teams.length - 1) {
+                            html += '<div style="height:1px;background:#F1F5F9"></div>';
                         }
-                    });
+                    }
 
                     resultContent.innerHTML = html;
                 })
@@ -1144,6 +1016,82 @@
                 });
         }
     </script>
+
+    <script>
+        (function () {
+            var topbar = document.querySelector('.topbar');
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var menu = document.getElementById('mobileMenu');
+            var competition = document.querySelector('.mobile-competition-toggle');
+            var submenu = document.getElementById('mobileCompetitionSubmenu');
+
+            function updateTopbar() {
+                if (topbar) topbar.classList.toggle('scrolled', window.scrollY > 10);
+            }
+
+            function setMobile(open) {
+                if (!toggle || !menu) return;
+                menu.classList.toggle('is-open', open);
+                toggle.classList.toggle('is-open', open);
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู');
+                toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>';
+                if (!open && competition && submenu) {
+                    competition.classList.remove('is-open');
+                    competition.setAttribute('aria-expanded', 'false');
+                    submenu.classList.remove('is-open');
+                }
+            }
+
+            document.querySelectorAll('.dropdown').forEach(function (dd) {
+                var trigger = dd.querySelector('.nav-link');
+                var dropdown = dd.querySelector('.dropdown-menu');
+                if (!trigger || !dropdown) return;
+                trigger.addEventListener('click', function (e) {
+                    if (window.innerWidth <= 640) return;
+                    e.preventDefault();
+                    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                });
+                var closeTimer;
+                dd.addEventListener('mouseenter', function () {
+                    if (window.innerWidth > 640) { clearTimeout(closeTimer); dropdown.style.display = 'block'; }
+                });
+                dd.addEventListener('mouseleave', function () {
+                    if (window.innerWidth > 640) { closeTimer = setTimeout(function () { dropdown.style.display = 'none'; }, 350); }
+                });
+                dropdown.addEventListener('mouseenter', function () {
+                    clearTimeout(closeTimer); dropdown.style.display = 'block';
+                });
+                dropdown.addEventListener('mouseleave', function () {
+                    if (window.innerWidth > 640) { closeTimer = setTimeout(function () { dropdown.style.display = 'none'; }, 350); }
+                });
+            });
+
+            if (toggle) toggle.addEventListener('click', function (e) {
+                e.preventDefault(); e.stopPropagation(); setMobile(!menu.classList.contains('is-open'));
+            });
+
+            if (competition && submenu) competition.addEventListener('click', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                var open = submenu.classList.toggle('is-open');
+                competition.classList.toggle('is-open', open);
+                competition.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+
+            if (menu) menu.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', function () { setMobile(false) });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth <= 640 && menu && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setMobile(false);
+            });
+
+            window.addEventListener('resize', function () { if (window.innerWidth > 640) setMobile(false) });
+            window.addEventListener('scroll', updateTopbar, { passive: true });
+            updateTopbar();
+        })();
+    </script>
+
 </body>
 
 </html>
