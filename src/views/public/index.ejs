@@ -1610,9 +1610,10 @@
 
 
     .sponsors-grid {
-      grid-template-columns:
-        repeat(5, minmax(120px, 1fr));
-    }
+    grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
+    justify-content: center;
+}
+    
 
 
     /* =========================================================
@@ -1920,7 +1921,7 @@
     .contact-brand-logo {
       display: inline-flex;
       align-items: center;
-      margin-bottom: 0px;
+      margin-bottom: 30px;
     }
 
     .contact-brand-logo:hover{
@@ -2077,7 +2078,7 @@
       }
 
       .contact-brand-logo img {
-        height: 50px;
+        height: 120px;
         max-width: 165px;
       }
 
@@ -4297,7 +4298,7 @@
       }
 
       .sponsors-grid .brand-card img {
-        max-height: 65px !important;
+        max-height: 70px !important;
       }
 
       .brand-divider {
@@ -4943,8 +4944,8 @@
       }
 
       .partners-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-      }
+grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
+      justify-content: center;      }
 
       .sponsors-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -5476,7 +5477,7 @@
       }
 
       .sponsors-grid .brand-card img {
-        max-height: 44px !important;
+        max-height: 70px !important;
         min-height: 0 !important;
       }
 
@@ -5792,8 +5793,7 @@
       overflow: hidden;"><span style="font-size: medium;">การแข่งขันหุ่นยนต์และการเขียนโปรแกรมเชิงวิศวกรรม
         ที่มุ่งพัฒนาทักษะด้าน Coding, Robotics,
         STEM และการแก้ปัญหา ผ่านภารกิจที่ท้าทายจากสถานการณ์จริง เพื่อส่งเสริมความคิดสร้างสรรค์ การทำงานเป็นทีม
-        และเตรียมความพร้อมสู่โลกแห่งเทคโนโลยีในอนาคต</span><br><span style="font-size: 25px; color: #054394;">
-        จัดโดย บริษัท โกรทเพาเวอร์ จำกัด (Growth Power Co., Ltd.)</span></div>
+        และเตรียมความพร้อมสู่โลกแห่งเทคโนโลยีในอนาคต</span></div>
     <div class="hero-actions">
       <a href="#tiers" class="hero-btn-primary hero-btn-register">
         <i class="ti ti-pencil-plus"></i> สมัครแข่งขัน
@@ -6030,7 +6030,7 @@
                 <img src="images/icon/first place.png" alt="First Place"
                   style="width: auto; height: 100px; margin-bottom: 10px;">
                 <div class="award-item-label">รางวัลชนะเลิศ</div>
-                <div class="award-item-value">4,000 บาท</div>
+                <div class="award-item-value">3,000 บาท</div>
                 <small>พร้อมถ้วยรางวัล เหรียญรางวัล
                   และเกียรติบัตรชนะเลิศ</small>
               </div>
@@ -6039,7 +6039,7 @@
                 <img src="images/icon/second place.png" alt="Second Place"
                   style="width: auto; height: 70px; margin-bottom: 10px;">
                 <div class="award-item-label">รองชนะเลิศอันดับ 1</div>
-                <div class="award-item-value">3,000 บาท</div>
+                <div class="award-item-value">2,000 บาท</div>
                 <small>พร้อมถ้วยรางวัล เหรียญรางวัล
                   และเกียรติรองชนะเลิศอันดับ1</small>
               </div>
@@ -6048,7 +6048,7 @@
                 <img src="images/icon/third place.png" alt="Third Place"
                   style="width: auto; height: 70px; margin-bottom: 10px;">
                 <div class="award-item-label">รองชนะเลิศอันดับ 2</div>
-                <div class="award-item-value">2,000 บาท</div>
+                <div class="award-item-value">1,000 บาท</div>
                 <small>พร้อมหรียญรางวัล
                   และเกียรติบัตรรองชนะเลิศอันดับ2</small>
               </div>
@@ -6502,7 +6502,7 @@
 
         <div class="brand-heading">
 
-          <h2 style="color: #EFBF04; font-size: 45px;">PARTNERS</h2>
+          <h2 style="color: #EFBF04; font-size: 45px;">OFFICIAL PARTNERS</h2>
 
         </div>
 
@@ -6524,6 +6524,11 @@
             <img src="images/robochampion-logo.png" alt="RoboChampion">
           </div>
 
+          <!-- Sponsor 3 -->
+          <div class="brand-card brand-add-card ">
+            <img src="images/ftu-logo.png" alt="ftu logo">
+          </div>
+
 
         </div>
       </div>
@@ -6541,11 +6546,6 @@
         </div>
 
         <div class="brand-grid sponsors-grid">
-
-          <!-- Sponsor 1 -->
-          <div class="brand-card sponsor-card">
-            <img src="public/images/RCL Logo.png" alt="RCL">
-          </div>
 
           <!-- Sponsor 2 -->
           <div class="brand-card brand-add-card sponsor-add-card">
