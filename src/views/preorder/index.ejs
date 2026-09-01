@@ -82,8 +82,8 @@
     }
 
     .topbar.scrolled .nav-link {
-  color: #334155 !important;
-}
+      color: #334155 !important;
+    }
 
 
     .topbar-logo {
@@ -120,7 +120,7 @@
       flex-direction: column;
       gap: 4px;
       flex: 0 0 auto;
-      border: 0 ;
+      border: 0;
       border-radius: 11px;
       background: transparent;
       color: #c8deff;
@@ -1520,6 +1520,89 @@
         border-bottom: 0
       }
     }
+
+
+    /* Pre-order success state — page-specific only */
+    .success-wrap {
+      min-height: 100vh;
+      padding: 116px 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 18% 20%, rgba(34, 197, 94, .07), transparent 28%),
+        radial-gradient(circle at 82% 80%, rgba(37, 99, 235, .06), transparent 30%),
+        var(--bg);
+    }
+
+    .success-card {
+      width: min(100%, 520px);
+      padding: 38px 36px 34px;
+      text-align: center;
+      background: #fff;
+      border: 1px solid #E2E8F0;
+      border-radius: 20px;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, .10);
+    }
+
+    .success-card>div:first-child {
+      width: 76px !important;
+      height: 76px !important;
+      margin-bottom: 18px !important;
+      font-size: 36px !important;
+      box-shadow: 0 8px 20px rgba(22, 163, 74, .10);
+    }
+
+    .success-card .btn-outline,
+    .success-card .btn-solid {
+      min-height: 44px;
+      padding: 0 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 10px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      transition: all .2s ease;
+    }
+
+    .success-card .btn-outline {
+      color: #2563EB;
+      background: #fff;
+      border: 1px solid #BFDBFE;
+    }
+
+    .success-card .btn-outline:hover {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+      transform: translateY(-1px);
+    }
+
+    .success-card .btn-solid {
+      color: #fff;
+      background: linear-gradient(135deg, #3478F6, #2563EB);
+      border: 1px solid transparent;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, .18);
+    }
+
+    .success-card .btn-solid:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 9px 20px rgba(37, 99, 235, .25);
+    }
+
+    @media (max-width: 640px) {
+      .success-wrap {
+        min-height: 100vh;
+        padding: 92px 16px 32px;
+      }
+
+      .success-card {
+        padding: 30px 20px 26px;
+        border-radius: 18px;
+      }
+    }
   </style>
 </head>
 
@@ -1979,14 +2062,14 @@
                   var PROMO_ACTIVE = <%= promoActive ? 'true' : 'false' %>;
                   var PROMO_PERCENT = <%= promoPercent || 0 %>;
                   var PRICES_ORIGINAL = {
-                    'beginner-full': 2500, 'beginner-mat': 2400, 'beginner-field': 500, 'beginner-mission': 500,
-                    'intermediate-full': 2500, 'intermediate-mat': 2400, 'intermediate-field': 500, 'intermediate-mission': 500,
-                    'advance-full': 2500, 'advance-mat': 2400, 'advance-field': 500, 'advance-mission': 500
+                    'beginner-full': 3450, 'beginner-mat': 2850, 'beginner-field': 500, 'beginner-mission': 600,
+                    'intermediate-full': 3450, 'intermediate-mat': 2850, 'intermediate-field': 500, 'intermediate-mission': 600,
+                    'advance-full': 3450, 'advance-mat': 2850, 'advance-field': 500, 'advance-mission': 600
                   };
                   var PRICES_FINAL = {
-                    'beginner-full':<%= Math.round(2500 * (1 - promoPercent / 100)) %>, 'beginner-mat':<%= Math.round(2400 * (1 - promoPercent / 100)) %>, 'beginner-field':<%= Math.round(500 * (1 - promoPercent / 100)) %>, 'beginner-mission':<%= Math.round(500 * (1 - promoPercent / 100)) %>,
-                    'intermediate-full':<%= Math.round(2500 * (1 - promoPercent / 100)) %>, 'intermediate-mat':<%= Math.round(2400 * (1 - promoPercent / 100)) %>, 'intermediate-field':<%= Math.round(500 * (1 - promoPercent / 100)) %>, 'intermediate-mission':<%= Math.round(500 * (1 - promoPercent / 100)) %>,
-                    'advance-full':<%= Math.round(2500 * (1 - promoPercent / 100)) %>, 'advance-mat':<%= Math.round(2400 * (1 - promoPercent / 100)) %>, 'advance-field':<%= Math.round(500 * (1 - promoPercent / 100)) %>, 'advance-mission':<%= Math.round(500 * (1 - promoPercent / 100)) %>
+                    'beginner-full':<%= Math.round(3450 * (1 - promoPercent / 100)) %>, 'beginner-mat':<%= Math.round(2850 * (1 - promoPercent / 100)) %>, 'beginner-field':<%= Math.round(500 * (1 - promoPercent / 100)) %>, 'beginner-mission':<%= Math.round(600 * (1 - promoPercent / 100)) %>,
+                    'intermediate-full':<%= Math.round(3450 * (1 - promoPercent / 100)) %>, 'intermediate-mat':<%= Math.round(2850 * (1 - promoPercent / 100)) %>, 'intermediate-field':<%= Math.round(500 * (1 - promoPercent / 100)) %>, 'intermediate-mission':<%= Math.round(600 * (1 - promoPercent / 100)) %>,
+                    'advance-full':<%= Math.round(3450 * (1 - promoPercent / 100)) %>, 'advance-mat':<%= Math.round(2850 * (1 - promoPercent / 100)) %>, 'advance-field':<%= Math.round(500 * (1 - promoPercent / 100)) %>, 'advance-mission':<%= Math.round(600 * (1 - promoPercent / 100)) %>
 };
                   var NAMES = {
                     'beginner-full': 'เซตสนาม Beginner', 'beginner-mat': 'สนามอย่างเดียว Beginner', 'beginner-field': 'ไฟล์สนาม Beginner', 'beginner-mission': 'ชิ้นส่วนภารกิจ Beginner',
@@ -2178,31 +2261,31 @@
                     }
                   })();
 
-                    (function () {
-                      var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
-                      if (!toggle || !menu) return
-                      function setOpen(open) {
-                        menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
-                        toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
-                        toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
-                        if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
-                      }
-                      toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
-                      var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
-                      document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
-                      window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
-                    })();
+                  (function () {
+                    var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
+                    if (!toggle || !menu) return
+                    function setOpen(open) {
+                      menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
+                      toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
+                      toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
+                      if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
+                    }
+                    toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
+                    var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
+                    document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
+                    window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
+                  })();
 
-                    // Scroll effect
-                  
-                   window.addEventListener('scroll', function () {
-                      var topbar = document.querySelector('.topbar');
-                      if (window.scrollY > 10) {
-                        topbar.classList.add('scrolled');
-                      } else {
-                        topbar.classList.remove('scrolled');
-                      }
-                    });
+                  // Scroll effect
+
+                  window.addEventListener('scroll', function () {
+                    var topbar = document.querySelector('.topbar');
+                    if (window.scrollY > 10) {
+                      topbar.classList.add('scrolled');
+                    } else {
+                      topbar.classList.remove('scrolled');
+                    }
+                  });
                 </script>
 
 </body>

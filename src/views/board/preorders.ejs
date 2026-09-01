@@ -36,15 +36,15 @@
                         <% preorders.forEach(function(p) { var parsedItems={}; try { parsedItems=p.items_json ?
                             JSON.parse(p.items_json) : {}; } catch(e) { parsedItems={}; } var
                             itemKeys=Object.keys(parsedItems); function getItemName(k) { var names={ 'beginner-full'
-                            : 'เซตสนาม Beginner' , 'beginner-field' : 'ไฟล์สนาม Beginner' , 'beginner-mission'
+                            : 'เซตสนาม Beginner' ,'beginner-mat' : 'แผ่นสนาม Beginner' , 'beginner-field' : 'ไฟล์สนาม Beginner' , 'beginner-mission'
                             : 'ชิ้นส่วนภารกิจ Beginner' , 'intermediate-full' : 'เซตสนาม Intermediate'
-                            , 'intermediate-field' : 'ไฟล์สนาม Intermediate' , 'intermediate-mission'
-                            : 'ชิ้นส่วนภารกิจ Intermediate' , 'advance-full' : 'เซตสนาม Advance' , 'advance-field'
+                            , 'intermediate-mat' : 'แผ่นสนาม Intermediate' , 'intermediate-field' : 'ไฟล์สนาม Intermediate' , 'intermediate-mission'
+                            : 'ชิ้นส่วนภารกิจ Intermediate' , 'advance-full' : 'เซตสนาม Advance' ,'advance-mat' : 'แผ่นสนาม Advance' , 'advance-field'
                             : 'ไฟล์สนาม Advance' , 'advance-mission' : 'ชิ้นส่วนภารกิจ Advance' }; return names[k] || k;
-                            } function getItemColor(k) { var colors={ 'beginner-full' : '#16A34A' , 'beginner-field'
+                            } function getItemColor(k) { var colors={ 'beginner-full' : '#16A34A' , 'beginner-mat' : '#FBBF24' , 'beginner-field'
                             : '#7C3AED' , 'beginner-mission' : '#EA580C' , 'intermediate-full' : '#2563EB'
-                            , 'intermediate-field' : '#7C3AED' , 'intermediate-mission' : '#EA580C' , 'advance-full'
-                            : '#EA580C' , 'advance-field' : '#7C3AED' , 'advance-mission' : '#EA580C' }; return
+                            , 'intermediate-mat' : '#FBBF24' , 'intermediate-field' : '#7C3AED' , 'intermediate-mission' : '#EA580C' , 'advance-full'
+                            : '#EA580C' , 'advance-mat' : '#FBBF24' , 'advance-field' : '#7C3AED' , 'advance-mission' : '#EA580C' }; return
                             colors[k] || '#475569' ; } %>
                             <tr>
                                 <td style="color:#94A3B8;font-size:12px">#<%= p.id %>
