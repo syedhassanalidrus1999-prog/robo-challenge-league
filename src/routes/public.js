@@ -564,6 +564,7 @@ router.post("/preorder", async (req, res) => {
     zipcode,
     note,
     items_json,
+    shipping_method
   } = req.body;
 
   var renderData = {
@@ -600,12 +601,16 @@ router.post("/preorder", async (req, res) => {
   }
 
   var totalPrice = 0;
+  var shippingFee = shipping_method === "delivery" ? 100 : 0;
+
   Object.keys(items).forEach(function (k) {
     var finalPrice = promo.promoActive
       ? PRICES_FINAL[k] || 0
       : PRICES_ORIG[k] || 0;
     totalPrice += finalPrice * (parseInt(items[k]) || 1);
   });
+
+  totalPrice += shippingFee;
 
   try {
     await query(
