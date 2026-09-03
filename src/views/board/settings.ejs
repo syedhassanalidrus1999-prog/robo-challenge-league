@@ -54,14 +54,97 @@
                 </div>
             </div>
             <div class="fg" style="margin-bottom:14px">
-                <div class="fl">ส่วนลด (%)</div>
-                <input class="fi" type="number" name="promo_percent" min="1" max="99"
-                    value="<%= settings.promo_percent || '10' %>" placeholder="เช่น 10">
-            </div>
-            <div class="fg" style="margin-bottom:14px">
                 <div class="fl">วันหมดอายุโปรโมชั่น</div>
                 <input class="fi" type="date" name="promo_end_date" value="<%= settings.promo_end_date || '' %>">
                 <div style="font-size:11px;color:#94A3B8;margin-top:4px">ถึงวันนี้แล้วโปรโมชั่นจะหยุดแสดงอัตโนมัติ</div>
+            </div>
+        </div>
+        <div class="modal-foot" style="padding:14px 16px">
+            <button type="submit" class="btn btn-primary">
+                <i class="ti ti-device-floppy"></i> บันทึก
+            </button>
+        </div>
+    </form>
+</div>
+
+<div class="card" style="max-width:500px;margin-top:16px">
+    <div class="card-hd">
+        <div class="card-title">ราคาสินค้า Pre-order</div>
+    </div>
+    <form method="POST" action="/board/settings">
+        <div class="card-body">
+            <div
+                style="font-size:11px;color:#64748B;margin-bottom:14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px">
+                ราคาเหล่านี้ใช้กับทุก tier (Beginner / Intermediate / Advance)<br>
+                ส่วนลดแยกต่อสินค้า — ใส่ 0 หากไม่ต้องการลดสินค้านั้น (ต้องเปิดโปรโมชั่นด้วย)
+            </div>
+
+            <div
+                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
+                เซตสนาม (full)
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ราคา (บาท)</div>
+                    <input class="fi" type="number" name="price_full" min="0"
+                        value="<%= settings.price_full || '3450' %>" placeholder="3450">
+                </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ส่วนลด (%)</div>
+                    <input class="fi" type="number" name="discount_full" min="0" max="99"
+                        value="<%= settings.discount_full || '0' %>" placeholder="0">
+                </div>
+            </div>
+
+            <div
+                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
+                สนามอย่างเดียว (mat)
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ราคา (บาท)</div>
+                    <input class="fi" type="number" name="price_mat" min="0" value="<%= settings.price_mat || '2850' %>"
+                        placeholder="2850">
+                </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ส่วนลด (%)</div>
+                    <input class="fi" type="number" name="discount_mat" min="0" max="99"
+                        value="<%= settings.discount_mat || '0' %>" placeholder="0">
+                </div>
+            </div>
+
+            <div
+                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
+                ไฟล์สนาม (field)
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ราคา (บาท)</div>
+                    <input class="fi" type="number" name="price_field" min="0"
+                        value="<%= settings.price_field || '625' %>" placeholder="625">
+                </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ส่วนลด (%)</div>
+                    <input class="fi" type="number" name="discount_field" min="0" max="99"
+                        value="<%= settings.discount_field || '0' %>" placeholder="0">
+                </div>
+            </div>
+
+            <div
+                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
+                ชิ้นส่วนภารกิจ (mission)
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ราคา (บาท)</div>
+                    <input class="fi" type="number" name="price_mission" min="0"
+                        value="<%= settings.price_mission || '600' %>" placeholder="600">
+                </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">ส่วนลด (%)</div>
+                    <input class="fi" type="number" name="discount_mission" min="0" max="99"
+                        value="<%= settings.discount_mission || '0' %>" placeholder="0">
+                </div>
             </div>
         </div>
         <div class="modal-foot" style="padding:14px 16px">

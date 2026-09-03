@@ -184,10 +184,19 @@ router.post("/settings", requireLogin, async (req, res) => {
     "event_date_end",
     "event_date_label",
     "promo_active",
-    "promo_percent",
     "promo_end_date",
     "registration_open_date",
     "registration_close_date",
+    // ราคาสินค้า Pre-order
+    "price_full",
+    "price_mat",
+    "price_field",
+    "price_mission",
+    // ส่วนลดแยกต่อสินค้า
+    "discount_full",
+    "discount_mat",
+    "discount_field",
+    "discount_mission",
   ];
   for (var k of keys) {
     await query(
@@ -198,7 +207,7 @@ router.post("/settings", requireLogin, async (req, res) => {
   req.flash("success", "บันทึกการตั้งค่าแล้ว");
   res.redirect("/board/settings");
 });
-
+ 
 // ─── GET /board/preorders ─────────────────────────────────────────────────────
 router.get("/preorders", requireLogin, async (req, res) => {
   const status = req.query.status || "";
@@ -233,6 +242,17 @@ router.post("/preorders/:id/status", requireLogin, async (req, res) => {
     req.params.id,
   ]);
   req.flash("success", "อัปเดตสถานะแล้ว");
+  res.redirect("/board/preorders");
+});
+
+router.delete("/preorders/:id", requireLogin, async (req, res) => {
+  try {
+    await query("DELETE FROM preorders WHERE id=$1", [req.params.id]);
+    req.flash("success", "ลบ Pre-order แล้ว");
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "ลบไม่ได้");
+  }
   res.redirect("/board/preorders");
 });
 

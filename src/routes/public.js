@@ -2,138 +2,114 @@ const express = require("express");
 const router = express.Router();
 const { query } = require("../config/database");
 
-function buildTiers(promoPercent) {
-  var pct = promoPercent || 0;
-  function makeItem(key, name, desc, price, hasDetail) {
+// ─── Default prices (fallback) ────────────────────────────────────────────────
+var DEFAULT_PRICES = {
+  full: 3450,
+  mat: 2850,
+  field: 625,
+  mission: 600,
+};
+var DEFAULT_DISCOUNTS = {
+  full: 0,
+  mat: 0,
+  field: 0,
+  mission: 0,
+};
+
+// ─── buildTiers ───────────────────────────────────────────────────────────────
+// prices: { 'full': 3450, 'mat': 2850, 'field': 625, 'mission': 600 }
+// discounts: { 'full': 20, 'mat': 10, 'field': 0, 'mission': 0 }
+function buildTiers(prices, discounts) {
+  prices = prices || DEFAULT_PRICES;
+  discounts = discounts || DEFAULT_DISCOUNTS;
+
+  function makeItem(tierKey, type, name, desc, hasDetail) {
+    var key = tierKey + "-" + type;
+    var price = prices[type] || 0;
+    var pct = discounts[type] || 0;
+    var promoPrice = pct > 0 ? Math.round(price * (1 - pct / 100)) : price;
     return {
       key: key,
       name: name,
       desc: desc,
       price: price,
       priceFormatted: price.toLocaleString(),
-      promoPrice: Math.round(price * (1 - pct / 100)),
-      promoPriceFormatted: Math.round(price * (1 - pct / 100)).toLocaleString(),
+      discountPct: pct,
+      promoPrice: promoPrice,
+      promoPriceFormatted: promoPrice.toLocaleString(),
+      hasDiscount: pct > 0,
       hasDetail: hasDetail,
     };
   }
-  return [
-    {
-      key: "beginner",
+
+  var tierKeys = ["beginner", "intermediate", "advance"];
+  var tierMeta = {
+    beginner: {
       label: "Beginner",
       emoji: "🌱",
       bg: "#F0FDF4",
       color: "#15803D",
       accent: "#16A34A",
-      items: [
-        makeItem(
-          "beginner-full",
-          "เซตสนาม Beginner",
-          "สนามไวนิล 236x114 ซม. + ชิ้นส่วนภารกิจครบชุด",
-          3450,
-          true,
-        ),
-        makeItem(
-          "beginner-mat",
-          "สนามอย่างเดียว Beginner",
-          "สนามไวนิล 236x114 ซม. ไม่รวมชิ้นส่วนภารกิจ",
-          2850,
-          true,
-        ),
-        makeItem(
-          "beginner-field",
-          "ไฟล์สนาม Beginner",
-          "ไฟล์สำหรับพิมพ์เอง ส่งทางอีเมล",
-          625,
-          true,
-        ),
-        makeItem(
-          "beginner-mission",
-          "ชิ้นส่วนภารกิจ Beginner",
-          "ชุดอุปกรณ์ภารกิจ (ไม่รวมสนาม)",
-          600,
-          false,
-        ),
-      ],
     },
-    {
-      key: "intermediate",
+    intermediate: {
       label: "Intermediate",
       emoji: "🔥",
       bg: "#EFF6FF",
       color: "#1D4ED8",
       accent: "#2563EB",
-      items: [
-        makeItem(
-          "intermediate-full",
-          "เซตสนาม Intermediate",
-          "สนามไวนิล 236x114 ซม. + ชิ้นส่วนภารกิจครบชุด",
-          3450,
-          true,
-        ),
-        makeItem(
-          "intermediate-mat",
-          "สนามอย่างเดียว Intermediate",
-          "สนามไวนิล 236x114 ซม. ไม่รวมชิ้นส่วนภารกิจ",
-          2850,
-          true,
-        ),
-        makeItem(
-          "intermediate-field",
-          "ไฟล์สนาม Intermediate",
-          "ไฟล์สำหรับพิมพ์เอง ส่งทางอีเมล",
-          625,
-          true,
-        ),
-        makeItem(
-          "intermediate-mission",
-          "ชิ้นส่วนภารกิจ Intermediate",
-          "ชุดอุปกรณ์ภารกิจ (ไม่รวมสนาม)",
-          600,
-          false,
-        ),
-      ],
     },
-    {
-      key: "advance",
+    advance: {
       label: "Advance",
       emoji: "🚀",
       bg: "#FFF7ED",
       color: "#C2410C",
       accent: "#EA580C",
-      items: [
-        makeItem(
-          "advance-full",
-          "เซตสนาม Advance",
-          "สนามไวนิล 236x114 ซม. + ชิ้นส่วนภารกิจครบชุด",
-          3450,
-          true,
-        ),
-        makeItem(
-          "advance-mat",
-          "สนามอย่างเดียว Advance",
-          "สนามไวนิล 236x114 ซม. ไม่รวมชิ้นส่วนภารกิจ",
-          2850,
-          true,
-        ),
-        makeItem(
-          "advance-field",
-          "ไฟล์สนาม Advance",
-          "ไฟล์สำหรับพิมพ์เอง ส่งทางอีเมล",
-          625,
-          true,
-        ),
-        makeItem(
-          "advance-mission",
-          "ชิ้นส่วนภารกิจ Advance",
-          "ชุดอุปกรณ์ภารกิจ (ไม่รวมสนาม)",
-          600,
-          false,
-        ),
-      ],
+    },
+  };
+  var itemDefs = [
+    {
+      type: "full",
+      name: (l) => "เซตสนาม " + l,
+      desc: "สนามไวนิล 236x114 ซม. + ชิ้นส่วนภารกิจครบชุด",
+      hasDetail: true,
+    },
+    {
+      type: "mat",
+      name: (l) => "สนามอย่างเดียว " + l,
+      desc: "สนามไวนิล 236x114 ซม. ไม่รวมชิ้นส่วนภารกิจ",
+      hasDetail: true,
+    },
+    {
+      type: "field",
+      name: (l) => "ไฟล์สนาม " + l,
+      desc: "ไฟล์สำหรับพิมพ์เอง ส่งทางอีเมล",
+      hasDetail: true,
+    },
+    {
+      type: "mission",
+      name: (l) => "ชิ้นส่วนภารกิจ " + l,
+      desc: "ชุดอุปกรณ์ภารกิจ (ไม่รวมสนาม)",
+      hasDetail: false,
     },
   ];
+
+  return tierKeys.map(function (tk) {
+    var meta = tierMeta[tk];
+    return {
+      key: tk,
+      label: meta.label,
+      emoji: meta.emoji,
+      bg: meta.bg,
+      color: meta.color,
+      accent: meta.accent,
+      items: itemDefs.map(function (d) {
+        return makeItem(tk, d.type, d.name(meta.label), d.desc, d.hasDetail);
+      }),
+    };
+  });
 }
 
+// ─── getPromoSettings ─────────────────────────────────────────────────────────
 async function getPromoSettings() {
   try {
     const settingsResult = await query("SELECT * FROM settings", []);
@@ -141,17 +117,69 @@ async function getPromoSettings() {
     settingsResult.rows.forEach(function (r) {
       settings[r.key] = r.value;
     });
+
     var promoActive = settings.promo_active === "1";
-    var promoPercent = parseInt(settings.promo_percent) || 10;
     var promoEndDate = settings.promo_end_date || null;
     if (promoEndDate && new Date(promoEndDate) < new Date())
       promoActive = false;
-    return { promoActive, promoPercent, promoEndDate, settings };
+
+    // Per-item prices from settings (fallback to defaults)
+    var prices = {
+      full: parseInt(settings.price_full) || DEFAULT_PRICES.full,
+      mat: parseInt(settings.price_mat) || DEFAULT_PRICES.mat,
+      field: parseInt(settings.price_field) || DEFAULT_PRICES.field,
+      mission: parseInt(settings.price_mission) || DEFAULT_PRICES.mission,
+    };
+
+    // Per-item discounts from settings (fallback to global promo_percent)
+    var globalPct = parseInt(settings.promo_percent) || 0;
+    var discounts = promoActive
+      ? {
+          full:
+            parseInt(settings.discount_full) >= 0
+              ? parseInt(settings.discount_full)
+              : globalPct,
+          mat:
+            parseInt(settings.discount_mat) >= 0
+              ? parseInt(settings.discount_mat)
+              : globalPct,
+          field:
+            parseInt(settings.discount_field) >= 0
+              ? parseInt(settings.discount_field)
+              : globalPct,
+          mission:
+            parseInt(settings.discount_mission) >= 0
+              ? parseInt(settings.discount_mission)
+              : globalPct,
+        }
+      : { full: 0, mat: 0, field: 0, mission: 0 };
+
+    // Max discount for banner
+    var maxDiscount = promoActive
+      ? Math.max(
+          discounts.full,
+          discounts.mat,
+          discounts.field,
+          discounts.mission,
+        )
+      : 0;
+
+    return {
+      promoActive,
+      promoEndDate,
+      prices,
+      discounts,
+      maxDiscount,
+      settings,
+    };
   } catch (err) {
+    console.error(err);
     return {
       promoActive: false,
-      promoPercent: 0,
       promoEndDate: null,
+      prices: DEFAULT_PRICES,
+      discounts: DEFAULT_DISCOUNTS,
+      maxDiscount: 0,
       settings: {},
     };
   }
@@ -190,8 +218,8 @@ router.get("/", async (req, res) => {
       eventDate: null,
       eventDateEnd: null,
       eventDateLabel: null,
-      registrationOpenDate: null, // ← เพิ่ม
-      registrationCloseDate: null, // ← เพิ่ม
+      registrationOpenDate: null,
+      registrationCloseDate: null,
     });
   }
 });
@@ -235,9 +263,7 @@ router.get("/register", async (req, res) => {
 router.get("/register/:tier", async (req, res) => {
   const validTiers = ["beginner", "intermediate", "advance"];
   const tier = req.params.tier;
-  if (!validTiers.includes(tier)) {
-    return res.redirect("/register");
-  }
+  if (!validTiers.includes(tier)) return res.redirect("/register");
   try {
     const settingsResult = await query("SELECT * FROM settings", []);
     const settings = {};
@@ -250,7 +276,7 @@ router.get("/register/:tier", async (req, res) => {
       success: false,
       teamId: null,
       teamName: null,
-      tier: tier,
+      tier,
       formData: {},
       errorMsg: null,
       registrationOpen: settings.registration_open !== "false",
@@ -263,7 +289,7 @@ router.get("/register/:tier", async (req, res) => {
       success: false,
       teamId: null,
       teamName: null,
-      tier: tier,
+      tier,
       formData: {},
       errorMsg: null,
       registrationOpen: true,
@@ -301,20 +327,18 @@ router.post("/register", async (req, res) => {
       registrationOpen: true,
     });
   }
-
   try {
-    const prefix =
-      tier === "beginner" ? "B" : tier === "intermediate" ? "I" : "A";
     const countResult = await query(
       "SELECT MAX(CAST(SUBSTRING(id FROM 2 FOR 3) AS INT)) as maxnum FROM teams WHERE tier = $1",
       [tier],
     );
     const num = (parseInt(countResult.rows[0].maxnum) || 0) + 1;
+    const prefix =
+      tier === "beginner" ? "B" : tier === "intermediate" ? "I" : "A";
     const id = "T" + String(num).padStart(3, "0") + "_" + prefix;
-
     await query(
       `INSERT INTO teams (id, name, institution, phone, coach, tier, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob, status)
-   VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
       [
         id,
         name.trim(),
@@ -331,14 +355,13 @@ router.post("/register", async (req, res) => {
         "pending",
       ],
     );
-
     return res.render("register/index", {
       layout: false,
       title: "สมัครแข่งขัน",
       success: true,
       teamId: id,
       teamName: name,
-      tier: tier,
+      tier,
       formData: req.body,
       errorMsg: null,
       registrationOpen: true,
@@ -431,7 +454,6 @@ router.get("/competition", async (req, res) => {
   const view = req.query.view || "board";
   const activeTier = req.query.tier || "beginner";
   const timeStr = new Date().toLocaleTimeString("th-TH");
-
   try {
     if (view === "teams") {
       const result = await query(
@@ -451,27 +473,29 @@ router.get("/competition", async (req, res) => {
     } else {
       const [ranked, maxScoreResult] = await Promise.all([
         query(
-  `SELECT t.id, t.name, t.institution, t.tier,
-    CASE WHEN s1.is_published = true THEN s1.total_score ELSE NULL END as r1_score,
-    CASE WHEN s1.is_published = true THEN s1.time_seconds ELSE NULL END as r1_time,
-    CASE WHEN s2.is_published = true THEN s2.total_score ELSE NULL END as r2_score,
-    CASE WHEN s2.is_published = true THEN s2.time_seconds ELSE NULL END as r2_time,
-    GREATEST(
-      CASE WHEN s1.is_published = true THEN COALESCE(s1.total_score,0) ELSE 0 END,
-      CASE WHEN s2.is_published = true THEN COALESCE(s2.total_score,0) ELSE 0 END
-    ) as best_score,
-    LEAST(
-      CASE WHEN s1.is_published = true THEN COALESCE(s1.time_seconds,999999) ELSE 999999 END,
-      CASE WHEN s2.is_published = true THEN COALESCE(s2.time_seconds,999999) ELSE 999999 END
-    ) as best_time
-  FROM teams t
-  LEFT JOIN scores s1 ON s1.team_id = t.id AND s1.round = 1
-  LEFT JOIN scores s2 ON s2.team_id = t.id AND s2.round = 2
-  WHERE t.tier = $1 AND t.status = 'approved'
-  ORDER BY best_score DESC, best_time ASC`,
-  [activeTier],
-),
-        query("SELECT SUM(max_score) as total FROM criteria WHERE tier = $1", [activeTier]),
+          `SELECT t.id, t.name, t.institution, t.tier,
+            CASE WHEN s1.is_published = true THEN s1.total_score ELSE NULL END as r1_score,
+            CASE WHEN s1.is_published = true THEN s1.time_seconds ELSE NULL END as r1_time,
+            CASE WHEN s2.is_published = true THEN s2.total_score ELSE NULL END as r2_score,
+            CASE WHEN s2.is_published = true THEN s2.time_seconds ELSE NULL END as r2_time,
+            GREATEST(
+              CASE WHEN s1.is_published = true THEN COALESCE(s1.total_score,0) ELSE 0 END,
+              CASE WHEN s2.is_published = true THEN COALESCE(s2.total_score,0) ELSE 0 END
+            ) as best_score,
+            LEAST(
+              CASE WHEN s1.is_published = true THEN COALESCE(s1.time_seconds,999999) ELSE 999999 END,
+              CASE WHEN s2.is_published = true THEN COALESCE(s2.time_seconds,999999) ELSE 999999 END
+            ) as best_time
+          FROM teams t
+          LEFT JOIN scores s1 ON s1.team_id = t.id AND s1.round = 1
+          LEFT JOIN scores s2 ON s2.team_id = t.id AND s2.round = 2
+          WHERE t.tier = $1 AND t.status = 'approved'
+          ORDER BY best_score DESC, best_time ASC`,
+          [activeTier],
+        ),
+        query("SELECT SUM(max_score) as total FROM criteria WHERE tier = $1", [
+          activeTier,
+        ]),
       ]);
       return res.render("public/competition", {
         layout: false,
@@ -504,28 +528,31 @@ router.get("/docs", (req, res) => {
   return res.render("public/docs", {
     layout: "layouts/public",
     title: "เอกสาร",
-    docs: [], // ← เพิ่ม
+    docs: [],
   });
 });
 
 // ─── GET /preorder ────────────────────────────────────────────────────────────
 router.get("/preorder", async (req, res) => {
   const promo = await getPromoSettings();
+  const tiers = buildTiers(promo.prices, promo.discounts);
   return res.render("preorder/index", {
     layout: false,
     success: false,
     errorMsg: null,
     formData: {},
     promoActive: promo.promoActive,
-    promoPercent: promo.promoPercent,
     promoEndDate: promo.promoEndDate,
-    tiers: buildTiers(promo.promoPercent),
+    maxDiscount: promo.maxDiscount,
+    tiers,
   });
 });
 
 // ─── POST /preorder ───────────────────────────────────────────────────────────
 router.post("/preorder", async (req, res) => {
   const promo = await getPromoSettings();
+  const tiers = buildTiers(promo.prices, promo.discounts);
+
   const {
     school_name,
     contact_name,
@@ -545,9 +572,9 @@ router.post("/preorder", async (req, res) => {
     errorMsg: null,
     formData: req.body,
     promoActive: promo.promoActive,
-    promoPercent: promo.promoPercent,
     promoEndDate: promo.promoEndDate,
-    tiers: buildTiers(promo.promoPercent),
+    maxDiscount: promo.maxDiscount,
+    tiers,
   };
 
   if (!school_name || !contact_name || !phone || !items_json) {
@@ -555,20 +582,15 @@ router.post("/preorder", async (req, res) => {
     return res.render("preorder/index", renderData);
   }
 
-  var PRICES = {
-    "beginner-full": 3450,
-    "beginner-mat": 2850,
-    "beginner-field": 625,
-    "beginner-mission": 600,
-    "intermediate-full": 3450,
-    "intermediate-mat": 2850,
-    "intermediate-field": 625,
-    "intermediate-mission": 600,
-    "advance-full": 3450,
-    "advance-mat": 2850,
-    "advance-field": 625,
-    "advance-mission": 600,
-  };
+  // Build price lookup from tiers (single source of truth)
+  var PRICES_ORIG = {};
+  var PRICES_FINAL = {};
+  tiers.forEach(function (tier) {
+    tier.items.forEach(function (item) {
+      PRICES_ORIG[item.key] = item.price;
+      PRICES_FINAL[item.key] = item.promoPrice;
+    });
+  });
 
   var items = {};
   try {
@@ -579,10 +601,9 @@ router.post("/preorder", async (req, res) => {
 
   var totalPrice = 0;
   Object.keys(items).forEach(function (k) {
-    var origPrice = PRICES[k] || 0;
     var finalPrice = promo.promoActive
-      ? Math.round(origPrice * (1 - promo.promoPercent / 100))
-      : origPrice;
+      ? PRICES_FINAL[k] || 0
+      : PRICES_ORIG[k] || 0;
     totalPrice += finalPrice * (parseInt(items[k]) || 1);
   });
 
@@ -610,9 +631,9 @@ router.post("/preorder", async (req, res) => {
       errorMsg: null,
       formData: {},
       promoActive: promo.promoActive,
-      promoPercent: promo.promoPercent,
       promoEndDate: promo.promoEndDate,
-      tiers: buildTiers(promo.promoPercent),
+      maxDiscount: promo.maxDiscount,
+      tiers,
     });
   } catch (err) {
     console.error(err);
@@ -620,7 +641,5 @@ router.post("/preorder", async (req, res) => {
     return res.render("preorder/index", renderData);
   }
 });
-
-
 
 module.exports = router;

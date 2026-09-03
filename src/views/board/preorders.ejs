@@ -124,21 +124,26 @@
                                         {day:'numeric',month:'short',year:'numeric'}) %>
                                 </td>
                                 <td>
-                                    <form method="POST" action="/board/preorders/<%= p.id %>/status">
-                                        <select name="status" class="fi"
-                                            style="font-size:12px;padding:4px 8px;width:auto"
-                                            onchange="this.form.submit()">
-                                            <option value="pending" <%=p.status==='pending' ?'selected':'' %>>รอยืนยัน
-                                            </option>
-                                            <option value="confirmed" <%=p.status==='confirmed' ?'selected':'' %>
-                                                >ยืนยันแล้ว</option>
-                                            <option value="shipped" <%=p.status==='shipped' ?'selected':'' %>>จัดส่งแล้ว
-                                            </option>
-                                            <option value="cancelled" <%=p.status==='cancelled' ?'selected':'' %>>ยกเลิก
-                                            </option>
-                                        </select>
-                                    </form>
+                                    <div style="display:flex;align-items:center;gap:6px">
+                                        <form method="POST" action="/board/preorders/<%= p.id %>/status">
+                                            <select name="status" class="fi" style="font-size:12px;padding:4px 8px;width:auto"
+                                                onchange="this.form.submit()">
+                                                <option value="pending" <%=p.status==='pending' ?'selected':'' %>>รอยืนยัน</option>
+                                                <option value="confirmed" <%=p.status==='confirmed' ?'selected':'' %>>ยืนยันแล้ว</option>
+                                                <option value="shipped" <%=p.status==='shipped' ?'selected':'' %>>จัดส่งแล้ว</option>
+                                                <option value="cancelled" <%=p.status==='cancelled' ?'selected':'' %>>ยกเลิก</option>
+                                            </select>
+                                        </form>
+                                        <form method="POST" action="/board/preorders/<%= p.id %>?_method=DELETE"
+                                            onsubmit="return confirm('ลบ Pre-order #<%= p.id %> ใช่ไหม?')">
+                                            <button type="submit" class="btn btn-sm"
+                                                style="background:#FEF2F2;color:#DC2626;border:1px solid #FECDD3;white-space:nowrap">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
+                                
                             </tr>
                             <% }); %>
             </tbody>
