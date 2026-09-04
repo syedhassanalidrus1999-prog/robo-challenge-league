@@ -1736,16 +1736,14 @@
                                       <% if (promoActive && item.hasDiscount) { %>
                                         <div class="price-discount-badge">-<%= item.discountPct %>%</div>
                                         <div class="price-original">
-                                          <%= item.priceFormatted %>.-
+                                          ฿<%= item.priceFormatted %>
                                         </div>
                                         <div class="price-promo">
-                                          <%= item.promoPriceFormatted %>.- <span
-                                              style="font-size:10px;font-weight:600;color:#94A3B8">บาท</span>
+                                          ฿<%= item.promoPriceFormatted %> 
                                         </div>
                                         <% } else { %>
                                           <div class="price-normal" style="color:<%= t.accent %>">
-                                            <%= item.priceFormatted %>.- <span
-                                                style="font-size:10px;font-weight:600;color:#94A3B8">บาท</span>
+                                            ฿<%= item.priceFormatted %>.- 
                                           </div>
                                           <% } %>
                                     </div>
@@ -1874,12 +1872,12 @@
                                           style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
                                           <span style="color:#64748B">ราคาก่อนลด</span><span
                                             style="color:#94A3B8;text-decoration:line-through"
-                                            id="summary-original">0.-</span>
+                                            id="summary-original">฿0</span>
                                         </div>
                                         <div
                                           style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px">
                                           <span style="color:#DC2626;font-weight:700">ส่วนลดรวม</span><span
-                                            style="color:#DC2626;font-weight:700" id="summary-discount">-0.-</span>
+                                            style="color:#DC2626;font-weight:700" id="summary-discount">-฿0</span>
                                         </div>
                                         <% } %>
                                           <div
@@ -1889,7 +1887,7 @@
                                           </div>
                                           <div class="summary-total-row">
                                             <span class="summary-total-label">ยอดรวมทั้งสิ้น</span><span
-                                              class="summary-total-price" id="summary-total">0.-</span>
+                                              class="summary-total-price" id="summary-total">฿0</span>
                                           </div>
                                           <button type="submit" class="btn-submit" id="submitBtn" disabled>
                                             <i class="ti ti-shopping-bag"></i> ยืนยันการสั่งซื้อ (Pre-order)
@@ -1977,23 +1975,23 @@
                     var keys = Object.keys(checkedItems);
                     if (keys.length === 0) {
                       document.getElementById('summary-items').innerHTML = '<div class="summary-empty"><i class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>';
-                      document.getElementById('summary-total').textContent = '0.-';
-                      if (document.getElementById('summary-original')) document.getElementById('summary-original').textContent = '0.-';
-                      if (document.getElementById('summary-discount')) document.getElementById('summary-discount').textContent = '-0.-';
+                      document.getElementById('summary-total').textContent = '฿0';
+                      if (document.getElementById('summary-original')) document.getElementById('summary-original').textContent = '฿0';
+                      if (document.getElementById('summary-discount')) document.getElementById('summary-discount').textContent = '-฿0';
                       document.getElementById('submitBtn').disabled = true; document.getElementById('items_json').value = ''; return;
                     }
                     var totalOriginal = 0, totalFinal = 0, html = '';
                     keys.forEach(function (id) {
                       var qty = checkedItems[id]; var origPrice = PRICES_ORIGINAL[id] || 0; var finalPrice = PROMO_ACTIVE ? (PRICES_FINAL[id] || 0) : origPrice;
                       totalOriginal += origPrice * qty; totalFinal += finalPrice * qty;
-                      html += '<div class="summary-line"><div><div class="summary-line-name">' + (NAMES[id] || id) + '</div><div class="summary-line-qty">' + qty + ' ชุด x ' + finalPrice.toLocaleString() + ' บาท</div></div><div class="summary-line-price">' + (finalPrice * qty).toLocaleString() + '.-</div></div>';
+                      html += '<div class="summary-line"><div><div class="summary-line-name">' + (NAMES[id] || id) + '</div><div class="summary-line-qty">' + qty + ' ชุด x ' + finalPrice.toLocaleString() + ' บาท</div></div><div class="summary-line-price">฿' + (finalPrice * qty).toLocaleString() + '</div></div>';
                     });
                     document.getElementById('summary-items').innerHTML = html;
                     var grandTotal = totalFinal + SHIPPING_FEE;
-                    document.getElementById('summary-total').textContent = grandTotal.toLocaleString() + '.-';
-                    if (document.getElementById('summary-shipping')) document.getElementById('summary-shipping').textContent = SHIPPING_FEE > 0 ? '+' + SHIPPING_FEE.toLocaleString() + '.-' : 'ฟรี';
-                    if (document.getElementById('summary-original')) document.getElementById('summary-original').textContent = totalOriginal.toLocaleString() + '.-';
-                    if (document.getElementById('summary-discount')) document.getElementById('summary-discount').textContent = '-' + (totalOriginal - totalFinal).toLocaleString() + '.-';
+                    document.getElementById('summary-total').textContent = '฿' + grandTotal.toLocaleString();
+                    if (document.getElementById('summary-shipping')) document.getElementById('summary-shipping').textContent = SHIPPING_FEE > 0 ? '+' + '฿' + SHIPPING_FEE.toLocaleString() : 'ฟรี';
+                    if (document.getElementById('summary-original')) document.getElementById('summary-original').textContent = '฿' + totalOriginal.toLocaleString();
+                    if (document.getElementById('summary-discount')) document.getElementById('summary-discount').textContent = '-' + '฿' + (totalOriginal - totalFinal).toLocaleString();
                     document.getElementById('submitBtn').disabled = false;
                     document.getElementById('items_json').value = JSON.stringify(checkedItems);
                   }
