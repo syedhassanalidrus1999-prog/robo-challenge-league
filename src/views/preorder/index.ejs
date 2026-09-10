@@ -1444,38 +1444,175 @@
       }
     }
 
+    /* =========================
+       PRE-ORDER SUCCESS STATE
+       ปรับเฉพาะหน้าสำเร็จเท่านั้น
+       ========================= */
     .success-wrap {
       min-height: 100vh;
-      padding: 116px 24px 48px;
+      padding: 112px 24px 48px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at 18% 20%, rgba(34, 197, 94, .07), transparent 28%), radial-gradient(circle at 82% 80%, rgba(37, 99, 235, .06), transparent 30%), var(--bg);
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(59, 130, 246, .10), transparent 30%),
+        radial-gradient(circle at 84% 78%, rgba(37, 99, 235, .09), transparent 32%),
+        linear-gradient(180deg, #F8FAFC 0%, #F5F7FB 100%);
+    }
+
+    .success-wrap::before,
+    .success-wrap::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(2px);
+    }
+
+    .success-wrap::before {
+      width: 260px;
+      height: 260px;
+      left: -110px;
+      top: 30%;
+      background: rgba(96, 165, 250, .055);
+    }
+
+    .success-wrap::after {
+      width: 320px;
+      height: 320px;
+      right: -150px;
+      bottom: 5%;
+      background: rgba(37, 99, 235, .045);
     }
 
     .success-card {
-      width: min(100%, 520px);
-      padding: 38px 36px 34px;
+      position: relative;
+      z-index: 1;
+      width: min(100%, 500px);
+      padding: 30px 34px 32px;
       text-align: center;
+      background: rgba(255, 255, 255, .96);
+      border: 1px solid rgba(226, 232, 240, .95);
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, .10);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .success-visual {
+      width: 116px;
+      height: 116px;
+      margin: 0 auto 12px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: radial-gradient(circle, #EFF6FF 0%, #F8FBFF 68%, rgba(239, 246, 255, 0) 70%);
+    }
+
+    .success-visual::before {
+      content: '';
+      width: 58px;
+      height: 72px;
+      border: 3px solid #60A5FA;
+      border-radius: 9px;
       background: #fff;
-      border: 1px solid #E2E8F0;
-      border-radius: 20px;
-      box-shadow: 0 18px 50px rgba(15, 23, 42, .10);
+      transform: rotate(-5deg);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, .10);
+    }
+
+    .success-visual::after {
+      content: '✓';
+      position: absolute;
+      right: 20px;
+      bottom: 18px;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #2563EB;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      box-shadow: 0 7px 18px rgba(37, 99, 235, .25);
+    }
+
+    .success-visual-icon {
+      position: absolute;
+      z-index: 2;
+      color: #60A5FA;
+      font-size: 29px;
+      transform: translateY(-2px);
+    }
+
+    .success-title {
+      color: #0F172A;
+      font-size: 21px;
+      line-height: 1.35;
+      font-weight: 800;
+      margin-bottom: 13px;
+    }
+
+    .success-order-box {
+      margin: 0 auto 15px;
+      padding: 9px 18px 11px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #EFF6FF, #EAF2FF);
+      border: 1px solid #DBEAFE;
+    }
+
+    .success-order-label {
+      color: #64748B;
+      font-size: 11px;
+      line-height: 1.2;
+      margin-bottom: 1px;
+    }
+
+    .success-order-id {
+      color: #2563EB;
+      font-family: 'Kanit', sans-serif;
+      font-size: 38px;
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: 2px;
+    }
+
+    .success-note {
+      color: #64748B;
+      font-size: 12px;
+      line-height: 1.65;
+      margin: 0 auto 20px;
+    }
+
+    .success-note strong {
+      color: #334155;
+      font-weight: 800;
+    }
+
+    .success-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .success-card .btn-outline,
     .success-card .btn-solid {
-      min-height: 44px;
-      padding: 0 16px;
+      min-height: 46px;
+      padding: 0 18px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 7px;
-      border-radius: 10px;
+      border-radius: 11px;
       font-family: 'Sarabun', sans-serif;
       font-size: 14px;
       font-weight: 800;
-      transition: all .2s ease;
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
     }
 
     .success-card .btn-outline {
@@ -1485,31 +1622,63 @@
     }
 
     .success-card .btn-outline:hover {
-      background: #EFF6FF;
+      background: #F8FBFF;
       border-color: #93C5FD;
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, .08);
     }
 
     .success-card .btn-solid {
       color: #fff;
       background: linear-gradient(135deg, #3478F6, #2563EB);
       border: 1px solid transparent;
-      box-shadow: 0 6px 14px rgba(37, 99, 235, .18);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, .20);
     }
 
     .success-card .btn-solid:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 9px 20px rgba(37, 99, 235, .25);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(37, 99, 235, .28);
     }
 
     @media(max-width:640px) {
       .success-wrap {
-        padding: 92px 16px 32px;
+        padding: 88px 16px 30px;
       }
 
       .success-card {
-        padding: 30px 20px 26px;
-        border-radius: 18px;
+        width: min(100%, 430px);
+        padding: 26px 20px 25px;
+        border-radius: 19px;
+      }
+
+      .success-visual {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 9px;
+      }
+
+      .success-title {
+        font-size: 19px;
+      }
+
+      .success-order-id {
+        font-size: 34px;
+      }
+
+      .success-note {
+        font-size: 11px;
+        margin-bottom: 17px;
+      }
+
+      .success-actions {
+        gap: 8px;
+      }
+
+      .success-card .btn-outline,
+      .success-card .btn-solid {
+        min-height: 44px;
+        padding: 0 15px;
+        font-size: 13px;
       }
     }
   </style>
@@ -1571,20 +1740,24 @@
   <% if (success) { %>
     <div class="success-wrap">
       <div class="success-card">
-        <div
-          style="width:80px;height:80px;border-radius:50%;background:#F0FDF4;margin:0 auto 20px;display:grid;place-items:center;font-size:40px">
-          &#9989;</div>
-        <div style="font-family:'Kanit',sans-serif;font-size:24px;font-weight:700;color:#0F172A;margin-bottom:8px">
-          Pre-order สำเร็จ!</div>
-        <div style="font-size:18px;color:#64748B;line-height:1.7;margin-bottom:20px">
-          จัดส่งภายใน <strong>วันที่ 20 กันยายน 2569</strong> (หลังจากชำระเงิน)<br>
-          วันทำการ <strong>ทุกวัน ยกเว้นวันศุกร์</strong>
+        <div class="success-visual" aria-hidden="true">
+          <i class="ti ti-file-check success-visual-icon"></i>
         </div>
-        <div
-          style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:14px;margin-bottom:24px;font-size:13px;color:#15803D">
-          <i class="ti ti-phone"></i> สอบถาม: <strong>081-882-0502</strong>
+
+        <div class="success-title">Pre-order ของคุณสำเร็จแล้ว</div>
+
+        <div class="success-order-box">
+          <div class="success-order-label">รหัส Pre-order ของคุณ</div>
+          <div class="success-order-id">#<%= orderId %>
+          </div>
         </div>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+
+        <div class="success-note">
+          📸 แคปหน้าจอนี้แล้วส่งในไลน์ <strong>@rcl.robo</strong><br>
+          เพื่อชำระเงินและยืนยัน Pre-order
+        </div>
+
+        <div class="success-actions">
           <a href="/preorder" class="btn-outline"><i class="ti ti-plus"></i> Pre-order เพิ่ม</a>
           <a href="/" class="btn-solid"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
         </div>
@@ -1739,11 +1912,11 @@
                                           ฿<%= item.priceFormatted %>
                                         </div>
                                         <div class="price-promo">
-                                          ฿<%= item.promoPriceFormatted %> 
+                                          ฿<%= item.promoPriceFormatted %>
                                         </div>
                                         <% } else { %>
                                           <div class="price-normal" style="color:<%= t.accent %>">
-                                            ฿<%= item.priceFormatted %>.- 
+                                            ฿<%= item.priceFormatted %>.-
                                           </div>
                                           <% } %>
                                     </div>

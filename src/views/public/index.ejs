@@ -1169,6 +1169,177 @@
       margin-bottom: 42px
     }
 
+    /* REGISTRATION INFO — ปรับให้เป็นแถบข้อมูลแบบ Reference */
+    .registration-info {
+      width: min(100%, 1060px) !important;
+      min-height: 94px;
+      margin: 22px auto 28px !important;
+      padding: 0 !important;
+      display: grid !important;
+      grid-template-columns: 235px repeat(3, minmax(0, 1fr)) !important;
+      gap: 0 !important;
+      align-items: stretch;
+      overflow: hidden;
+      background: #fff !important;
+      border: 1px solid #E2E8F0 !important;
+      border-radius: 20px !important;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, .07) !important;
+    }
+
+    .registration-info .registration-label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 28px;
+      color: #fff;
+      background: linear-gradient(135deg, #1554C7, #2563EB);
+      overflow: hidden;
+    }
+
+    .registration-info .registration-label::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -28px;
+      width: 48px;
+      height: 100%;
+      background: #2563EB;
+      clip-path: polygon(45% 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    .registration-info .registration-label-icon {
+      position: relative;
+      z-index: 1;
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      transform: rotate(-8deg);
+    }
+
+    .registration-info .registration-label-text {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+
+    .registration-info .registration-label-title {
+      font-family: 'Kanit', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .registration-info .registration-label-sub {
+      margin-top: 5px;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      opacity: .9;
+      white-space: nowrap;
+    }
+
+    .registration-info .registration-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 20px;
+      text-align: left;
+    }
+
+    .registration-info .registration-item+.registration-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 22px;
+      bottom: 22px;
+      width: 1px;
+      background: #DCE4EE;
+    }
+
+    .registration-info .registration-item-icon {
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #1554C7;
+      background: #EFF6FF;
+      font-size: 23px;
+    }
+
+    .registration-info .registration-item-content {
+      min-width: 0;
+    }
+
+    .registration-info .registration-item-label {
+      color: #64748B;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .registration-info .registration-item-value {
+      margin-top: 3px;
+      color: #2563EB;
+      font-family: 'Kanit', sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1.25;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 700px) {
+      .registration-info {
+        grid-template-columns: 1fr !important;
+        margin: 18px auto 24px !important;
+        border-radius: 16px !important;
+      }
+
+      .registration-info .registration-label {
+        min-height: 72px;
+        justify-content: center;
+        padding: 14px 18px;
+      }
+
+      .registration-info .registration-label::after {
+        display: none;
+      }
+
+      .registration-info .registration-item {
+        justify-content: flex-start;
+        padding: 12px 18px;
+      }
+
+      .registration-info .registration-item+.registration-item::before {
+        left: 18px;
+        right: 18px;
+        top: 0;
+        bottom: auto;
+        width: auto;
+        height: 1px;
+      }
+
+      .registration-info .registration-item-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 20px;
+      }
+
+      .registration-info .registration-item-value {
+        font-size: 18px;
+      }
+    }
+
     .tiers-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1610,10 +1781,10 @@
 
 
     .sponsors-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
-    justify-content: center;
-}
-    
+      grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
+      justify-content: center;
+    }
+
 
 
     /* =========================================================
@@ -1924,10 +2095,10 @@
       margin-bottom: 30px;
     }
 
-    .contact-brand-logo:hover{
-    transform: translateY(-2px);
-    transition: .2s ease;
-    filter: drop-shadow(0 0 10px rgba(126, 194, 242, 0.5));
+    .contact-brand-logo:hover {
+      transform: translateY(-2px);
+      transition: .2s ease;
+      filter: drop-shadow(0 0 10px rgba(126, 194, 242, 0.5));
     }
 
     .contact-brand-logo img {
@@ -3814,7 +3985,7 @@
       grid-column: 1 !important;
       grid-row: 1 / 4 !important;
       width: auto !important;
-      height: 300px !important;
+      height: 250px !important;
       max-width: 100% !important;
       object-fit: contain !important;
       margin: 0 !important;
@@ -3874,7 +4045,7 @@
       grid-row: 3 !important;
       width: fit-content !important;
       max-width: 100% !important;
-      margin: 10px auto 0 !important;
+      margin: auto 0 !important;
       padding: 0 !important;
       white-space: nowrap !important;
       text-align: center !important;
@@ -4944,8 +5115,9 @@
       }
 
       .partners-grid {
-grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
-      justify-content: center;      }
+        grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
+        justify-content: center;
+      }
 
       .sponsors-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -6339,6 +6511,49 @@ grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
 
           <% } %>
 
+            <!-- ข้อมูลสำคัญในการสมัคร -->
+            <div class="registration-info">
+              <div class="registration-label">
+                <div class="registration-label-icon">
+                  <i class="ti ti-ticket"></i>
+                </div>
+                <div class="registration-label-text">
+                  <div class="registration-label-title">ค่าลงทะเบียน</div>
+                  <div class="registration-label-sub">ต่อทีม / การแข่งขัน</div>
+                </div>
+              </div>
+
+              <div class="registration-item">
+                <div class="registration-item-icon">
+                  <i class="ti ti-wallet"></i>
+                </div>
+                <div class="registration-item-content">
+                  <div class="registration-item-label">ค่าลงทะเบียน</div>
+                  <div class="registration-item-value">2,000 บาท/ทีม</div>
+                </div>
+              </div>
+
+              <div class="registration-item">
+                <div class="registration-item-icon">
+                  <i class="ti ti-users"></i>
+                </div>
+                <div class="registration-item-content">
+                  <div class="registration-item-label">สมาชิกในทีม</div>
+                  <div class="registration-item-value">2–3 คน/ทีม</div>
+                </div>
+              </div>
+
+              <div class="registration-item">
+                <div class="registration-item-icon">
+                  <i class="ti ti-file-description"></i>
+                </div>
+                <div class="registration-item-content">
+                  <div class="registration-item-label">ครูผู้ควบคุมทีม</div>
+                  <div class="registration-item-value">1 คน/ทีม</div>
+                </div>
+              </div>
+            </div>
+
             <!-- เพิ่มตรงนี้ก่อน <div class="tiers-grid"> -->
             <% var now=new Date(); var regOpenDate=registrationOpenDate ? new Date(registrationOpenDate) : null; var
               regCloseDate=registrationCloseDate ? new Date(registrationCloseDate) : null; var regNotYet=regOpenDate &&
@@ -6595,10 +6810,11 @@ grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
             <a class="contact-social" href="tel:0818820502" aria-label="โทรศัพท์">
               <i class="ti ti-phone"></i>
             </a>
-            <a class="contact-social" href="https://www.youtube.com/channel/UCcJGMXm7mCM4-ZMJi5MWETg" aria-label="youtube">
+            <a class="contact-social" href="https://www.youtube.com/channel/UCcJGMXm7mCM4-ZMJi5MWETg"
+              aria-label="youtube">
               <i class="ti ti-brand-youtube"></i>
             </a>
-            <a class="contact-social" href="https://line.me/R/ti/p/@robochampion" aria-label="line">
+            <a class="contact-social" href="https://line.me/R/ti/p/@rcl.robo" aria-label="line">
               <i class="ti ti-brand-line"></i>
             </a>
           </div>
@@ -6639,31 +6855,37 @@ grid-template-columns: repeat(auto-fit, minmax(150px, 220px));
           <div class="contact-details">
             <div class="contact-detail">
               <i class="ti ti-calendar-event"></i>
-              <span><strong>วันแข่งขัน</strong><% if (eventDate) { const startDate=new Date(eventDate); const endDate=eventDateEnd ? new Date(eventDateEnd) : null; %>
-              
-                <div class="event-date-range">
-                  <% if (endDate) { %>
-                    <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
-                      -
-                      <%= endDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
-                        <% } else { %>
-                          <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
-                            <% } %>
-                </div>
-              
-                <% } else { %>
+              <span><strong>วันแข่งขัน</strong>
+                <% if (eventDate) { const startDate=new Date(eventDate); const endDate=eventDateEnd ? new
+                  Date(eventDateEnd) : null; %>
+
+                  <div class="event-date-range">
+                    <% if (endDate) { %>
+                      <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                        -
+                        <%= endDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                          <% } else { %>
+                            <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric'
+                              }) %>
+                              <% } %>
+                  </div>
+
+                  <% } else { %>
                     ยังไม่กำหนด
-           
-              
-                  <% } %></span>
+
+
+                    <% } %>
+              </span>
             </div>
             <div class="contact-detail">
               <i class="ti ti-map-2"></i>
-              <span><strong>สถานที่จัดการแข่งขัน</strong><% if (eventDateLabel) { %>
-                <%= eventDateLabel %>
-                  <% } else { %>
-                    <span>ยังไม่กำหนด</span>
-                    <% } %></span>
+              <span><strong>สถานที่จัดการแข่งขัน</strong>
+                <% if (eventDateLabel) { %>
+                  <%= eventDateLabel %>
+                    <% } else { %>
+                      <span>ยังไม่กำหนด</span>
+                      <% } %>
+              </span>
             </div>
             <div class="contact-detail">
               <i class="ti ti-clock"></i>

@@ -540,6 +540,7 @@ router.get("/preorder", async (req, res) => {
     layout: false,
     success: false,
     errorMsg: null,
+    orderId: null,
     formData: {},
     promoActive: promo.promoActive,
     promoEndDate: promo.promoEndDate,
@@ -571,6 +572,7 @@ router.post("/preorder", async (req, res) => {
     layout: false,
     success: false,
     errorMsg: null,
+    orderId: null,
     formData: req.body,
     promoActive: promo.promoActive,
     promoEndDate: promo.promoEndDate,
@@ -630,9 +632,15 @@ router.post("/preorder", async (req, res) => {
         totalPrice,
       ],
     );
+    const newOrder = await query(
+      "SELECT id FROM preorders ORDER BY id DESC LIMIT 1",
+      [],
+    );
+    const orderId = newOrder.rows[0].id;
     return res.render("preorder/index", {
       layout: false,
       success: true,
+      orderId: orderId,
       errorMsg: null,
       formData: {},
       promoActive: promo.promoActive,
