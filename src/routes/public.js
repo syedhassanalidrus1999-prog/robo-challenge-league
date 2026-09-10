@@ -528,7 +528,15 @@ router.get("/docs", (req, res) => {
   return res.render("public/docs", {
     layout: "layouts/public",
     title: "เอกสาร",
-    docs: [],
+    docs: {
+      project: "/docs/โครงการROBO CHALLENGE LEAGUE 2026.pdf",
+      invitation: "/docs/หนังสือเชิญแข่งขันหุ่นยนต์RCL2026.pdf",
+      rules: {
+        beginner: null,
+        intermediate: null,
+        advance: null,
+      },
+    },
   });
 });
 

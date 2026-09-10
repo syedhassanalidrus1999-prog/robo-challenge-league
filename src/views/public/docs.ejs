@@ -1524,37 +1524,37 @@
             }
         })();
 
-            (function () {
-                var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
-                if (!toggle || !menu) return
-                function setOpen(open) {
-                    menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
-                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
-                    toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
-                    if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
+            if (!toggle || !menu) return
+            function setOpen(open) {
+                menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
+                toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
+                toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
+                if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
+            }
+            toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
+            var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
+            document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
+            window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
+        })();
+
+        // Scroll effect
+        (function () {
+            var topbar = document.querySelector('.topbar')
+            if (!topbar) return
+
+            function updateTopbar() {
+                if (window.scrollY > 10) {
+                    topbar.classList.add('scrolled')
+                } else {
+                    topbar.classList.remove('scrolled')
                 }
-                toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
-                var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
-                document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
-                window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
-            })();
+            }
 
-            // Scroll effect
-            (function () {
-                var topbar = document.querySelector('.topbar')
-                if (!topbar) return
-
-                function updateTopbar() {
-                    if (window.scrollY > 10) {
-                        topbar.classList.add('scrolled')
-                    } else {
-                        topbar.classList.remove('scrolled')
-                    }
-                }
-
-                window.addEventListener('scroll', updateTopbar, { passive: true })
-                updateTopbar()
-            })();
+            window.addEventListener('scroll', updateTopbar, { passive: true })
+            updateTopbar()
+        })();
 
         // Tier tabs
         function switchTier(tier, button) {
