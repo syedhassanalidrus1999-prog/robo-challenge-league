@@ -887,6 +887,11 @@
             background: #fff7ed;
         }
 
+        .doc-icon.yellow {
+            color: #f59e0b;
+            background: #fffbeb;
+        }
+
         .doc-info {
             flex: 1;
             min-width: 0;
@@ -1379,6 +1384,27 @@
                                                 <span class="coming-soon"><i class="ti ti-clock"></i> เร็ว ๆ นี้</span>
                                             </div>
                                             <% } %>
+
+                                    <% if (docs.basic) { %>
+                                                <a href="<%= docs.basic %>" target="_blank" class="doc-card" style="--accent:#f59e0b">
+                                                    <div class="doc-icon yellow"><i class="ti ti-book"></i></div>
+                                                    <div class="doc-info">
+                                                        <div class="doc-name">กติกาทั่วไป</div>
+                                                        <div class="doc-desc">กฎ กติกา และเกณฑ์การให้คะแนนสำหรับการแข่งขันทุกรุ่น</div>
+                                        
+                                                    </div>
+                                                    <div class="doc-btn"><i class="ti ti-download"></i> ดาวน์โหลด</div>
+                                                </a>
+                                                <% } else { %>
+                                                    <div class="doc-card">
+                                                        <div class="doc-icon yellow"><i class="ti ti-book"></i></div>
+                                                        <div class="doc-info">
+                                                            <div class="doc-name">กติกาทั่วไป</div>
+                                                            <div class="doc-desc">กฎ กติกา และเกณฑ์การให้คะแนนสำหรับการแข่งขันทุกรุ่น</div>
+                                                        </div>
+                                                        <span class="coming-soon"><i class="ti ti-clock"></i> เร็ว ๆ นี้</span>
+                                                    </div>
+                                                    <% } %>
                     </div>
                 </section>
 

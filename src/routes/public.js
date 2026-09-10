@@ -531,6 +531,7 @@ router.get("/docs", (req, res) => {
     docs: {
       project: "/docs/โครงการROBO CHALLENGE LEAGUE 2026.pdf",
       invitation: "/docs/หนังสือเชิญแข่งขันหุ่นยนต์RCL2026.pdf",
+      basic: "/docs/กติกาทั่วไป 2026.pdf",
       rules: {
         beginner: null,
         intermediate: null,
