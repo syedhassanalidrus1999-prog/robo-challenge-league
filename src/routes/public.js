@@ -306,6 +306,7 @@ router.post("/register", async (req, res) => {
     institution,
     phone,
     coach,
+    coach_email,
     student_1,
     student_1_dob,
     student_2,
@@ -337,14 +338,15 @@ router.post("/register", async (req, res) => {
       tier === "beginner" ? "B" : tier === "intermediate" ? "I" : "A";
     const id = "T" + String(num).padStart(3, "0") + "_" + prefix;
     await query(
-      `INSERT INTO teams (id, name, institution, phone, coach, tier, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+      `INSERT INTO teams (id, name, institution, phone, coach, coach_email, tier, student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob, status)
+   VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
       [
         id,
         name.trim(),
         institution.trim(),
         phone.trim(),
         coach ? coach.trim() : null,
+        coach_email ? coach_email.trim() : null,
         tier,
         student_1 ? student_1.trim() : null,
         student_1_dob || null,
@@ -574,7 +576,12 @@ router.post("/preorder", async (req, res) => {
     zipcode,
     note,
     items_json,
-    shipping_method
+    shipping_method,
+    receipt,
+    receipt_name,
+    receipt_address,
+    receipt_zipcode,
+    receipt_tax_id,
   } = req.body;
 
   var renderData = {
@@ -625,8 +632,8 @@ router.post("/preorder", async (req, res) => {
 
   try {
     await query(
-      `INSERT INTO preorders (school_name, contact_name, phone, email, address, district, province, zipcode, note, items_json, total_price)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+      `INSERT INTO preorders (school_name, contact_name, phone, email, address, district, province, zipcode, note, items_json, total_price, receipt, receipt_name, receipt_address, receipt_zipcode, receipt_tax_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [
         school_name.trim(),
         contact_name.trim(),
@@ -639,6 +646,11 @@ router.post("/preorder", async (req, res) => {
         note ? note.trim() : null,
         items_json,
         totalPrice,
+        receipt ? receipt.trim() : null,
+        receipt_name ? receipt_name.trim() : null,
+        receipt_address ? receipt_address.trim() : null,
+        receipt_zipcode ? receipt_zipcode.trim() : null,
+        receipt_tax_id ? receipt_tax_id.trim() : null,
       ],
     );
     const newOrder = await query(

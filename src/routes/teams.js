@@ -62,15 +62,15 @@ router.post('/', requireLogin, requireAdmin, async (req, res) => {
 router.put('/:id', requireLogin, requireAdmin, async (req, res) => {
   const { id } = req.params
   const tier = req.body.tier || req.query.tier || 'beginner'
-  const { name, institution, phone, coach, status, note,
+  const { name, institution, phone, coach, coach_email, status, note,
     student_1, student_1_dob, student_2, student_2_dob, student_3, student_3_dob } = req.body
   try {
     await query(
-      `UPDATE teams SET name=$1, institution=$2, phone=$3, coach=$4, tier=$5, status=$6, note=$7,
-        student_1=$8, student_1_dob=$9, student_2=$10, student_2_dob=$11,
-        student_3=$12, student_3_dob=$13 WHERE id=$14`,
+      `UPDATE teams SET name=$1, institution=$2, phone=$3, coach=$4, coach_email=$5, tier=$6, status=$7, note=$8,
+        student_1=$9, student_1_dob=$10, student_2=$11, student_2_dob=$12,
+        student_3=$13, student_3_dob=$14 WHERE id=$15`,
       [name.trim(), institution.trim(), phone ? phone.trim() : null,
-        coach ? coach.trim() : null, tier, status, note ? note.trim() : null,
+        coach ? coach.trim() : null, coach_email ? coach_email.trim() : null, tier, status, note ? note.trim() : null,
         student_1 ? student_1.trim() : null, student_1_dob || null,
         student_2 ? student_2.trim() : null, student_2_dob || null,
         student_3 ? student_3.trim() : null, student_3_dob || null,

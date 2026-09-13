@@ -1810,7 +1810,7 @@
                         <div class="field-spec-grid">
                           <div class="field-mini-spec"><strong>ขนาดสนาม</strong>235 × 114 ซม.</div>
                           <div class="field-mini-spec"><strong>ภารกิจ</strong>11 ภารกิจ</div>
-                          <div class="field-mini-spec"><strong>คะแนนสูงสุด</strong>270 คะแนน</div>
+                          <div class="field-mini-spec"><strong>คะแนนสูงสุด</strong>215 คะแนน</div>
                           <div class="field-mini-spec"><strong>เหมาะสำหรับ</strong>อายุไม่เกิน 9 ปี</div>
                           <div class="field-mini-spec"><strong>วัสดุ</strong>PPคุณภาพสูง กันน้ำ</div>
                           <div class="field-mini-spec"><strong>การใช้งาน</strong>ใช้ซ้ำได้ / ม้วนเก็บง่าย</div>
@@ -2004,12 +2004,55 @@
                                   </div>
                                 </div>
 
+                                <!-- ใบเสร็จ / ใบกำกับภาษี -->
+                                <div class="fg" style="margin-top:12px">
+                                  <div class="fl">ใบเสร็จ / ใบกำกับภาษี</div>
+                                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+                                    <label
+                                      style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff">
+                                      <input type="radio" name="receipt" value="no" checked onchange="updateReceipt(this.value)">
+                                      <span><b style="font-size:13px">ไม่รับใบเสร็จ</b></span>
+                                    </label>
+                                    <label
+                                      style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff">
+                                      <input type="radio" name="receipt" value="yes" onchange="updateReceipt(this.value)">
+                                      <span><b style="font-size:13px">รับใบเสร็จ</b></span>
+                                    </label>
+                                  </div>
+                                </div>
+                                
+                                <div id="receipt-section" style="display:none;margin-top:4px">
+                                  <div class="fg">
+                                    <div class="fl">ชื่อในใบเสร็จ *</div>
+                                    <input class="fi" name="receipt_name" id="receipt_name" placeholder="ชื่อบุคคล / นิติบุคคล"
+                                      value="<%= formData.receipt_name || '' %>">
+                                  </div>
+                                  <div class="fg">
+                                    <div class="fl">ที่อยู่ในใบเสร็จ *</div>
+                                    <textarea class="fi" name="receipt_address" id="receipt_address" placeholder="ที่อยู่สำหรับออกใบเสร็จ"
+                                      style="min-height:70px;resize:vertical"><%= formData.receipt_address || '' %></textarea>
+                                  </div>
+                                  <div class="form-grid-2">
+                                    <div class="fg" style="margin-bottom:0">
+                                      <div class="fl">รหัสไปรษณีย์</div>
+                                      <input class="fi" name="receipt_zipcode" id="receipt_zipcode" placeholder="XXXXX"
+                                        value="<%= formData.receipt_zipcode || '' %>">
+                                    </div>
+                                    <div class="fg" style="margin-bottom:0">
+                                      <div class="fl">เลขประจำตัวผู้เสียภาษี</div>
+                                      <input class="fi" name="receipt_tax_id" id="receipt_tax_id" placeholder="0000000000000" maxlength="13"
+                                        value="<%= formData.receipt_tax_id || '' %>">
+                                    </div>
+                                  </div>
+                                </div>
+
                                 <div class="fg" style="margin-top:12px">
                                   <div class="fl">หมายเหตุ (ไม่บังคับ)</div>
                                   <textarea class="fi" name="note" placeholder="ข้อมูลเพิ่มเติม"
                                     style="min-height:70px;resize:vertical"><%= formData.note || '' %></textarea>
                                 </div>
                               </div>
+                        
                               <div class="info-note">
                                 <i class="ti ti-info-circle" style="flex-shrink:0;margin-top:1px"></i>
                                 <span>กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน
@@ -2180,6 +2223,23 @@
                     var checked = document.querySelector('input[name="shipping_method"]:checked');
                     if (checked) updateShipping(checked.value);
                   })();
+
+                  function updateReceipt(val) {
+                      var section = document.getElementById('receipt-section');
+                      var nameInput = document.getElementById('receipt_name');
+                      var addrInput = document.getElementById('receipt_address');
+                      if (section) {
+                        section.style.display = val === 'yes' ? 'block' : 'none';
+                        if (nameInput) nameInput.required = val === 'yes';
+                        if (addrInput) addrInput.required = val === 'yes';
+                      }
+                    }
+
+                    // restore on page load
+                    (function () {
+                      var checked = document.querySelector('input[name="receipt"]:checked');
+                      if (checked) updateReceipt(checked.value);
+                    })();
                 </script>
 
                 <script>

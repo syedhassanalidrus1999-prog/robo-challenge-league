@@ -5983,33 +5983,70 @@
 
       <div class="event-date-card">
 
-        <!-- DATE -->
-        <div class="event-date-main">
-          <div class="event-date-icon">
-            <i class="ti ti-calendar"></i>
-          </div>
-          <div class="event-date-label">วันแข่งขัน</div>
-          <% if (eventDate) { %>
-            <div class="event-day-number">
-              <%= new Date(eventDate).toLocaleDateString('th-TH', {day:'numeric'}) %>
-            </div>
-            <div class="event-month">
-              <%= new Date(eventDate).toLocaleDateString('th-TH', {month:'long'}) %>
-            </div>
-            <% if (eventDateEnd) { %>
-              <div style="color:rgba(255,255,255,.7);font-size:13px;margin-top:4px">ถึง</div>
-              <div class="event-date-range">
-                <%= new Date(eventDateEnd).toLocaleDateString('th-TH', {day:'numeric', month:'long', year:'numeric'}) %>
-              </div>
-              <% } else { %>
-                <div class="event-date-range">
-                  <%= new Date(eventDate).toLocaleDateString('th-TH', {year:'numeric'}) %>
-                </div>
-                <% } %>
-                  <% } else { %>
-                    <div class="event-day-number" style="font-size:48px;letter-spacing:0">---</div>
-                    <% } %>
+      
+      <!-- DATE -->
+      <div class="event-date-main">
+        <div class="event-date-icon">
+          <i class="ti ti-calendar"></i>
         </div>
+      
+        <div class="event-date-label">วันแข่งขัน</div>
+      
+        <% if (eventDate) { const startDate=new Date(eventDate); const endDate=eventDateEnd ? new Date(eventDateEnd) : null;
+          const sameMonth=endDate && startDate.getMonth()===endDate.getMonth() &&
+          startDate.getFullYear()===endDate.getFullYear(); %>
+      
+          <% if (sameMonth) { %>
+      
+            <!-- กรณีวันเริ่มและวันจบอยู่เดือนเดียวกัน -->
+            <div class="event-day-number">
+              <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' }) %> - <%= endDate.toLocaleDateString('th-TH', {
+                  day: 'numeric' }) %>
+            </div>
+      
+            <div class="event-month">
+              <%= startDate.toLocaleDateString('th-TH', { month: 'long' }) %>
+            </div>
+      
+            <div class="event-date-range">
+              <%= startDate.toLocaleDateString('th-TH', { year: 'numeric' }) %>
+            </div>
+      
+            <% } else { %>
+      
+              <!-- กรณีคนละเดือน -->
+              <div class="event-day-number">
+                <%= startDate.toLocaleDateString('th-TH', { day: 'numeric' }) %>
+              </div>
+      
+              <div class="event-month">
+                <%= startDate.toLocaleDateString('th-TH', { month: 'long' }) %>
+              </div>
+      
+              <% if (endDate) { %>
+                <div style="color:rgba(255,255,255,.7);font-size:13px;margin-top:4px">
+                  ถึง
+                </div>
+      
+                <div class="event-date-range">
+                  <%= endDate.toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' , year: 'numeric' }) %>
+                </div>
+                <% } else { %>
+                  <div class="event-date-range">
+                    <%= startDate.toLocaleDateString('th-TH', { year: 'numeric' }) %>
+                  </div>
+                  <% } %>
+      
+                    <% } %>
+      
+                      <% } else { %>
+      
+                        <div class="event-day-number" style="font-size:48px;letter-spacing:0">
+                          ---
+                        </div>
+      
+                        <% } %>
+      </div>
 
         <!-- LOCATION -->
         <div class="event-location-main">
@@ -6581,8 +6618,8 @@
                     9 ปี</div>
                   <div class="tier-desc" style="font-size: 20px; font-family: kanit; color:#16A34A;">ประเภทหุ่นยนต์ :
                     Botzees</div>
-                  <span class="tier-badge green" style="font-size: 15px; font-family: kanit; color:#16A34A;"><i
-                      class="ti ti-trophy" aria-hidden="true"></i>คะแนนรวม 270 คะแนน</span>
+                  <span class="tier-badge green" style="font-size: 18px; font-family: kanit; color:#16A34A;"><i
+                      class="ti ti-trophy" aria-hidden="true"></i>คะแนนรวม 215 คะแนน</span>
                   <br>
                   <% if (regNotYet) { %>
                     <span class="tier-reg-btn green" style="opacity:.5;cursor:not-allowed;pointer-events:none">

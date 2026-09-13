@@ -593,6 +593,288 @@
                 width: 100%;
             }
         }
+
+
+        /* ===== Layout refinement ===== */
+        .reg-wrap {
+            max-width: 920px;
+            padding-top: 36px;
+        }
+
+        .reg-hero {
+            margin-bottom: 24px;
+        }
+
+        .reg-hero-title {
+            font-size: clamp(26px, 4vw, 32px);
+            letter-spacing: -.3px;
+        }
+
+        .reg-hero-sub {
+            margin-top: 3px;
+        }
+
+        .form-card {
+            padding: 30px;
+        }
+
+        .form-section-title {
+            margin-top: 2px;
+        }
+
+        .form-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .form-grid:has(.reg-field) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .fg,
+        .reg-field {
+            min-width: 0;
+        }
+
+        .fl,
+        .reg-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            letter-spacing: 0;
+            text-transform: none;
+            margin-bottom: 2px;
+        }
+
+        .fi,
+        .reg-input {
+            min-height: 44px;
+            padding: 10px 13px;
+            border-radius: 10px;
+        }
+
+        .member-block {
+            padding: 18px;
+            margin-bottom: 14px;
+            background: linear-gradient(180deg, #F8FAFC, #F6F8FB);
+        }
+
+        .member-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .member-label:before {
+            content: '✓';
+            width: 22px;
+            height: 22px;
+            border-radius: 7px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #DBEAFE;
+            color: #2563EB;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .registration-summary {
+            margin-top: 20px;
+            padding: 18px;
+            background: linear-gradient(135deg, #EFF6FF 0%, #F8FAFC 100%);
+            border: 1px solid #BFDBFE;
+            border-radius: 16px;
+        }
+
+        .summary-heading {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin-bottom: 14px;
+        }
+
+        .summary-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #DBEAFE;
+            color: #2563EB;
+            font-size: 20px;
+            flex: 0 0 auto;
+        }
+
+        .summary-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1D4ED8;
+        }
+
+        .summary-subtitle {
+            font-size: 11px;
+            color: #64748B;
+            margin-top: 1px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .summary-item {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 13px 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(15, 23, 42, .035);
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #64748B;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .summary-value {
+            font-size: 21px;
+            line-height: 1.15;
+            font-weight: 900;
+            color: #2563EB;
+        }
+
+        .summary-value small {
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .summary-note {
+            font-size: 10px;
+            color: #94A3B8;
+            margin-top: 3px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .form-actions .btn {
+            min-height: 44px;
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .form-actions .btn-primary {
+            min-width: 150px;
+        }
+
+        .tier-cards {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .tier-card {
+            min-height: 230px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 24px 18px;
+        }
+
+        .tier-desc {
+            min-height: 43px;
+        }
+
+        .tier-icon {
+            margin-bottom: 12px;
+        }
+
+        .success-card {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        @media (max-width:760px) {
+            .reg-wrap {
+                padding-top: 26px;
+            }
+
+            .form-card {
+                padding: 20px 16px;
+                border-radius: 18px;
+            }
+
+            .form-grid,
+            .form-grid:has(.reg-field) {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column-reverse;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+
+            .tier-cards {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .tier-card {
+                min-height: 0;
+                padding: 20px 16px;
+            }
+
+            .tier-desc {
+                min-height: 0;
+            }
+        }
+
+        @media (max-width:640px) {
+            .reg-topbar {
+                padding: 0 12px;
+            }
+
+            .reg-topbar>div:nth-child(2) {
+                font-size: 14px !important;
+            }
+
+            .reg-topbar .btn {
+                white-space: nowrap;
+            }
+
+            .success-banner {
+                padding: 26px 16px 22px;
+            }
+
+            .success-body {
+                padding: 18px 14px 22px;
+            }
+
+            .success-id {
+                font-size: 28px;
+                padding: 10px 18px;
+            }
+        }
     </style>
 </head>
 
@@ -634,7 +916,8 @@
                                 <div class="line-copy">แคปหน้าจอนี้ แล้วส่งผ่าน LINE พร้อมแจ้งรหัสทีมของคุณ</div>
                             </div>
                         </div>
-                        <div class="line-id">@rcl.robo</div>
+                        <a href="https://line.me/R/ti/p/@rcl.robo" target="_blank" class="side-link"><div class="line-id">@rcl.robo</div></a>
+                        
                     </div>
 
                     <div class="info-card">
@@ -659,9 +942,15 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="info-label">ชื่อโค้ช</div>
+                                <div class="info-label">ผู้ควบคุมทีม</div>
                                 <div class="info-value">
                                     <%= formData.coach || '—' %>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="info-label">อีเมลผู้ควบคุมทีม</div>
+                                <div class="info-value">
+                                    <%= formData.coach_email || '—' %>
                                 </div>
                             </div>
                         </div>
@@ -692,7 +981,8 @@
                     </div>
 
                     <div class="status-note"><span class="status-dot"></span>สถานะใบสมัครจะเปลี่ยนเป็น
-                        <strong>อนุมัติแล้ว</strong> หลังชำระค่าสมัครเรียบร้อย</div>
+                        <strong>อนุมัติแล้ว</strong> หลังชำระค่าสมัครเรียบร้อย
+                    </div>
                     <div class="action-row">
                         <a href="/register" class="btn btn-secondary"><i class="ti ti-plus"></i> สมัครทีมอื่น</a>
                         <a href="/" class="btn btn-primary"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
@@ -740,9 +1030,14 @@
                                             value="<%= typeof formData !== 'undefined' ? (formData.phone||'') : '' %>">
                                     </div>
                                     <div class="fg">
-                                        <div class="fl">ชื่อโคช</div><input class="fi" name="coach"
-                                            placeholder="ชื่อโคช"
+                                        <div class="fl">ชื่อผู้ควบคุมทีม</div><input class="fi" name="coach"
+                                            placeholder="ผู้ควบคุมทีม" required
                                             value="<%= typeof formData !== 'undefined' ? (formData.coach||'') : '' %>">
+                                    </div>
+                                    <div class="reg-field">
+                                        <label class="reg-label">อีเมลผู้ควบคุมทีม</label>
+                                        <input class="reg-input" type="email" name="coach_email"
+                                            placeholder="email@example.com" required value="<%= typeof formData !== 'undefined' ? (formData.coach_email || '') : '' %>">
                                     </div>
                                 </div>
 
@@ -750,54 +1045,79 @@
                                 <div class="form-section-title">สมาชิกทีม</div>
 
                                 <div class="member-block">
-                                    <div class="member-label">นักเรียนคนที่ 1</div>
+                                    <div class="member-label">ผู้แข่งขันคนที่ 1</div>
                                     <div class="form-grid">
                                         <div class="fg">
                                             <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_1"
-                                                placeholder="ชื่อ-นามสกุล"
+                                                placeholder="ชื่อ-นามสกุล" required
                                                 value="<%= typeof formData !== 'undefined' ? (formData.student_1||'') : '' %>">
                                         </div>
                                         <div class="fg">
                                             <div class="fl">วันเกิด</div><input class="fi" type="date"
-                                                name="student_1_dob"
+                                                name="student_1_dob" required
                                                 value="<%= typeof formData !== 'undefined' ? (formData.student_1_dob||'') : '' %>">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="member-block">
-                                    <div class="member-label">นักเรียนคนที่ 2</div>
+                                    <div class="member-label">ผู้แข่งขันคนที่ 2</div>
                                     <div class="form-grid">
                                         <div class="fg">
                                             <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_2"
-                                                placeholder="ชื่อ-นามสกุล"
+                                                placeholder="ชื่อ-นามสกุล" required
                                                 value="<%= typeof formData !== 'undefined' ? (formData.student_2||'') : '' %>">
                                         </div>
                                         <div class="fg">
                                             <div class="fl">วันเกิด</div><input class="fi" type="date"
-                                                name="student_2_dob"
+                                                name="student_2_dob" required
                                                 value="<%= typeof formData !== 'undefined' ? (formData.student_2_dob||'') : '' %>">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="member-block">
-                                    <div class="member-label">นักเรียนคนที่ 3</div>
+                                    <div class="member-label">ผู้แข่งขันคนที่ 3</div>
                                     <div class="form-grid">
                                         <div class="fg">
                                             <div class="fl">ชื่อ-นามสกุล</div><input class="fi" name="student_3"
-                                                placeholder="ชื่อ-นามสกุล"
+                                                placeholder="ชื่อ-นามสกุล" 
                                                 value="<%= typeof formData !== 'undefined' ? (formData.student_3||'') : '' %>">
                                         </div>
                                         <div class="fg">
                                             <div class="fl">วันเกิด</div><input class="fi" type="date"
-                                                name="student_3_dob"
+                                                name="student_3_dob" 
                                                 value="<%= typeof formData !== 'undefined' ? (formData.student_3_dob||'') : '' %>">
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="section-div"></div>
-                                <div
-                                    style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+                                <div class="registration-summary">
+                                    <div class="summary-heading">
+                                        <span class="summary-icon"><i class="ti ti-ticket"></i></span>
+                                        <div>
+                                            <div class="summary-title">ค่าลงทะเบียน</div>
+                                            <div class="summary-subtitle">รายละเอียดการสมัครต่อทีม</div>
+                                        </div>
+                                    </div>
+                                    <div class="summary-grid">
+                                        <div class="summary-item">
+                                            <div class="summary-label">ค่าลงทะเบียน</div>
+                                            <div class="summary-value">2,000 <small>บาท</small></div>
+                                            <div class="summary-note">ต่อทีม / การแข่งขัน</div>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-label">สมาชิกในทีม</div>
+                                            <div class="summary-value">2–3 <small>คน</small></div>
+                                            <div class="summary-note">ต่อทีม</div>
+                                        </div>
+                                        <div class="summary-item">
+                                            <div class="summary-label">ครูผู้ควบคุมทีม</div>
+                                            <div class="summary-value">1 <small>คน</small></div>
+                                            <div class="summary-note">ต่อทีม</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
                                     <a href="/register" class="btn btn-secondary"><i class="ti ti-arrow-left"></i>
                                         เลือกรุ่นอื่น</a>
                                     <button type="submit" class="btn btn-primary"><i class="ti ti-send"></i>

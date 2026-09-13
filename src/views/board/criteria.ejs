@@ -54,13 +54,14 @@
                             </td>
                             <td>
                                 <div class="action-row">
-                                    <button class="btn btn-secondary btn-sm" data-id="<%= c.id %>" data-name="<%= c.name %>" data-max="<%= c.max_score %>"
-                                        data-tier="<%= c.tier %>" data-type="<%= c.score_type || 'full_only' %>" data-partial="<%= c.score_partial || 0 %>"
-                                        onclick="openEditModalFromBtn(this)">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-id="<%= c.id %>"
+                                        data-name="<%= c.name %>" data-max="<%= c.max_score %>"
+                                        data-tier="<%= c.tier %>" data-type="<%= c.score_type || 'full_only' %>"
+                                        data-partial="<%= c.score_partial || 0 %>" onclick="openEditModalFromBtn(this)">
                                         <i class="ti ti-edit"></i> แก้ไข
                                     </button>
                                     <form method="POST"
-                                        action="/dashboard/criteria/<%= c.id %>?_method=DELETE&tier=<%= c.tier %>"
+                                        action="/board/criteria/<%= c.id %>?_method=DELETE&tier=<%= c.tier %>"
                                         onsubmit="return confirm('ลบภารกิจ <%= c.name %>?')">
                                         <button type="submit" class="btn btn-danger btn-sm"><i
                                                 class="ti ti-trash"></i></button>
@@ -92,7 +93,7 @@
                     </div>
                     <button class="modal-close" onclick="closeModal('addModal')"><i class="ti ti-x"></i></button>
                 </div>
-                <form method="POST" action="/dashboard/criteria">
+                <form method="POST" action="/board/criteria">
                     <div class="modal-body">
                         <input type="hidden" name="tier" id="add_tier">
                         <div class="fg" style="margin-bottom:12px">
@@ -143,7 +144,6 @@
                     <button class="modal-close" onclick="closeModal('editModal')"><i class="ti ti-x"></i></button>
                 </div>
                 <form id="editForm" method="POST">
-                    <input type="hidden" name="_method" value="PUT">
                     <input type="hidden" name="tier" id="edit_tier">
                     <div class="modal-body">
                         <div class="fg" style="margin-bottom:12px">
@@ -201,34 +201,18 @@
             }
 
             function openEditModalFromBtn(btn) {
-                    openCriteriaEditModal(
-                        btn.dataset.id,
-                        btn.dataset.name,
-                        btn.dataset.max,
-                        btn.dataset.tier,
-                        btn.dataset.type,
-                        btn.dataset.partial
-                    )
-                }
+                openCriteriaEditModal(
+                    btn.dataset.id,
+                    btn.dataset.name,
+                    btn.dataset.max,
+                    btn.dataset.tier,
+                    btn.dataset.type,
+                    btn.dataset.partial
+                )
+            }
 
-                function openCriteriaEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
-                    document.getElementById('editForm').action = '/dashboard/criteria/' + id + '?_method=PUT'
-                    document.getElementById('edit_name').value = name
-                    document.getElementById('edit_max').value = maxScore
-                    document.getElementById('edit_tier').value = tier
-                    document.getElementById('edit_score_partial').value = scorePartial || 0
-                    if (scoreType === 'both') {
-                        document.getElementById('edit_type_both').checked = true
-                        document.getElementById('edit_partial_row').style.display = 'block'
-                    } else {
-                        document.getElementById('edit_type_full').checked = true
-                        document.getElementById('edit_partial_row').style.display = 'none'
-                    }
-                    openModal('editModal')
-                }
-
-            function openEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
-                document.getElementById('editForm').action = '/dashboard/criteria/' + id + '?_method=PUT'
+            function openCriteriaEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
+                document.getElementById('editForm').action = '/board/criteria/' + id;
                 document.getElementById('edit_name').value = name
                 document.getElementById('edit_max').value = maxScore
                 document.getElementById('edit_tier').value = tier
@@ -242,4 +226,5 @@
                 }
                 openModal('editModal')
             }
+
         </script>
