@@ -98,12 +98,14 @@ router.post("/criteria", requireLogin, async (req, res) => {
   const { tier, name, max_score, score_type, score_partial } = req.body;
 
   try {
-    const countResult = await query(
-      "SELECT COUNT(*) as cnt FROM criteria WHERE tier = $1",
+    const missionResult = await query(
+      `SELECT COALESCE(MAX(mission), 0) AS max_mission
+   FROM criteria
+   WHERE tier = $1`,
       [tier],
     );
 
-    const nextMission = parseInt(countResult.rows[0].cnt) + 1;
+    const nextMission = parseInt(missionResult.rows[0].max_mission, 10) + 1;
 
     const sType = score_type === "both" ? "both" : "full_only";
 
