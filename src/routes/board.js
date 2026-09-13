@@ -94,6 +94,40 @@ router.get("/criteria", requireLogin, async (req, res) => {
   }
 });
 
+router.post("/criteria", requireLogin, async (req, res) => {
+  const { tier, name, max_score, score_type, score_partial } = req.body;
+
+  try {
+    const countResult = await query(
+      "SELECT COUNT(*) as cnt FROM criteria WHERE tier = $1",
+      [tier],
+    );
+
+    const nextMission = parseInt(countResult.rows[0].cnt) + 1;
+
+    const sType = score_type === "both" ? "both" : "full_only";
+
+    const sPartial = sType === "both" ? parseFloat(score_partial) || 0 : 0;
+
+    await query(
+      `INSERT INTO criteria
+       (tier, mission, name, max_score, score_type, score_partial)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [tier, nextMission, name.trim(), parseFloat(max_score), sType, sPartial],
+    );
+
+    req.flash("success", "เพิ่มภารกิจแล้ว");
+
+    res.redirect("/board/criteria?tier=" + tier);
+  } catch (err) {
+    console.error(err);
+
+    req.flash("error", "เพิ่มภารกิจไม่ได้");
+
+    res.redirect("/board/criteria?tier=" + tier);
+  }
+});
+
 router.post("/criteria/:id", requireLogin, async (req, res) => {
   const { name, max_score, tier, score_type, score_partial } = req.body;
 
