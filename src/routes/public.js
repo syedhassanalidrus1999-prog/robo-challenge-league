@@ -632,8 +632,8 @@ router.post("/preorder", async (req, res) => {
 
   try {
     await query(
-      `INSERT INTO preorders (school_name, contact_name, phone, email, address, district, province, zipcode, note, items_json, total_price, receipt, receipt_name, receipt_address, receipt_zipcode, receipt_tax_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+      `INSERT INTO preorders (school_name, contact_name, phone, email, address, district, province, zipcode, note, items_json, total_price, shipping_method, receipt, receipt_name, receipt_address, receipt_zipcode, receipt_tax_id)
+ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
       [
         school_name.trim(),
         contact_name.trim(),
@@ -646,7 +646,8 @@ router.post("/preorder", async (req, res) => {
         note ? note.trim() : null,
         items_json,
         totalPrice,
-        receipt ? receipt.trim() : null,
+        shipping_method || "pickup", // ← เพิ่มตรงนี้
+        receipt || "no",
         receipt_name ? receipt_name.trim() : null,
         receipt_address ? receipt_address.trim() : null,
         receipt_zipcode ? receipt_zipcode.trim() : null,

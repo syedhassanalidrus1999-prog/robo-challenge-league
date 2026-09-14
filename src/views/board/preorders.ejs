@@ -104,6 +104,19 @@
                                                 <% } else { %>
                                                     <span style="color:#CBD5E1">-</span>
                                                     <% } %>
+                                    <div style="margin-top:6px;padding-top:6px;border-top:1px solid #F1F5F9">
+                                        <% if (p.shipping_method==='delivery' ) { %>
+                                            <span
+                                                style="font-size:11px;background:#FFF7ED;color:#EA580C;border:1px solid #FED7AA;border-radius:999px;padding:2px 8px;font-weight:700">
+                                                <i class="ti ti-truck"></i> จัดส่ง
+                                            </span>
+                                            <% } else { %>
+                                                <span
+                                                    style="font-size:11px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0;border-radius:999px;padding:2px 8px;font-weight:700">
+                                                    <i class="ti ti-walking"></i> รับเอง
+                                                </span>
+                                                <% } %>
+                                    </div>
                                 </td>
                                 <td style="font-weight:700;color:#2563EB">
                                     <%= (p.total_price || 0).toLocaleString() %> B
