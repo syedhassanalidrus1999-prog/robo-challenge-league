@@ -604,8 +604,8 @@
                                 <div class="score-input-box">
                                   <div class="score-input-label full"><i class="ti ti-trophy"></i> เข้าเต็ม (ชิ้น)</div>
                                   <input type="number" name="mission_<%= n %>_full" class="score-num-input full-input"
-                                    data-max="<%= parseFloat(c.max_score) %>" data-n="<%= n %>" value="<%= prevFull %>"
-                                    min="0" step="1">
+                                    data-max="<%= parseFloat(c.max_score) %>" data-max-pieces="<%= parseInt(c.max_pieces || 1) %>" data-n="<%= n %>"
+                                    value="<%= prevFull %>" min="0" max="<%= parseInt(c.max_pieces || 1) %>" step="1">
                                   <div class="score-calc" id="calc_full_<%= n %>">
                                     <%= prevFull %> × <%= parseFloat(c.max_score) %> = <strong>
                                           <%= (prevFull * parseFloat(c.max_score)).toFixed(1) %>
@@ -616,11 +616,10 @@
                                   style="<%= c.score_type !== 'both' ? 'opacity:.4;pointer-events:none' : '' %>">
                                   <div class="score-input-label partial"><i class="ti ti-star-half"></i> เข้าบางส่วน
                                     (ชิ้น)</div>
-                                  <input type="number" name="mission_<%= n %>_partial"
-                                    class="score-num-input partial-input"
-                                    data-partial="<%= parseFloat(c.score_partial || 0) %>" data-n="<%= n %>"
-                                    value="<%= prevPartial %>" min="0" step="1" <%=c.score_type !=='both' ? 'disabled'
-                                    : '' %>>
+                                  <input type="number" name="mission_<%= n %>_partial" class="score-num-input partial-input"
+                                    data-partial="<%= parseFloat(c.score_partial || 0) %>" data-max-pieces="<%= parseInt(c.max_pieces || 1) %>"
+                                    data-n="<%= n %>" value="<%= prevPartial %>" min="0" max="<%= parseInt(c.max_pieces || 1) %>" step="1" <%=c.score_type
+                                    !=='both' ? 'disabled' : '' %>>
                                   <div class="score-calc" id="calc_partial_<%= n %>">
                                     <%= prevPartial %> × <%= parseFloat(c.score_partial || 0) %> = <strong>
                                           <%= (prevPartial * parseFloat(c.score_partial || 0)).toFixed(1) %>
@@ -721,58 +720,126 @@
 
   <script src="/js/main.js"></script>
   <script>
-    // ── Score calculation ────────────────────────────────────────────────────────
-    document.querySelectorAll('.full-input').forEach(function (input) {
-      input.addEventListener('input', function () {
-        var n = this.dataset.n;
-        var max = parseFloat(this.dataset.max);
-        var val = parseFloat(this.value) || 0;
-        var score = val * max;
-        document.getElementById('calc_full_' + n).innerHTML =
-          val + ' × ' + max + ' = <strong>' + score.toFixed(1) + '</strong> คะแนน';
-        updateMissionTotal(n);
-      });
-    });
+    // ── Score calculation ───────────────────────────────────────────────
 
-    document.querySelectorAll('.partial-input').forEach(function (input) {
-      input.addEventListener('input', function () {
-        var n = this.dataset.n;
-        var partial = parseFloat(this.dataset.partial) || 0;
-        var val = parseFloat(this.value) || 0;
-        var score = val * partial;
-        document.getElementById('calc_partial_' + n).innerHTML =
-          val + ' × ' + partial + ' = <strong>' + score.toFixed(1) + '</strong> คะแนน';
-        updateMissionTotal(n);
-      });
-    });
+      function updateMissionTotal(n) {
+        var fullInput = document.querySelector(
+          '.full-input[data-n="' + n + '"]'
+        );
 
-    function updateMissionTotal(n) {
-      var fullInput = document.querySelector('.full-input[data-n="' + n + '"]');
-      var partialInput = document.querySelector('.partial-input[data-n="' + n + '"]');
-      var max = parseFloat(fullInput.dataset.max) || 0;
-      var partial = parseFloat(partialInput.dataset.partial) || 0;
-      var fullVal = parseFloat(fullInput.value) || 0;
-      var partialVal = parseFloat(partialInput.value) || 0;
-      var total = (fullVal * max) + (partialVal * partial);
-      document.getElementById('mission_total_' + n).innerHTML =
-        'รวม <span>' + total.toFixed(1) + '</span> คะแนน';
-      updateGrandTotal();
-    }
+        var partialInput = document.querySelector(
+          '.partial-input[data-n="' + n + '"]'
+        );
 
-    function updateGrandTotal() {
-      var total = 0;
-      document.querySelectorAll('.full-input').forEach(function (input) {
-        var n = input.dataset.n;
-        var max = parseFloat(input.dataset.max) || 0;
-        var partialInput = document.querySelector('.partial-input[data-n="' + n + '"]');
+        if (!fullInput || !partialInput) return;
+
+        var max = parseFloat(fullInput.dataset.max) || 0;
         var partial = parseFloat(partialInput.dataset.partial) || 0;
-        total += (parseFloat(input.value) || 0) * max;
-        total += (parseFloat(partialInput.value) || 0) * partial;
-      });
-      document.getElementById('totalScore').textContent = total.toFixed(1);
-    }
+        var maxPieces = parseInt(fullInput.dataset.maxPieces) || 1;
 
-    updateGrandTotal();
+        var fullVal = parseInt(fullInput.value) || 0;
+        var partialVal = parseInt(partialInput.value) || 0;
+
+        // ป้องกันค่าติดลบ
+        fullVal = Math.max(0, fullVal);
+        partialVal = Math.max(0, partialVal);
+
+        // จำนวนชิ้นรวมกันห้ามเกินจำนวนชิ้นสูงสุด
+        if (fullVal + partialVal > maxPieces) {
+          if (document.activeElement === fullInput) {
+            fullVal = Math.max(0, maxPieces - partialVal);
+            fullInput.value = fullVal;
+          } else {
+            partialVal = Math.max(0, maxPieces - fullVal);
+            partialInput.value = partialVal;
+          }
+        }
+
+        // คะแนนเต็ม
+        var fullScore = fullVal * max;
+
+        document.getElementById('calc_full_' + n).innerHTML =
+          fullVal +
+          ' × ' +
+          max +
+          ' = <strong>' +
+          fullScore.toFixed(1) +
+          '</strong> คะแนน';
+
+        // คะแนนบางส่วน
+        var partialScore = partialVal * partial;
+
+        document.getElementById('calc_partial_' + n).innerHTML =
+          partialVal +
+          ' × ' +
+          partial +
+          ' = <strong>' +
+          partialScore.toFixed(1) +
+          '</strong> คะแนน';
+
+        // รวมภารกิจ
+        var total = fullScore + partialScore;
+
+        document.getElementById('mission_total_' + n).innerHTML =
+          'รวม <span>' +
+          total.toFixed(1) +
+          '</span> คะแนน';
+
+        updateGrandTotal();
+      }
+
+
+      // เมื่อเปลี่ยนจำนวนชิ้น "เต็ม"
+      document.querySelectorAll('.full-input').forEach(function (input) {
+        input.addEventListener('input', function () {
+          updateMissionTotal(this.dataset.n);
+        });
+      });
+
+
+      // เมื่อเปลี่ยนจำนวนชิ้น "บางส่วน"
+      document.querySelectorAll('.partial-input').forEach(function (input) {
+        input.addEventListener('input', function () {
+          updateMissionTotal(this.dataset.n);
+        });
+      });
+
+
+      // คะแนนรวมทั้งหมด
+      function updateGrandTotal() {
+        var total = 0;
+
+        document.querySelectorAll('.full-input').forEach(function (input) {
+          var n = input.dataset.n;
+
+          var max = parseFloat(input.dataset.max) || 0;
+
+          var partialInput = document.querySelector(
+            '.partial-input[data-n="' + n + '"]'
+          );
+
+          var partial = partialInput
+            ? parseFloat(partialInput.dataset.partial) || 0
+            : 0;
+
+          var fullVal = parseInt(input.value) || 0;
+          var partialVal = partialInput
+            ? parseInt(partialInput.value) || 0
+            : 0;
+
+          total += fullVal * max;
+          total += partialVal * partial;
+        });
+
+        document.getElementById('totalScore').textContent =
+          total.toFixed(1);
+      }
+
+
+      // คำนวณทันทีเมื่อเปิดหน้า
+      document.querySelectorAll('.full-input').forEach(function (input) {
+        updateMissionTotal(input.dataset.n);
+      });
 
     // ── Signature pad ────────────────────────────────────────────────────────────
     var canvas = document.getElementById('sigCanvas');

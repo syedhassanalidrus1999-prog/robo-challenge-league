@@ -131,7 +131,8 @@ router.post("/criteria", requireLogin, async (req, res) => {
 });
 
 router.post("/criteria/:id", requireLogin, async (req, res) => {
-  const { name, max_score, tier, score_type, score_partial } = req.body;
+  const { name, max_score, score_type, score_partial, tier, max_pieces } =
+    req.body;
 
   try {
     const sType = score_type === "both" ? "both" : "full_only";
@@ -142,9 +143,17 @@ router.post("/criteria/:id", requireLogin, async (req, res) => {
        SET name=$1,
            max_score=$2,
            score_type=$3,
-           score_partial=$4
-       WHERE id=$5`,
-      [name.trim(), parseFloat(max_score), sType, sPartial, req.params.id],
+           score_partial=$4,
+           max_pieces=$5
+       WHERE id=$6`,
+      [
+        name.trim(),
+        parseFloat(max_score),
+        sType,
+        sPartial,
+        parseInt(max_pieces) || 1,
+        req.params.id,
+      ],
     );
 
     req.flash("success", "อัปเดตภารกิจแล้ว");
@@ -157,13 +166,15 @@ router.post("/criteria/:id", requireLogin, async (req, res) => {
 });
 
 router.put("/criteria/:id", requireLogin, async (req, res) => {
-  const { name, max_score, tier, score_type, score_partial } = req.body;
+  const { name, max_score, score_type, score_partial, tier, max_pieces } =
+    req.body;
+
   try {
     const sType = score_type === "both" ? "both" : "full_only";
     const sPartial = sType === "both" ? parseFloat(score_partial) || 0 : 0;
     await query(
-      "UPDATE criteria SET name=$1, max_score=$2, score_type=$3, score_partial=$4 WHERE id=$5",
-      [name.trim(), parseFloat(max_score), sType, sPartial, req.params.id],
+      "UPDATE criteria SET name=$1, max_score=$2, score_type=$3, score_partial=$4, max_pieces=$5 WHERE id=$6",
+      [name.trim(), parseFloat(max_score), sType, sPartial, parseInt(max_pieces), req.params.id],
     );
     req.flash("success", "อัปเดตภารกิจแล้ว");
     res.redirect("/board/criteria?tier=" + tier);

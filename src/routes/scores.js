@@ -53,7 +53,7 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
       query("SELECT * FROM criteria WHERE tier = $1 ORDER BY mission", [tier]),
     ]);
     const maxScore = criteriaResult.rows.reduce(
-      (s, c) => s + parseFloat(c.max_score),
+      (s, c) => s + parseFloat(c.max_score || 0) * parseInt(c.max_pieces || 1),
       0,
     );
     res.render("scores/index", {
@@ -105,7 +105,7 @@ router.get(
       }
       const existing = existingResult.rows[0] || null;
       const maxScore = criteriaResult.rows.reduce(
-        (s, c) => s + parseFloat(c.max_score),
+        (s, c) => s + parseFloat(c.max_score) * parseInt(c.max_pieces || 1),
         0,
       );
       res.render("scores/form", {
@@ -160,11 +160,32 @@ router.post(
 
       const missionScores = criteriaResult.rows.map(function (c, i) {
         var n = i + 1;
-        var fullCount = parseFloat(req.body["mission_" + n + "_full"]) || 0;
-        var partialCount =
-          c.score_type === "both"
-            ? parseFloat(req.body["mission_" + n + "_partial"]) || 0
-            : 0;
+       var maxPieces = parseInt(c.max_pieces || 1);
+
+       var fullCount = parseInt(req.body["mission_" + n + "_full"]) || 0;
+
+       var partialCount =
+         c.score_type === "both"
+           ? parseInt(req.body["mission_" + n + "_partial"]) || 0
+           : 0;
+
+       // ป้องกันค่าติดลบ
+fullCount = Math.max(0, fullCount);
+partialCount = Math.max(0, partialCount);
+
+// Full + Partial รวมกันห้ามเกิน max_pieces
+// และ Full เองก็ห้ามเกิน max_pieces
+fullCount = Math.min(fullCount, maxPieces);
+
+// Partial ใช้ได้เฉพาะจำนวนชิ้นที่เหลือ
+if (c.score_type === "both") {
+  partialCount = Math.min(
+    partialCount,
+    maxPieces - fullCount
+  );
+} else {
+  partialCount = 0;
+}
         var scorePerFull = parseFloat(c.max_score);
         var scorePerPartial = parseFloat(c.score_partial) || 0;
         var total = fullCount * scorePerFull + partialCount * scorePerPartial;

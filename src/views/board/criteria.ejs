@@ -25,6 +25,7 @@
                         <th>ชื่อภารกิจ</th>
                         <th>คะแนน/ชิ้น (เต็ม)</th>
                         <th>คะแนน/ชิ้น (บางส่วน)</th>
+                        <th>ชิ้นสูงสุด</th>
                         <th>จัดการ</th>
                     </tr>
                 </thead>
@@ -53,11 +54,14 @@
                                         <% } %>
                             </td>
                             <td>
+                                <%= c.max_pieces || 1 %> ชิ้น
+                            </td>
+                            <td>
                                 <div class="action-row">
-                                    <button type="button" class="btn btn-secondary btn-sm" data-id="<%= c.id %>"
-                                        data-name="<%= c.name %>" data-max="<%= c.max_score %>"
-                                        data-tier="<%= c.tier %>" data-type="<%= c.score_type || 'full_only' %>"
-                                        data-partial="<%= c.score_partial || 0 %>" onclick="openEditModalFromBtn(this)">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-id="<%= c.id %>" data-name="<%= c.name %>"
+                                        data-max="<%= c.max_score %>" data-tier="<%= c.tier %>" data-type="<%= c.score_type || 'full_only' %>"
+                                        data-partial="<%= c.score_partial || 0 %>" data-pieces="<%= c.max_pieces || 1 %>"
+                                        onclick="openEditModalFromBtn(this)">
                                         <i class="ti ti-edit"></i> แก้ไข
                                     </button>
                                     <form method="POST"
@@ -125,6 +129,10 @@
                             <input class="fi" name="score_partial" id="add_score_partial" type="number" min="0"
                                 max="999" step="0.5" placeholder="เช่น 5">
                         </div>
+                        <div class="fg">
+                            <div class="fl">จำนวนชิ้นสูงสุด</div>
+                            <input class="fi" type="number" name="max_pieces" min="1" value="1" placeholder="1">
+                        </div>
                     </div>
                     <div class="modal-foot">
                         <button type="button" class="btn btn-secondary" onclick="closeModal('addModal')">ยกเลิก</button>
@@ -175,6 +183,10 @@
                             <input class="fi" name="score_partial" id="edit_score_partial" type="number" min="0"
                                 max="999" step="0.5">
                         </div>
+                        <div class="fg">
+                            <div class="fl">จำนวนชิ้นสูงสุด</div>
+                            <input class="fi" type="number" name="max_pieces" id="edit_max_pieces" min="1" placeholder="1">
+                        </div>
                     </div>
                     <div class="modal-foot">
                         <button type="button" class="btn btn-secondary"
@@ -201,17 +213,17 @@
             }
 
             function openEditModalFromBtn(btn) {
-                openCriteriaEditModal(
-                    btn.dataset.id,
-                    btn.dataset.name,
-                    btn.dataset.max,
-                    btn.dataset.tier,
-                    btn.dataset.type,
-                    btn.dataset.partial
-                )
-            }
+                    var id = btn.getAttribute('data-id');
+                    var name = btn.getAttribute('data-name');
+                    var max = btn.getAttribute('data-max');
+                    var tier = btn.getAttribute('data-tier');
+                    var type = btn.getAttribute('data-type');
+                    var partial = btn.getAttribute('data-partial');
+                    var pieces = btn.getAttribute('data-pieces');  // ← เพิ่ม
+                    openCriteriaEditModal(id, name, max, tier, type, partial, pieces);  // ← เพิ่ม pieces
+                }
 
-            function openCriteriaEditModal(id, name, maxScore, tier, scoreType, scorePartial) {
+            function openCriteriaEditModal(id, name, maxScore, tier, scoreType, scorePartial, maxPieces) {
                 document.getElementById('editForm').action = '/board/criteria/' + id;
                 document.getElementById('edit_name').value = name
                 document.getElementById('edit_max').value = maxScore
@@ -224,6 +236,7 @@
                     document.getElementById('edit_type_full').checked = true
                     document.getElementById('edit_partial_row').style.display = 'none'
                 }
+                document.getElementById('edit_max_pieces').value = maxPieces || 1
                 openModal('editModal')
             }
 
