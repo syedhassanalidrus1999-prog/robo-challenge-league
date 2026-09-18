@@ -357,6 +357,15 @@ router.post("/register", async (req, res) => {
         "pending",
       ],
     );
+    // หลัง await query INSERT teams ...
+    await sendLineNotify(
+      `\n🤖 มีทีมสมัครใหม่!\n` +
+        `รุ่น: ${tier}\n` +
+        `ชื่อทีม: ${name}\n` +
+        `สถาบัน: ${institution}\n` +
+        `เบอร์: ${phone}`,
+    ).catch((err) => console.error("LINE Notify error:", err));
+
     return res.render("register/index", {
       layout: false,
       title: "สมัครแข่งขัน",
@@ -382,6 +391,7 @@ router.post("/register", async (req, res) => {
       registrationOpen: true,
     });
   }
+  
 });
 
 // ─── GET /teams-list ──────────────────────────────────────────────────────────
@@ -654,6 +664,19 @@ router.post("/preorder", async (req, res) => {
         receipt_tax_id ? receipt_tax_id.trim() : null,
       ],
     );
+    // หลัง await query INSERT preorders ...
+    const itemsParsed = JSON.parse(items_json || "{}");
+    const itemsList = Object.entries(itemsParsed)
+      .map(([k, v]) => `  - ${k} x${v}`)
+      .join("\n");
+
+    await sendLineNotify(
+      `\n🛒 มี Pre-order ใหม่!\n` +
+        `โรงเรียน: ${school_name}\n` +
+        `ผู้ติดต่อ: ${contact_name} (${phone})\n` +
+        `สินค้า:\n${itemsList}\n` +
+        `ยอดรวม: ${totalPrice.toLocaleString()} บาท`,
+    ).catch((err) => console.error("LINE Notify error:", err));
     const newOrder = await query(
       "SELECT id FROM preorders ORDER BY id DESC LIMIT 1",
       [],
@@ -676,5 +699,28 @@ router.post("/preorder", async (req, res) => {
     return res.render("preorder/index", renderData);
   }
 });
+
+async function sendLineNotify(message) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify({
+      to: process.env.LINE_USER_ID,
+      messages: [{ type: "text", text: message }],
+    });
+    const options = {
+      hostname: "api.line.me",
+      path: "/v2/bot/message/push",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + process.env.LINE_CHANNEL_TOKEN,
+        "Content-Length": Buffer.byteLength(body),
+      },
+    };
+    const req = https.request(options, resolve);
+    req.on("error", reject);
+    req.write(body);
+    req.end();
+  });
+}
 
 module.exports = router;
