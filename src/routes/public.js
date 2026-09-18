@@ -1,3 +1,5 @@
+const https = require("https");
+const querystring = require("querystring");
 const express = require("express");
 const router = express.Router();
 const { query } = require("../config/database");
@@ -396,7 +398,6 @@ router.post("/register", async (req, res) => {
       registrationOpen: true,
     });
   }
-  
 });
 
 // ─── GET /teams-list ──────────────────────────────────────────────────────────
