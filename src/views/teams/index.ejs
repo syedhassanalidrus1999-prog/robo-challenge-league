@@ -521,14 +521,315 @@
         margin-bottom: 10px !important;
       }
     }
+
+    @media print {
+
+      .sidebar,
+      .topbar,
+      .page-header,
+      .action-row,
+      .btn,
+      select,
+      input,
+      .search-box {
+        display: none !important;
+      }
+
+      body {
+        background: #fff !important;
+      }
+
+      .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      #print-header {
+        display: block !important;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 10mm;
+      }
+
+      table {
+        font-size: 10px !important;
+      }
+    }
+
+    #print-header {
+      display: none;
+    }
+  </style>
+
+  <style>
+    /* ===== Final UI polish: RCL 2026 Teams ===== */
+    body {
+      background: #F6F8FC;
+    }
+
+    .page-hd {
+      margin-bottom: 20px !important;
+      padding: 2px 0 0;
+    }
+
+    .page-hd-left {
+      min-width: 0;
+    }
+
+    .page-title {
+      color: #0F172A;
+      font-size: 26px !important;
+      line-height: 1.2;
+    }
+
+    .page-title span {
+      color: #2563EB;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: #94A3B8;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .page-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-export {
+      background: #FFFFFF;
+      color: #2563EB;
+      border: 1px solid #BFDBFE;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
+    }
+
+    .btn-export:hover {
+      background: #EFF6FF;
+      border-color: #93C5FD;
+    }
+
+    .btn-add {
+      padding-left: 17px !important;
+      padding-right: 17px !important;
+    }
+
+    .stats-grid {
+      margin-bottom: 22px !important;
+    }
+
+    .stat-card {
+      position: relative;
+      min-height: 86px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #fff 0%, #fbfdff 100%);
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      right: -24px;
+      bottom: -30px;
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: rgba(148, 163, 184, .055);
+      pointer-events: none;
+    }
+
+    .stat-icon {
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .025);
+    }
+
+    .section-hd {
+      position: relative;
+      min-height: 62px;
+      box-sizing: border-box;
+    }
+
+    .section-hd>div:first-child {
+      font-size: 16px !important;
+    }
+
+    .search-wrap {
+      background: #F8FAFC;
+    }
+
+    .search-wrap:focus-within {
+      background: #fff;
+      border-color: #93C5FD !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
+    }
+
+    .tbl-wrap {
+      background: #fff;
+    }
+
+    .tbl th:first-child,
+    .tbl td:first-child {
+      padding-left: 18px !important;
+    }
+
+    .tbl th:last-child,
+    .tbl td:last-child {
+      padding-right: 18px !important;
+    }
+
+    .tbl th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .tbl td {
+      height: 52px;
+      box-sizing: border-box;
+    }
+
+    .tbl td:nth-child(2) {
+      min-width: 145px;
+    }
+
+    .tbl td:nth-child(3) {
+      min-width: 170px;
+    }
+
+    .tbl td:nth-child(4),
+    .tbl td:nth-child(5),
+    .tbl td:nth-child(6) {
+      min-width: 150px;
+    }
+
+    .tbl td:nth-child(7) {
+      min-width: 115px;
+    }
+
+    .tbl td:nth-child(8) {
+      min-width: 190px;
+    }
+
+    .tbl td:nth-child(9) {
+      min-width: 120px;
+    }
+
+    .tbl td:nth-child(10) {
+      min-width: 105px;
+    }
+
+    .tbl td:nth-child(11) {
+      min-width: 130px;
+    }
+
+    .act-wrap {
+      justify-content: flex-start;
+    }
+
+    .btn-icon {
+      background: #fff;
+      transition: all .15s ease;
+    }
+
+    .modal-backdrop {
+      padding: 18px;
+      box-sizing: border-box;
+    }
+
+    .modal {
+      max-height: calc(100vh - 36px);
+    }
+
+    .modal-head {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+
+    .modal-foot {
+      position: sticky;
+      bottom: 0;
+      z-index: 3;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    @media(max-width:900px) {
+      .page-hd {
+        align-items: flex-start;
+      }
+
+      .page-actions {
+        margin-top: 2px;
+      }
+    }
+
+    @media(max-width:640px) {
+      .page-hd {
+        display: block;
+      }
+
+      .page-title {
+        font-size: 21px !important;
+      }
+
+      .page-subtitle {
+        font-size: 11px;
+      }
+
+      .page-actions {
+        width: 100%;
+        margin-top: 12px;
+      }
+
+      .page-actions .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .stats-grid {
+        margin-bottom: 16px !important;
+      }
+
+      .stat-card {
+        min-height: 72px;
+      }
+
+      .section-hd {
+        gap: 12px;
+      }
+
+      .section-hd>div:first-child {
+        width: 100%;
+      }
+
+      .tbl-wrap {
+        border-radius: 0 0 14px 14px !important;
+      }
+    }
   </style>
 
   <div class="page-hd">
-    <div class="page-title"><span>จัดการ</span>ทีมที่สมัคร</div>
-    <button class="btn btn-primary btn-sm" onclick="openModal('addModal')">
-      <i class="ti ti-plus"></i> เพิ่มทีม
-    </button>
+    <div class="page-hd-left">
+      <div class="page-title">จัดการทีม <span>RCL 2026</span></div>
+      <div class="page-subtitle">
+        รายชื่อทีม ผู้เข้าแข่งขัน และข้อมูลโค้ช
+      </div>
+    </div>
+    <div class="page-actions">
+      <button onclick="printTeams()" class="btn btn-export">
+        <i class="ti ti-printer"></i> Export PDF
+      </button>
+      <button onclick="openModal('addModal')" class="btn btn-primary btn-add">
+        <i class="ti ti-plus"></i> เพิ่มทีม
+      </button>
+    </div>
   </div>
+
 
   <!-- Stats -->
   <div class="stats-grid">
@@ -883,6 +1184,26 @@
       </form>
     </div>
   </div>
+  <!-- Print Header -->
+  <div id="print-header" style="margin-bottom:16px">
+    <div style="font-size:20px;font-weight:800;color:#0F172A">Robo Challenge League 2026</div>
+    <div style="font-size:14px;color:#64748B;margin-top:4px">
+      รายชื่อทีมแข่งขัน — รุ่น <strong>
+        <%= activeTier %>
+      </strong>
+      | จำนวน <%= teams.length %> ทีม
+        | วันที่พิมพ์: <span id="print-date"></span>
+    </div>
+    <hr style="margin:10px 0">
+  </div>
+
+  <script>
+    function printTeams() {
+      document.getElementById('print-date').textContent =
+        new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+      window.print();
+    }
+  </script>
 
   <script>
     function filterTeams() {
