@@ -379,6 +379,11 @@ router.post("/register", async (req, res) => {
     });
   } catch (err) {
     console.error(err);
+    // เพิ่ม check unique constraint
+    var errorMsg = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+    if (err.constraint === "unique_team_name_institution_tier") {
+      errorMsg = "ชื่อทีมนี้ได้สมัครในรุ่นนี้ไปแล้ว กรุณาตรวจสอบข้อมูลอีกครั้ง";
+    }
     return res.render("register/index", {
       layout: false,
       title: "สมัครแข่งขัน",
@@ -387,7 +392,7 @@ router.post("/register", async (req, res) => {
       teamName: null,
       tier: tier || null,
       formData: req.body,
-      errorMsg: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง",
+      errorMsg,
       registrationOpen: true,
     });
   }
