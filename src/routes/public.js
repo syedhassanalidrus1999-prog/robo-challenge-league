@@ -551,9 +551,9 @@ router.get("/docs", (req, res) => {
       invitation: "/docs/หนังสือเชิญแข่งขันหุ่นยนต์RCL2026.pdf",
       basic: "/docs/กติกาทั่วไป 2026.pdf",
       rules: {
-        beginner: null,
-        intermediate: null,
-        advance: null,
+        beginner: "/docs/กติกา Beginner 2026.pdf",
+        intermediate: "/docs/กติกา Intermediate 2026.pdf",
+        advance: "/docs/กติกา Advance 2026.pdf",
       },
     },
   });
