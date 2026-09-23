@@ -1444,6 +1444,71 @@
       }
     }
 
+        /* ===== สินค้าหมด ===== */
+
+        .alert-error {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
+      color: #B91C1C;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .alert-error i {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    
+    .product-item.is-soldout {
+      cursor: not-allowed;
+      background: #F8FAFC;
+    }
+
+    .product-item.is-soldout:hover {
+      border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .product-item.is-soldout .product-thumb img {
+      filter: grayscale(1);
+      opacity: .55;
+    }
+
+    .product-item.is-soldout .product-item-name,
+    .product-item.is-soldout .product-item-desc {
+      opacity: .55;
+    }
+
+    .product-item.is-soldout .custom-checkbox {
+      background: #F1F5F9;
+      border-color: #E2E8F0;
+    }
+
+    .price-soldout {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: #F1F5F9;
+      border: 1px solid #E2E8F0;
+      color: #64748B;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    @media(max-width:640px) {
+      .price-soldout {
+        font-size: 15px;
+        padding: 4px 11px;
+      }
+    }
+
     /* =========================
        PRE-ORDER SUCCESS STATE
        ปรับเฉพาะหน้าสำเร็จเท่านั้น
@@ -1886,7 +1951,7 @@
                             <div class="product-options-list">
                               <% for (var ii=0; ii < t.items.length; ii++) { %>
                                 <% var item=t.items[ii]; %>
-                                  <div class="product-item" id="item-<%= item.key %>"
+                                   <div class="product-item<%= item.soldOut ? ' is-soldout' : '' %>" id="item-<%= item.key %>"
                                     onclick="toggleItem('<%= item.key %>',this)">
                                     <div class="product-thumb"><img src="/images/product/product-<%= item.key %>.png"
                                         alt="<%= item.name %>" onerror="this.style.display='none'"></div>
@@ -1911,21 +1976,19 @@
                                         </div>
                                       </div>
                                     </div>
-                                    <div class="price-wrap">
-                                      <% if (promoActive && item.hasDiscount) { %>
-                                        <div class="price-discount-badge">-<%= item.discountPct %>%</div>
-                                        <div class="price-original">
-                                          ฿<%= item.priceFormatted %>
-                                        </div>
-                                        <div class="price-promo">
-                                          ฿<%= item.promoPriceFormatted %>
-                                        </div>
-                                        <% } else { %>
-                                          <div class="price-normal" style="color:<%= t.accent %>">
-                                            ฿<%= item.priceFormatted %>.-
-                                          </div>
-                                          <% } %>
-                                    </div>
+                                                                    <div class="price-wrap">
+                                                                      <% if (item.soldOut) { %>
+                                                                        <div class="price-soldout">หมด</div>
+                                                                        <% } else if (promoActive && item.hasDiscount) { %>
+                                                                          <div class="price-discount-badge">-<%= item.discountPct %>%</div>
+                                                                          <div class="price-original">฿<%= item.priceFormatted %>
+                                                                          </div>
+                                                                          <div class="price-promo">฿<%= item.promoPriceFormatted %>
+                                                                          </div>
+                                                                          <% } else { %>
+                                                                            <div class="price-normal" style="color:<%= t.accent %>">฿<%= item.priceFormatted %>.-</div>
+                                                                            <% } %>
+                                                                    </div>
                                   </div>
                                   <% } %>
                             </div>
@@ -2180,6 +2243,7 @@
                     activeFieldKey = null;
                   }
                   function toggleItem(id, el) {
+                    if (el.classList.contains('is-soldout')) return;
                     if (event && event.target.closest && event.target.closest('.qty-control')) return;
                     var isChecked = checkedItems[id]; var cb = document.getElementById('cb-' + id); var qtyWrap = document.getElementById('qty-wrap-' + id);
                     if (isChecked) { delete checkedItems[id]; el.style.borderColor = '#E2E8F0'; el.classList.remove('is-selected'); cb.style.background = '#fff'; cb.style.borderColor = '#CBD5E1'; cb.querySelector('i').style.opacity = '0'; qtyWrap.style.display = 'none'; }

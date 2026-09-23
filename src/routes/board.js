@@ -247,6 +247,11 @@ router.post("/settings", requireLogin, async (req, res) => {
     "discount_mat",
     "discount_field",
     "discount_mission",
+    // สถานะสินค้าหมด ("1" = หมด, "0" = มีสินค้า)
+    "soldout_full",
+    "soldout_mat",
+    "soldout_field",
+    "soldout_mission",
   ];
   for (var k of keys) {
     await query(

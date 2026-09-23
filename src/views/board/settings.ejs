@@ -67,6 +67,43 @@
     </form>
 </div>
 
+<style>
+    .price-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 800;
+        color: #334155;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #F1F5F9;
+    }
+
+    .price-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1.1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .soldout-tag {
+        font-size: 11px;
+        font-weight: 700;
+        color: #DC2626;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        border-radius: 999px;
+        padding: 1px 9px;
+    }
+
+    @media (max-width:520px) {
+        .price-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+
 <div class="card" style="max-width:500px;margin-top:16px">
     <div class="card-hd">
         <div class="card-title">ราคาสินค้า Pre-order</div>
@@ -76,14 +113,17 @@
             <div
                 style="font-size:11px;color:#64748B;margin-bottom:14px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:10px">
                 ราคาเหล่านี้ใช้กับทุก tier (Beginner / Intermediate / Advance)<br>
-                ส่วนลดแยกต่อสินค้า — ใส่ 0 หากไม่ต้องการลดสินค้านั้น (ต้องเปิดโปรโมชั่นด้วย)
+                ส่วนลดแยกต่อสินค้า — ใส่ 0 หากไม่ต้องการลดสินค้านั้น (ต้องเปิดโปรโมชั่นด้วย)<br>
+                สถานะ "สินค้าหมด" — หน้า Pre-order จะแสดงคำว่า "หมด" แทนราคา และเลือกสินค้านั้นไม่ได้
             </div>
 
-            <div
-                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
-                เซตสนาม (full)
+            <!-- เซตสนาม -->
+            <div class="price-head">
+                <span>เซตสนาม (full)</span>
+                <% if (settings.soldout_full==='1' ) { %><span class="soldout-tag">หมด</span>
+                    <% } %>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div class="price-grid">
                 <div class="fg" style="margin-bottom:0">
                     <div class="fl">ราคา (บาท)</div>
                     <input class="fi" type="number" name="price_full" min="0"
@@ -94,13 +134,22 @@
                     <input class="fi" type="number" name="discount_full" min="0" max="99"
                         value="<%= settings.discount_full || '0' %>" placeholder="0">
                 </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">สถานะ</div>
+                    <select class="fi" name="soldout_full">
+                        <option value="0" <%=settings.soldout_full !=='1' ? 'selected' : '' %>>มีสินค้า</option>
+                        <option value="1" <%=settings.soldout_full==='1' ? 'selected' : '' %>>สินค้าหมด</option>
+                    </select>
+                </div>
             </div>
 
-            <div
-                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
-                สนามอย่างเดียว (mat)
+            <!-- สนามอย่างเดียว -->
+            <div class="price-head">
+                <span>สนามอย่างเดียว (mat)</span>
+                <% if (settings.soldout_mat==='1' ) { %><span class="soldout-tag">หมด</span>
+                    <% } %>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div class="price-grid">
                 <div class="fg" style="margin-bottom:0">
                     <div class="fl">ราคา (บาท)</div>
                     <input class="fi" type="number" name="price_mat" min="0" value="<%= settings.price_mat || '2850' %>"
@@ -111,13 +160,22 @@
                     <input class="fi" type="number" name="discount_mat" min="0" max="99"
                         value="<%= settings.discount_mat || '0' %>" placeholder="0">
                 </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">สถานะ</div>
+                    <select class="fi" name="soldout_mat">
+                        <option value="0" <%=settings.soldout_mat !=='1' ? 'selected' : '' %>>มีสินค้า</option>
+                        <option value="1" <%=settings.soldout_mat==='1' ? 'selected' : '' %>>สินค้าหมด</option>
+                    </select>
+                </div>
             </div>
 
-            <div
-                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
-                ไฟล์สนาม (field)
+            <!-- ไฟล์สนาม -->
+            <div class="price-head">
+                <span>ไฟล์สนาม (field)</span>
+                <% if (settings.soldout_field==='1' ) { %><span class="soldout-tag">หมด</span>
+                    <% } %>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+            <div class="price-grid">
                 <div class="fg" style="margin-bottom:0">
                     <div class="fl">ราคา (บาท)</div>
                     <input class="fi" type="number" name="price_field" min="0"
@@ -128,13 +186,22 @@
                     <input class="fi" type="number" name="discount_field" min="0" max="99"
                         value="<%= settings.discount_field || '0' %>" placeholder="0">
                 </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">สถานะ</div>
+                    <select class="fi" name="soldout_field">
+                        <option value="0" <%=settings.soldout_field !=='1' ? 'selected' : '' %>>มีสินค้า</option>
+                        <option value="1" <%=settings.soldout_field==='1' ? 'selected' : '' %>>สินค้าหมด</option>
+                    </select>
+                </div>
             </div>
 
-            <div
-                style="font-size:12px;font-weight:800;color:#334155;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #F1F5F9">
-                ชิ้นส่วนภารกิจ (mission)
+            <!-- ชิ้นส่วนภารกิจ -->
+            <div class="price-head">
+                <span>ชิ้นส่วนภารกิจ (mission)</span>
+                <% if (settings.soldout_mission==='1' ) { %><span class="soldout-tag">หมด</span>
+                    <% } %>
             </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
+            <div class="price-grid" style="margin-bottom:0">
                 <div class="fg" style="margin-bottom:0">
                     <div class="fl">ราคา (บาท)</div>
                     <input class="fi" type="number" name="price_mission" min="0"
@@ -144,6 +211,13 @@
                     <div class="fl">ส่วนลด (%)</div>
                     <input class="fi" type="number" name="discount_mission" min="0" max="99"
                         value="<%= settings.discount_mission || '0' %>" placeholder="0">
+                </div>
+                <div class="fg" style="margin-bottom:0">
+                    <div class="fl">สถานะ</div>
+                    <select class="fi" name="soldout_mission">
+                        <option value="0" <%=settings.soldout_mission !=='1' ? 'selected' : '' %>>มีสินค้า</option>
+                        <option value="1" <%=settings.soldout_mission==='1' ? 'selected' : '' %>>สินค้าหมด</option>
+                    </select>
                 </div>
             </div>
         </div>

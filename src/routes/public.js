@@ -17,13 +17,20 @@ var DEFAULT_DISCOUNTS = {
   field: 0,
   mission: 0,
 };
+var DEFAULT_SOLDOUT = {
+  full: false,
+  mat: false,
+  field: false,
+  mission: false,
+};
 
 // ─── buildTiers ───────────────────────────────────────────────────────────────
 // prices: { 'full': 3450, 'mat': 2850, 'field': 625, 'mission': 600 }
 // discounts: { 'full': 20, 'mat': 10, 'field': 0, 'mission': 0 }
-function buildTiers(prices, discounts) {
+function buildTiers(prices, discounts, soldOut) {
   prices = prices || DEFAULT_PRICES;
   discounts = discounts || DEFAULT_DISCOUNTS;
+  soldOut = soldOut || DEFAULT_SOLDOUT;
 
   function makeItem(tierKey, type, name, desc, hasDetail) {
     var key = tierKey + "-" + type;
@@ -41,6 +48,7 @@ function buildTiers(prices, discounts) {
       promoPriceFormatted: promoPrice.toLocaleString(),
       hasDiscount: pct > 0,
       hasDetail: hasDetail,
+      soldOut: soldOut[type] || false,
     };
   }
 
@@ -156,6 +164,13 @@ async function getPromoSettings() {
         }
       : { full: 0, mat: 0, field: 0, mission: 0 };
 
+          var soldOut = {
+            full: settings.soldout_full === "1",
+            mat: settings.soldout_mat === "1",
+            field: settings.soldout_field === "1",
+            mission: settings.soldout_mission === "1",
+          };
+
     // Max discount for banner
     var maxDiscount = promoActive
       ? Math.max(
@@ -171,19 +186,21 @@ async function getPromoSettings() {
       promoEndDate,
       prices,
       discounts,
+      soldOut,
       maxDiscount,
       settings,
     };
   } catch (err) {
     console.error(err);
-    return {
-      promoActive: false,
-      promoEndDate: null,
-      prices: DEFAULT_PRICES,
-      discounts: DEFAULT_DISCOUNTS,
-      maxDiscount: 0,
-      settings: {},
-    };
+        return {
+          promoActive: false,
+          promoEndDate: null,
+          prices: DEFAULT_PRICES,
+          discounts: DEFAULT_DISCOUNTS,
+          soldOut: DEFAULT_SOLDOUT,
+          maxDiscount: 0,
+          settings: {},
+        };
   }
 }
 
@@ -616,7 +633,7 @@ router.get("/docs", async (req, res) => {
 // ─── GET /preorder ────────────────────────────────────────────────────────────
 router.get("/preorder", async (req, res) => {
   const promo = await getPromoSettings();
-  const tiers = buildTiers(promo.prices, promo.discounts);
+  const tiers = buildTiers(promo.prices, promo.discounts, promo.soldOut);
   return res.render("preorder/index", {
     layout: false,
     success: false,
@@ -633,7 +650,7 @@ router.get("/preorder", async (req, res) => {
 // ─── POST /preorder ───────────────────────────────────────────────────────────
 router.post("/preorder", async (req, res) => {
   const promo = await getPromoSettings();
-  const tiers = buildTiers(promo.prices, promo.discounts);
+    const tiers = buildTiers(promo.prices, promo.discounts, promo.soldOut);
 
   const {
     school_name,
@@ -681,12 +698,35 @@ router.post("/preorder", async (req, res) => {
     });
   });
 
-  var items = {};
-  try {
-    items = JSON.parse(items_json);
-  } catch (e) {
-    items = {};
-  }
+   var items = {};
+   try {
+     items = JSON.parse(items_json);
+   } catch (e) {
+     items = {};
+   }
+
+   var SOLDOUT = {};
+   var NAMES = {};
+   tiers.forEach(function (tier) {
+     tier.items.forEach(function (item) {
+       SOLDOUT[item.key] = item.soldOut;
+       NAMES[item.key] = item.name;
+     });
+   });
+   var soldOutPicked = Object.keys(items).filter(function (k) {
+     return SOLDOUT[k];
+   });
+   if (soldOutPicked.length) {
+     renderData.errorMsg =
+       "สินค้าต่อไปนี้หมดแล้ว: " +
+       soldOutPicked
+         .map(function (k) {
+           return NAMES[k];
+         })
+         .join(", ") +
+       " กรุณานำออกจากรายการ";
+     return res.render("preorder/index", renderData);
+   }
 
   var totalPrice = 0;
   var shippingFee = shipping_method === "delivery" ? 100 : 0;
