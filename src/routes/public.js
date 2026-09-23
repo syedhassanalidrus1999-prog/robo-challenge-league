@@ -563,7 +563,7 @@ router.get("/docs", async (req, res) => {
     );
     result.rows.forEach(function (row) {
       meta[row.doc_key] = row;
-      if (row.file_url) urls[row.doc_key] = row.file_url;
+      if (row.file_url) urls[row.doc_key] = "/docs/file/" + row.doc_key;
     });
   } catch (err) {
     console.error(err);
