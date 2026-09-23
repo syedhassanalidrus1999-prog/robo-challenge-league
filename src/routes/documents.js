@@ -5,7 +5,7 @@ const { query } = require("../config/database"); // ปรับตามจร�
 const { requireAdmin } = require("../middleware/auth"); // ปรับตามจริง
 
 const router = express.Router();
-const MAX_MB = 15;
+const MAX_MB = 10;
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -127,7 +127,7 @@ router.post(
         "latin1",
       ).toString("utf8"); // ชื่อไฟล์ภาษาไทย
 
-      await     query(
+      await query(
         `UPDATE competition_documents
          SET file_url = $1, public_id = $2, original_name = $3, file_size = $4, updated_at = NOW()
        WHERE doc_key = $5`,
@@ -147,9 +147,15 @@ router.post(
       );
     } catch (e) {
       console.error(e);
-      return res.redirect(
-        "/board/documents?err=" + encodeURIComponent("อัปโหลดไม่สำเร็จ"),
-      );
+      var msg = "อัปโหลดไม่สำเร็จ";
+      if (
+        e &&
+        e.http_code === 400 &&
+        /File size too large/i.test(e.message || "")
+      ) {
+        msg = "ไฟล์ใหญ่เกิน " + MAX_MB + "MB กรุณาบีบอัด PDF ก่อนอัปโหลด";
+      }
+      return res.redirect("/board/documents?err=" + encodeURIComponent(msg));
     }
   },
 );
