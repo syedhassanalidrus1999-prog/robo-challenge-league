@@ -1,0 +1,7 @@
+<% if (d && d.file_url) { %>
+    <a href="<%= d.file_url %>" target="_blank" rel="noopener" class="doc-download-btn">
+        <i class="bi bi-download"></i> ดาวน์โหลด
+    </a>
+    <% } else { %>
+        <span class="doc-download-btn is-disabled" aria-disabled="true">เร็วๆ นี้</span>
+        <% } %>

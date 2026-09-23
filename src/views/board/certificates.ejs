@@ -1,175 +1,1746 @@
-<style>
-    .cert-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 18px;
-        margin-top: 16px;
-    }
+<% var allTemplates=Array.isArray(templates) ? templates : []; var tiers=[ 'beginner' , 'intermediate' , 'advance' ];
+    var selectedTier=(typeof tier !=='undefined' && tier) ? tier : ((typeof activeTier !=='undefined' && activeTier) ?
+    activeTier : 'beginner' ); var tierLabels={ beginner: 'Beginner' , intermediate: 'Intermediate' , advance: 'Advance'
+    }; var tierColors={ beginner: '#16A34A' , intermediate: '#2563EB' , advance: '#EA580C' }; var certTypes=[ {
+    type: 'participation' , label: '🎖 เกียรติบัตรเข้าร่วม' }, { type: 'rank_1' , label: '🏆 เกียรติบัตรอันดับ 1' }, {
+    type: 'rank_2' , label: '🥈 เกียรติบัตรอันดับ 2' }, { type: 'rank_3' , label: '🥉 เกียรติบัตรอันดับ 3' }, {
+    type: 'gold' , label: '🥇 เกียรติบัตรทอง' , note: '(คะแนน >80%)' , borderColor: '#F59E0B' , headBg: '#FFFBEB' }, {
+    type: 'silver' , label: '🥈 เกียรติบัตรเงิน' , note: '(คะแนน 51-80%)' , borderColor: '#94A3B8' , headBg: '#F8FAFC'
+    }, { type: 'bronze' , label: '🥉 เกียรติบัตรทองแดง' , note: '(คะแนน 30-50%)' , borderColor: '#B45309' ,
+    headBg: '#FFF7ED' } ]; %>
 
-    .cert-card {
-        background: #fff;
-        border: 1px solid #E2E8F0;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, .05);
-    }
 
-    .cert-card-head {
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 800;
-        font-size: 13px;
-    }
+    <style>
+        /* =========================================================
+   PAGE
+========================================================= */
 
-    .cert-preview {
-        position: relative;
-        aspect-ratio: 21/29.7;
-        background: #F1F5F9;
-        overflow: hidden;
-    }
+        .cert-section {
+            margin-bottom: 32px;
+        }
 
-    .cert-preview img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
 
-    .cert-preview-empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-        color: #94A3B8;
-        font-size: 12px;
-        flex-direction: column;
-        gap: 6px;
-    }
+        /* =========================================================
+   GRID
+========================================================= */
 
-    .cert-preview-empty i {
-        font-size: 32px;
-        opacity: .4;
-    }
+        .cert-grid {
+            display: grid;
 
-    .cert-body {
-        padding: 14px 16px;
-    }
+            grid-template-columns:
+                repeat(auto-fill, minmax(300px, 1fr));
 
-    .cert-name-dot {
-        position: absolute;
-        width: 12px;
-        height: 12px;
-        background: #EF4444;
-        border: 2px solid #fff;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        pointer-events: none;
-        box-shadow: 0 0 0 2px rgba(239, 68, 68, .3);
-    }
-</style>
+            gap: 16px;
+        }
 
-<div class="page-hd">
-    <div class="page-title"><span>จัดการ</span>เกียรติบัตร</div>
-</div>
 
-<% var tiers=['beginner', 'intermediate' , 'advance' ]; var tierColors={ beginner: '#16A34A' , intermediate: '#2563EB' ,
-    advance: '#EA580C' }; var tierLabels={ beginner: 'Beginner' , intermediate: 'Intermediate' , advance: 'Advance' };
-    var certTypes=[ { key: 'participation' , label: 'เข้าร่วม' , icon: 'ti-certificate' , color: '#64748B' }, {
-    key: '1st' , label: 'อันดับ 1' , icon: 'ti-trophy' , color: '#D97706' }, { key: '2nd' , label: 'อันดับ 2' ,
-    icon: 'ti-medal' , color: '#94A3B8' }, { key: '3rd' , label: 'อันดับ 3' , icon: 'ti-medal-2' , color: '#92400E' },
-    ]; %>
+        /* =========================================================
+   CARD
+========================================================= */
 
-    <% tiers.forEach(function(tier) { %>
-        <div style="margin-bottom:32px">
-            <div
-                style="font-size:18px;font-weight:800;color:<%= tierColors[tier] %>;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-                <i class="ti <%= tier==='beginner'?'ti-leaf':tier==='intermediate'?'ti-flame':'ti-rocket' %>"></i>
-                <%= tierLabels[tier] %>
+        .cert-card {
+            position: relative;
+
+            border: 1.5px solid #E2E8F0;
+            border-radius: 12px;
+
+            overflow: hidden;
+
+            background: #FFFFFF;
+
+            box-shadow:
+                0 2px 8px rgba(15, 23, 42, 0.05);
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 18px rgba(15, 23, 42, 0.08);
+        }
+
+
+        /* =========================================================
+   HEADER
+========================================================= */
+
+        .cert-card-head {
+            min-height: 54px;
+
+            padding: 10px 14px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 8px;
+
+            box-sizing: border-box;
+
+            background: #F8FAFC;
+
+            border-bottom: 1px solid #E2E8F0;
+
+            font-size: 13px;
+
+            font-weight: 700;
+        }
+
+        .cert-card-title {
+            min-width: 0;
+
+            line-height: 1.4;
+        }
+
+        .cert-card-title small {
+            display: block;
+
+            margin-top: 3px;
+
+            color: #64748B;
+
+            font-size: 11px;
+
+            font-weight: 500;
+        }
+
+
+        /* =========================================================
+   BADGE
+========================================================= */
+
+        .badge-has-bg {
+            flex-shrink: 0;
+
+            padding: 3px 8px;
+
+            border-radius: 999px;
+
+            background: #F0FDF4;
+
+            border: 1px solid #BBF7D0;
+
+            color: #16A34A;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================================================
+   PREVIEW OUTER
+========================================================= */
+
+        .cert-preview-area {
+            position: relative;
+
+            width: 100%;
+
+            background: #F1F5F9;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            min-height: 240px;
+
+            user-select: none;
+        }
+
+
+        /* =========================================================
+   IMAGE STAGE
+   สำคัญ:
+   Stage จะมีขนาดเท่ากับภาพจริง
+========================================================= */
+
+        .cert-image-stage {
+            position: relative;
+
+            display: block;
+
+            width: 100%;
+
+            line-height: 0;
+
+            overflow: visible;
+        }
+
+
+        /* =========================================================
+   CERTIFICATE IMAGE
+========================================================= */
+
+        .cert-preview {
+            display: block;
+
+            width: 100%;
+
+            height: auto;
+
+            max-width: 100%;
+
+            user-select: none;
+
+            -webkit-user-drag: none;
+        }
+
+
+        /* =========================================================
+   NO IMAGE
+========================================================= */
+
+        .cert-no-bg {
+            width: 100%;
+
+            min-height: 240px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            color: #94A3B8;
+
+            font-size: 12px;
+
+            background: #F8FAFC;
+
+            text-align: center;
+        }
+
+        .cert-no-bg i {
+            font-size: 32px;
+
+            opacity: .8;
+        }
+
+
+        /* =========================================================
+   MARKER
+========================================================= */
+
+        .name-marker {
+            position: absolute;
+
+            left: 50%;
+            top: 50%;
+
+            width: 0;
+            height: 0;
+
+            z-index: 30;
+
+            cursor: grab;
+
+            touch-action: none;
+
+            user-select: none;
+
+            transition:
+                left .08s ease,
+                top .08s ease;
+        }
+
+        .name-marker.dragging {
+            cursor: grabbing;
+
+            transition: none;
+        }
+
+
+        /* =========================================================
+   CENTER DOT
+========================================================= */
+
+        .marker-dot {
+            position: absolute;
+
+            left: -8px;
+            top: -8px;
+
+            width: 16px;
+            height: 16px;
+
+            border-radius: 50%;
+
+            background: #EF4444;
+
+            border: 3px solid #FFFFFF;
+
+            box-sizing: border-box;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, .35);
+        }
+
+
+        /* =========================================================
+   CROSSHAIR
+========================================================= */
+
+        .marker-cross-x {
+            position: absolute;
+
+            left: -35px;
+            top: -1px;
+
+            width: 70px;
+            height: 2px;
+
+            background: #EF4444;
+
+            opacity: .9;
+        }
+
+        .marker-cross-y {
+            position: absolute;
+
+            left: -1px;
+            top: -35px;
+
+            width: 2px;
+            height: 70px;
+
+            background: #EF4444;
+
+            opacity: .9;
+        }
+
+
+        /* =========================================================
+   LABEL
+========================================================= */
+
+        .marker-label {
+            position: absolute;
+
+            left: 14px;
+            top: 14px;
+
+            min-width: 125px;
+
+            padding: 6px 9px;
+
+            box-sizing: border-box;
+
+            border-radius: 7px;
+
+            background: rgba(15, 23, 42, .94);
+
+            color: #FFFFFF;
+
+            font-size: 10px;
+
+            line-height: 1.35;
+
+            white-space: nowrap;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, .25);
+
+            pointer-events: none;
+        }
+
+        .marker-label strong {
+            display: block;
+
+            margin-bottom: 2px;
+
+            font-size: 11px;
+        }
+
+        .marker-label span {
+            color: #CBD5E1;
+        }
+
+
+        /* =========================================================
+   FORM
+========================================================= */
+
+        .cert-card-foot {
+            padding: 12px 14px;
+
+            border-top: 1px solid #F1F5F9;
+
+            background: #FFFFFF;
+        }
+
+        .cert-card-foot label {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #475569;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+   FILE INPUT
+========================================================= */
+
+        .background-input {
+            display: block;
+
+            width: 100%;
+
+            margin-bottom: 6px;
+
+            font-size: 11px;
+        }
+
+
+        /* =========================================================
+   SELECTED FILE
+========================================================= */
+
+        .selected-file {
+            display: none;
+
+            margin-bottom: 8px;
+
+            padding: 5px 8px;
+
+            border-radius: 6px;
+
+            background: #EFF6FF;
+
+            border: 1px solid #BFDBFE;
+
+            color: #2563EB;
+
+            font-size: 10px;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+        .selected-file.show {
+            display: block;
+        }
+
+
+        /* =========================================================
+   POSITION ROW
+========================================================= */
+
+        .pos-row {
+            display: flex;
+
+            align-items: center;
+
+            flex-wrap: wrap;
+
+            gap: 6px;
+
+            margin-bottom: 8px;
+        }
+
+        .pos-title {
+            color: #475569;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .pos-label {
+            color: #64748B;
+
+            font-size: 11px;
+        }
+
+        .pos-input {
+            width: 55px;
+
+            height: 28px;
+
+            padding: 4px 6px;
+
+            border: 1px solid #E2E8F0;
+
+            border-radius: 6px;
+
+            box-sizing: border-box;
+
+            color: #334155;
+
+            font-size: 12px;
+
+            background: #FFFFFF;
+        }
+
+        .pos-input:focus {
+            outline: none;
+
+            border-color: #2563EB;
+
+            box-shadow:
+                0 0 0 2px rgba(37, 99, 235, .1);
+        }
+
+
+        /* =========================================================
+   HINT
+========================================================= */
+
+        .position-hint {
+            margin-bottom: 8px;
+
+            padding: 6px 8px;
+
+            border-radius: 6px;
+
+            background: #F8FAFC;
+
+            border: 1px solid #E2E8F0;
+
+            color: #64748B;
+
+            font-size: 10px;
+
+            line-height: 1.4;
+
+            text-align: center;
+        }
+
+
+        /* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+        .cert-save-btn {
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+        }
+
+
+        /* =========================================================
+   MOBILE
+========================================================= */
+
+        @media (max-width: 640px) {
+
+            .cert-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cert-card-head {
+                padding: 10px 12px;
+            }
+
+            .cert-card-foot {
+                padding: 12px;
+            }
+
+        }
+
+        /* =========================================================
+   CURRENT TIER HEADER
+========================================================= */
+
+        .current-tier-header {
+            margin-top: 14px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 10px 14px;
+
+            border-radius: 10px;
+
+            background: color-mix(in srgb,
+                    var(--tier-color) 8%,
+                    #ffffff);
+
+            border: 1px solid color-mix(in srgb,
+                    var(--tier-color) 25%,
+                    #E2E8F0);
+        }
+
+
+        /* Icon */
+
+        .current-tier-icon {
+            width: 34px;
+            height: 34px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 8px;
+
+            background: var(--tier-color);
+
+            color: #ffffff;
+
+            font-size: 17px;
+        }
+
+
+        /* Text */
+
+        .current-tier-info {
+            line-height: 1.25;
+        }
+
+        .current-tier-label {
+            color: #64748B;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            margin-bottom: 2px;
+        }
+
+        .current-tier-name {
+            color: #334155;
+
+            font-size: 15px;
+
+            font-weight: 500;
+        }
+
+        .current-tier-name strong {
+            color: var(--tier-color);
+
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+   TIER TABS
+========================================================= */
+
+        .tier-tabs {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 6px;
+        }
+
+        .tier-tab {
+            transition:
+                all .2s ease;
+        }
+
+
+        /* Mobile */
+
+        @media (max-width: 640px) {
+
+            .current-tier-header {
+                width: 100%;
+
+                box-sizing: border-box;
+            }
+
+        }
+
+        /* =========================================================
+           CURRENT TIER - FINAL OVERRIDE
+        ========================================================= */
+
+        .page-hd {
+            position: relative;
+        }
+
+        .current-tier-header {
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 14px;
+            border-radius: 10px;
+            background: color-mix(in srgb, var(--tier-color) 8%, #ffffff);
+            border: 1px solid color-mix(in srgb, var(--tier-color) 25%, #E2E8F0);
+        }
+
+        .current-tier-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--tier-color);
+            color: #fff;
+            font-size: 17px;
+            flex-shrink: 0;
+        }
+
+        .current-tier-info {
+            line-height: 1.25;
+        }
+
+        .current-tier-label {
+            color: #64748B;
+            font-size: 10px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .current-tier-name {
+            color: #334155;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .current-tier-name strong {
+            color: var(--tier-color);
+            font-weight: 800;
+        }
+
+        .tier-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .tier-tab {
+            transition: all .2s ease;
+        }
+
+        @media (max-width: 640px) {
+            .current-tier-header {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+
+
+
+    <!-- =========================================================
+         PAGE HEADER
+    ========================================================= -->
+
+    <% var currentTierLabel=tierLabels[selectedTier] || selectedTier; var currentTierColor=tierColors[selectedTier]
+        || '#2563EB' ; %>
+
+        <div class="page-hd">
+
+            <div class="page-title">
+                <span>จัดการ</span>เกียรติบัตร
             </div>
-            <div class="cert-grid">
-                <% certTypes.forEach(function(ct) { %>
-                    <% var tmpl=(templates[tier] && templates[tier][ct.key]) ? templates[tier][ct.key] : null; %>
-                        <div class="cert-card">
 
-                            <!-- Head -->
-                            <div class="cert-card-head"
-                                style="background:<%= tierColors[tier] %>18;border-bottom:1px solid <%= tierColors[tier] %>22">
-                                <i class="ti <%= ct.icon %>" style="color:<%= ct.color %>"></i>
-                                <span style="color:<%= ct.color %>">เกียรติบัตร<%= ct.label %></span>
-                                <% if (tmpl && tmpl.background_url) { %>
-                                    <span
-                                        style="margin-left:auto;font-size:10px;color:#16A34A;background:#F0FDF4;padding:2px 8px;border-radius:999px;border:1px solid #BBF7D0">
-                                        <i class="ti ti-check"></i> มี background
+            <div class="current-tier-header" style="--tier-color:<%= currentTierColor %>;">
+                <div class="current-tier-icon">
+                    <i class="ti ti-trophy"></i>
+                </div>
+
+                <div class="current-tier-info">
+                    <div class="current-tier-label">
+                        กำลังจัดการเกียรติบัตร
+                    </div>
+
+                    <div class="current-tier-name">
+                        ระดับ <strong id="current-tier-name">
+                            <%= currentTierLabel %>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tier-tabs">
+                <% tiers.forEach(function(tier) { %>
+                    <a href="/board/certificates?tier=<%= tier %>"
+                        class="tier-tab <%= selectedTier === tier ? 'active' : '' %>" style="<%= selectedTier === tier
+                        ? 'background:' + tierColors[tier] + ';color:#fff;border-color:' + tierColors[tier]
+                        : ''
+                    %>">
+                        <%= tierLabels[tier] %>
+                    </a>
+                    <% }); %>
+            </div>
+
+        </div>
+
+        <!-- =========================================================
+     CERTIFICATE GRID
+========================================================= -->
+
+        <div class="cert-section">
+
+            <div class="cert-grid">
+
+
+                <% certTypes.forEach(function(ct) { %>
+
+
+                    <% var tpl=allTemplates.find(function(template) { return ( template.cert_type===ct.type &&
+                        template.tier===selectedTier ); }); var initialX=tpl && tpl.name_x !=null ? Number(tpl.name_x) :
+                        50; var initialY=tpl && tpl.name_y !=null ? Number(tpl.name_y) : 50; %>
+
+
+                        <!-- =================================================
+                 CARD
+            ================================================= -->
+
+                        <div class="cert-card" style="<%= ct.borderColor
+                    ? 'border-color:' + ct.borderColor
+                    : ''
+                %>">
+
+                            <!-- CARD HEADER -->
+                            <div class="cert-card-head" style="<%= ct.headBg
+                                ? 'background:' + ct.headBg
+                                : ''
+                            %>">
+                                <div class="cert-card-title">
+                                    <%= ct.label %>
+                                        <% if (ct.note) { %>
+                                            <small>
+                                                <%= ct.note %>
+                                            </small>
+                                            <% } %>
+                                </div>
+
+                                <% if (tpl && tpl.background_url) { %>
+                                    <span class="badge-has-bg">
+                                        ✓ มี Background
                                     </span>
                                     <% } %>
                             </div>
 
-                            <!-- Preview -->
-                            <div class="cert-preview" id="preview-<%= tmpl ? tmpl.id : tier+'-'+ct.key %>">
-                                <% if (tmpl && tmpl.background_url) { %>
-                                    <img src="<%= tmpl.background_url %>" alt="background">
-                                    <% if (tmpl) { %>
-                                        <div class="cert-name-dot"
-                                            style="left:<%= tmpl.name_x %>%;top:<%= tmpl.name_y %>%"></div>
+                            <!-- =================================================
+                     PREVIEW AREA
+                ================================================= -->
+
+                            <div class="cert-preview-area">
+
+
+                                <% if (tpl && tpl.background_url) { %>
+
+
+                                    <div class="cert-image-stage">
+
+
+                                        <img src="<%= tpl.background_url %>" alt="<%= ct.label %>" class="cert-preview">
+
+
+                                        <!-- =====================================
+                                 NAME MARKER
+                            ====================================== -->
+
+                                        <div class="name-marker" style="
+                                    left:<%= initialX %>%;
+                                    top:<%= initialY %>%;
+                                ">
+
+                                            <div class="marker-cross-x"></div>
+
+                                            <div class="marker-cross-y"></div>
+
+                                            <div class="marker-dot"></div>
+
+                                            <div class="marker-label">
+
+                                                <strong>
+                                                    ตำแหน่งชื่อ
+                                                </strong>
+
+                                                <span>
+                                                    X:
+                                                    <b class="marker-x">
+                                                        <%= initialX %>
+                                                    </b>%
+
+                                                    &nbsp;
+
+                                                    Y:
+                                                    <b class="marker-y">
+                                                        <%= initialY %>
+                                                    </b>%
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                    <% } else { %>
+
+
+                                        <div class="cert-no-bg">
+
+                                            <i class="ti ti-photo-off"></i>
+
+                                            <div>
+                                                ยังไม่มี Background
+                                            </div>
+
+                                        </div>
+
+
                                         <% } %>
-                                            <% } else { %>
-                                                <div class="cert-preview-empty">
-                                                    <i class="ti ti-photo-off"></i>
-                                                    <span>ยังไม่มี background</span>
-                                                </div>
-                                                <% } %>
+
+
                             </div>
 
-                            <!-- Form -->
-                            <div class="cert-body">
-                                <% if (tmpl) { %>
-                                    <form method="POST" action="/board/certificates/<%= tmpl.id %>"
-                                        enctype="multipart/form-data">
-                                        <div class="fg" style="margin-bottom:10px">
-                                            <div class="fl">Background (JPG/PNG, A4)</div>
-                                            <input class="fi" type="file" name="background" accept="image/*"
-                                                style="padding:6px">
-                                        </div>
-                                        <div
-                                            style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-                                            <div class="fg" style="margin-bottom:0">
-                                                <div class="fl">ตำแหน่ง X (%)</div>
-                                                <input class="fi" type="number" name="name_x" min="0" max="100"
-                                                    step="0.1" value="<%= tmpl.name_x || 50 %>">
-                                            </div>
-                                            <div class="fg" style="margin-bottom:0">
-                                                <div class="fl">ตำแหน่ง Y (%)</div>
-                                                <input class="fi" type="number" name="name_y" min="0" max="100"
-                                                    step="0.1" value="<%= tmpl.name_y || 45 %>">
-                                            </div>
-                                        </div>
-                                        <div
-                                            style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-                                            <div class="fg" style="margin-bottom:0">
-                                                <div class="fl">ขนาด font (px)</div>
-                                                <input class="fi" type="number" name="name_font_size" min="12" max="120"
-                                                    value="<%= tmpl.name_font_size || 48 %>">
-                                            </div>
-                                            <div class="fg" style="margin-bottom:0">
-                                                <div class="fl">สีตัวอักษร</div>
-                                                <input class="fi" type="color" name="name_color"
-                                                    value="<%= tmpl.name_color || '#000000' %>"
-                                                    style="height:40px;padding:4px">
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-sm" style="width:100%">
-                                            <i class="ti ti-device-floppy"></i> บันทึก
-                                        </button>
-                                    </form>
-                                    <% } else { %>
-                                        <div style="text-align:center;color:#94A3B8;font-size:12px;padding:8px">
-                                            ไม่พบ template — กรุณารัน SQL เพื่อสร้างข้อมูลเริ่มต้น
-                                        </div>
-                                        <% } %>
+
+
+                            <!-- =================================================
+                     FORM
+                ================================================= -->
+
+                            <div class="cert-card-foot">
+
+
+                                <form method="POST" action="/board/certificates/upload" enctype="multipart/form-data">
+
+
+                                    <input type="hidden" name="tier" value="<%= selectedTier %>">
+
+
+                                    <input type="hidden" name="cert_type" value="<%= ct.type %>">
+
+
+
+                                    <!-- =========================================
+                             FILE
+                        ========================================== -->
+
+                                    <label>
+                                        BACKGROUND (.JPG / .PNG, A4)
+                                    </label>
+
+
+                                    <input type="file" name="background" class="background-input"
+                                        accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+
+
+                                    <div class="selected-file">
+                                    </div>
+
+
+
+                                    <!-- =========================================
+                             POSITION
+                        ========================================== -->
+
+                                    <div class="pos-row">
+
+
+                                        <span class="pos-title">
+                                            ตำแหน่งชื่อ
+                                        </span>
+
+
+                                        <span class="pos-label">
+                                            X%:
+                                        </span>
+
+
+                                        <input type="number" name="name_x" class="pos-input name-x-input"
+                                            value="<%= initialX %>" min="0" max="100" step="1">
+
+
+                                        <span class="pos-label">
+                                            Y%:
+                                        </span>
+
+
+                                        <input type="number" name="name_y" class="pos-input name-y-input"
+                                            value="<%= initialY %>" min="0" max="100" step="1">
+
+                                    </div>
+
+
+
+                                    <!-- =========================================
+                             HINT
+                        ========================================== -->
+
+                                    <div class="position-hint">
+
+                                        🖱️ คลิกบนภาพเพื่อวางตำแหน่งชื่อ
+                                        <br>
+
+                                        หรือ ลากจุด 🔴 ไปยังตำแหน่งที่ต้องการ
+
+                                    </div>
+
+
+
+                                    <!-- =========================================
+                             SAVE
+                        ========================================== -->
+
+                                    <button type="submit" class="btn btn-primary btn-sm cert-save-btn">
+
+                                        <i class="ti ti-upload"></i>
+
+                                        บันทึก
+
+                                    </button>
+
+
+                                </form>
+
                             </div>
+
+
                         </div>
-                        <% }) %>
+
+
+                        <% }); %>
+
+
             </div>
+
         </div>
-        <% }) %>
+
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+
+                /* Sync the visible tier with the URL */
+                const params = new URLSearchParams(window.location.search);
+                const urlTier = params.get('tier');
+                const validTiers = ['beginner', 'intermediate', 'advance'];
+                const tierNames = {
+                    beginner: 'Beginner',
+                    intermediate: 'Intermediate',
+                    advance: 'Advance'
+                };
+
+                if (urlTier && validTiers.includes(urlTier)) {
+                    const tierName = document.getElementById('current-tier-name');
+                    if (tierName) {
+                        tierName.textContent = tierNames[urlTier];
+                    }
+
+                    document.querySelectorAll('.tier-tab').forEach(function (tab) {
+                        const href = tab.getAttribute('href') || '';
+                        const active = href.indexOf('tier=' + urlTier) !== -1;
+                        tab.classList.toggle('active', active);
+                    });
+                }
+
+                document.querySelectorAll('.cert-card').forEach(function (card) {
+
+                    /* =====================================================
+                       ELEMENTS
+                    ===================================================== */
+
+                    const previewArea =
+                        card.querySelector('.cert-preview-area');
+
+                    const fileInput =
+                        card.querySelector('.background-input');
+
+                    const selectedFile =
+                        card.querySelector('.selected-file');
+
+                    const inputX =
+                        card.querySelector('.name-x-input');
+
+                    const inputY =
+                        card.querySelector('.name-y-input');
+
+
+                    if (!previewArea || !fileInput || !inputX || !inputY) {
+                        return;
+                    }
+
+
+                    /* =====================================================
+                       POSITION
+                       ประกาศตรงนี้ก่อนทุก Function
+                       เพื่อไม่ให้เกิด Cannot access 'x' before initialization
+                    ===================================================== */
+
+                    let x = Number(inputX.value);
+
+                    let y = Number(inputY.value);
+
+
+                    if (Number.isNaN(x)) {
+                        x = 50;
+                    }
+
+                    if (Number.isNaN(y)) {
+                        y = 50;
+                    }
+
+
+                    /* =====================================================
+                       LIMIT VALUE
+                    ===================================================== */
+
+                    function clamp(value) {
+
+                        value = Number(value);
+
+                        if (Number.isNaN(value)) {
+                            return 50;
+                        }
+
+                        return Math.max(
+                            0,
+                            Math.min(100, value)
+                        );
+                    }
+
+
+                    /* =====================================================
+                       UPDATE INPUT
+                    ===================================================== */
+
+                    function updateInputs() {
+
+                        x = clamp(x);
+                        y = clamp(y);
+
+                        inputX.value = Math.round(x);
+                        inputY.value = Math.round(y);
+                    }
+
+
+                    /* =====================================================
+                       GET IMAGE STAGE
+                    ===================================================== */
+
+                    function getStage() {
+
+                        return card.querySelector(
+                            '.cert-image-stage'
+                        );
+
+                    }
+
+
+                    /* =====================================================
+                       GET MARKER
+                    ===================================================== */
+
+                    function getMarker() {
+
+                        return card.querySelector(
+                            '.name-marker'
+                        );
+
+                    }
+
+
+                    /* =====================================================
+                       UPDATE MARKER
+                    ===================================================== */
+
+                    function updateMarker() {
+
+                        const marker = getMarker();
+
+                        if (!marker) {
+                            return;
+                        }
+
+
+                        x = clamp(x);
+                        y = clamp(y);
+
+
+                        marker.style.left = x + '%';
+                        marker.style.top = y + '%';
+
+
+                        const markerX =
+                            marker.querySelector('.marker-x');
+
+                        const markerY =
+                            marker.querySelector('.marker-y');
+
+
+                        if (markerX) {
+                            markerX.textContent =
+                                Math.round(x);
+                        }
+
+
+                        if (markerY) {
+                            markerY.textContent =
+                                Math.round(y);
+                        }
+
+
+                        updateInputs();
+
+                    }
+
+
+                    /* =====================================================
+                       SET POSITION FROM MOUSE
+                    ===================================================== */
+
+                    function setPositionFromMouse(
+                        event,
+                        stage
+                    ) {
+
+                        if (!stage) {
+                            return;
+                        }
+
+
+                        const rect =
+                            stage.getBoundingClientRect();
+
+
+                        if (
+                            rect.width <= 0 ||
+                            rect.height <= 0
+                        ) {
+                            return;
+                        }
+
+
+                        x =
+                            (
+                                (event.clientX - rect.left)
+                                /
+                                rect.width
+                            ) * 100;
+
+
+                        y =
+                            (
+                                (event.clientY - rect.top)
+                                /
+                                rect.height
+                            ) * 100;
+
+
+                        updateMarker();
+
+                    }
+
+
+                    /* =====================================================
+                       CREATE MARKER
+                    ===================================================== */
+
+                    function createMarker(stage) {
+
+                        if (!stage) {
+                            return null;
+                        }
+
+
+                        let marker =
+                            stage.querySelector(
+                                '.name-marker'
+                            );
+
+
+                        if (marker) {
+                            return marker;
+                        }
+
+
+                        marker =
+                            document.createElement('div');
+
+
+                        marker.className =
+                            'name-marker';
+
+
+                        marker.innerHTML = `
+    
+                    <div class="marker-cross-x"></div>
+    
+                    <div class="marker-cross-y"></div>
+    
+                    <div class="marker-dot"></div>
+    
+                    <div class="marker-label">
+    
+                        <strong>
+                            ตำแหน่งชื่อ
+                        </strong>
+    
+                        <span>
+                            X:
+                            <b class="marker-x">
+                                ${Math.round(x)}
+                            </b>%
+    
+                            &nbsp;
+    
+                            Y:
+                            <b class="marker-y">
+                                ${Math.round(y)}
+                            </b>%
+                        </span>
+    
+                    </div>
+    
+                `;
+
+
+                        marker.style.left =
+                            x + '%';
+
+                        marker.style.top =
+                            y + '%';
+
+
+                        stage.appendChild(marker);
+
+
+                        setupMarker(
+                            stage,
+                            marker
+                        );
+
+
+                        return marker;
+
+                    }
+
+
+                    /* =====================================================
+                       MARKER DRAG
+                    ===================================================== */
+
+                    function setupMarker(
+                        stage,
+                        marker
+                    ) {
+
+                        if (
+                            !stage ||
+                            !marker ||
+                            marker.dataset.ready === '1'
+                        ) {
+                            return;
+                        }
+
+
+                        marker.dataset.ready = '1';
+
+
+                        let dragging = false;
+
+
+                        marker.addEventListener(
+                            'pointerdown',
+                            function (event) {
+
+                                dragging = true;
+
+                                marker.classList.add(
+                                    'dragging'
+                                );
+
+                                marker.setPointerCapture(
+                                    event.pointerId
+                                );
+
+                                event.preventDefault();
+
+                                event.stopPropagation();
+
+                            }
+                        );
+
+
+                        marker.addEventListener(
+                            'pointermove',
+                            function (event) {
+
+                                if (!dragging) {
+                                    return;
+                                }
+
+
+                                setPositionFromMouse(
+                                    event,
+                                    stage
+                                );
+
+                            }
+                        );
+
+
+                        marker.addEventListener(
+                            'pointerup',
+                            function (event) {
+
+                                dragging = false;
+
+                                marker.classList.remove(
+                                    'dragging'
+                                );
+
+
+                                try {
+
+                                    marker.releasePointerCapture(
+                                        event.pointerId
+                                    );
+
+                                } catch (error) { }
+
+                            }
+                        );
+
+
+                        marker.addEventListener(
+                            'pointercancel',
+                            function () {
+
+                                dragging = false;
+
+                                marker.classList.remove(
+                                    'dragging'
+                                );
+
+                            }
+                        );
+
+                    }
+
+
+                    /* =====================================================
+                       CLICK IMAGE
+                    ===================================================== */
+
+                    function setupStageClick(stage) {
+
+                        if (
+                            !stage ||
+                            stage.dataset.clickReady === '1'
+                        ) {
+                            return;
+                        }
+
+
+                        stage.dataset.clickReady = '1';
+
+
+                        stage.addEventListener(
+                            'click',
+                            function (event) {
+
+                                /*
+                                 * ถ้าคลิก Marker
+                                 * ไม่ต้องประมวลผลซ้ำ
+                                 */
+
+                                if (
+                                    event.target.closest(
+                                        '.name-marker'
+                                    )
+                                ) {
+                                    return;
+                                }
+
+
+                                setPositionFromMouse(
+                                    event,
+                                    stage
+                                );
+
+                            }
+                        );
+
+                    }
+
+
+                    /* =====================================================
+                       INITIALIZE EXISTING IMAGE
+                    ===================================================== */
+
+                    let stage =
+                        getStage();
+
+
+                    if (stage) {
+
+                        createMarker(stage);
+
+                        setupStageClick(stage);
+
+                        updateMarker();
+
+                    }
+
+
+                    /* =====================================================
+                       X INPUT
+                    ===================================================== */
+
+                    inputX.addEventListener(
+                        'input',
+                        function () {
+
+                            x = clamp(this.value);
+
+                            updateMarker();
+
+                        }
+                    );
+
+
+                    /* =====================================================
+                       Y INPUT
+                    ===================================================== */
+
+                    inputY.addEventListener(
+                        'input',
+                        function () {
+
+                            y = clamp(this.value);
+
+                            updateMarker();
+
+                        }
+                    );
+
+
+                    /* =====================================================
+                       FILE UPLOAD PREVIEW
+                    ===================================================== */
+
+                    fileInput.addEventListener(
+                        'change',
+                        function () {
+
+                            const file =
+                                this.files &&
+                                this.files[0];
+
+
+                            if (!file) {
+
+                                if (selectedFile) {
+
+                                    selectedFile.textContent =
+                                        '';
+
+                                    selectedFile.classList.remove(
+                                        'show'
+                                    );
+
+                                }
+
+                                return;
+
+                            }
+
+
+                            /* ---------------------------------------------
+                               CHECK FILE TYPE
+                            --------------------------------------------- */
+
+                            const allowedTypes = [
+                                'image/jpeg',
+                                'image/png'
+                            ];
+
+
+                            if (
+                                !allowedTypes.includes(
+                                    file.type
+                                )
+                            ) {
+
+                                alert(
+                                    'กรุณาเลือกไฟล์ JPG หรือ PNG เท่านั้น'
+                                );
+
+
+                                this.value = '';
+
+
+                                return;
+
+                            }
+
+
+                            /* ---------------------------------------------
+                               SHOW FILE NAME
+                            --------------------------------------------- */
+
+                            if (selectedFile) {
+
+                                selectedFile.textContent =
+                                    'ไฟล์ที่เลือก: ' +
+                                    file.name;
+
+                                selectedFile.classList.add(
+                                    'show'
+                                );
+
+                            }
+
+
+                            /* ---------------------------------------------
+                               CREATE IMAGE URL
+                            --------------------------------------------- */
+
+                            const objectUrl =
+                                URL.createObjectURL(file);
+
+
+                            /* ---------------------------------------------
+                               GET / CREATE IMAGE STAGE
+                            --------------------------------------------- */
+
+                            stage =
+                                getStage();
+
+
+                            if (!stage) {
+
+                                /*
+                                 * ยังไม่มี Background
+                                 * สร้าง Stage ใหม่
+                                 */
+
+                                const noBg =
+                                    previewArea.querySelector(
+                                        '.cert-no-bg'
+                                    );
+
+
+                                if (noBg) {
+                                    noBg.remove();
+                                }
+
+
+                                stage =
+                                    document.createElement(
+                                        'div'
+                                    );
+
+
+                                stage.className =
+                                    'cert-image-stage';
+
+
+                                previewArea.innerHTML = '';
+
+                                previewArea.appendChild(
+                                    stage
+                                );
+
+                            }
+
+
+                            /* ---------------------------------------------
+                               CREATE / UPDATE IMAGE
+                            --------------------------------------------- */
+
+                            let image =
+                                stage.querySelector(
+                                    '.cert-preview'
+                                );
+
+
+                            if (!image) {
+
+                                image =
+                                    document.createElement(
+                                        'img'
+                                    );
+
+
+                                image.className =
+                                    'cert-preview';
+
+
+                                image.alt =
+                                    'Certificate Background';
+
+
+                                stage.prepend(
+                                    image
+                                );
+
+                            }
+
+
+                            image.src =
+                                objectUrl;
+
+
+                            /* ---------------------------------------------
+                               CREATE MARKER
+                            --------------------------------------------- */
+
+                            createMarker(stage);
+
+                            setupStageClick(stage);
+
+                            updateMarker();
+
+
+                            /* ---------------------------------------------
+                               IMAGE LOADED
+                            --------------------------------------------- */
+
+                            image.onload = function () {
+
+                                URL.revokeObjectURL(
+                                    objectUrl
+                                );
+
+                                updateMarker();
+
+                            };
+
+                        }
+                    );
+
+                });
+
+            });
+        </script>

@@ -1,0 +1,298 @@
+<style>
+    .dm-wrap {
+        max-width: 760px;
+        padding: 20px 24px;
+    }
+
+    .dm-title {
+        margin: 0 0 6px;
+        color: #2563eb;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .dm-hint {
+        margin: 0 0 18px;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .dm-alert {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 14px;
+    }
+
+    .dm-ok {
+        background: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+
+    .dm-err {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+    }
+
+    .dm-section {
+        margin: 22px 0 10px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .dm-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 14px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, .04);
+    }
+
+    .dm-card-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #eef2f6;
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .dm-card-body {
+        padding: 14px 16px;
+    }
+
+    .dm-badge {
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        background: #f1f5f9;
+        color: #64748b;
+        white-space: nowrap;
+    }
+
+    .dm-badge-ok {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .dm-file {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #f8fafc;
+        font-size: 13px;
+    }
+
+    .dm-file a {
+        color: #2563eb;
+        font-weight: 600;
+        text-decoration: none;
+        word-break: break-all;
+    }
+
+    .dm-file a:hover {
+        text-decoration: underline;
+    }
+
+    .dm-file-meta {
+        color: #94a3b8;
+        margin-left: 6px;
+    }
+
+    .dm-file i {
+        color: #dc2626;
+        margin-right: 4px;
+    }
+
+    .dm-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .dm-input {
+        flex: 1;
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font: inherit;
+        font-size: 13px;
+        background: #fff;
+        box-sizing: border-box;
+    }
+
+    .dm-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border: 0;
+        border-radius: 8px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .dm-btn-primary {
+        background: #2563eb;
+        color: #fff;
+    }
+
+    .dm-btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .dm-btn-primary:disabled {
+        opacity: .6;
+        cursor: wait;
+    }
+
+    .dm-btn-outline {
+        background: #fff;
+        color: #2563eb;
+        border: 1px solid #bfdbfe;
+    }
+
+    .dm-btn-danger {
+        background: #fff;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .dm-btn-danger:hover {
+        background: #fef2f2;
+    }
+
+    .dm-details summary {
+        cursor: pointer;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .dm-details form {
+        margin-top: 10px;
+        display: grid;
+        gap: 8px;
+    }
+
+    .dm-details .dm-btn {
+        justify-self: start;
+    }
+</style>
+
+<div class="dm-wrap">
+    <h2 class="dm-title">จัดการเอกสาร</h2>
+    <p class="dm-hint">
+        ไฟล์ที่อัปโหลดจะแสดงที่หน้า /docs — รองรับเฉพาะ PDF ไม่เกิน <%= maxMb %>MB
+            อัปโหลดไฟล์ใหม่จะแทนที่ไฟล์เดิมทันที
+    </p>
+
+    <% if (ok) { %>
+        <div class="dm-alert dm-ok">
+            <%= ok %>
+        </div>
+        <% } %>
+            <% if (err) { %>
+                <div class="dm-alert dm-err">
+                    <%= err %>
+                </div>
+                <% } %>
+
+                    <% sections.forEach(function (sec) { %>
+                        <div class="dm-section">
+                            <%= sec.label %>
+                        </div>
+
+                        <% sec.docs.forEach(function (d) { %>
+                            <div class="dm-card">
+                                <div class="dm-card-head">
+                                    <span>
+                                        <%= d.title %>
+                                    </span>
+                                    <% if (d.file_url) { %>
+                                        <span class="dm-badge dm-badge-ok">มีไฟล์</span>
+                                        <% } else { %>
+                                            <span class="dm-badge">ยังไม่มีไฟล์</span>
+                                            <% } %>
+                                </div>
+
+                                <div class="dm-card-body">
+                                    <% if (d.file_url) { %>
+                                        <div class="dm-file">
+                                            <div>
+                                                <i class="ti ti-file-type-pdf"></i>
+                                                <a href="<%= d.file_url %>" target="_blank" rel="noopener">
+                                                    <%= d.original_name || 'ไฟล์ปัจจุบัน' %>
+                                                </a>
+                                                <span class="dm-file-meta">
+                                                    <%= d.sizeText %> · <%= d.dateText %>
+                                                </span>
+                                            </div>
+                                            <form method="POST" action="/board/documents/<%= d.doc_key %>/delete"
+                                                class="js-delete-form" data-title="<%= d.title %>">
+                                                <button type="submit" class="dm-btn dm-btn-danger"><i
+                                                        class="ti ti-trash"></i> ลบ</button>
+                                            </form>
+                                        </div>
+                                        <% } %>
+
+                                            <form method="POST" action="/board/documents/<%= d.doc_key %>/upload"
+                                                enctype="multipart/form-data" class="dm-row js-upload-form">
+                                                <input type="file" name="file" accept="application/pdf,.pdf"
+                                                    class="dm-input" required>
+                                                <button type="submit" class="dm-btn dm-btn-primary">
+                                                    <i class="ti ti-upload"></i>
+                                                    <%= d.file_url ? 'เปลี่ยนไฟล์' : 'อัปโหลด' %>
+                                                </button>
+                                            </form>
+
+                                            <details class="dm-details">
+                                                <summary>แก้ไขชื่อ / คำอธิบาย</summary>
+                                                <form method="POST" action="/board/documents/<%= d.doc_key %>/meta">
+                                                    <input name="title" value="<%= d.title %>" class="dm-input"
+                                                        placeholder="ชื่อเอกสาร" required>
+                                                    <input name="description" value="<%= d.description || '' %>"
+                                                        class="dm-input" placeholder="คำอธิบาย">
+                                                    <button type="submit" class="dm-btn dm-btn-outline"><i
+                                                            class="ti ti-device-floppy"></i> บันทึก</button>
+                                                </form>
+                                            </details>
+                                </div>
+                            </div>
+                            <% }); %>
+                                <% }); %>
+</div>
+
+<script>
+    (function () {
+        var uploads = document.querySelectorAll('.js-upload-form');
+        for (var i = 0; i < uploads.length; i++) {
+            uploads[i].addEventListener('submit', function () {
+                var btn = this.querySelector('button');
+                btn.disabled = true;
+                btn.innerHTML = 'กำลังอัปโหลด...';
+            });
+        }
+        var deletes = document.querySelectorAll('.js-delete-form');
+        for (var j = 0; j < deletes.length; j++) {
+            deletes[j].addEventListener('submit', function (e) {
+                if (!confirm('ลบไฟล์ของ "' + this.getAttribute('data-title') + '" ?')) e.preventDefault();
+            });
+        }
+    })();
+</script>

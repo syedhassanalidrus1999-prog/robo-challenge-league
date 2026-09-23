@@ -632,7 +632,7 @@
             display: flex;
             align-items: center;
             padding: 14px 20px;
-            border-bottom: 1px solid #F8FAFC;
+            border: 2px solid #edf2f7;
             gap: 14px;
         }
 
@@ -655,7 +655,7 @@
         }
 
         .student-info {
-            flex: 1;
+            flex: 0 0 auto;
         }
 
         .student-name {
@@ -740,10 +740,95 @@
         }
 
         .not-checked {
-            font: size 15px;
-            px;
+            font-size: 15px;
             color: #94A3B8;
             font-style: italic;
+        }
+
+        /* Medal Certificate */
+        .medal-cert {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .medal-cert-info {
+            flex: 1 1 220px;
+            min-width: 0;
+        }
+
+        .medal-cert-title {
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .medal-cert-score {
+            margin-top: 2px;
+            font-size: 11px;
+            color: #64748B;
+        }
+
+        .btn-medal {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 12px;
+            border-radius: 9px;
+            color: #fff;
+            font: 700 12px 'Sarabun', sans-serif;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: .15s;
+        }
+
+        .btn-medal:hover {
+            transform: translateY(-1px);
+            opacity: .9;
+        }
+
+        .medal-gold {
+            background: #FFFBEB;
+            border: 1.5px solid #F59E0B;
+        }
+
+        .medal-gold .medal-cert-title {
+            color: #92400E;
+        }
+
+        .medal-gold .btn-medal {
+            background: #D97706;
+        }
+
+        .medal-silver {
+            background: #F8FAFC;
+            border: 1.5px solid #94A3B8;
+        }
+
+        .medal-silver .medal-cert-title {
+            color: #334155;
+        }
+
+        .medal-silver .btn-medal {
+            background: #475569;
+        }
+
+        .medal-bronze {
+            background: #FFF7ED;
+            border: 1.5px solid #B45309;
+        }
+
+        .medal-bronze .medal-cert-title {
+            color: #7C2D12;
+        }
+
+        .medal-bronze .btn-medal {
+            background: #92400E;
         }
 
         .no-result {
@@ -827,6 +912,14 @@
             .btn-cert {
                 white-space: normal;
                 text-align: left
+            }
+
+            .medal-cert {
+                align-items: flex-start;
+            }
+
+            .btn-medal {
+                width: 100%;
             }
         }
     </style>
@@ -928,7 +1021,10 @@
             resultCard.classList.remove('show');
 
             fetch('/certificate/search?q=' + encodeURIComponent(q))
-                .then(function (r) { return r.json(); })
+                .then(function (r) {
+                    if (!r.ok) throw new Error('Search request failed: ' + r.status);
+                    return r.json();
+                })
                 .then(function (data) {
                     loading.style.display = 'none';
                     resultCard.classList.add('show');
@@ -982,8 +1078,9 @@
                                 html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=participation" target="_blank" class="btn-cert btn-participation">';
                                 html += '<i class="ti ti-download"></i> เกียรติบัตรเข้าร่วม';
                                 html += '</a>';
-                                for (var ci = 0; ci < team.team_cert_types.length; ci++) {
-                                    var ct = team.team_cert_types[ci];
+                                var certTypes = team.team_cert_types || [];
+                                for (var ci = 0; ci < certTypes.length; ci++) {
+                                    var ct = certTypes[ci];
                                     var ctClass = ct === '1st' ? 'btn-1st' : ct === '2nd' ? 'btn-2nd' : 'btn-3rd';
                                     var ctLabel = ct === '1st' ? '🥇 เกียรติบัตรชนะเลิศ' : ct === '2nd' ? '🥈 รองชนะเลิศ อันดับ 1' : '🥉 รองชนะเลิศ อันดับ 2';
                                     html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn-cert ' + ctClass + '">';
@@ -991,10 +1088,61 @@
                                     html += '</a>';
                                 }
                             } else {
-                                html += '<span class="not-checked"><i class="ti ti-clock"></i>ไม่ได้เข้ารวมงานแข่งขัน</span>';
+                                html += '<span class="not-checked"><i class="ti ti-clock"></i>ไม่ได้เข้าร่วมงานแข่งขัน</span>';
                             }
 
-                            // เกียรติบัตรอันดับ (ทุกคนในทีมได้)
+                            // เกียรติบัตรเหรียญทอง / เงิน / ทองแดง (ทุกคนในทีมได้)
+                            // รองรับชื่อ field หลายแบบจาก API เพื่อไม่ให้หน้าแตกหาก backend ใช้ snake_case
+                            var medal = team.medal || team.medal_type || team.medalType || '';
+                            var bestScore = Number(
+                                team.bestScore !== undefined ? team.bestScore :
+                                    team.best_score !== undefined ? team.best_score :
+                                        team.score !== undefined ? team.score : 0
+                            );
+                            var maxScore = Number(
+                                team.maxScore !== undefined ? team.maxScore :
+                                    team.max_score !== undefined ? team.max_score : 0
+                            );
+                            var medalLabel = team.medalLabel || team.medal_label || team.medalName || '';
+
+                            if (medal) {
+                                var medalTitle = medal === 'gold'
+                                    ? '🥇 คุณได้รับเกียรติบัตรทอง'
+                                    : medal === 'silver'
+                                        ? '🥈 คุณได้รับเกียรติบัตรเงิน'
+                                        : '🥉 คุณได้รับเกียรติบัตรทองแดง';
+
+                                var medalDownloadLabel = medal === 'gold'
+                                    ? 'ดาวน์โหลดเกียรติบัตรทอง'
+                                    : medal === 'silver'
+                                        ? 'ดาวน์โหลดเกียรติบัตรเงิน'
+                                        : 'ดาวน์โหลดเกียรติบัตรทองแดง';
+
+                                var medalClass = medal === 'gold'
+                                    ? 'medal-gold'
+                                    : medal === 'silver'
+                                        ? 'medal-silver'
+                                        : 'medal-bronze';
+
+                                var percent = maxScore > 0
+                                    ? Math.round((bestScore / maxScore) * 100)
+                                    : 0;
+
+                                var medalInfo = 'คะแนน ' + bestScore + ' / ' + maxScore + ' คะแนน (' + percent + '%)';
+                                if (medalLabel) medalInfo += ' — ' + medalLabel;
+
+                                html += '<div class="medal-cert ' + medalClass + '">';
+                                html += '<div class="medal-cert-info">';
+                                html += '<div class="medal-cert-title">' + medalTitle + '</div>';
+                                html += '<div class="medal-cert-score">' + medalInfo + '</div>';
+                                html += '</div>';
+
+                                // ใช้ endpoint เดียวกับระบบดาวน์โหลด Medal ที่คุณกำหนดไว้
+                                html += '<a href="/certificate/download?team_id=' + encodeURIComponent(team.id) + '&type=' + encodeURIComponent(medal) + '" target="_blank" class="btn-medal">';
+                                html += '<i class="ti ti-download"></i> ' + medalDownloadLabel;
+                                html += '</a>';
+                                html += '</div>';
+                            }
 
 
                             html += '</div></div>';
@@ -1009,7 +1157,8 @@
 
                     resultContent.innerHTML = html;
                 })
-                .catch(function () {
+                .catch(function (error) {
+                    console.error('Certificate search error:', error);
                     loading.style.display = 'none';
                     resultCard.classList.add('show');
                     resultContent.innerHTML = '<div class="no-result"><i class="ti ti-alert-circle"></i>เกิดข้อผิดพลาด กรุณาลองใหม่</div>';

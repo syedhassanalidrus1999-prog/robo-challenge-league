@@ -542,20 +542,49 @@ router.get("/competition", async (req, res) => {
 });
 
 // ─── GET /docs ────────────────────────────────────────────────────────────────
-router.get("/docs", (req, res) => {
+router.get("/docs", async (req, res) => {
+  // ไฟล์เดิมใน public/docs ใช้เป็น fallback ถ้ายังไม่ได้อัปโหลดผ่านหลังบ้าน
+  var FALLBACK = {
+    project: "/docs/โครงการROBO CHALLENGE LEAGUE 2026.pdf",
+    invitation: "/docs/หนังสือเชิญแข่งขันหุ่นยนต์RCL2026.pdf",
+    general_rules: "/docs/กติกาทั่วไป 2026.pdf",
+    rules_beginner: "/docs/กติกา Beginner 2026.pdf",
+    rules_intermediate: "/docs/กติกา Intermediate 2026.pdf",
+    rules_advance: "/docs/กติกา Advance 2026.pdf",
+  };
+
+  var urls = Object.assign({}, FALLBACK);
+  var meta = {};
+
+  try {
+    const result = await query(
+      "SELECT * FROM competition_documents ORDER BY sort_order",
+      [],
+    );
+    result.rows.forEach(function (row) {
+      meta[row.doc_key] = row;
+      if (row.file_url) urls[row.doc_key] = row.file_url;
+    });
+  } catch (err) {
+    console.error(err);
+  }
+
   return res.render("public/docs", {
     layout: "layouts/public",
     title: "เอกสาร",
+    // โครงสร้างเดิม ไม่ต้องแก้ view
     docs: {
-      project: "/docs/โครงการROBO CHALLENGE LEAGUE 2026.pdf",
-      invitation: "/docs/หนังสือเชิญแข่งขันหุ่นยนต์RCL2026.pdf",
-      basic: "/docs/กติกาทั่วไป 2026.pdf",
+      project: urls.project,
+      invitation: urls.invitation,
+      basic: urls.general_rules,
       rules: {
-        beginner: "/docs/กติกา Beginner 2026.pdf",
-        intermediate: "/docs/กติกา Intermediate 2026.pdf",
-        advance: "/docs/กติกา Advance 2026.pdf",
+        beginner: urls.rules_beginner,
+        intermediate: urls.rules_intermediate,
+        advance: urls.rules_advance,
       },
     },
+    // ชื่อ/คำอธิบายจากหลังบ้าน (ใช้ใน view ถ้าต้องการ)
+    docsMeta: meta,
   });
 });
 
