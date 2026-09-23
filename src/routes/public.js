@@ -563,7 +563,13 @@ router.get("/docs", async (req, res) => {
     );
     result.rows.forEach(function (row) {
       meta[row.doc_key] = row;
-      if (row.file_url) urls[row.doc_key] = "/docs/file/" + row.doc_key;
+      if (row.file_url) {
+        var fname =
+          (row.title || row.doc_key).replace(/[\\/:*?"<>|]/g, "").trim() +
+          ".pdf";
+        urls[row.doc_key] =
+          "/docs/file/" + row.doc_key + "/" + encodeURIComponent(fname);
+      }
     });
   } catch (err) {
     console.error(err);

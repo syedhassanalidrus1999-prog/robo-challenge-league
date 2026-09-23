@@ -216,38 +216,41 @@ router.post(
 );
 
 // ---------- ส่งไฟล์ให้หน้าเว็บ พร้อมตั้งชื่อไฟล์ ----------
-router.get('/docs/file/:key', async function (req, res) {
+router.get("/docs/file/:key/:name?", async function (req, res) {
   try {
     const doc = await getDoc(req.params.key);
-    if (!doc || !doc.file_url) return res.status(404).send('ไม่พบเอกสาร');
+    if (!doc || !doc.file_url) return res.status(404).send("ไม่พบเอกสาร");
 
-    var filename = (doc.title || doc.doc_key)
-      .replace(/[\\/:*?"<>|]/g, '')
-      .trim() + '.pdf';
+    var filename =
+      (doc.title || doc.doc_key).replace(/[\\/:*?"<>|]/g, "").trim() + ".pdf";
 
-    https.get(doc.file_url, function (upstream) {
-      if (upstream.statusCode !== 200) {
-        upstream.resume();
-        return res.status(502).send('ไม่สามารถโหลดไฟล์ได้ กรุณาลองใหม่');
-      }
-      res.setHeader('Content-Type', 'application/pdf');
-      if (upstream.headers['content-length']) {
-        res.setHeader('Content-Length', upstream.headers['content-length']);
-      }
-      // inline = เปิดดูในเบราว์เซอร์, filename* = รองรับชื่อภาษาไทย
-      res.setHeader(
-        'Content-Disposition',
-        'inline; filename="document.pdf"; filename*=UTF-8\'\'' + encodeURIComponent(filename)
-      );
-      res.setHeader('Cache-Control', 'public, max-age=300');
-      upstream.pipe(res);
-    }).on('error', function (e) {
-      console.error(e);
-      if (!res.headersSent) res.status(502).send('ไม่สามารถโหลดไฟล์ได้ กรุณาลองใหม่');
-    });
+    https
+      .get(doc.file_url, function (upstream) {
+        if (upstream.statusCode !== 200) {
+          upstream.resume();
+          return res.status(502).send("ไม่สามารถโหลดไฟล์ได้ กรุณาลองใหม่");
+        }
+        res.setHeader("Content-Type", "application/pdf");
+        if (upstream.headers["content-length"]) {
+          res.setHeader("Content-Length", upstream.headers["content-length"]);
+        }
+        // inline = เปิดดูในเบราว์เซอร์, filename* = รองรับชื่อภาษาไทย
+        res.setHeader(
+          "Content-Disposition",
+          "inline; filename=\"document.pdf\"; filename*=UTF-8''" +
+            encodeURIComponent(filename),
+        );
+        res.setHeader("Cache-Control", "public, max-age=300");
+        upstream.pipe(res);
+      })
+      .on("error", function (e) {
+        console.error(e);
+        if (!res.headersSent)
+          res.status(502).send("ไม่สามารถโหลดไฟล์ได้ กรุณาลองใหม่");
+      });
   } catch (e) {
     console.error(e);
-    if (!res.headersSent) res.status(500).send('Server error');
+    if (!res.headersSent) res.status(500).send("Server error");
   }
 });
 
