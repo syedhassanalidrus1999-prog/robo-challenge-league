@@ -1329,130 +1329,60 @@
         </div>
 
         <div class="content-grid">
-                        <div class="main-column">
-                            <% var meta=(typeof docsMeta !=='undefined' && docsMeta) ? docsMeta : {}; function metaTitle(key, fb) { var m=meta[key];
-                                return (m && m.title) ? m.title : fb; } function metaDesc(key, fb) { var m=meta[key]; return (m && m.description) ?
-                                m.description : fb; } var rules=docs.rules || {}; var generalDocs=[ { url: docs.project, icon: 'ti-file-description'
-                                , color: 'red' , accent: '#ef4444' , title: metaTitle('project', 'เอกสารโครงการ' ), desc:
-                                metaDesc('project', 'รายละเอียดโครงการ Robo Challenge League 2026' ) }, { url: docs.invitation, icon: 'ti-mail' ,
-                                color: 'blue' , accent: '#2563eb' , title: metaTitle('invitation', 'จดหมายเชิญเข้าร่วมการแข่งขัน' ), desc:
-                                metaDesc('invitation', 'จดหมายเชิญอย่างเป็นทางการสำหรับสถาบันการศึกษา' ) }, { url: docs.basic, icon: 'ti-book' ,
-                                color: 'yellow' , accent: '#f59e0b' , title: metaTitle('general_rules', 'กติกาทั่วไป' ), desc:
-                                metaDesc('general_rules', 'กฎ กติกา และเกณฑ์การให้คะแนนสำหรับการแข่งขันทุกรุ่น' ) } ]; var tierDocs=[ {
-                                tier: 'beginner' , url: rules.beginner, color: 'green' , accent: '#22c55e' , title:
-                                metaTitle('rules_beginner', 'กติกาการแข่งขัน — Beginner' ), desc:
-                                metaDesc('rules_beginner', 'กฎ กติกา และเกณฑ์การให้คะแนน รุ่น Beginner' ) }, { tier: 'intermediate' , url:
-                                rules.intermediate, color: 'blue' , accent: '#3b82f6' , title:
-                                metaTitle('rules_intermediate', 'กติกาการแข่งขัน — Intermediate' ), desc:
-                                metaDesc('rules_intermediate', 'กฎ กติกา และเกณฑ์การให้คะแนน รุ่น Intermediate' ) }, { tier: 'advance' , url:
-                                rules.advance, color: 'orange' , accent: '#ef4444' , title: metaTitle('rules_advance', 'กติกาการแข่งขัน — Advance'
-                                ), desc: metaDesc('rules_advance', 'กฎ กติกา และเกณฑ์การให้คะแนน รุ่น Advance' ) } ]; %>
+                                <div class="main-column">
                                 
-                                <!-- เอกสารทั่วไป -->
-                                <section class="section">
-                                    <div class="section-head">
-                                        <div>
-                                            <h2 class="section-title">เอกสารทั่วไป</h2>
-                                            <div class="section-subtitle">ข้อมูลหลักสำหรับสถานศึกษา โค้ช และผู้สมัคร</div>
+                                    <!-- เอกสารทั่วไป -->
+                                    <section class="section">
+                                        <div class="section-head">
+                                            <div>
+                                                <h2 class="section-title">เอกสารทั่วไป</h2>
+                                                <div class="section-subtitle">ข้อมูลหลักสำหรับสถานศึกษา โค้ช และผู้สมัคร</div>
+                                            </div>
+                                            <span class="section-count">
+                                                <%= generalDocs.length %> รายการ
+                                            </span>
                                         </div>
-                                        <span class="section-count">
-                                            <%= generalDocs.length %> รายการ
-                                        </span>
-                                    </div>
-                        
-                                    <div class="doc-list">
-                                        <% generalDocs.forEach(function (item) { %>
-                                            <% if (item.url) { %>
-                                                <a href="<%= item.url %>" target="_blank" rel="noopener" class="doc-card"
-                                                    style="--accent:<%= item.accent %>">
-                                                    <div class="doc-icon <%= item.color %>"><i class="ti <%= item.icon %>"></i></div>
-                                                    <div class="doc-info">
-                                                        <div class="doc-name">
-                                                            <%= item.title %>
-                                                        </div>
-                                                        <div class="doc-desc">
-                                                            <%= item.desc %>
-                                                        </div>
-                                                    </div>
-                                                    <div class="doc-btn"><i class="ti ti-download"></i> ดาวน์โหลด</div>
-                                                </a>
-                                                <% } else { %>
-                                                    <div class="doc-card">
-                                                        <div class="doc-icon <%= item.color %>"><i class="ti <%= item.icon %>"></i></div>
-                                                        <div class="doc-info">
-                                                            <div class="doc-name">
-                                                                <%= item.title %>
-                                                            </div>
-                                                            <div class="doc-desc">
-                                                                <%= item.desc %>
-                                                            </div>
-                                                        </div>
-                                                        <span class="coming-soon"><i class="ti ti-clock"></i> เร็ว ๆ นี้</span>
-                                                    </div>
-                                                    <% } %>
-                                                        <% }); %>
-                                    </div>
-                                </section>
-                        
-                                <!-- กติกาการแข่งขัน -->
-                                <section class="section">
-                                    <div class="section-head">
-                                        <div>
-                                            <h2 class="section-title">กติกาการแข่งขัน</h2>
-                                            <div class="section-subtitle">เลือกดูเอกสารตามรุ่นการแข่งขัน</div>
+                                        <div class="doc-list">
+                                            <% generalDocs.forEach(function (item) { %>
+                                                <%- include('_doc-card', { item: item }) %>
+                                                    <% }); %>
                                         </div>
-                                        <span class="section-count">3 รุ่น</span>
-                                    </div>
-                        
-                                    <div class="tier-tabs" role="tablist" aria-label="เลือกรุ่นการแข่งขัน">
-                                        <button class="tier-tab t-b active" role="tab" aria-selected="true"
-                                            onclick="switchTier('beginner', this)">
-                                            <span class="tier-dot"></span> Beginner
-                                        </button>
-                                        <button class="tier-tab t-i" role="tab" aria-selected="false"
-                                            onclick="switchTier('intermediate', this)">
-                                            <span class="tier-dot"></span> Intermediate
-                                        </button>
-                                        <button class="tier-tab t-a" role="tab" aria-selected="false" onclick="switchTier('advance', this)">
-                                            <span class="tier-dot"></span> Advance
-                                        </button>
-                                    </div>
-                        
-                                    <% tierDocs.forEach(function (item, idx) { %>
-                                        <div class="tier-content<%= idx === 0 ? ' active' : '' %>" id="tier-<%= item.tier %>" role="tabpanel">
-                                            <% if (item.url) { %>
-                                                <a href="<%= item.url %>" target="_blank" rel="noopener" class="doc-card"
-                                                    style="--accent:<%= item.accent %>">
-                                                    <div class="doc-icon <%= item.color %>"><i class="ti ti-clipboard-list"></i></div>
-                                                    <div class="doc-info">
-                                                        <div class="doc-name">
-                                                            <%= item.title %>
-                                                        </div>
-                                                        <div class="doc-desc">
-                                                            <%= item.desc %>
-                                                        </div>
-                                                    </div>
-                                                    <div class="doc-btn"><i class="ti ti-download"></i> ดาวน์โหลด</div>
-                                                </a>
-                                                <% } else { %>
-                                                    <div class="doc-card">
-                                                        <div class="doc-icon <%= item.color %>"><i class="ti ti-clipboard-list"></i></div>
-                                                        <div class="doc-info">
-                                                            <div class="doc-name">
-                                                                <%= item.title %>
-                                                            </div>
-                                                            <div class="doc-desc">
-                                                                <%= item.desc %>
-                                                            </div>
-                                                        </div>
-                                                        <span class="coming-soon"><i class="ti ti-clock"></i> เร็ว ๆ นี้</span>
-                                                    </div>
-                                                    <% } %>
+                                    </section>
+                                
+                                    <!-- เอกสารแยกรุ่น -->
+                                    <section class="section">
+                                        <div class="section-head">
+                                            <div>
+                                                <h2 class="section-title">เอกสารแยกรุ่น</h2>
+                                                <div class="section-subtitle">กติกาและวิธีต่อตัวภารกิจของแต่ละรุ่น</div>
+                                            </div>
+                                            <span class="section-count">3 รุ่น</span>
                                         </div>
-                                        <% }); %>
-                                </section>
-                        
-                        </div>
+                                
+                                        <div class="tier-tabs" role="tablist" aria-label="เลือกรุ่นการแข่งขัน">
+                                            <button class="tier-tab t-b active" role="tab" aria-selected="true" onclick="switchTier('beginner', this)">
+                                                <span class="tier-dot"></span> Beginner
+                                            </button>
+                                            <button class="tier-tab t-i" role="tab" aria-selected="false" onclick="switchTier('intermediate', this)">
+                                                <span class="tier-dot"></span> Intermediate
+                                            </button>
+                                            <button class="tier-tab t-a" role="tab" aria-selected="false" onclick="switchTier('advance', this)">
+                                                <span class="tier-dot"></span> Advance
+                                            </button>
+                                        </div>
+                                
+                                        <% tierDocs.forEach(function (t, idx) { %>
+                                            <div class="tier-content<%= idx === 0 ? ' active' : '' %>" id="tier-<%= t.tier %>" role="tabpanel">
+                                                <div class="doc-list">
+                                                    <% t.docs.forEach(function (item) { %>
+                                                        <%- include('_doc-card', { item: item }) %>
+                                                            <% }); %>
+                                                </div>
+                                            </div>
+                                            <% }); %>
+                                    </section>
+                                
+                                </div>
 
             <!-- Sidebar -->
             <aside class="side-card">

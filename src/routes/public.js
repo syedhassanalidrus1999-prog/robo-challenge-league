@@ -543,54 +543,73 @@ router.get("/competition", async (req, res) => {
 
 // ─── GET /docs ────────────────────────────────────────────────────────────────
 router.get("/docs", async (req, res) => {
-  // ไฟล์เดิมใน public/docs ใช้เป็น fallback ถ้ายังไม่ได้อัปโหลดผ่านหลังบ้าน
+  // ไฟล์เดิมใน public/docs — ลบ object นี้ได้เมื่ออัปโหลดครบผ่านหลังบ้านแล้ว
   var FALLBACK = {
     project: "/docs/โครงการROBO CHALLENGE LEAGUE 2026.pdf",
     invitation: "/docs/หนังสือเชิญแข่งขันหุ่นยนต์RCL2026.pdf",
     general_rules: "/docs/กติกาทั่วไป 2026.pdf",
     rules_beginner: "/docs/กติกา Beginner 2026.pdf",
     rules_intermediate: "/docs/กติกา Intermediate 2026.pdf",
-    rules_advance: "/docs/กติกา Advance 2026.pdf",
   };
 
-  var urls = Object.assign({}, FALLBACK);
-  var meta = {};
-
+  var rows = {};
   try {
-    const result = await query(
-      "SELECT * FROM competition_documents ORDER BY sort_order",
-      [],
-    );
-    result.rows.forEach(function (row) {
-      meta[row.doc_key] = row;
-      if (row.file_url) {
-        var fname =
-          (row.title || row.doc_key).replace(/[\\/:*?"<>|]/g, "").trim() +
-          ".pdf";
-        urls[row.doc_key] =
-          "/docs/file/" + row.doc_key + "/" + encodeURIComponent(fname);
-      }
+    const result = await query("SELECT * FROM competition_documents", []);
+    result.rows.forEach(function (r) {
+      rows[r.doc_key] = r;
     });
   } catch (err) {
     console.error(err);
   }
 
+  function makeDoc(key, fbTitle, fbDesc, icon, color, accent) {
+    var row = rows[key];
+    var title = (row && row.title) || fbTitle;
+    var url = null;
+    if (row && row.file_url) {
+      var fname = title.replace(/[\\/:*?"<>|]/g, "").trim() + ".pdf";
+      url = "/docs/file/" + key + "/" + encodeURIComponent(fname);
+    } else if (FALLBACK[key]) {
+      url = FALLBACK[key];
+    }
+    return {
+      key: key,
+      title: title,
+      desc: (row && row.description) || fbDesc,
+      url: url,
+      icon: icon,
+      color: color,
+      accent: accent,
+    };
+  }
+
+  var generalDocs = [
+    makeDoc("project", "เอกสารโครงการ", "รายละเอียดโครงการ Robo Challenge League 2026", "ti-file-description", "red", "#ef4444"),
+    makeDoc("invitation", "จดหมายเชิญเข้าร่วมการแข่งขัน", "จดหมายเชิญอย่างเป็นทางการสำหรับสถาบันการศึกษา", "ti-mail", "blue", "#2563eb"),
+    makeDoc("general_rules", "กติกาทั่วไป", "กฎ กติกา และเกณฑ์การให้คะแนนสำหรับการแข่งขันทุกรุ่น", "ti-book", "yellow", "#f59e0b"),
+  ];
+
+  var tierMeta = [
+    { tier: "beginner", label: "Beginner", color: "green", accent: "#22c55e" },
+    { tier: "intermediate", label: "Intermediate", color: "blue", accent: "#3b82f6" },
+    { tier: "advance", label: "Advance", color: "orange", accent: "#ef4444" },
+  ];
+
+  var tierDocs = tierMeta.map(function (t) {
+    return {
+      tier: t.tier,
+      docs: [
+        makeDoc("rules_" + t.tier, "กติกาการแข่งขัน — " + t.label, "กฎ กติกา และเกณฑ์การให้คะแนน รุ่น " + t.label, "ti-clipboard-list", t.color, t.accent),
+        makeDoc("build_" + t.tier, "วิธีต่อตัวภารกิจ — " + t.label, "คู่มือการประกอบชิ้นส่วนภารกิจ รุ่น " + t.label, "ti-puzzle", t.color, t.accent),
+      ],
+    };
+  });
+
   return res.render("public/docs", {
     layout: "layouts/public",
     title: "เอกสาร",
-    // โครงสร้างเดิม ไม่ต้องแก้ view
-    docs: {
-      project: urls.project,
-      invitation: urls.invitation,
-      basic: urls.general_rules,
-      rules: {
-        beginner: urls.rules_beginner,
-        intermediate: urls.rules_intermediate,
-        advance: urls.rules_advance,
-      },
-    },
-    // ชื่อ/คำอธิบายจากหลังบ้าน (ใช้ใน view ถ้าต้องการ)
-    docsMeta: meta,
+    generalDocs: generalDocs,
+    tierDocs: tierDocs,
   });
 });
 

@@ -1,0 +1,27 @@
+<% if (item.url) { %>
+    <a href="<%= item.url %>" target="_blank" rel="noopener" class="doc-card" style="--accent:<%= item.accent %>">
+        <div class="doc-icon <%= item.color %>"><i class="ti <%= item.icon %>"></i></div>
+        <div class="doc-info">
+            <div class="doc-name">
+                <%= item.title %>
+            </div>
+            <div class="doc-desc">
+                <%= item.desc %>
+            </div>
+        </div>
+        <div class="doc-btn"><i class="ti ti-download"></i> ดาวน์โหลด</div>
+    </a>
+    <% } else { %>
+        <div class="doc-card">
+            <div class="doc-icon <%= item.color %>"><i class="ti <%= item.icon %>"></i></div>
+            <div class="doc-info">
+                <div class="doc-name">
+                    <%= item.title %>
+                </div>
+                <div class="doc-desc">
+                    <%= item.desc %>
+                </div>
+            </div>
+            <span class="coming-soon"><i class="ti ti-clock"></i> เร็ว ๆ นี้</span>
+        </div>
+        <% } %>

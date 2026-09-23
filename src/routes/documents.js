@@ -81,17 +81,42 @@ router.get('/board/documents', requireAdmin, async function (req, res) {
       return d;
     });
 
-    return res.render('board/documents', {
-      // ไม่ใส่ layout → ใช้ layout default แบบเดียวกับ /board/settings
-      title: 'จัดการเอกสาร',
-      sections: [
-        { label: 'เอกสารทั่วไป', docs: docs.filter(function (d) { return d.section === 'general'; }) },
-        { label: 'กติกาการแข่งขัน (แยกรุ่น)', docs: docs.filter(function (d) { return d.section === 'rules'; }) }
-      ],
-      ok: req.query.ok || null,
-      err: req.query.err || null,
-      maxMb: MAX_MB
-    });
+        var byKey = {};
+        docs.forEach(function (d) {
+          byKey[d.doc_key] = d;
+        });
+        function pick(keys) {
+          return keys
+            .map(function (k) {
+              return byKey[k];
+            })
+            .filter(Boolean);
+        }
+
+        return res.render("board/documents", {
+          title: "จัดการเอกสาร",
+          sections: [
+            {
+              label: "เอกสารทั่วไป",
+              docs: pick(["project", "invitation", "general_rules"]),
+            },
+            {
+              label: "รุ่น Beginner",
+              docs: pick(["rules_beginner", "build_beginner"]),
+            },
+            {
+              label: "รุ่น Intermediate",
+              docs: pick(["rules_intermediate", "build_intermediate"]),
+            },
+            {
+              label: "รุ่น Advance",
+              docs: pick(["rules_advance", "build_advance"]),
+            },
+          ],
+          ok: req.query.ok || null,
+          err: req.query.err || null,
+          maxMb: MAX_MB,
+        });
   } catch (e) {
     console.error(e);
     return res.status(500).send('Server error');
