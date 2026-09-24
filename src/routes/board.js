@@ -363,71 +363,317 @@ router.get("/certificates", requireLogin, async (req, res) => {
   }
 });
 
-// ─── POST /board/certificates/:id ────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /board/certificates/upload
+// อัปโหลด Background + บันทึกตำแหน่งชื่อ
+// ─────────────────────────────────────────────────────────────────────────────
+
 router.post(
-  "/certificates/:id",
+  "/certificates/upload",
   requireLogin,
+
   function (req, res, next) {
-    certUpload.single("background")(req, res, function (err) {
-      if (err) {
-        console.error("Upload error:", err.message);
-        req.flash("error", "อัปโหลดไฟล์ไม่ได้");
-        return res.redirect("/board/certificates");
-      }
-      next();
-    });
+    certUpload.single("background")(
+      req,
+      res,
+      function (err) {
+        if (err) {
+          console.error(
+            "Certificate upload error:",
+            err,
+          );
+
+          req.flash(
+            "error",
+            err.message ||
+              "อัปโหลดไฟล์ไม่ได้",
+          );
+
+          return res.redirect(
+            "/board/certificates?tier=" +
+              encodeURIComponent(
+                req.body?.tier ||
+                  "beginner",
+              ),
+          );
+        }
+
+        next();
+      },
+    );
   },
+
   async (req, res) => {
-    const { id } = req.params;
-    const { name_x, name_y, name_font_size, name_color } = req.body;
+    const {
+      tier,
+      cert_type,
+      name_x,
+      name_y,
+      name_font_size,
+      name_color,
+    } = req.body;
+
     try {
-      var backgroundUrl = req.file ? req.file.path : null;
-      var updateFields = [];
-      var params = [];
-      var idx = 1;
+      // ------------------------------------------------------------
+      // ตรวจข้อมูลพื้นฐาน
+      // ------------------------------------------------------------
 
-      if (backgroundUrl) {
-        updateFields.push("background_url=$" + idx);
-        params.push(backgroundUrl);
-        idx++;
-      }
-      if (name_x) {
-        updateFields.push("name_x=$" + idx);
-        params.push(parseFloat(name_x));
-        idx++;
-      }
-      if (name_y) {
-        updateFields.push("name_y=$" + idx);
-        params.push(parseFloat(name_y));
-        idx++;
-      }
-      if (name_font_size) {
-        updateFields.push("name_font_size=$" + idx);
-        params.push(parseInt(name_font_size));
-        idx++;
-      }
-      if (name_color) {
-        updateFields.push("name_color=$" + idx);
-        params.push(name_color);
-        idx++;
-      }
+      if (!tier || !cert_type) {
+        req.flash(
+          "error",
+          "ข้อมูลประเภทเกียรติบัตรไม่ครบ",
+        );
 
-      if (updateFields.length > 0) {
-        params.push(parseInt(id));
-        await query(
-          "UPDATE certificate_templates SET " +
-            updateFields.join(", ") +
-            " WHERE id=$" +
-            idx,
-          params,
+        return res.redirect(
+          "/board/certificates?tier=" +
+            encodeURIComponent(
+              tier || "beginner",
+            ),
         );
       }
-      req.flash("success", "บันทึกแล้ว");
+
+      // ------------------------------------------------------------
+      // ต้องมีไฟล์
+      // ------------------------------------------------------------
+
+      const backgroundUrl =
+        req.file?.path || null;
+
+      // ------------------------------------------------------------
+      // หา Template เดิม
+      // ------------------------------------------------------------
+
+      const templateResult =
+        await query(
+          `
+          SELECT *
+          FROM certificate_templates
+          WHERE tier = $1
+            AND cert_type = $2
+          LIMIT 1
+          `,
+          [
+            tier,
+            cert_type,
+          ],
+        );
+
+      if (
+        !templateResult.rows.length
+      ) {
+        req.flash(
+          "error",
+          "ไม่พบ Template ของเกียรติบัตรประเภทนี้",
+        );
+
+        return res.redirect(
+          "/board/certificates?tier=" +
+            encodeURIComponent(tier),
+        );
+      }
+
+      const template =
+        templateResult.rows[0];
+
+      // ------------------------------------------------------------
+      // สร้าง UPDATE แบบ Dynamic
+      // ------------------------------------------------------------
+
+      const updateFields = [];
+      const params = [];
+      let idx = 1;
+
+      // Background
+      if (backgroundUrl) {
+        updateFields.push(
+          `background_url = $${idx}`,
+        );
+
+        params.push(
+          backgroundUrl,
+        );
+
+        idx++;
+      }
+
+      // X
+      if (
+        name_x !== undefined &&
+        name_x !== ""
+      ) {
+        const x =
+          parseFloat(name_x);
+
+        if (!Number.isFinite(x)) {
+          req.flash(
+            "error",
+            "ค่า X ไม่ถูกต้อง",
+          );
+
+          return res.redirect(
+            "/board/certificates?tier=" +
+              encodeURIComponent(
+                tier,
+              ),
+          );
+        }
+
+        updateFields.push(
+          `name_x = $${idx}`,
+        );
+
+        params.push(x);
+
+        idx++;
+      }
+
+      // Y
+      if (
+        name_y !== undefined &&
+        name_y !== ""
+      ) {
+        const y =
+          parseFloat(name_y);
+
+        if (!Number.isFinite(y)) {
+          req.flash(
+            "error",
+            "ค่า Y ไม่ถูกต้อง",
+          );
+
+          return res.redirect(
+            "/board/certificates?tier=" +
+              encodeURIComponent(
+                tier,
+              ),
+          );
+        }
+
+        updateFields.push(
+          `name_y = $${idx}`,
+        );
+
+        params.push(y);
+
+        idx++;
+      }
+
+      // Font size
+      if (
+        name_font_size !== undefined &&
+        name_font_size !== ""
+      ) {
+        const fontSize =
+          parseInt(
+            name_font_size,
+            10,
+          );
+
+        if (
+          !Number.isInteger(
+            fontSize,
+          )
+        ) {
+          req.flash(
+            "error",
+            "ขนาดตัวอักษรไม่ถูกต้อง",
+          );
+
+          return res.redirect(
+            "/board/certificates?tier=" +
+              encodeURIComponent(
+                tier,
+              ),
+          );
+        }
+
+        updateFields.push(
+          `name_font_size = $${idx}`,
+        );
+
+        params.push(
+          fontSize,
+        );
+
+        idx++;
+      }
+
+      // Font color
+      if (
+        name_color !== undefined &&
+        name_color !== ""
+      ) {
+        updateFields.push(
+          `name_color = $${idx}`,
+        );
+
+        params.push(
+          name_color,
+        );
+
+        idx++;
+      }
+
+      // ------------------------------------------------------------
+      // ไม่มีอะไรให้อัปเดต
+      // ------------------------------------------------------------
+
+      if (
+        updateFields.length === 0
+      ) {
+        req.flash(
+          "error",
+          "ไม่มีข้อมูลที่ต้องบันทึก",
+        );
+
+        return res.redirect(
+          "/board/certificates?tier=" +
+            encodeURIComponent(tier),
+        );
+      }
+
+      // ------------------------------------------------------------
+      // UPDATE โดยใช้ id จาก Database
+      // ------------------------------------------------------------
+
+      params.push(template.id);
+
+      await query(
+        `
+        UPDATE certificate_templates
+        SET ${updateFields.join(", ")}
+        WHERE id = $${idx}
+        `,
+        params,
+      );
+
+      req.flash(
+        "success",
+        "บันทึกเกียรติบัตรเรียบร้อยแล้ว",
+      );
+
+      return res.redirect(
+        "/board/certificates?tier=" +
+          encodeURIComponent(tier),
+      );
     } catch (err) {
-      console.error(err);
-      req.flash("error", "เกิดข้อผิดพลาด");
+      console.error(
+        "Save certificate template error:",
+        err,
+      );
+
+      req.flash(
+        "error",
+        "เกิดข้อผิดพลาดในการบันทึกเกียรติบัตร",
+      );
+
+      return res.redirect(
+        "/board/certificates?tier=" +
+          encodeURIComponent(
+            tier || "beginner",
+          ),
+      );
     }
-    res.redirect("/board/certificates");
   },
 );
 
