@@ -3,6 +3,23 @@ const router = express.Router();
 const { query } = require("../config/database");
 
 // ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ALLOWED_TYPES = [
+  "gold",
+  "silver",
+  "bronze",
+  "participation",
+  "rank_1",
+  "rank_2",
+  "rank_3",
+];
+
+// Arial ไม่มีตัวอักษรไทย → ใส่ฟอนต์ไทยไว้ก่อน
+const SVG_FONT = "Sarabun, Tahoma, 'Leelawadee UI', Arial, sans-serif";
+
+// ============================================================================
 // MEDAL
 // ============================================================================
 
@@ -15,7 +32,7 @@ function getMedalType(score, maxScore) {
   const pct = (s / m) * 100;
 
   if (pct > 80) return "gold";
-  if (pct >= 51) return "silver";
+  if (pct >= 51) return "silver"; // หมายเหตุ: 50.01–50.99% จะตกไป bronze
   if (pct >= 30) return "bronze";
 
   return null;
@@ -40,6 +57,10 @@ function escapeXml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function backToCertificatePage(teamId) {
+  return "/certificate?team_id=" + encodeURIComponent(teamId || "");
 }
 
 // ============================================================================
@@ -68,6 +89,27 @@ function hasAnyStudentCheckedIn(team) {
   return getStudentList(team).some((student) => student.checkedIn);
 }
 
+// หานักเรียนจาก studentName หรือ student_id
+// ต้องเป็นนักเรียนในทีมนี้เท่านั้น (กันการใส่ชื่อมั่ว)
+function resolveStudent(team, req) {
+  const students = getStudentList(team);
+
+  const rawName = req.query.studentName || req.query.student_name;
+
+  if (rawName && String(rawName).trim()) {
+    const name = String(rawName).trim();
+    return students.find((s) => s.name === name) || null;
+  }
+
+  const number = parseInt(req.query.student_id || req.query.student || "", 10);
+
+  if (Number.isInteger(number)) {
+    return students.find((s) => s.number === number) || null;
+  }
+
+  return null;
+}
+
 // ============================================================================
 // SCORE
 // ============================================================================
@@ -77,11 +119,7 @@ async function getMaxScore(tier) {
     `
       SELECT
         COALESCE(
-          SUM(
-            COALESCE(max_score, 0)
-            *
-            COALESCE(max_pieces, 1)
-          ),
+          SUM(COALESCE(max_score, 0) * COALESCE(max_pieces, 1)),
           0
         ) AS total
       FROM criteria
@@ -100,7 +138,6 @@ function getBestScore(scores) {
 
   return scores.reduce((best, score) => {
     const current = parseFloat(score.total_score || 0);
-
     return Math.max(best, current);
   }, 0);
 }
@@ -112,8 +149,11 @@ function getBestScore(scores) {
 // ใช้หลัก:
 // 1. คะแนนสูงสุดมาก่อน
 // 2. ถ้าคะแนนเท่ากัน เวลาน้อยกว่ามาก่อน
+//    - ถ้า R1 = R2 ใช้เวลาที่ดีที่สุดของทั้งสองรอบ
+// 3. ถ้ายังเท่ากัน เรียงตาม team id (ให้ผลคงที่ทุกครั้ง)
 //
-// ไม่กรอง is_published เพื่อให้ตรงกับหน้า Board ที่ใช้จัดอันดับ
+// ทีมที่ยังไม่มีคะแนน (best_score = 0) จะไม่ได้อันดับ (rank = null)
+// ไม่กรอง is_published เพื่อให้ตรงกับหน้า Board
 // ============================================================================
 
 async function getRanking(tier) {
@@ -138,10 +178,11 @@ async function getRanking(tier) {
         ) AS best_score,
 
         CASE
-          WHEN COALESCE(s1.total_score, 0)
-               >= COALESCE(s2.total_score, 0)
-          THEN COALESCE(s1.time_seconds, 999999)
-          ELSE COALESCE(s2.time_seconds, 999999)
+          WHEN COALESCE(s1.total_score, -1) > COALESCE(s2.total_score, -1)
+            THEN s1.time_seconds
+          WHEN COALESCE(s2.total_score, -1) > COALESCE(s1.total_score, -1)
+            THEN s2.time_seconds
+          ELSE LEAST(s1.time_seconds, s2.time_seconds)
         END AS best_time
 
       FROM teams t
@@ -158,30 +199,37 @@ async function getRanking(tier) {
 
       ORDER BY
         best_score DESC,
-        best_time ASC
+        best_time ASC NULLS LAST,
+        t.id ASC
     `,
     [tier],
   );
 
-  return result.rows.map((team, index) => ({
-    ...team,
-    rank: index + 1,
-  }));
+  let counter = 0;
+
+  return result.rows.map((team) => {
+    const hasScore = parseFloat(team.best_score || 0) > 0;
+
+    return {
+      ...team,
+      rank: hasScore ? ++counter : null,
+    };
+  });
 }
 
 async function getTeamRank(teamId, tier) {
   const ranking = await getRanking(tier);
 
-  const index = ranking.findIndex((team) => team.id === teamId);
+  const team = ranking.find((t) => String(t.id) === String(teamId));
 
-  if (index === -1) {
+  if (!team || team.rank === null) {
     return null;
   }
 
   return {
-    rank: index + 1,
-    totalTeams: ranking.length,
-    team: ranking[index],
+    rank: team.rank,
+    totalTeams: ranking.filter((t) => t.rank !== null).length,
+    team,
   };
 }
 
@@ -219,37 +267,6 @@ function rankFromType(type) {
 }
 
 // ============================================================================
-// CERTIFICATE NAME
-// ============================================================================
-
-function getCertificateName(team, req) {
-  const studentName = req.query.studentName || req.query.student_name || null;
-
-  if (studentName && String(studentName).trim()) {
-    return String(studentName).trim();
-  }
-
-  const studentNumber = parseInt(
-    req.query.student_id || req.query.student || "",
-    10,
-  );
-
-  if (
-    Number.isInteger(studentNumber) &&
-    studentNumber >= 1 &&
-    studentNumber <= 3
-  ) {
-    const name = team[`student_${studentNumber}`];
-
-    if (name) {
-      return String(name).trim();
-    }
-  }
-
-  return "";
-}
-
-// ============================================================================
 // TEMPLATE
 // ============================================================================
 
@@ -262,8 +279,162 @@ function findTemplate(templates, tier, certType) {
 }
 
 // ============================================================================
+// VALIDATE (ใช้ร่วมกันระหว่าง /download และ /generate)
+// ============================================================================
+
+function fail(status, message) {
+  return { ok: false, status, message };
+}
+
+async function validateCertificateRequest(req) {
+  const teamId = req.query.team_id || req.query.teamId;
+  const type = normalizeCertificateType(req.query.type || req.query.certType);
+
+  if (!teamId || !ALLOWED_TYPES.includes(type)) {
+    return fail(400, "ข้อมูลเกียรติบัตรไม่ถูกต้อง");
+  }
+
+  // ---------------- Team ----------------
+
+  const teamResult = await query(`SELECT * FROM teams WHERE id = $1 LIMIT 1`, [
+    teamId,
+  ]);
+
+  if (!teamResult.rows.length) {
+    return fail(404, "ไม่พบข้อมูลทีม");
+  }
+
+  const team = teamResult.rows[0];
+
+  // ---------------- Template ----------------
+
+  const templateResult = await query(
+    `
+      SELECT *
+      FROM certificate_templates
+      WHERE tier = $1
+        AND cert_type = $2
+      LIMIT 1
+    `,
+    [team.tier, type],
+  );
+
+  if (!templateResult.rows.length) {
+    console.error("Certificate template not found:", {
+      team_id: teamId,
+      tier: team.tier,
+      type,
+    });
+
+    return fail(404, "ยังไม่มี Template สำหรับเกียรติบัตรประเภทนี้");
+  }
+
+  const template = templateResult.rows[0];
+
+  // ---------------- Check-in ----------------
+
+  if (!hasAnyStudentCheckedIn(team)) {
+    return fail(403, "ทีมนี้ยังไม่มีผู้เข้าแข่งขัน Check-in");
+  }
+
+  // ---------------- Student ----------------
+
+  let student = resolveStudent(team, req);
+
+  // Participation ต้องระบุผู้เข้าแข่งขัน
+  if (type === "participation") {
+    if (!student) {
+      return fail(400, "ไม่พบชื่อผู้เข้าแข่งขันในทีมนี้");
+    }
+
+    if (!student.checkedIn) {
+      return fail(403, "ผู้เข้าแข่งขันยังไม่ได้ Check-in");
+    }
+  }
+
+  // Rank / Medal
+  // ถ้าไม่ได้ส่ง student มา ให้ใช้ผู้ที่ Check-in คนแรก
+  if (!student) {
+    student = getStudentList(team).find((s) => s.checkedIn);
+  }
+
+  if (!student) {
+    return fail(403, "ไม่พบผู้เข้าแข่งขันที่ Check-in");
+  }
+
+  // ---------------- Score ----------------
+
+  const scoresResult = await query(
+    `SELECT * FROM scores WHERE team_id = $1 ORDER BY round ASC`,
+    [teamId],
+  );
+
+  const maxScore = await getMaxScore(team.tier);
+  const bestScore = getBestScore(scoresResult.rows);
+
+  // ---------------- Medal ----------------
+
+  let medalLabel = null;
+
+  if (isMedalCertificate(type)) {
+    const medal = getMedalType(bestScore, maxScore);
+
+    if (medal !== type) {
+      return fail(403, "ทีมนี้ไม่มีสิทธิ์สำหรับเกียรติบัตรประเภทนี้");
+    }
+
+    medalLabel = getMedalLabel(medal);
+  }
+
+  // ---------------- Rank ----------------
+
+  let rank = null;
+
+  if (isRankCertificate(type)) {
+    const rankData = await getTeamRank(team.id, team.tier);
+
+    if (!rankData) {
+      return fail(403, "ไม่พบอันดับของทีม");
+    }
+
+    if (rankData.rank !== rankFromType(type)) {
+      return fail(403, "ทีมนี้ไม่มีสิทธิ์สำหรับเกียรติบัตรอันดับนี้");
+    }
+
+    rank = rankData.rank;
+  }
+
+  return {
+    ok: true,
+    type,
+    team,
+    template,
+    student,
+    bestScore,
+    maxScore,
+    medalLabel,
+    rank,
+  };
+}
+
+// ============================================================================
 // GENERATE SVG
 // ============================================================================
+
+function svgText({ y, size, fill, bold = false, content }) {
+  if (!content) return "";
+
+  return `
+  <text
+    x="50%"
+    y="${y}"
+    text-anchor="middle"
+    font-family="${SVG_FONT}"
+    font-size="${size}"
+    ${bold ? 'font-weight="700"' : ""}
+    fill="${fill}"
+  >${content}</text>`;
+}
 
 function createCertificateSvg({
   template,
@@ -279,51 +450,28 @@ function createCertificateSvg({
     throw new Error("CERTIFICATE_BACKGROUND_MISSING");
   }
 
-  const backgroundUrl = template.background_url;
+  const num = (value, fallback) =>
+    Number.isFinite(parseFloat(value)) ? parseFloat(value) : fallback;
 
-  const x = Number.isFinite(parseFloat(template.name_x))
-    ? parseFloat(template.name_x)
-    : 50;
-
-  const y = Number.isFinite(parseFloat(template.name_y))
-    ? parseFloat(template.name_y)
-    : 50;
-
-  const fontSize = Number.isFinite(parseFloat(template.name_font_size))
-    ? parseFloat(template.name_font_size)
-    : 48;
-
+  const x = num(template.name_x, 50);
+  const y = num(template.name_y, 50);
+  const fontSize = num(template.name_font_size, 48);
   const fontColor = template.name_color || "#111827";
 
-  const posX = `${x}%`;
-  const posY = `${y}%`;
+  const titles = {
+    participation: "CERTIFICATE OF PARTICIPATION",
+    rank_1: "FIRST PLACE",
+    rank_2: "SECOND PLACE",
+    rank_3: "THIRD PLACE",
+    gold: "GOLD MEDAL",
+    silver: "SILVER MEDAL",
+    bronze: "BRONZE MEDAL",
+  };
 
-  let titleText = "";
-
-  if (type === "participation") {
-    titleText = "CERTIFICATE OF PARTICIPATION";
-  } else if (type === "rank_1") {
-    titleText = "FIRST PLACE";
-  } else if (type === "rank_2") {
-    titleText = "SECOND PLACE";
-  } else if (type === "rank_3") {
-    titleText = "THIRD PLACE";
-  } else if (type === "gold") {
-    titleText = "GOLD MEDAL";
-  } else if (type === "silver") {
-    titleText = "SILVER MEDAL";
-  } else if (type === "bronze") {
-    titleText = "BRONZE MEDAL";
-  }
-
-  const safeBackground = escapeXml(backgroundUrl);
-
+  const safeBackground = escapeXml(template.background_url);
   const safeName = escapeXml(name);
-
-  const safeTitle = escapeXml(titleText);
-
+  const safeTitle = escapeXml(titles[type] || "");
   const safeTeam = escapeXml(team.name || "");
-
   const safeInstitution = escapeXml(team.institution || "");
 
   const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
@@ -334,11 +482,12 @@ function createCertificateSvg({
       : "";
 
   const safeRank = rank && rank <= 3 ? escapeXml(`อันดับ ${rank}`) : "";
-
   const safeMedal = escapeXml(medalLabel || "");
 
-  return `<?xml version="1.0" encoding="UTF-8"?>
+  // rank กับ medal ไม่มีทางมีพร้อมกัน → ใช้ตำแหน่ง 86% ร่วมกัน
+  const safeBadge = safeRank || safeMedal;
 
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <svg
   xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -346,128 +495,31 @@ function createCertificateSvg({
   height="2480"
   viewBox="0 0 3508 2480"
 >
-
   <image
     href="${safeBackground}"
+    xlink:href="${safeBackground}"
     x="0"
     y="0"
     width="3508"
     height="2480"
     preserveAspectRatio="xMidYMid slice"
   />
+${svgText({ y: "20%", size: 64, fill: "#111827", bold: true, content: safeTitle })}
 
   <text
-    x="50%"
-    y="20%"
-    text-anchor="middle"
-    font-family="Arial, sans-serif"
-    font-size="64"
-    font-weight="700"
-    fill="#111827"
-  >
-    ${safeTitle}
-  </text>
-
-  <text
-    x="${posX}"
-    y="${posY}"
+    x="${x}%"
+    y="${y}%"
     text-anchor="middle"
     dominant-baseline="middle"
-    font-family="Arial, sans-serif"
+    font-family="${SVG_FONT}"
     font-size="${fontSize}"
     font-weight="700"
     fill="${escapeXml(fontColor)}"
-  >
-    ${safeName}
-  </text>
-
-  ${
-    safeTeam
-      ? `
-  <text
-    x="50%"
-    y="76%"
-    text-anchor="middle"
-    font-family="Arial, sans-serif"
-    font-size="38"
-    fill="#334155"
-  >
-    ${safeTeam}
-  </text>
-  `
-      : ""
-  }
-
-  ${
-    safeInstitution
-      ? `
-  <text
-    x="50%"
-    y="80%"
-    text-anchor="middle"
-    font-family="Arial, sans-serif"
-    font-size="32"
-    fill="#64748B"
-  >
-    ${safeInstitution}
-  </text>
-  `
-      : ""
-  }
-
-  ${
-    safeRank
-      ? `
-  <text
-    x="50%"
-    y="86%"
-    text-anchor="middle"
-    font-family="Arial, sans-serif"
-    font-size="34"
-    font-weight="700"
-    fill="#111827"
-  >
-    ${safeRank}
-  </text>
-  `
-      : ""
-  }
-
-  ${
-    safeMedal
-      ? `
-  <text
-    x="50%"
-    y="86%"
-    text-anchor="middle"
-    font-family="Arial, sans-serif"
-    font-size="34"
-    font-weight="700"
-    fill="#111827"
-  >
-    ${safeMedal}
-  </text>
-  `
-      : ""
-  }
-
-  ${
-    safeScore
-      ? `
-  <text
-    x="50%"
-    y="91%"
-    text-anchor="middle"
-    font-family="Arial, sans-serif"
-    font-size="28"
-    fill="#64748B"
-  >
-    ${safeScore}
-  </text>
-  `
-      : ""
-  }
-
+  >${safeName}</text>
+${svgText({ y: "76%", size: 38, fill: "#334155", content: safeTeam })}
+${svgText({ y: "80%", size: 32, fill: "#64748B", content: safeInstitution })}
+${svgText({ y: "86%", size: 34, fill: "#111827", bold: true, content: safeBadge })}
+${svgText({ y: "91%", size: 28, fill: "#64748B", content: safeScore })}
 </svg>`;
 }
 
@@ -513,21 +565,10 @@ router.get("/", async (req, res) => {
   }
 
   try {
-    const [teamResult, scoresResult, templatesResult] = await Promise.all([
-      query("SELECT * FROM teams WHERE id=$1", [team_id]),
-
-      query(
-        `
-        SELECT *
-        FROM scores
-        WHERE team_id=$1
-        ORDER BY round ASC
-        `,
-        [team_id],
-      ),
-
-      query("SELECT * FROM certificate_templates", []),
-    ]);
+    const teamResult = await query(
+      `SELECT * FROM teams WHERE id = $1 LIMIT 1`,
+      [team_id],
+    );
 
     if (!teamResult.rows.length) {
       return emptyRender("ไม่พบข้อมูลทีม");
@@ -535,24 +576,27 @@ router.get("/", async (req, res) => {
 
     const team = teamResult.rows[0];
 
-    const scores = scoresResult.rows;
+    // หน้านี้ต้องใช้ Template ทุกประเภทของ tier นี้
+    const [templatesResult, scoresResult, maxScore, rankData] =
+      await Promise.all([
+        query(`SELECT * FROM certificate_templates WHERE tier = $1`, [
+          team.tier,
+        ]),
+        query(`SELECT * FROM scores WHERE team_id = $1 ORDER BY round ASC`, [
+          team_id,
+        ]),
+        getMaxScore(team.tier),
+        getTeamRank(team.id, team.tier),
+      ]);
 
     const templates = templatesResult.rows;
-
-    const maxScore = await getMaxScore(team.tier);
+    const scores = scoresResult.rows;
 
     const bestScore = getBestScore(scores);
-
     const medal = getMedalType(bestScore, maxScore);
-
     const medalLabel = getMedalLabel(medal);
-
     const medalPct =
       maxScore > 0 ? Math.round((bestScore / maxScore) * 100) : 0;
-
-    const checkedIn = hasAnyStudentCheckedIn(team);
-
-    const rankData = await getTeamRank(team.id, team.tier);
 
     const tpl = (certType) => findTemplate(templates, team.tier, certType);
 
@@ -561,7 +605,7 @@ router.get("/", async (req, res) => {
 
       team,
       scores,
-      checkedIn,
+      checkedIn: hasAnyStudentCheckedIn(team),
 
       bestScore,
       maxScore,
@@ -575,15 +619,11 @@ router.get("/", async (req, res) => {
       participationTemplate: tpl("participation"),
 
       rank1Template: tpl("rank_1"),
-
       rank2Template: tpl("rank_2"),
-
       rank3Template: tpl("rank_3"),
 
       goldTemplate: tpl("gold"),
-
       silverTemplate: tpl("silver"),
-
       bronzeTemplate: tpl("bronze"),
 
       errorMsg: null,
@@ -603,9 +643,7 @@ router.get("/search", async (req, res) => {
   const q = String(req.query.q || "").trim();
 
   if (!q) {
-    return res.json({
-      teams: [],
-    });
+    return res.json({ teams: [] });
   }
 
   try {
@@ -618,94 +656,90 @@ router.get("/search", async (req, res) => {
         WHERE
           (
             LOWER(id) LIKE LOWER($1)
-            OR LOWER(REPLACE(id, '_', ' '))
-              LIKE LOWER($2)
+            OR LOWER(REPLACE(id, '_', ' ')) LIKE LOWER($2)
             OR LOWER(name) LIKE LOWER($3)
             OR LOWER(institution) LIKE LOWER($3)
           )
         ORDER BY created_at ASC
         LIMIT 50
-        `,
+      `,
       [`%${searchText}%`, `%${q}%`, `%${q}%`],
     );
 
-    const teams = [];
+    const foundTeams = result.rows;
 
-    for (const team of result.rows) {
-      // ------------------------------------------------------------
-      // Students
-      // ------------------------------------------------------------
+    if (!foundTeams.length) {
+      return res.json({ teams: [] });
+    }
 
+    // ------------------------------------------------------------
+    // ดึงข้อมูลครั้งเดียวต่อ tier แทนการ query ซ้ำทุกทีม
+    // ------------------------------------------------------------
+
+    const tiers = [...new Set(foundTeams.map((t) => t.tier))];
+
+    const rankByTier = new Map();
+    const maxScoreByTier = new Map();
+
+    await Promise.all(
+      tiers.map(async (tier) => {
+        const [ranking, maxScore] = await Promise.all([
+          getRanking(tier),
+          getMaxScore(tier),
+        ]);
+
+        rankByTier.set(
+          tier,
+          new Map(ranking.map((t) => [String(t.id), t.rank])),
+        );
+        maxScoreByTier.set(tier, maxScore);
+      }),
+    );
+
+    // Scores ของทุกทีมใน query เดียว
+    const scoresResult = await query(
+      `
+        SELECT *
+        FROM scores
+        WHERE team_id = ANY($1)
+        ORDER BY round ASC
+      `,
+      [foundTeams.map((t) => t.id)],
+    );
+
+    const scoresByTeam = new Map();
+
+    for (const score of scoresResult.rows) {
+      const key = String(score.team_id);
+      if (!scoresByTeam.has(key)) scoresByTeam.set(key, []);
+      scoresByTeam.get(key).push(score);
+    }
+
+    // ------------------------------------------------------------
+    // Build result
+    // ------------------------------------------------------------
+
+    const teams = foundTeams.map((team) => {
       const students = getStudentList(team).map((student) => ({
         name: student.name,
         checked_in: student.checkedIn,
         number: student.number,
       }));
 
-      // ------------------------------------------------------------
-      // Ranking
-      // ------------------------------------------------------------
+      const rank = rankByTier.get(team.tier)?.get(String(team.id)) ?? null;
 
-      let rank = null;
-
-      try {
-        const rankData = await getTeamRank(team.id, team.tier);
-
-        if (rankData) {
-          rank = rankData.rank;
-        }
-      } catch (rankError) {
-        console.error("Certificate search rank error:", rankError);
-      }
-
-      // ------------------------------------------------------------
       // Rank certificate ONLY
-      // ------------------------------------------------------------
-
+      // Medal ไม่ใส่ใน team_cert_types เพราะหน้าเว็บแสดง Medal แยกเอง
       const teamCertTypes = [];
+      if (rank === 1) teamCertTypes.push("1st");
+      if (rank === 2) teamCertTypes.push("2nd");
+      if (rank === 3) teamCertTypes.push("3rd");
 
-      if (rank === 1) {
-        teamCertTypes.push("1st");
-      }
-
-      if (rank === 2) {
-        teamCertTypes.push("2nd");
-      }
-
-      if (rank === 3) {
-        teamCertTypes.push("3rd");
-      }
-
-      // ------------------------------------------------------------
-      // Scores / Medal
-      //
-      // Medal ไม่ใส่ใน team_cert_types
-      // เพราะหน้าเว็บแสดง Medal แยกเอง
-      // ------------------------------------------------------------
-
-      const scoresResult = await query(
-        `
-            SELECT *
-            FROM scores
-            WHERE team_id=$1
-            ORDER BY round ASC
-            `,
-        [team.id],
-      );
-
-      const scores = scoresResult.rows;
-
-      const maxScore = await getMaxScore(team.tier);
-
-      const bestScore = getBestScore(scores);
-
+      const maxScore = maxScoreByTier.get(team.tier) || 0;
+      const bestScore = getBestScore(scoresByTeam.get(String(team.id)));
       const medal = getMedalType(bestScore, maxScore);
 
-      // ------------------------------------------------------------
-      // Result
-      // ------------------------------------------------------------
-
-      teams.push({
+      return {
         id: team.id,
         name: team.name,
         institution: team.institution,
@@ -718,20 +752,16 @@ router.get("/search", async (req, res) => {
         team_cert_types: teamCertTypes,
 
         best_score: bestScore,
-
         max_score: maxScore,
 
         medal,
-
         medalLabel: getMedalLabel(medal),
 
         checkedIn: hasAnyStudentCheckedIn(team),
-      });
-    }
-
-    return res.json({
-      teams,
+      };
     });
+
+    return res.json({ teams });
   } catch (err) {
     console.error("Certificate search error:", err);
 
@@ -745,171 +775,33 @@ router.get("/search", async (req, res) => {
 // ============================================================================
 // GET /certificate/download
 // ============================================================================
+//
+// ตรวจสิทธิ์ แล้ว redirect ไป /generate
+// ถ้าไม่ผ่าน → กลับไปหน้า Certificate
+// ============================================================================
 
 router.get("/download", async (req, res) => {
-  const team_id = req.query.team_id || req.query.teamId;
-
-  let type = req.query.type || req.query.certType;
-
-  // หน้า EJS เดิมใช้ 1st / 2nd / 3rd
-  // ระบบภายในใช้ rank_1 / rank_2 / rank_3
-  type = normalizeCertificateType(type);
-
-  const allowedTypes = [
-    "gold",
-    "silver",
-    "bronze",
-    "participation",
-    "rank_1",
-    "rank_2",
-    "rank_3",
-  ];
-
-  if (!team_id || !allowedTypes.includes(type)) {
-    return res.redirect(
-      "/certificate?team_id=" + encodeURIComponent(team_id || ""),
-    );
-  }
+  const teamId = req.query.team_id || req.query.teamId || "";
 
   try {
-    const [teamResult, templateResult, scoresResult] = await Promise.all([
-      query("SELECT * FROM teams WHERE id=$1", [team_id]),
+    const result = await validateCertificateRequest(req);
 
-      query(
-        `
-          SELECT *
-          FROM certificate_templates
-          WHERE tier = (
-            SELECT tier
-            FROM teams
-            WHERE id=$1
-          )
-          AND cert_type=$2
-          `,
-        [team_id, type],
-      ),
-
-      query(
-        `
-          SELECT *
-          FROM scores
-          WHERE team_id=$1
-          ORDER BY round ASC
-          `,
-        [team_id],
-      ),
-    ]);
-
-    if (!teamResult.rows.length || !templateResult.rows.length) {
-      return res.redirect(
-        "/certificate?team_id=" + encodeURIComponent(team_id),
-      );
+    if (!result.ok) {
+      return res.redirect(backToCertificatePage(teamId));
     }
 
-    const team = teamResult.rows[0];
-
-    const students = getStudentList(team);
-
-    const scores = scoresResult.rows;
-
-    // ------------------------------------------------------------
-    // Check-in
-    // ------------------------------------------------------------
-
-    if (!hasAnyStudentCheckedIn(team)) {
-      return res.redirect(
-        "/certificate?team_id=" + encodeURIComponent(team_id),
-      );
-    }
-
-    // ------------------------------------------------------------
-    // Participation
-    // ------------------------------------------------------------
-
-    if (type === "participation") {
-      const studentName = getCertificateName(team, req);
-
-      if (!studentName) {
-        return res.redirect(
-          "/certificate?team_id=" + encodeURIComponent(team_id),
-        );
-      }
-
-      const student = students.find((item) => item.name === studentName);
-
-      if (!student || !student.checkedIn) {
-        return res.redirect(
-          "/certificate?team_id=" + encodeURIComponent(team_id),
-        );
-      }
-    }
-
-    // ------------------------------------------------------------
-    // Score
-    // ------------------------------------------------------------
-
-    const maxScore = await getMaxScore(team.tier);
-
-    const bestScore = getBestScore(scores);
-
-    // ------------------------------------------------------------
-    // Medal
-    // ------------------------------------------------------------
-
-    if (isMedalCertificate(type)) {
-      const actualMedal = getMedalType(bestScore, maxScore);
-
-      if (actualMedal !== type) {
-        return res.redirect(
-          "/certificate?team_id=" + encodeURIComponent(team_id),
-        );
-      }
-    }
-
-    // ------------------------------------------------------------
-    // Rank
-    // ------------------------------------------------------------
-
-    if (isRankCertificate(type)) {
-      const rankData = await getTeamRank(team.id, team.tier);
-
-      if (!rankData) {
-        return res.redirect(
-          "/certificate?team_id=" + encodeURIComponent(team_id),
-        );
-      }
-
-      const requiredRank = rankFromType(type);
-
-      if (rankData.rank !== requiredRank) {
-        return res.redirect(
-          "/certificate?team_id=" + encodeURIComponent(team_id),
-        );
-      }
-    }
-
-    // ------------------------------------------------------------
-    // Generate
-    // ------------------------------------------------------------
-
-    const params = new URLSearchParams();
-
-    params.set("team_id", team_id);
-
-    params.set("type", type);
-
-    if (req.query.studentName || req.query.student_name) {
-      params.set(
-        "studentName",
-        req.query.studentName || req.query.student_name,
-      );
-    }
+    // ส่งต่อด้วย student_id (ตัวเลข) แทนชื่อ → ไม่มีปัญหา encoding ภาษาไทย
+    const params = new URLSearchParams({
+      team_id: String(result.team.id),
+      type: result.type,
+      student_id: String(result.student.number),
+    });
 
     return res.redirect(`/certificate/generate?${params.toString()}`);
   } catch (err) {
     console.error("Certificate download error:", err);
 
-    return res.redirect("/certificate?team_id=" + encodeURIComponent(team_id));
+    return res.redirect(backToCertificatePage(teamId));
   }
 });
 
@@ -918,177 +810,46 @@ router.get("/download", async (req, res) => {
 // ============================================================================
 
 router.get("/generate", async (req, res) => {
-  const team_id = req.query.team_id || req.query.teamId;
-
-  let type = req.query.type || req.query.certType;
-
-  type = normalizeCertificateType(type);
-
-  const allowedTypes = [
-    "gold",
-    "silver",
-    "bronze",
-    "participation",
-    "rank_1",
-    "rank_2",
-    "rank_3",
-  ];
-
-  if (!team_id || !allowedTypes.includes(type)) {
-    return res.status(400).send("ข้อมูลเกียรติบัตรไม่ถูกต้อง");
-  }
-
   try {
-    const [teamResult, templateResult, scoresResult] = await Promise.all([
-      query("SELECT * FROM teams WHERE id=$1", [team_id]),
+    const result = await validateCertificateRequest(req);
 
-      query(
-        `
-          SELECT *
-          FROM certificate_templates
-          WHERE tier = (
-            SELECT tier
-            FROM teams
-            WHERE id=$1
-          )
-          AND cert_type=$2
-          `,
-        [team_id, type],
-      ),
-
-      query(
-        `
-          SELECT *
-          FROM scores
-          WHERE team_id=$1
-          ORDER BY round ASC
-          `,
-        [team_id],
-      ),
-    ]);
-
-    if (!teamResult.rows.length) {
-      return res.status(404).send("ไม่พบข้อมูลทีม");
+    if (!result.ok) {
+      return res.status(result.status).send(result.message);
     }
 
-    if (!templateResult.rows.length) {
-      return res
-        .status(404)
-        .send("ยังไม่มี Template สำหรับเกียรติบัตรประเภทนี้");
-    }
-
-    const team = teamResult.rows[0];
-
-    const template = templateResult.rows[0];
-
-    const scores = scoresResult.rows;
-
-    // ------------------------------------------------------------
-    // Check-in
-    // ------------------------------------------------------------
-
-    if (!hasAnyStudentCheckedIn(team)) {
-      return res.status(403).send("ทีมนี้ยังไม่มีผู้เข้าแข่งขัน Check-in");
-    }
-
-    // ------------------------------------------------------------
-    // Participation
-    // ------------------------------------------------------------
-
-    const certificateName = getCertificateName(team, req);
-
-    if (!certificateName) {
-      return res.status(400).send("ไม่พบชื่อสำหรับเกียรติบัตร");
-    }
-
-    if (type === "participation") {
-      const students = getStudentList(team);
-
-      const student = students.find((item) => item.name === certificateName);
-
-      if (!student || !student.checkedIn) {
-        return res.status(403).send("ผู้เข้าแข่งขันยังไม่ได้ Check-in");
-      }
-    }
-
-    // ------------------------------------------------------------
-    // Score
-    // ------------------------------------------------------------
-
-    const maxScore = await getMaxScore(team.tier);
-
-    const bestScore = getBestScore(scores);
-
-    // ------------------------------------------------------------
-    // Medal
-    // ------------------------------------------------------------
-
-    let medal = null;
-    let medalLabel = null;
-
-    if (isMedalCertificate(type)) {
-      medal = getMedalType(bestScore, maxScore);
-
-      medalLabel = getMedalLabel(medal);
-
-      if (medal !== type) {
-        return res
-          .status(403)
-          .send("ทีมนี้ไม่มีสิทธิ์สำหรับเกียรติบัตรประเภทนี้");
-      }
-    }
-
-    // ------------------------------------------------------------
-    // Rank
-    // ------------------------------------------------------------
-
-    let rank = null;
-
-    if (isRankCertificate(type)) {
-      const rankData = await getTeamRank(team.id, team.tier);
-
-      if (!rankData) {
-        return res.status(403).send("ไม่พบอันดับของทีม");
-      }
-
-      rank = rankData.rank;
-
-      const requiredRank = rankFromType(type);
-
-      if (rank !== requiredRank) {
-        return res
-          .status(403)
-          .send("ทีมนี้ไม่มีสิทธิ์สำหรับเกียรติบัตรอันดับนี้");
-      }
-    }
-
-    // ------------------------------------------------------------
-    // Create SVG
-    // ------------------------------------------------------------
+    const {
+      type,
+      team,
+      template,
+      student,
+      bestScore,
+      maxScore,
+      medalLabel,
+      rank,
+    } = result;
 
     const svg = createCertificateSvg({
       template,
-
-      name: certificateName,
-
+      name: student.name,
       team,
-
       type,
-
       rank,
-
       medalLabel,
-
       score: bestScore,
-
       maxScore,
     });
 
-    const filename = `certificate-${team.id}-${type}.svg`;
+    // Header รับได้แค่ ASCII → ใช้ filename* สำหรับชื่อภาษาไทย
+    const filename = `certificate-${team.id}-${type}-${student.number}.svg`;
+    const asciiFallback = filename
+      .replace(/[^\x20-\x7E]/g, "_")
+      .replace(/"/g, "");
 
     res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
-
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
+    );
 
     return res.send(svg);
   } catch (err) {
