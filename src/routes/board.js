@@ -337,29 +337,52 @@ router.post(
   },
 );
 
-// ─── GET /board/certificates ──────────────────────────────────────────────────
+// ─── GET /board/certificates ────────────────────────────────────────────────
 router.get("/certificates", requireLogin, async (req, res) => {
   try {
+    const user = req.session.user;
+
+    // Admin สามารถเลือก tier จาก URL ได้
+    // ถ้าไม่ระบุ ให้ใช้ beginner
+    const activeTier =
+      user?.role === "admin"
+        ? req.query.tier || "beginner"
+        : user?.tier || "beginner";
+
     const result = await query(
-      "SELECT * FROM certificate_templates ORDER BY tier, cert_type",
+      `
+      SELECT *
+      FROM certificate_templates
+      ORDER BY tier, cert_type
+      `,
       [],
     );
-    const templates = {};
-    result.rows.forEach(function (r) {
-      if (!templates[r.tier]) templates[r.tier] = {};
-      templates[r.tier][r.cert_type] = r;
-    });
-    res.render("board/certificates", {
+
+    const templates = result.rows;
+
+    return res.render("board/certificates", {
       title: "จัดการเกียรติบัตร",
       pageTitle: "<span>จัดการ</span>เกียรติบัตร",
-      tierSelector: false,
-      activeTier: "",
+
+      tierSelector: true,
+
+      // สำคัญมาก
+      activeTier,
+
       templates,
     });
   } catch (err) {
-    console.error(err);
-    req.flash("error", "โหลดข้อมูลไม่ได้");
-    res.redirect("/board");
+    console.error(
+      "Load certificate templates error:",
+      err,
+    );
+
+    req.flash(
+      "error",
+      "โหลดข้อมูลเกียรติบัตรไม่ได้",
+    );
+
+    return res.redirect("/board");
   }
 });
 
@@ -437,8 +460,7 @@ router.post(
       // ------------------------------------------------------------
 
       const backgroundUrl =
-        req.file?.path || null;
-
+        req.file?.secure_url || req.file?.path || req.file?.url || null;
       // ------------------------------------------------------------
       // หา Template เดิม
       // ------------------------------------------------------------
