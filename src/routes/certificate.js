@@ -1,4 +1,9 @@
 const express = require("express");
+const path = require("path");
+const fs = require("fs");
+const { Resvg } = require("@resvg/resvg-js");
+const PDFDocument = require("pdfkit");
+
 const router = express.Router();
 const { query } = require("../config/database");
 
@@ -16,8 +21,23 @@ const ALLOWED_TYPES = [
   "rank_3",
 ];
 
-// Arial ไม่มีตัวอักษรไทย → ใส่ฟอนต์ไทยไว้ก่อน
-const SVG_FONT = "Sarabun, Tahoma, 'Leelawadee UI', Arial, sans-serif";
+const ALLOWED_FORMATS = ["png", "pdf"];
+
+// A4 แนวนอน 300 dpi
+const CERT_WIDTH = 3508;
+const CERT_HEIGHT = 2480;
+
+// ฟอนต์ฝังในโปรเจกต์ → ไม่ต้องพึ่งฟอนต์ในเครื่อง server
+const FONT_FAMILY = "Sarabun";
+const FONT_FILES = ["Sarabun-Regular.ttf", "Sarabun-Bold.ttf"].map((file) =>
+  path.join(__dirname, "..", "fonts", file),
+);
+
+for (const file of FONT_FILES) {
+  if (!fs.existsSync(file)) {
+    console.warn("[certificate] ไม่พบไฟล์ฟอนต์:", file);
+  }
+}
 
 // ============================================================================
 // MEDAL
@@ -59,8 +79,20 @@ function escapeXml(value) {
     .replace(/'/g, "&apos;");
 }
 
+// ฟอนต์ Sarabun ไม่มี emoji → ตัดออกก่อน render
+function stripEmoji(value) {
+  return String(value ?? "")
+    .replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "")
+    .trim();
+}
+
 function backToCertificatePage(teamId) {
   return "/certificate?team_id=" + encodeURIComponent(teamId || "");
+}
+
+function parseFormat(value) {
+  const format = String(value || "png").toLowerCase();
+  return ALLOWED_FORMATS.includes(format) ? format : "png";
 }
 
 // ============================================================================
@@ -146,13 +178,11 @@ function getBestScore(scores) {
 // RANKING
 // ============================================================================
 //
-// ใช้หลัก:
 // 1. คะแนนสูงสุดมาก่อน
-// 2. ถ้าคะแนนเท่ากัน เวลาน้อยกว่ามาก่อน
-//    - ถ้า R1 = R2 ใช้เวลาที่ดีที่สุดของทั้งสองรอบ
-// 3. ถ้ายังเท่ากัน เรียงตาม team id (ให้ผลคงที่ทุกครั้ง)
+// 2. ถ้าคะแนนเท่ากัน เวลาน้อยกว่ามาก่อน (ถ้า R1 = R2 ใช้เวลาที่ดีที่สุด)
+// 3. ถ้ายังเท่ากัน เรียงตาม team id (ให้ผลคงที่)
 //
-// ทีมที่ยังไม่มีคะแนน (best_score = 0) จะไม่ได้อันดับ (rank = null)
+// ทีมที่ยังไม่มีคะแนน (best_score = 0) ไม่ได้อันดับ (rank = null)
 // ไม่กรอง is_published เพื่อให้ตรงกับหน้า Board
 // ============================================================================
 
@@ -339,27 +369,14 @@ async function validateCertificateRequest(req) {
 
   // ---------------- Student ----------------
 
-  let student = resolveStudent(team, req);
-
-  // Participation ต้องระบุผู้เข้าแข่งขัน
-  if (type === "participation") {
-    if (!student) {
-      return fail(400, "ไม่พบชื่อผู้เข้าแข่งขันในทีมนี้");
-    }
-
-    if (!student.checkedIn) {
-      return fail(403, "ผู้เข้าแข่งขันยังไม่ได้ Check-in");
-    }
-  }
-
-  // Rank / Medal
-  // ถ้าไม่ได้ส่ง student มา ให้ใช้ผู้ที่ Check-in คนแรก
-  if (!student) {
-    student = getStudentList(team).find((s) => s.checkedIn);
-  }
+  const student = resolveStudent(team, req);
 
   if (!student) {
-    return fail(403, "ไม่พบผู้เข้าแข่งขันที่ Check-in");
+    return fail(400, "ไม่พบชื่อผู้เข้าแข่งขันในทีมนี้");
+  }
+
+  if (type === "participation" && !student.checkedIn) {
+    return fail(403, "ผู้เข้าแข่งขันยังไม่ได้ Check-in");
   }
 
   // ---------------- Score ----------------
@@ -418,6 +435,35 @@ async function validateCertificateRequest(req) {
 }
 
 // ============================================================================
+// BACKGROUND (โหลดมาฝังเป็น data URI + cache ไว้ในหน่วยความจำ)
+// ============================================================================
+
+const backgroundCache = new Map();
+
+async function loadBackgroundDataUri(url) {
+  if (backgroundCache.has(url)) {
+    return backgroundCache.get(url);
+  }
+
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`CERTIFICATE_BACKGROUND_FETCH_FAILED ${response.status}`);
+  }
+
+  const contentType = (response.headers.get("content-type") || "image/png")
+    .split(";")[0]
+    .trim();
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const dataUri = `data:${contentType};base64,${buffer.toString("base64")}`;
+
+  backgroundCache.set(url, dataUri);
+
+  return dataUri;
+}
+
+// ============================================================================
 // GENERATE SVG
 // ============================================================================
 
@@ -429,14 +475,15 @@ function svgText({ y, size, fill, bold = false, content }) {
     x="50%"
     y="${y}"
     text-anchor="middle"
-    font-family="${SVG_FONT}"
+    font-family="${FONT_FAMILY}"
     font-size="${size}"
-    ${bold ? 'font-weight="700"' : ""}
+    font-weight="${bold ? 700 : 400}"
     fill="${fill}"
   >${content}</text>`;
 }
 
 function createCertificateSvg({
+  backgroundDataUri,
   template,
   name,
   team,
@@ -446,10 +493,6 @@ function createCertificateSvg({
   score,
   maxScore,
 }) {
-  if (!template || !template.background_url) {
-    throw new Error("CERTIFICATE_BACKGROUND_MISSING");
-  }
-
   const num = (value, fallback) =>
     Number.isFinite(parseFloat(value)) ? parseFloat(value) : fallback;
 
@@ -468,7 +511,6 @@ function createCertificateSvg({
     bronze: "BRONZE MEDAL",
   };
 
-  const safeBackground = escapeXml(template.background_url);
   const safeName = escapeXml(name);
   const safeTitle = escapeXml(titles[type] || "");
   const safeTeam = escapeXml(team.name || "");
@@ -482,7 +524,7 @@ function createCertificateSvg({
       : "";
 
   const safeRank = rank && rank <= 3 ? escapeXml(`อันดับ ${rank}`) : "";
-  const safeMedal = escapeXml(medalLabel || "");
+  const safeMedal = escapeXml(stripEmoji(medalLabel));
 
   // rank กับ medal ไม่มีทางมีพร้อมกัน → ใช้ตำแหน่ง 86% ร่วมกัน
   const safeBadge = safeRank || safeMedal;
@@ -491,17 +533,16 @@ function createCertificateSvg({
 <svg
   xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="3508"
-  height="2480"
-  viewBox="0 0 3508 2480"
+  width="${CERT_WIDTH}"
+  height="${CERT_HEIGHT}"
+  viewBox="0 0 ${CERT_WIDTH} ${CERT_HEIGHT}"
 >
   <image
-    href="${safeBackground}"
-    xlink:href="${safeBackground}"
+    href="${backgroundDataUri}"
     x="0"
     y="0"
-    width="3508"
-    height="2480"
+    width="${CERT_WIDTH}"
+    height="${CERT_HEIGHT}"
     preserveAspectRatio="xMidYMid slice"
   />
 ${svgText({ y: "20%", size: 64, fill: "#111827", bold: true, content: safeTitle })}
@@ -511,7 +552,7 @@ ${svgText({ y: "20%", size: 64, fill: "#111827", bold: true, content: safeTitle 
     y="${y}%"
     text-anchor="middle"
     dominant-baseline="middle"
-    font-family="${SVG_FONT}"
+    font-family="${FONT_FAMILY}"
     font-size="${fontSize}"
     font-weight="700"
     fill="${escapeXml(fontColor)}"
@@ -521,6 +562,46 @@ ${svgText({ y: "80%", size: 32, fill: "#64748B", content: safeInstitution })}
 ${svgText({ y: "86%", size: 34, fill: "#111827", bold: true, content: safeBadge })}
 ${svgText({ y: "91%", size: 28, fill: "#64748B", content: safeScore })}
 </svg>`;
+}
+
+// ============================================================================
+// RENDER PNG / PDF
+// ============================================================================
+
+function renderPng(svg) {
+  const resvg = new Resvg(svg, {
+    fitTo: { mode: "original" },
+    font: {
+      fontFiles: FONT_FILES,
+      loadSystemFonts: false,
+      defaultFontFamily: FONT_FAMILY,
+    },
+  });
+
+  return resvg.render().asPng();
+}
+
+function pngToPdf(png) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: "A4",
+      layout: "landscape",
+      margin: 0,
+    });
+
+    const chunks = [];
+
+    doc.on("data", (chunk) => chunks.push(chunk));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    doc.image(png, 0, 0, {
+      width: doc.page.width,
+      height: doc.page.height,
+    });
+
+    doc.end();
+  });
 }
 
 // ============================================================================
@@ -576,7 +657,6 @@ router.get("/", async (req, res) => {
 
     const team = teamResult.rows[0];
 
-    // หน้านี้ต้องใช้ Template ทุกประเภทของ tier นี้
     const [templatesResult, scoresResult, maxScore, rankData] =
       await Promise.all([
         query(`SELECT * FROM certificate_templates WHERE tier = $1`, [
@@ -672,10 +752,7 @@ router.get("/search", async (req, res) => {
       return res.json({ teams: [] });
     }
 
-    // ------------------------------------------------------------
     // ดึงข้อมูลครั้งเดียวต่อ tier แทนการ query ซ้ำทุกทีม
-    // ------------------------------------------------------------
-
     const tiers = [...new Set(foundTeams.map((t) => t.tier))];
 
     const rankByTier = new Map();
@@ -696,7 +773,6 @@ router.get("/search", async (req, res) => {
       }),
     );
 
-    // Scores ของทุกทีมใน query เดียว
     const scoresResult = await query(
       `
         SELECT *
@@ -714,10 +790,6 @@ router.get("/search", async (req, res) => {
       if (!scoresByTeam.has(key)) scoresByTeam.set(key, []);
       scoresByTeam.get(key).push(score);
     }
-
-    // ------------------------------------------------------------
-    // Build result
-    // ------------------------------------------------------------
 
     const teams = foundTeams.map((team) => {
       const students = getStudentList(team).map((student) => ({
@@ -790,11 +862,11 @@ router.get("/download", async (req, res) => {
       return res.redirect(backToCertificatePage(teamId));
     }
 
-    // ส่งต่อด้วย student_id (ตัวเลข) แทนชื่อ → ไม่มีปัญหา encoding ภาษาไทย
     const params = new URLSearchParams({
       team_id: String(result.team.id),
       type: result.type,
       student_id: String(result.student.number),
+      format: parseFormat(req.query.format),
     });
 
     return res.redirect(`/certificate/generate?${params.toString()}`);
@@ -807,6 +879,9 @@ router.get("/download", async (req, res) => {
 
 // ============================================================================
 // GET /certificate/generate
+// ============================================================================
+//
+// ?format=png (ค่าเริ่มต้น) | pdf
 // ============================================================================
 
 router.get("/generate", async (req, res) => {
@@ -828,7 +903,18 @@ router.get("/generate", async (req, res) => {
       rank,
     } = result;
 
+    if (!template.background_url) {
+      return res.status(500).send("Template นี้ยังไม่มีภาพพื้นหลัง");
+    }
+
+    const format = parseFormat(req.query.format);
+
+    const backgroundDataUri = await loadBackgroundDataUri(
+      template.background_url,
+    );
+
     const svg = createCertificateSvg({
+      backgroundDataUri,
       template,
       name: student.name,
       team,
@@ -839,19 +925,25 @@ router.get("/generate", async (req, res) => {
       maxScore,
     });
 
-    // Header รับได้แค่ ASCII → ใช้ filename* สำหรับชื่อภาษาไทย
-    const filename = `certificate-${team.id}-${type}-${student.number}.svg`;
+    const png = renderPng(svg);
+    const file = format === "pdf" ? await pngToPdf(png) : png;
+
+    const filename = `certificate-${team.id}-${type}-${student.number}.${format}`;
     const asciiFallback = filename
       .replace(/[^\x20-\x7E]/g, "_")
       .replace(/"/g, "");
 
-    res.setHeader("Content-Type", "image/svg+xml; charset=utf-8");
+    res.setHeader(
+      "Content-Type",
+      format === "pdf" ? "application/pdf" : "image/png",
+    );
     res.setHeader(
       "Content-Disposition",
       `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
     );
+    res.setHeader("Cache-Control", "no-store");
 
-    return res.send(svg);
+    return res.send(file);
   } catch (err) {
     console.error("Certificate generate error:", err);
 
