@@ -33,6 +33,99 @@ function handleUpload(req, res, next) {
   });
 }
 
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+const VALID_ROUNDS = [1, 2];
+
+// เรียงด้วย id ด้วย เพื่อให้ลำดับคงที่ทุกครั้ง
+const CRITERIA_BY_TIER_SQL =
+  "SELECT * FROM criteria WHERE tier = $1 ORDER BY mission, id";
+
+function parseRound(value) {
+  const round = parseInt(value, 10);
+  return VALID_ROUNDS.includes(round) ? round : null;
+}
+
+function parsePieces(value) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+function round2(value) {
+  return Math.round(value * 100) / 100;
+}
+
+function calcMaxScore(criteria) {
+  return criteria.reduce(
+    (sum, c) =>
+      sum + (parseFloat(c.max_score) || 0) * (parseInt(c.max_pieces, 10) || 1),
+    0,
+  );
+}
+
+// ค่าที่เคยบันทึกไว้ → { [criteria_id]: { full, partial } }
+function buildPrevMap(criteria, existing) {
+  const map = {};
+
+  if (!existing) return map;
+
+  const details = Array.isArray(existing.mission_details)
+    ? existing.mission_details
+    : [];
+
+  if (details.length) {
+    for (const d of details) {
+      map[String(d.criteria_id)] = {
+        full: parseInt(d.full, 10) || 0,
+        partial: parseInt(d.partial, 10) || 0,
+      };
+    }
+    return map;
+  }
+
+  // ข้อมูลเก่าก่อน migration: มีแค่ mission_1..5 ตามลำดับ
+  criteria.slice(0, 5).forEach((c, i) => {
+    const n = i + 1;
+    map[String(c.id)] = {
+      full: parseInt(existing[`mission_${n}_full`], 10) || 0,
+      partial: parseInt(existing[`mission_${n}_partial`], 10) || 0,
+    };
+  });
+
+  return map;
+}
+
+// คำนวณคะแนนทุกเกณฑ์จาก req.body (ช่องกรอกชื่อ crit_<id>_full / crit_<id>_partial)
+function calcMissionDetails(criteria, body) {
+  return criteria.map((c) => {
+    const maxPieces = Math.max(1, parseInt(c.max_pieces, 10) || 1);
+    const allowPartial = c.score_type === "both";
+
+    const full = Math.min(parsePieces(body[`crit_${c.id}_full`]), maxPieces);
+
+    const partial = allowPartial
+      ? Math.min(parsePieces(body[`crit_${c.id}_partial`]), maxPieces - full)
+      : 0;
+
+    const scoreFull = parseFloat(c.max_score) || 0;
+    const scorePartial = allowPartial ? parseFloat(c.score_partial) || 0 : 0;
+
+    return {
+      criteria_id: c.id,
+      mission: c.mission,
+      name: c.name,
+      full,
+      partial,
+      score_full: scoreFull,
+      score_partial: scorePartial,
+      total: round2(full * scoreFull + partial * scorePartial),
+    };
+  });
+}
+
 // ─── GET /scores ──────────────────────────────────────────────────────────────
 router.get("/", requireLogin, requireJudge, async (req, res) => {
   const user = req.session.user;
@@ -50,12 +143,9 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
         ORDER BY t.created_at ASC`,
         [tier],
       ),
-      query("SELECT * FROM criteria WHERE tier = $1 ORDER BY mission", [tier]),
+      query(CRITERIA_BY_TIER_SQL, [tier]),
     ]);
-    const maxScore = criteriaResult.rows.reduce(
-      (s, c) => s + parseFloat(c.max_score || 0) * parseInt(c.max_pieces || 1),
-      0,
-    );
+
     res.render("scores/index", {
       title: "ลงคะแนน",
       pageTitle: "<span>ลงคะแนน</span>การแข่งขัน",
@@ -63,7 +153,7 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
       activeTier: tier,
       teams: teamsResult.rows,
       criteria: criteriaResult.rows,
-      maxScore,
+      maxScore: calcMaxScore(criteriaResult.rows),
       tier,
     });
   } catch (err) {
@@ -80,20 +170,24 @@ router.get(
   requireJudge,
   requireTierAccess,
   async (req, res) => {
-    const { teamId, round } = req.params;
+    const { teamId } = req.params;
+    const round = parseRound(req.params.round);
     const user = req.session.user;
+
+    if (!round) {
+      req.flash("error", "รอบไม่ถูกต้อง");
+      return res.redirect("/scores");
+    }
+
     try {
-      const [teamResult, criteriaResult, existingResult] = await Promise.all([
+      const [teamResult, existingResult] = await Promise.all([
         query("SELECT * FROM teams WHERE id = $1", [teamId]),
-        query(
-          "SELECT * FROM criteria WHERE tier = (SELECT tier FROM teams WHERE id = $1) ORDER BY mission",
-          [teamId],
-        ),
         query("SELECT * FROM scores WHERE team_id = $1 AND round = $2", [
           teamId,
           round,
         ]),
       ]);
+
       const team = teamResult.rows[0];
       if (!team) {
         req.flash("error", "ไม่พบทีมนี้");
@@ -103,23 +197,23 @@ router.get(
         req.flash("error", "คุณเป็นกรรมการรุ่น " + user.tier + " เท่านั้น");
         return res.redirect("/scores");
       }
+
+      const criteriaResult = await query(CRITERIA_BY_TIER_SQL, [team.tier]);
+      const criteria = criteriaResult.rows;
       const existing = existingResult.rows[0] || null;
-      const maxScore = criteriaResult.rows.reduce(
-        (s, c) => s + parseFloat(c.max_score) * parseInt(c.max_pieces || 1),
-        0,
-      );
+
       res.render("scores/form", {
-        layout: "layouts/main",
         layout: false,
         title: "ลงคะแนน " + team.name + " รอบ " + round,
         pageTitle: "<span>ลงคะแนน</span> — รอบที่ " + round,
         tierSelector: false,
         activeTier: team.tier,
         team,
-        round: parseInt(round),
-        criteria: criteriaResult.rows,
+        round,
+        criteria,
         existing,
-        maxScore,
+        prevMap: buildPrevMap(criteria, existing),
+        maxScore: calcMaxScore(criteria),
       });
     } catch (err) {
       console.error(err);
@@ -136,9 +230,15 @@ router.post(
   requireJudge,
   handleUpload,
   async (req, res) => {
-    const { teamId, round } = req.params;
+    const { teamId } = req.params;
+    const round = parseRound(req.params.round);
     const user = req.session.user;
-    const { time_seconds } = req.body;
+
+    if (!round) {
+      req.flash("error", "รอบไม่ถูกต้อง");
+      return res.redirect("/scores");
+    }
+
     try {
       const teamResult = await query("SELECT * FROM teams WHERE id = $1", [
         teamId,
@@ -153,65 +253,41 @@ router.post(
         return res.redirect("/scores");
       }
 
-      const criteriaResult = await query(
-        "SELECT * FROM criteria WHERE tier = $1 ORDER BY mission",
-        [team.tier],
-      );
+      const criteriaResult = await query(CRITERIA_BY_TIER_SQL, [team.tier]);
 
-      const missionScores = criteriaResult.rows.map(function (c, i) {
-        var n = i + 1;
-       var maxPieces = parseInt(c.max_pieces || 1);
+      // ---------------- คะแนน ----------------
 
-       var fullCount = parseInt(req.body["mission_" + n + "_full"]) || 0;
+      const details = calcMissionDetails(criteriaResult.rows, req.body);
 
-       var partialCount =
-         c.score_type === "both"
-           ? parseInt(req.body["mission_" + n + "_partial"]) || 0
-           : 0;
+      const totalScore = round2(details.reduce((sum, d) => sum + d.total, 0));
 
-       // ป้องกันค่าติดลบ
-fullCount = Math.max(0, fullCount);
-partialCount = Math.max(0, partialCount);
+      // คอลัมน์เดิม mission_1..5 ยังเขียนไว้ เผื่อหน้าอื่นยังอ่านอยู่
+      const empty = { total: 0, full: 0, partial: 0 };
+      const legacy = [0, 1, 2, 3, 4].map((i) => details[i] || empty);
 
-// Full + Partial รวมกันห้ามเกิน max_pieces
-// และ Full เองก็ห้ามเกิน max_pieces
-fullCount = Math.min(fullCount, maxPieces);
+      // ---------------- เวลา ----------------
 
-// Partial ใช้ได้เฉพาะจำนวนชิ้นที่เหลือ
-if (c.score_type === "both") {
-  partialCount = Math.min(
-    partialCount,
-    maxPieces - fullCount
-  );
-} else {
-  partialCount = 0;
-}
-        var scorePerFull = parseFloat(c.max_score);
-        var scorePerPartial = parseFloat(c.score_partial) || 0;
-        var total = fullCount * scorePerFull + partialCount * scorePerPartial;
-        return { full: fullCount, partial: partialCount, total: total };
-      });
+      const timeRaw = parseFloat(req.body.time_seconds);
+      const timeSeconds =
+        Number.isFinite(timeRaw) && timeRaw >= 0 ? round2(timeRaw) : null;
 
-      var mission1 = missionScores[0] || { total: 0, full: 0, partial: 0 };
-      var mission2 = missionScores[1] || { total: 0, full: 0, partial: 0 };
-      var mission3 = missionScores[2] || { total: 0, full: 0, partial: 0 };
-      var mission4 = missionScores[3] || { total: 0, full: 0, partial: 0 };
-      var mission5 = missionScores[4] || { total: 0, full: 0, partial: 0 };
+      // ---------------- รูป / ลายเซ็น ----------------
 
-      var photoUrl =
+      const photoUrl =
         req.files && req.files.photo ? req.files.photo[0].path : null;
 
-      var signatureUrl = null;
-      var sigData = Array.isArray(req.body.signature_data)
+      let signatureUrl = null;
+      const sigData = Array.isArray(req.body.signature_data)
         ? req.body.signature_data[0]
         : req.body.signature_data;
+
       if (
         sigData &&
         typeof sigData === "string" &&
         sigData.startsWith("data:image")
       ) {
         try {
-          var uploadResult = await cloudinary.uploader.upload(sigData, {
+          const uploadResult = await cloudinary.uploader.upload(sigData, {
             folder: "robo-league/signatures",
           });
           signatureUrl = uploadResult.secure_url;
@@ -220,55 +296,59 @@ if (c.score_type === "both") {
         }
       }
 
+      // ---------------- บันทึก ----------------
+
       await query(
         `INSERT INTO scores (
-        team_id, judge_id, round,
-        mission_1, mission_1_full, mission_1_partial,
-        mission_2, mission_2_full, mission_2_partial,
-        mission_3, mission_3_full, mission_3_partial,
-        mission_4, mission_4_full, mission_4_partial,
-        mission_5, mission_5_full, mission_5_partial,
-        time_seconds, photo_url, signature_url
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)
-      ON CONFLICT (team_id, round) DO UPDATE SET
-        judge_id=$2,
-        mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
-        mission_2=$7, mission_2_full=$8, mission_2_partial=$9,
-        mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
-        mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
-        mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
-        time_seconds=$19,
-        photo_url=COALESCE($20, scores.photo_url),
-        signature_url=COALESCE($21, scores.signature_url),
-        scored_at=NOW()`,
+          team_id, judge_id, round,
+          mission_1, mission_1_full, mission_1_partial,
+          mission_2, mission_2_full, mission_2_partial,
+          mission_3, mission_3_full, mission_3_partial,
+          mission_4, mission_4_full, mission_4_partial,
+          mission_5, mission_5_full, mission_5_partial,
+          time_seconds, photo_url, signature_url,
+          mission_details, total_score
+        ) VALUES (
+          $1,$2,$3,
+          $4,$5,$6, $7,$8,$9, $10,$11,$12, $13,$14,$15, $16,$17,$18,
+          $19,$20,$21,
+          $22::jsonb, $23
+        )
+        ON CONFLICT (team_id, round) DO UPDATE SET
+          judge_id=$2,
+          mission_1=$4, mission_1_full=$5, mission_1_partial=$6,
+          mission_2=$7, mission_2_full=$8, mission_2_partial=$9,
+          mission_3=$10, mission_3_full=$11, mission_3_partial=$12,
+          mission_4=$13, mission_4_full=$14, mission_4_partial=$15,
+          mission_5=$16, mission_5_full=$17, mission_5_partial=$18,
+          time_seconds=$19,
+          photo_url=COALESCE($20, scores.photo_url),
+          signature_url=COALESCE($21, scores.signature_url),
+          mission_details=$22::jsonb,
+          total_score=$23,
+          scored_at=NOW()`,
         [
           teamId,
-          parseInt(user.id),
-          parseInt(round),
-          mission1.total,
-          mission1.full,
-          mission1.partial,
-          mission2.total,
-          mission2.full,
-          mission2.partial,
-          mission3.total,
-          mission3.full,
-          mission3.partial,
-          mission4.total,
-          mission4.full,
-          mission4.partial,
-          mission5.total,
-          mission5.full,
-          mission5.partial,
-          time_seconds ? parseFloat(time_seconds) : null,
+          parseInt(user.id, 10),
+          round,
+          ...legacy.flatMap((m) => [m.total, m.full, m.partial]),
+          timeSeconds,
           photoUrl,
           signatureUrl,
+          JSON.stringify(details),
+          totalScore,
         ],
       );
 
       req.flash(
         "success",
-        "บันทึกคะแนนรอบ " + round + ' ของทีม "' + team.name + '" สำเร็จ',
+        "บันทึกคะแนนรอบ " +
+          round +
+          ' ของทีม "' +
+          team.name +
+          '" สำเร็จ (' +
+          totalScore +
+          " คะแนน)",
       );
       res.redirect("/scores");
     } catch (err) {

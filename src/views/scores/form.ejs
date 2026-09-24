@@ -585,56 +585,53 @@
 
                   <!-- LEFT: missions -->
                   <div>
-                    <% for (var i=0; i < criteria.length; i++) { %>
-                      <% var c=criteria[i]; var n=i + 1; %>
-                        <% var prevFull=existing && existing['mission_' + n + '_full' ] ? parseFloat(existing['mission_'
-                          + n + '_full' ]) : 0; %>
-                          <% var prevPartial=existing && existing['mission_' + n + '_partial' ] ?
-                            parseFloat(existing['mission_' + n + '_partial' ]) : 0; %>
-                            <div class="mission-card">
-                              <div class="mission-title">
-                                <%= n %>. <%= c.name %>
-                              </div>
-                              <div class="mission-sub">
-                                เข้าเต็ม <%= parseFloat(c.max_score) %> คะแนน/ชิ้น
-                                  <% if (c.score_type==='both' ) { %> · เข้าบางส่วน <%= parseFloat(c.score_partial) %>
-                                      คะแนน/ชิ้น<% } %>
-                              </div>
-                              <div class="mission-row">
-                                <div class="score-input-box">
-                                  <div class="score-input-label full"><i class="ti ti-trophy"></i> เข้าเต็ม (ชิ้น)</div>
-                                  <input type="number" name="mission_<%= n %>_full" class="score-num-input full-input"
-                                    data-max="<%= parseFloat(c.max_score) %>" data-max-pieces="<%= parseInt(c.max_pieces || 1) %>" data-n="<%= n %>"
-                                    value="<%= prevFull %>" min="0" max="<%= parseInt(c.max_pieces || 1) %>" step="1">
-                                  <div class="score-calc" id="calc_full_<%= n %>">
-                                    <%= prevFull %> × <%= parseFloat(c.max_score) %> = <strong>
-                                          <%= (prevFull * parseFloat(c.max_score)).toFixed(1) %>
-                                        </strong> คะแนน
-                                  </div>
-                                </div>
-                                <div class="score-input-box"
-                                  style="<%= c.score_type !== 'both' ? 'opacity:.4;pointer-events:none' : '' %>">
-                                  <div class="score-input-label partial"><i class="ti ti-star-half"></i> เข้าบางส่วน
-                                    (ชิ้น)</div>
-                                  <input type="number" name="mission_<%= n %>_partial" class="score-num-input partial-input"
-                                    data-partial="<%= parseFloat(c.score_partial || 0) %>" data-max-pieces="<%= parseInt(c.max_pieces || 1) %>"
-                                    data-n="<%= n %>" value="<%= prevPartial %>" min="0" max="<%= parseInt(c.max_pieces || 1) %>" step="1" <%=c.score_type
-                                    !=='both' ? 'disabled' : '' %>>
-                                  <div class="score-calc" id="calc_partial_<%= n %>">
-                                    <%= prevPartial %> × <%= parseFloat(c.score_partial || 0) %> = <strong>
-                                          <%= (prevPartial * parseFloat(c.score_partial || 0)).toFixed(1) %>
-                                        </strong> คะแนน
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="mission-total" id="mission_total_<%= n %>">
-                                รวม <span>
-                                  <%= ((prevFull * parseFloat(c.max_score)) + (prevPartial * parseFloat(c.score_partial
-                                    || 0))).toFixed(1) %>
-                                </span> คะแนน
-                              </div>
+                    <% criteria.forEach(function (c, i) { var n=i + 1; var prev=(prevMap && prevMap[String(c.id)]) || {
+                      full: 0, partial: 0 }; var isBoth=c.score_type==='both' ; var maxScoreC=parseFloat(c.max_score) ||
+                      0; var partialScoreC=isBoth ? (parseFloat(c.score_partial) || 0) : 0; var
+                      maxPiecesC=parseInt(c.max_pieces || 1); var prevFull=prev.full || 0; var prevPartial=isBoth ?
+                      (prev.partial || 0) : 0; %>
+                      <div class="mission-card">
+                        <div class="mission-title">
+                          <%= n %>. <%= c.name %>
+                        </div>
+                        <div class="mission-sub">
+                          เข้าเต็ม <%= maxScoreC %> คะแนน/ชิ้น
+                            <% if (isBoth) { %> · เข้าบางส่วน <%= partialScoreC %> คะแนน/ชิ้น<% } %>
+                                  · สูงสุด <%= maxPiecesC %> ชิ้น
+                        </div>
+                        <div class="mission-row">
+                          <div class="score-input-box">
+                            <div class="score-input-label full"><i class="ti ti-trophy"></i> เข้าเต็ม (ชิ้น)</div>
+                            <input type="number" name="crit_<%= c.id %>_full" class="score-num-input full-input"
+                              data-max="<%= maxScoreC %>" data-max-pieces="<%= maxPiecesC %>" data-n="<%= n %>"
+                              value="<%= prevFull %>" min="0" max="<%= maxPiecesC %>" step="1">
+                            <div class="score-calc" id="calc_full_<%= n %>">
+                              <%= prevFull %> × <%= maxScoreC %> = <strong>
+                                    <%= (prevFull * maxScoreC).toFixed(1) %>
+                                  </strong> คะแนน
                             </div>
-                            <% } %>
+                          </div>
+                          <div class="score-input-box" style="<%= !isBoth ? 'opacity:.4;pointer-events:none' : '' %>">
+                            <div class="score-input-label partial"><i class="ti ti-star-half"></i> เข้าบางส่วน (ชิ้น)
+                            </div>
+                            <input type="number" name="crit_<%= c.id %>_partial" class="score-num-input partial-input"
+                              data-partial="<%= partialScoreC %>" data-max-pieces="<%= maxPiecesC %>" data-n="<%= n %>"
+                              value="<%= prevPartial %>" min="0" max="<%= maxPiecesC %>" step="1" <%=!isBoth
+                              ? 'disabled' : '' %>>
+                            <div class="score-calc" id="calc_partial_<%= n %>">
+                              <%= prevPartial %> × <%= partialScoreC %> = <strong>
+                                    <%= (prevPartial * partialScoreC).toFixed(1) %>
+                                  </strong> คะแนน
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mission-total" id="mission_total_<%= n %>">
+                          รวม <span>
+                            <%= (prevFull * maxScoreC + prevPartial * partialScoreC).toFixed(1) %>
+                          </span> คะแนน
+                        </div>
+                      </div>
+                      <% }); %>
                   </div>
 
                   <!-- RIGHT: sidebar -->
@@ -644,7 +641,7 @@
                     <div class="side-card">
                       <div class="side-title"><i class="ti ti-clock"></i> เวลา (วินาที)</div>
                       <input type="number" name="time_seconds" class="fi" step="0.01" min="0"
-                        value="<%= existing && existing.time_seconds ? parseFloat(existing.time_seconds).toFixed(2) : '' %>"
+                        value="<%= existing && existing.time_seconds !== null && existing.time_seconds !== undefined ? parseFloat(existing.time_seconds).toFixed(2) : '' %>"
                         placeholder="เช่น 45.30">
                     </div>
 
@@ -654,8 +651,8 @@
                       <% if (existing && existing.photo_url) { %>
                         <div style="margin-bottom:10px">
                           <img src="<%= existing.photo_url %>" class="photo-preview"
-                            onclick="openLightbox('<%= existing.photo_url %>')" title="คลิกเพื่อดูรูปเต็ม"
-                            style="margin-bottom:0">
+                            data-src="<%= existing.photo_url %>" onclick="openLightbox(this.dataset.src)"
+                            title="คลิกเพื่อดูรูปเต็ม" style="margin-bottom:0">
                           <div style="text-align:center;font-size:11px;color:#64748B;margin-top:6px">
                             <i class="ti ti-zoom-in"></i> คลิกที่รูปเพื่อดูภาพเต็ม
                           </div>
@@ -670,8 +667,8 @@
 
                       <% if (existing && existing.signature_url) { %>
                         <div style="margin-bottom:10px">
-                          <img src="<%= existing.signature_url %>"
-                            onclick="openLightbox('<%= existing.signature_url %>')"
+                          <img src="<%= existing.signature_url %>" data-src="<%= existing.signature_url %>"
+                            onclick="openLightbox(this.dataset.src)"
                             style="width:100%;border-radius:8px;border:1px solid #E2E8F0;cursor:zoom-in;background:#fff">
                           <div style="font-size:11px;color:#94A3B8;margin-top:4px;text-align:center">ลายเซ็นเดิม
                             (วาดใหม่เพื่อเปลี่ยน)</div>
@@ -722,124 +719,90 @@
   <script>
     // ── Score calculation ───────────────────────────────────────────────
 
-      function updateMissionTotal(n) {
-        var fullInput = document.querySelector(
-          '.full-input[data-n="' + n + '"]'
-        );
+    function getInputs(n) {
+      return {
+        full: document.querySelector('.full-input[data-n="' + n + '"]'),
+        partial: document.querySelector('.partial-input[data-n="' + n + '"]')
+      };
+    }
 
-        var partialInput = document.querySelector(
-          '.partial-input[data-n="' + n + '"]'
-        );
+    // ช่อง partial ที่ disabled จะไม่ถูกส่งไป server → ไม่นับ
+    function readPartial(partialInput) {
+      if (!partialInput || partialInput.disabled) return 0;
+      return Math.max(0, parseInt(partialInput.value) || 0);
+    }
 
-        if (!fullInput || !partialInput) return;
+    function updateMissionTotal(n) {
+      var inputs = getInputs(n);
+      var fullInput = inputs.full;
+      var partialInput = inputs.partial;
 
-        var max = parseFloat(fullInput.dataset.max) || 0;
-        var partial = parseFloat(partialInput.dataset.partial) || 0;
-        var maxPieces = parseInt(fullInput.dataset.maxPieces) || 1;
+      if (!fullInput) return;
 
-        var fullVal = parseInt(fullInput.value) || 0;
-        var partialVal = parseInt(partialInput.value) || 0;
+      var max = parseFloat(fullInput.dataset.max) || 0;
+      var partial = partialInput ? parseFloat(partialInput.dataset.partial) || 0 : 0;
+      var maxPieces = parseInt(fullInput.dataset.maxPieces) || 1;
 
-        // ป้องกันค่าติดลบ
-        fullVal = Math.max(0, fullVal);
-        partialVal = Math.max(0, partialVal);
+      var fullVal = Math.max(0, parseInt(fullInput.value) || 0);
+      var partialVal = readPartial(partialInput);
 
-        // จำนวนชิ้นรวมกันห้ามเกินจำนวนชิ้นสูงสุด
-        if (fullVal + partialVal > maxPieces) {
-          if (document.activeElement === fullInput) {
-            fullVal = Math.max(0, maxPieces - partialVal);
-            fullInput.value = fullVal;
-          } else {
-            partialVal = Math.max(0, maxPieces - fullVal);
-            partialInput.value = partialVal;
-          }
+      // จำนวนชิ้นรวมกันห้ามเกินจำนวนชิ้นสูงสุด
+      if (fullVal > maxPieces) {
+        fullVal = maxPieces;
+        fullInput.value = fullVal;
+      }
+
+      if (fullVal + partialVal > maxPieces) {
+        if (document.activeElement === fullInput) {
+          partialVal = Math.max(0, maxPieces - fullVal);
+          if (partialInput && !partialInput.disabled) partialInput.value = partialVal;
+        } else {
+          partialVal = Math.max(0, maxPieces - fullVal);
+          if (partialInput) partialInput.value = partialVal;
         }
-
-        // คะแนนเต็ม
-        var fullScore = fullVal * max;
-
-        document.getElementById('calc_full_' + n).innerHTML =
-          fullVal +
-          ' × ' +
-          max +
-          ' = <strong>' +
-          fullScore.toFixed(1) +
-          '</strong> คะแนน';
-
-        // คะแนนบางส่วน
-        var partialScore = partialVal * partial;
-
-        document.getElementById('calc_partial_' + n).innerHTML =
-          partialVal +
-          ' × ' +
-          partial +
-          ' = <strong>' +
-          partialScore.toFixed(1) +
-          '</strong> คะแนน';
-
-        // รวมภารกิจ
-        var total = fullScore + partialScore;
-
-        document.getElementById('mission_total_' + n).innerHTML =
-          'รวม <span>' +
-          total.toFixed(1) +
-          '</span> คะแนน';
-
-        updateGrandTotal();
       }
 
+      var fullScore = fullVal * max;
+      var partialScore = partialVal * partial;
 
-      // เมื่อเปลี่ยนจำนวนชิ้น "เต็ม"
+      document.getElementById('calc_full_' + n).innerHTML =
+        fullVal + ' × ' + max + ' = <strong>' + fullScore.toFixed(1) + '</strong> คะแนน';
+
+      document.getElementById('calc_partial_' + n).innerHTML =
+        partialVal + ' × ' + partial + ' = <strong>' + partialScore.toFixed(1) + '</strong> คะแนน';
+
+      document.getElementById('mission_total_' + n).innerHTML =
+        'รวม <span>' + (fullScore + partialScore).toFixed(1) + '</span> คะแนน';
+
+      updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+      var total = 0;
+
       document.querySelectorAll('.full-input').forEach(function (input) {
-        input.addEventListener('input', function () {
-          updateMissionTotal(this.dataset.n);
-        });
+        var partialInput = getInputs(input.dataset.n).partial;
+
+        var max = parseFloat(input.dataset.max) || 0;
+        var partial = partialInput ? parseFloat(partialInput.dataset.partial) || 0 : 0;
+
+        total += Math.max(0, parseInt(input.value) || 0) * max;
+        total += readPartial(partialInput) * partial;
       });
 
+      document.getElementById('totalScore').textContent = total.toFixed(1);
+    }
 
-      // เมื่อเปลี่ยนจำนวนชิ้น "บางส่วน"
-      document.querySelectorAll('.partial-input').forEach(function (input) {
-        input.addEventListener('input', function () {
-          updateMissionTotal(this.dataset.n);
-        });
+    document.querySelectorAll('.full-input, .partial-input').forEach(function (input) {
+      input.addEventListener('input', function () {
+        updateMissionTotal(this.dataset.n);
       });
+    });
 
-
-      // คะแนนรวมทั้งหมด
-      function updateGrandTotal() {
-        var total = 0;
-
-        document.querySelectorAll('.full-input').forEach(function (input) {
-          var n = input.dataset.n;
-
-          var max = parseFloat(input.dataset.max) || 0;
-
-          var partialInput = document.querySelector(
-            '.partial-input[data-n="' + n + '"]'
-          );
-
-          var partial = partialInput
-            ? parseFloat(partialInput.dataset.partial) || 0
-            : 0;
-
-          var fullVal = parseInt(input.value) || 0;
-          var partialVal = partialInput
-            ? parseInt(partialInput.value) || 0
-            : 0;
-
-          total += fullVal * max;
-          total += partialVal * partial;
-        });
-
-        document.getElementById('totalScore').textContent =
-          total.toFixed(1);
-      }
-
-
-      // คำนวณทันทีเมื่อเปิดหน้า
-      document.querySelectorAll('.full-input').forEach(function (input) {
-        updateMissionTotal(input.dataset.n);
-      });
+    // คำนวณทันทีเมื่อเปิดหน้า
+    document.querySelectorAll('.full-input').forEach(function (input) {
+      updateMissionTotal(input.dataset.n);
+    });
 
     // ── Signature pad ────────────────────────────────────────────────────────────
     var canvas = document.getElementById('sigCanvas');
@@ -853,48 +816,23 @@
       var rect = canvas.getBoundingClientRect();
       var scaleX = canvas.width / rect.width;
       var scaleY = canvas.height / rect.height;
-      if (e.touches) {
-        return {
-          x: (e.touches[0].clientX - rect.left) * scaleX,
-          y: (e.touches[0].clientY - rect.top) * scaleY
-        };
-      }
+      var point = e.touches ? e.touches[0] : e;
       return {
-        x: (e.clientX - rect.left) * scaleX,
-        y: (e.clientY - rect.top) * scaleY
+        x: (point.clientX - rect.left) * scaleX,
+        y: (point.clientY - rect.top) * scaleY
       };
     }
 
-    canvas.addEventListener('mousedown', function (e) {
+    function startDraw(e) {
+      if (e.touches) e.preventDefault();
       drawing = true;
       var pos = getPos(e);
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
-    });
-    canvas.addEventListener('mousemove', function (e) {
-      if (!drawing) return;
-      var pos = getPos(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.strokeStyle = '#0F172A';
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      hasSig = true;
-      document.getElementById('sigStatus').textContent = 'มีลายเซ็น';
-      document.getElementById('sigStatus').style.color = '#16A34A';
-    });
-    canvas.addEventListener('mouseup', function () { drawing = false; });
-    canvas.addEventListener('mouseleave', function () { drawing = false; });
+    }
 
-    canvas.addEventListener('touchstart', function (e) {
-      e.preventDefault();
-      drawing = true;
-      var pos = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
-    canvas.addEventListener('touchmove', function (e) {
-      e.preventDefault();
+    function moveDraw(e) {
+      if (e.touches) e.preventDefault();
       if (!drawing) return;
       var pos = getPos(e);
       ctx.lineTo(pos.x, pos.y);
@@ -905,8 +843,17 @@
       hasSig = true;
       document.getElementById('sigStatus').textContent = 'มีลายเซ็น';
       document.getElementById('sigStatus').style.color = '#16A34A';
-    });
-    canvas.addEventListener('touchend', function () { drawing = false; });
+    }
+
+    function endDraw() { drawing = false; }
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', moveDraw);
+    canvas.addEventListener('mouseup', endDraw);
+    canvas.addEventListener('mouseleave', endDraw);
+    canvas.addEventListener('touchstart', startDraw);
+    canvas.addEventListener('touchmove', moveDraw);
+    canvas.addEventListener('touchend', endDraw);
 
     function clearSig() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
