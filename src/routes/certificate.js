@@ -23,9 +23,15 @@ const ALLOWED_TYPES = [
 
 const ALLOWED_FORMATS = ["png", "pdf"];
 
-// A4 แนวนอน 300 dpi
-const CERT_WIDTH = 3508;
-const CERT_HEIGHT = 2480;
+// A4 ที่ 300 dpi ด้านยาว / ด้านสั้น
+// ขนาดจริงของไฟล์จะคำนวณตามสัดส่วนภาพพื้นหลัง (แนวตั้ง / แนวนอน)
+const A4_LONG = 3508;
+const A4_SHORT = 2480;
+
+// ข้อความเสริม (หัวเรื่อง / ทีม / โรงเรียน / อันดับ / คะแนน)
+// ปิดไว้ เพราะ Template ออกแบบข้อความพวกนี้ไว้ในภาพแล้ว
+// เปิดเป็น true ถ้า Template ไหนไม่มีข้อความเหล่านี้
+const SHOW_EXTRA_TEXT = false;
 
 // ฟอนต์ฝังในโปรเจกต์ → ไม่ต้องพึ่งฟอนต์ในเครื่อง server
 const FONT_FAMILY = "Sarabun";
@@ -33,10 +39,12 @@ const FONT_FILES = ["Sarabun-Regular.ttf", "Sarabun-Bold.ttf"].map((file) =>
   path.join(__dirname, "..", "fonts", file),
 );
 
-for (const file of FONT_FILES) {
-  if (!fs.existsSync(file)) {
-    console.warn("[certificate] ไม่พบไฟล์ฟอนต์:", file);
-  }
+function getMissingFonts() {
+  return FONT_FILES.filter((file) => !fs.existsSync(file));
+}
+
+if (getMissingFonts().length) {
+  console.warn("[certificate] ไม่พบไฟล์ฟอนต์:", getMissingFonts());
 }
 
 // ============================================================================
@@ -435,12 +443,58 @@ async function validateCertificateRequest(req) {
 }
 
 // ============================================================================
-// BACKGROUND (โหลดมาฝังเป็น data URI + cache ไว้ในหน่วยความจำ)
+// BACKGROUND (โหลดมาฝังเป็น data URI + อ่านขนาดภาพ + cache ในหน่วยความจำ)
 // ============================================================================
 
 const backgroundCache = new Map();
 
-async function loadBackgroundDataUri(url) {
+// อ่านขนาดภาพจาก header ของไฟล์ (PNG / JPEG) โดยไม่ต้องใช้ library เพิ่ม
+function readImageSize(buffer) {
+  // PNG: signature 8 bytes, IHDR width/height ที่ byte 16 / 20
+  if (
+    buffer.length > 24 &&
+    buffer.readUInt32BE(0) === 0x89504e47 &&
+    buffer.readUInt32BE(4) === 0x0d0a1a0a
+  ) {
+    return {
+      width: buffer.readUInt32BE(16),
+      height: buffer.readUInt32BE(20),
+    };
+  }
+
+  // JPEG: หา SOF marker (0xC0–0xCF ยกเว้น C4, C8, CC)
+  if (buffer.length > 4 && buffer[0] === 0xff && buffer[1] === 0xd8) {
+    let offset = 2;
+
+    while (offset + 9 < buffer.length) {
+      if (buffer[offset] !== 0xff) {
+        offset++;
+        continue;
+      }
+
+      const marker = buffer[offset + 1];
+      const length = buffer.readUInt16BE(offset + 2);
+
+      const isSof =
+        marker >= 0xc0 &&
+        marker <= 0xcf &&
+        ![0xc4, 0xc8, 0xcc].includes(marker);
+
+      if (isSof) {
+        return {
+          height: buffer.readUInt16BE(offset + 5),
+          width: buffer.readUInt16BE(offset + 7),
+        };
+      }
+
+      offset += 2 + length;
+    }
+  }
+
+  return null;
+}
+
+async function loadBackground(url) {
   if (backgroundCache.has(url)) {
     return backgroundCache.get(url);
   }
@@ -456,11 +510,36 @@ async function loadBackgroundDataUri(url) {
     .trim();
 
   const buffer = Buffer.from(await response.arrayBuffer());
-  const dataUri = `data:${contentType};base64,${buffer.toString("base64")}`;
+  const size = readImageSize(buffer);
 
-  backgroundCache.set(url, dataUri);
+  if (!size || !size.width || !size.height) {
+    throw new Error("CERTIFICATE_BACKGROUND_UNSUPPORTED (ต้องเป็น PNG / JPG)");
+  }
 
-  return dataUri;
+  const background = {
+    dataUri: `data:${contentType};base64,${buffer.toString("base64")}`,
+    width: size.width,
+    height: size.height,
+  };
+
+  backgroundCache.set(url, background);
+
+  return background;
+}
+
+// ขนาดไฟล์ผลลัพธ์: ด้านยาว = A4_LONG ตามแนวของภาพพื้นหลัง, คงสัดส่วนเดิม
+function getCanvasSize(background) {
+  const isPortrait = background.height > background.width;
+
+  if (isPortrait) {
+    const height = A4_LONG;
+    const width = Math.round((background.width / background.height) * height);
+    return { width, height, isPortrait };
+  }
+
+  const width = A4_LONG;
+  const height = Math.round((background.height / background.width) * width);
+  return { width, height, isPortrait };
 }
 
 // ============================================================================
@@ -482,8 +561,79 @@ function svgText({ y, size, fill, bold = false, content }) {
   >${content}</text>`;
 }
 
+function buildExtraText({
+  canvas,
+  team,
+  type,
+  rank,
+  medalLabel,
+  score,
+  maxScore,
+}) {
+  if (!SHOW_EXTRA_TEXT) return "";
+
+  // ขนาดตัวอักษรอิงจากความกว้าง เพื่อให้สัดส่วนเท่ากันทั้งแนวตั้ง / แนวนอน
+  const unit = canvas.width / 100;
+
+  const titles = {
+    participation: "CERTIFICATE OF PARTICIPATION",
+    rank_1: "FIRST PLACE",
+    rank_2: "SECOND PLACE",
+    rank_3: "THIRD PLACE",
+    gold: "GOLD MEDAL",
+    silver: "SILVER MEDAL",
+    bronze: "BRONZE MEDAL",
+  };
+
+  const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
+
+  const safeScore =
+    score > 0 && maxScore > 0
+      ? escapeXml(`${score} / ${maxScore} คะแนน (${percentage}%)`)
+      : "";
+
+  const safeRank = rank && rank <= 3 ? escapeXml(`อันดับ ${rank}`) : "";
+  const safeBadge = safeRank || escapeXml(stripEmoji(medalLabel));
+
+  return [
+    svgText({
+      y: "20%",
+      size: unit * 1.8,
+      fill: "#111827",
+      bold: true,
+      content: escapeXml(titles[type] || ""),
+    }),
+    svgText({
+      y: "76%",
+      size: unit * 1.1,
+      fill: "#334155",
+      content: escapeXml(team.name || ""),
+    }),
+    svgText({
+      y: "80%",
+      size: unit * 0.9,
+      fill: "#64748B",
+      content: escapeXml(team.institution || ""),
+    }),
+    svgText({
+      y: "86%",
+      size: unit * 1.0,
+      fill: "#111827",
+      bold: true,
+      content: safeBadge,
+    }),
+    svgText({
+      y: "91%",
+      size: unit * 0.8,
+      fill: "#64748B",
+      content: safeScore,
+    }),
+  ].join("\n");
+}
+
 function createCertificateSvg({
-  backgroundDataUri,
+  background,
+  canvas,
   template,
   name,
   team,
@@ -501,51 +651,21 @@ function createCertificateSvg({
   const fontSize = num(template.name_font_size, 48);
   const fontColor = template.name_color || "#111827";
 
-  const titles = {
-    participation: "CERTIFICATE OF PARTICIPATION",
-    rank_1: "FIRST PLACE",
-    rank_2: "SECOND PLACE",
-    rank_3: "THIRD PLACE",
-    gold: "GOLD MEDAL",
-    silver: "SILVER MEDAL",
-    bronze: "BRONZE MEDAL",
-  };
-
-  const safeName = escapeXml(name);
-  const safeTitle = escapeXml(titles[type] || "");
-  const safeTeam = escapeXml(team.name || "");
-  const safeInstitution = escapeXml(team.institution || "");
-
-  const percentage = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
-
-  const safeScore =
-    score > 0 && maxScore > 0
-      ? escapeXml(`${score} / ${maxScore} คะแนน (${percentage}%)`)
-      : "";
-
-  const safeRank = rank && rank <= 3 ? escapeXml(`อันดับ ${rank}`) : "";
-  const safeMedal = escapeXml(stripEmoji(medalLabel));
-
-  // rank กับ medal ไม่มีทางมีพร้อมกัน → ใช้ตำแหน่ง 86% ร่วมกัน
-  const safeBadge = safeRank || safeMedal;
-
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  width="${CERT_WIDTH}"
-  height="${CERT_HEIGHT}"
-  viewBox="0 0 ${CERT_WIDTH} ${CERT_HEIGHT}"
+  width="${canvas.width}"
+  height="${canvas.height}"
+  viewBox="0 0 ${canvas.width} ${canvas.height}"
 >
   <image
-    href="${backgroundDataUri}"
+    href="${background.dataUri}"
     x="0"
     y="0"
-    width="${CERT_WIDTH}"
-    height="${CERT_HEIGHT}"
-    preserveAspectRatio="xMidYMid slice"
+    width="${canvas.width}"
+    height="${canvas.height}"
+    preserveAspectRatio="none"
   />
-${svgText({ y: "20%", size: 64, fill: "#111827", bold: true, content: safeTitle })}
 
   <text
     x="${x}%"
@@ -556,11 +676,8 @@ ${svgText({ y: "20%", size: 64, fill: "#111827", bold: true, content: safeTitle 
     font-size="${fontSize}"
     font-weight="700"
     fill="${escapeXml(fontColor)}"
-  >${safeName}</text>
-${svgText({ y: "76%", size: 38, fill: "#334155", content: safeTeam })}
-${svgText({ y: "80%", size: 32, fill: "#64748B", content: safeInstitution })}
-${svgText({ y: "86%", size: 34, fill: "#111827", bold: true, content: safeBadge })}
-${svgText({ y: "91%", size: 28, fill: "#64748B", content: safeScore })}
+  >${escapeXml(name)}</text>
+${buildExtraText({ canvas, team, type, rank, medalLabel, score, maxScore })}
 </svg>`;
 }
 
@@ -569,6 +686,13 @@ ${svgText({ y: "91%", size: 28, fill: "#64748B", content: safeScore })}
 // ============================================================================
 
 function renderPng(svg) {
+  const missing = getMissingFonts();
+
+  // ถ้าไม่มีฟอนต์ resvg จะไม่วาดข้อความเลย → หยุดดีกว่าได้เกียรติบัตรไม่มีชื่อ
+  if (missing.length) {
+    throw new Error("CERTIFICATE_FONT_MISSING " + missing.join(", "));
+  }
+
   const resvg = new Resvg(svg, {
     fitTo: { mode: "original" },
     font: {
@@ -581,11 +705,11 @@ function renderPng(svg) {
   return resvg.render().asPng();
 }
 
-function pngToPdf(png) {
+function pngToPdf(png, isPortrait) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",
-      layout: "landscape",
+      layout: isPortrait ? "portrait" : "landscape",
       margin: 0,
     });
 
@@ -595,9 +719,11 @@ function pngToPdf(png) {
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
+    // fit = คงสัดส่วน, จัดกึ่งกลางหน้า
     doc.image(png, 0, 0, {
-      width: doc.page.width,
-      height: doc.page.height,
+      fit: [doc.page.width, doc.page.height],
+      align: "center",
+      valign: "center",
     });
 
     doc.end();
@@ -909,12 +1035,12 @@ router.get("/generate", async (req, res) => {
 
     const format = parseFormat(req.query.format);
 
-    const backgroundDataUri = await loadBackgroundDataUri(
-      template.background_url,
-    );
+    const background = await loadBackground(template.background_url);
+    const canvas = getCanvasSize(background);
 
     const svg = createCertificateSvg({
-      backgroundDataUri,
+      background,
+      canvas,
       template,
       name: student.name,
       team,
@@ -926,7 +1052,8 @@ router.get("/generate", async (req, res) => {
     });
 
     const png = renderPng(svg);
-    const file = format === "pdf" ? await pngToPdf(png) : png;
+    const file =
+      format === "pdf" ? await pngToPdf(png, canvas.isPortrait) : png;
 
     const filename = `certificate-${team.id}-${type}-${student.number}.${format}`;
     const asciiFallback = filename
@@ -946,6 +1073,14 @@ router.get("/generate", async (req, res) => {
     return res.send(file);
   } catch (err) {
     console.error("Certificate generate error:", err);
+
+    if (String(err.message).startsWith("CERTIFICATE_FONT_MISSING")) {
+      return res
+        .status(500)
+        .send(
+          "ไม่สามารถสร้างเกียรติบัตรได้: ระบบไม่พบไฟล์ฟอนต์ (แจ้งผู้ดูแลระบบ)",
+        );
+    }
 
     return res.status(500).send("ไม่สามารถสร้างเกียรติบัตรได้");
   }
