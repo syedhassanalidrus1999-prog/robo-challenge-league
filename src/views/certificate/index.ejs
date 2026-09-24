@@ -1081,9 +1081,35 @@
                                 var certTypes = team.team_cert_types || [];
                                 for (var ci = 0; ci < certTypes.length; ci++) {
                                     var ct = certTypes[ci];
-                                    var ctClass = ct === '1st' ? 'btn-1st' : ct === '2nd' ? 'btn-2nd' : 'btn-3rd';
-                                    var ctLabel = ct === '1st' ? '🥇 เกียรติบัตรชนะเลิศ' : ct === '2nd' ? '🥈 รองชนะเลิศ อันดับ 1' : '🥉 รองชนะเลิศ อันดับ 2';
-                                    html += '<a href="/certificate/download?teamId=' + team.id + '&studentName=' + encodeURIComponent(s.name) + '&certType=' + ct + '" target="_blank" class="btn-cert ' + ctClass + '">';
+
+                                    // UI ใช้ค่า 1st / 2nd / 3rd เหมือนเดิม
+                                    // แปลงเฉพาะค่าที่ส่งไป Backend เป็น rank_1 / rank_2 / rank_3
+                                    var backendCertType =
+                                        ct === '1st' ? 'rank_1' :
+                                            ct === '2nd' ? 'rank_2' :
+                                                ct === '3rd' ? 'rank_3' :
+                                                    ct;
+
+                                    var ctClass =
+                                        ct === '1st' ? 'btn-1st' :
+                                            ct === '2nd' ? 'btn-2nd' :
+                                                'btn-3rd';
+
+                                    var ctLabel =
+                                        ct === '1st' ? '🥇 เกียรติบัตรชนะเลิศ' :
+                                            ct === '2nd' ? '🥈 รองชนะเลิศ อันดับ 1' :
+                                                '🥉 รองชนะเลิศ อันดับ 2';
+
+                                    html += '<a href="/certificate/download?teamId=' +
+                                        encodeURIComponent(team.id) +
+                                        '&studentName=' +
+                                        encodeURIComponent(s.name) +
+                                        '&certType=' +
+                                        encodeURIComponent(backendCertType) +
+                                        '" target="_blank" class="btn-cert ' +
+                                        ctClass +
+                                        '">';
+
                                     html += '<i class="ti ti-download"></i> ' + ctLabel;
                                     html += '</a>';
                                 }
