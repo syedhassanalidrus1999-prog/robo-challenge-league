@@ -39,12 +39,51 @@ const FONT_FILES = ["Sarabun-Regular.ttf", "Sarabun-Bold.ttf"].map((file) =>
   path.join(__dirname, "..", "fonts", file),
 );
 
-function getMissingFonts() {
-  return FONT_FILES.filter((file) => !fs.existsSync(file));
+// ตรวจว่าไฟล์ฟอนต์มีอยู่จริง และเป็นไฟล์ฟอนต์จริง
+// (กันกรณีดาวน์โหลดผิดแล้วได้หน้า HTML / Git LFS pointer มาแทน
+//  ซึ่ง resvg จะข้ามไปเงียบ ๆ ทำให้ไม่มีข้อความบนเกียรติบัตร)
+const FONT_MAGICS = ["00010000", "74727565", "4f54544f", "74746366"]; // TTF, 'true', 'OTTO', 'ttcf'
+
+function getFontProblems() {
+  const problems = [];
+
+  for (const file of FONT_FILES) {
+    const label = path.basename(file);
+
+    if (!fs.existsSync(file)) {
+      problems.push(`${label}: ไม่พบไฟล์`);
+      continue;
+    }
+
+    const size = fs.statSync(file).size;
+    const fd = fs.openSync(file, "r");
+    const head = Buffer.alloc(4);
+    fs.readSync(fd, head, 0, 4, 0);
+    fs.closeSync(fd);
+
+    if (!FONT_MAGICS.includes(head.toString("hex"))) {
+      problems.push(
+        `${label}: ไม่ใช่ไฟล์ฟอนต์ (ขนาด ${size} bytes, ขึ้นต้นด้วย "${head.toString("latin1")}")`,
+      );
+    }
+  }
+
+  return problems;
 }
 
-if (getMissingFonts().length) {
-  console.warn("[certificate] ไม่พบไฟล์ฟอนต์:", getMissingFonts());
+{
+  const problems = getFontProblems();
+
+  if (problems.length) {
+    console.warn("[certificate] ฟอนต์มีปัญหา:", problems);
+  } else {
+    console.log(
+      "[certificate] โหลดฟอนต์สำเร็จ:",
+      FONT_FILES.map(
+        (f) => `${path.basename(f)} (${fs.statSync(f).size} bytes)`,
+      ),
+    );
+  }
 }
 
 // ============================================================================
@@ -648,7 +687,11 @@ function createCertificateSvg({
 
   const x = num(template.name_x, 50);
   const y = num(template.name_y, 50);
-  const fontSize = num(template.name_font_size, 48);
+  // ไม่ได้ตั้งขนาดไว้ → ใช้ 4.5% ของความกว้างภาพ (~112px บน A4 แนวตั้ง)
+  const fontSize = num(
+    template.name_font_size,
+    Math.round(canvas.width * 0.045),
+  );
   const fontColor = template.name_color || "#111827";
 
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -686,11 +729,11 @@ ${buildExtraText({ canvas, team, type, rank, medalLabel, score, maxScore })}
 // ============================================================================
 
 function renderPng(svg) {
-  const missing = getMissingFonts();
+  const problems = getFontProblems();
 
-  // ถ้าไม่มีฟอนต์ resvg จะไม่วาดข้อความเลย → หยุดดีกว่าได้เกียรติบัตรไม่มีชื่อ
-  if (missing.length) {
-    throw new Error("CERTIFICATE_FONT_MISSING " + missing.join(", "));
+  // ถ้าฟอนต์ใช้ไม่ได้ resvg จะไม่วาดข้อความเลย → หยุดดีกว่าได้เกียรติบัตรไม่มีชื่อ
+  if (problems.length) {
+    throw new Error("CERTIFICATE_FONT_MISSING " + problems.join(" | "));
   }
 
   const resvg = new Resvg(svg, {
