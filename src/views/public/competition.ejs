@@ -1,2176 +1,1727 @@
-<!DOCTYPE html>
-<html lang="th">
+<% var tierKey=activeTier==='beginner' ? 'beginner' : activeTier==='intermediate' ? 'intermediate' : 'advance' ; var
+    isTeams=view==='teams' ; %>
+    <!DOCTYPE html>
+    <html lang="th">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title style="font-family: Kanit;">
-        <%= view==='board' ?'ผลสรุปคะแนน':'ทีมที่สมัคร' %> — Robo Challenge League
-    </title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-    <style>
-        /* =========================================================
-   RCL 2026 — MASTER TOPBAR
-   SINGLE SOURCE OF TRUTH — use on every page
-========================================================= */
-        .topbar {
-            position: fixed;
-            inset: 0 0 auto 0;
-            z-index: 1000;
-            width: 100%;
-            height: 84px;
-            padding: 0 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-sizing: border-box;
-            background: transparent;
-            border-bottom: 1px solid transparent;
-            transition: background .25s ease, border-color .25s ease, box-shadow .25s ease
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            <%= isTeams ? 'ทีมที่สมัคร' : 'ผลสรุปคะแนน' %> — Robo Challenge League
+        </title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="/css/style.css">
+        <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+        <style>
+            /* =========================================================
+       RCL 2026 — COMPETITION PAGE (teams / board)
+       01 Tokens / Reset
+       02 Topbar + Dropdown   (same as home page)
+       03 Mobile menu         (same as home page)
+       04 Page header / toggles
+       05 Card / search / table
+       06 Board
+       07 Footer
+       08 Responsive
+    ========================================================= */
 
-        .topbar.scrolled{
-            background: rgba(255, 255, 255, .92);
-            border-bottom-color: rgba(226, 232, 240, .9);
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px)
-        }
+            /* 01 — TOKENS / RESET */
+            :root {
+                --primary: #2563EB;
+                --primary-soft: #EFF6FF;
+                --navy: #0F172A;
+                --text: #172033;
+                --muted: #64748B;
+                --line: #E5EAF2;
+                --page: #F4F7FB;
+                --shadow-sm: 0 4px 14px rgba(15, 23, 42, .05);
+                --shadow-md: 0 12px 30px rgba(15, 23, 42, .08);
+                --content: 1180px;
+                --gutter: 24px;
+                --topbar-h: 82px;
+            }
 
-        .topbar-logo {
-            flex: 0 0 auto;
-            width: auto;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center
-        }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
 
-        .topbar-logo img {
-            display: block;
-            width: auto;
-            max-width: 130px;
-            height: 120px;
-            object-fit: contain
-        }
+            body {
+                min-width: 320px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow-x: hidden;
+                color: #1E293B;
+                background: var(--page);
+                font-family: 'Kanit', 'Sarabun', sans-serif;
+            }
 
-        .topbar-nav {
-            flex: 1 1 auto;
-            min-width: 0;
-            margin-left: 18px;
-            display: flex;
-            align-items: center;
-            gap: 6px
-        }
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
 
-        .nav-link {
-            min-height: 52px;
-            padding: 0 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 4px;
-            flex: 0 0 auto;
-            border: 0 !important;
-            border-radius: 11px;
-            background: transparent !important;
-            color: #334155;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            text-decoration: none;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: color .2s ease, background .2s ease, transform .2s ease
-        }
+            button,
+            input {
+                font: inherit;
+            }
 
-        .nav-link span:first-child {
-            font-size: 16px;
-            line-height: 1.05;
-            font-weight: 700;
-            letter-spacing: 1px
-        }
+            :focus-visible {
+                outline: 3px solid #93C5FD;
+                outline-offset: 2px;
+            }
 
-        .nav-link span:last-child {
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            font-size: 13px;
-            line-height: 1.05;
-            font-weight: 500;
-            letter-spacing: 0
-        }
-
-        .nav-link i {
-            font-size: 17px
-        }
-
-        .nav-link:hover {
-            color: #2563EB;
-            background: #F4F8FF !important;
-            transform: translateY(-1px)
-        }
-
-        .nav-link.active {
-            color: #2563EB !important;
-            background: #EFF6FF !important
-        }
-
-        .certificate-btn {
-            background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
-            color: #92400E !important;
-            border: 1px solid #FCD34D !important;
-            border-radius: 90px !important;
-            box-shadow: 0 4px 12px rgba(180, 120, 20, .18)
-        }
-
-        .certificate-btn:hover {
-            background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
-            color: #78350F !important;
-            border-color: #F59E0B !important;
-            box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
-            transform: translateY(-2px)
-        }
-
-        .topbar-actions {
-            flex: 0 0 auto;
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 10px
-        }
-
-        .btn-reg,
-        .btn-login {
-            min-height: 52px;
-            padding: 0 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            border-radius: 11px;
-            font: 800 16px 'Sarabun', sans-serif;
-            text-decoration: none;
-            white-space: nowrap;
-            box-sizing: border-box;
-            transition: all .2s ease
-        }
-
-        .btn-reg {
-            color: #fff;
-            background: linear-gradient(135deg, #3478F6, #2563EB);
-            border: 1px solid transparent;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, .24)
-        }
-
-        .btn-reg:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
-        }
-
-        .btn-login {
-            color: #334155;
-            background: #fff;
-            border: 1px solid #E2E8F0
-        }
-
-        .btn-login:hover {
-            color: #2563EB;
-            background: #F8FAFC;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .07)
-        }
-
-        .btn-login i {
-            font-size: 16px
-        }
-
-        .dropdown {
-            position: relative
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 0;
-            z-index: 1100;
-            display: none;
-            min-width: 215px;
-            padding: 8px;
-            background: rgba(255, 255, 255, .98);
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px)
-        }
-
-        .dropdown-item {
-            min-height: 44px;
-            padding: 0 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-radius: 10px;
-            color: #334155;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
-            transition: color .18s ease, background .18s ease
-        }
-
-        .dropdown-item:hover,
-        .dropdown-item.active {
-            color: #2563EB;
-            background: #EFF6FF
-        }
-
-        .dropdown-item:first-child:hover {
-            background: #FEF2F2;
-            color: #DC2626
-        }
-
-        .dropdown-item i {
-            font-size: 17px;
-            color: #64748B
-        }
-
-        .mobile-menu-toggle {
-            display: none;
-            position: relative;
-            z-index: 1202;
-            flex: 0 0 44px;
-            width: 44px;
-            height: 44px;
-            padding: 0;
-            margin-left: auto;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(148, 163, 184, .35);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, .96);
-            color: #334155;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, .07);
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent
-        }
-
-        .mobile-menu-toggle i {
-            font-size: 25px;
-            line-height: 1
-        }
-
-        .mobile-menu-toggle.is-open {
-            color: #2563EB;
-            background: #EFF6FF;
-            border-color: #BFDBFE
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 94px;
-            left: 12px;
-            right: 12px;
-            z-index: 1201;
-            max-height: calc(100dvh - 106px);
-            overflow-y: auto;
-            box-sizing: border-box;
-            padding: 8px;
-            background: rgba(255, 255, 255, .98);
-            border: 1px solid #DBEAFE;
-            border-radius: 17px;
-            box-shadow: 0 20px 50px rgba(15, 23, 42, .16);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            visibility: hidden;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-8px) scale(.985);
-            transform-origin: top center;
-            transition: opacity .18s ease, transform .18s ease, visibility .18s ease
-        }
-
-        .mobile-menu.is-open {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            transform: translateY(0) scale(1)
-        }
-
-        .mobile-menu-item {
-            width: 100%;
-            min-height: 52px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            box-sizing: border-box;
-            border: 0;
-            border-radius: 11px;
-            background: transparent;
-            color: #334155;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            text-decoration: none;
-            text-align: left;
-            cursor: pointer
-        }
-
-        .mobile-menu-item:hover,
-        .mobile-menu-item:active {
-            background: #F4F8FF;
-            color: #2563EB
-        }
-
-        .mobile-menu-item>i:first-child {
-            width: 28px;
-            min-width: 28px;
-            text-align: center;
-            font-size: 20px;
-            color: #64748B
-        }
-
-        .mobile-menu-item>span {
-            min-width: 0;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1
-        }
-
-        .mobile-menu-item b {
-            font-size: 15px;
-            font-weight: 800;
-            letter-spacing: .2px
-        }
-
-        .mobile-menu-item small {
-            margin-top: 3px;
-            font-size: 11px;
-            font-weight: 500;
-            color: #94A3B8
-        }
-
-        .mobile-menu-arrow {
-            width: auto !important;
-            min-width: 0 !important;
-            font-size: 18px !important;
-            color: #94A3B8 !important;
-            transition: transform .2s ease
-        }
-
-        .mobile-competition-toggle.is-open {
-            background: #EFF6FF;
-            color: #2563EB
-        }
-
-        .mobile-competition-toggle.is-open .mobile-menu-arrow {
-            transform: rotate(180deg)
-        }
-
-        .mobile-submenu {
-            display: none;
-            margin: 0 8px 6px 51px;
-            padding: 5px;
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px
-        }
-
-        .mobile-submenu.is-open {
-            display: block
-        }
-
-        .mobile-submenu-item {
-            min-height: 42px;
-            padding: 0 10px;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            border-radius: 8px;
-            color: #475569;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            text-decoration: none
-        }
-
-        .mobile-submenu-item:hover {
-            color: #2563EB;
-            background: #EFF6FF
-        }
-
-        .mobile-submenu-item i {
-            font-size: 16px;
-            color: #64748B
-        }
-
-        .mobile-login-item {
-            margin-top: 4px;
-            border-top: 1px solid #EEF2F6;
-            border-radius: 0 0 11px 11px
-        }
-
-        @media (min-width:901px) and (max-width:1199px) {
+            /* 02 — TOPBAR + DROPDOWN (solid on this page — no hero behind it) */
             .topbar {
-                height: 78px;
-                padding: 0 20px;
-                gap: 7px
+                position: fixed;
+                inset: 0 0 auto;
+                z-index: 1000;
+                height: var(--topbar-h);
+                padding: 0 30px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(255, 255, 255, .92);
+                border-bottom: 1px solid rgba(226, 232, 240, .9);
+                box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+            }
+
+            .topbar-logo {
+                flex: 0 0 auto;
+                display: inline-flex;
+                align-items: center;
             }
 
             .topbar-logo img {
-                height: 96px;
-                max-width: 112px
+                display: block;
+                width: auto;
+                height: 58px;
+                max-width: 150px;
+                object-fit: contain;
             }
 
             .topbar-nav {
-                margin-left: 8px;
-                gap: 2px
+                flex: 1 1 auto;
+                min-width: 0;
+                margin-left: 18px;
+                display: flex;
+                align-items: center;
+                gap: 2px;
             }
 
             .nav-link {
-                min-height: 48px;
-                padding: 0 10px
-            }
-
-            .nav-link span:first-child {
-                font-size: 14px;
-                letter-spacing: .7px
-            }
-
-            .nav-link span:last-child {
-                font-size: 11px
-            }
-
-            .btn-reg,
-            .btn-login {
-                min-height: 48px;
+                min-height: 52px;
                 padding: 0 14px;
-                font-size: 14px
-            }
-        }
-
-        @media (min-width:641px) and (max-width:900px) {
-            .topbar {
-                height: 72px;
-                padding: 0 16px;
-                gap: 6px
-            }
-
-            .topbar-logo img {
-                height: 76px;
-                max-width: 92px
-            }
-
-            .topbar-nav {
-                margin-left: 4px;
-                gap: 1px
-            }
-
-            .nav-link {
-                min-height: 46px;
-                padding: 0 8px
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                border: 0;
+                border-radius: 11px;
+                background: transparent;
+                color: #334155;
+                font-family: 'Kanit', sans-serif;
+                font-weight: 700;
+                letter-spacing: 1px;
+                line-height: 1.15;
+                white-space: nowrap;
+                cursor: pointer;
+                transition: color .2s ease, transform .2s ease;
             }
 
             .nav-link span:first-child {
-                font-size: 12px;
-                letter-spacing: .4px
+                font-size: 17px;
+                font-weight: 800;
             }
 
             .nav-link span:last-child {
-                font-size: 10px
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                margin-top: 1px;
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: .2px;
             }
 
-            .btn-reg,
+            .nav-link:hover,
+            .nav-link.active {
+                color: var(--primary);
+                transform: translateY(-1px);
+            }
+
+            .certificate-btn {
+                min-width: 150px;
+                padding: 8px 16px;
+                border: 1px solid #F6D365;
+                border-radius: 999px;
+                background: linear-gradient(135deg, #FFF8D8, #FFF0B8);
+                color: #92400E;
+                box-shadow: 0 6px 16px rgba(180, 120, 20, .12);
+            }
+
+            .certificate-btn:hover {
+                background: linear-gradient(135deg, #FDE68A, #FCD34D);
+                border-color: #F59E0B;
+                color: #78350F;
+            }
+
+            .topbar-actions {
+                flex: 0 0 auto;
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
             .btn-login {
-                min-height: 44px;
-                padding: 0 11px;
-                font-size: 13px
+                min-height: 52px;
+                padding: 0 18px;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                border: 1px solid #E2E8F0;
+                border-radius: 11px;
+                background: #fff;
+                color: #334155;
+                white-space: nowrap;
+                transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
             }
 
+            .btn-login:hover {
+                background: #F8FAFC;
+                transform: translateY(-1px);
+                box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
+            }
+
+            .dropdown {
+                position: relative;
+            }
+
+            .dropdown-menu {
+                position: absolute;
+                top: calc(100% + 8px);
+                left: 0;
+                z-index: 1100;
+                display: none;
+                min-width: 205px;
+                padding: 8px;
+                background: rgba(255, 255, 255, .98);
+                border: 1px solid #E2E8F0;
+                border-radius: 14px;
+                box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
+            }
+
+            .dropdown-item {
+                min-height: 42px;
+                padding: 0 12px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border-radius: 10px;
+                color: #334155;
+                font-size: 14px;
+                font-weight: 700;
+                white-space: nowrap;
+            }
+
+            .dropdown-item i {
+                color: #64748B;
+                font-size: 17px;
+            }
+
+            .dropdown-item:hover,
+            .dropdown-item.active {
+                background: var(--primary-soft);
+                color: var(--primary);
+            }
+
+            .dropdown-item.active i {
+                color: var(--primary);
+            }
+
+            /* 03 — MOBILE MENU (shown ≤1100px) */
             .mobile-menu-toggle,
             .mobile-menu {
-                display: none !important
-            }
-        }
-
-        @media (max-width:640px) {
-            .topbar {
-                height: 62px;
-                padding: 0 12px;
-                gap: 8px;
-                background: rgba(255, 255, 255, .94);
-                border-bottom-color: rgba(226, 232, 240, .9);
-                box-shadow: 0 4px 18px rgba(15, 23, 42, .07);
-                backdrop-filter: blur(16px);
-                -webkit-backdrop-filter: blur(16px)
-            }
-
-            .topbar-logo img {
-                height: 44px;
-                max-width: 86px
-            }
-
-            .topbar-nav,
-            .topbar-actions {
-                display: none !important
-            }
-
-            .mobile-menu-toggle {
-                display: inline-flex !important
-            }
-
-            .mobile-menu {
-                top: 72px;
-                left: 12px;
-                right: 12px;
-                max-height: calc(100dvh - 84px)
-            }
-        }
-
-        @media (max-width:430px) {
-            .topbar {
-                height: 60px;
-                padding: 0 9px
-            }
-
-            .topbar-logo img {
-                height: 40px;
-                max-width: 76px
-            }
-
-            .mobile-menu-toggle {
-                flex-basis: 42px;
-                width: 42px;
-                height: 42px
-            }
-
-            .mobile-menu {
-                top: 70px;
-                left: 9px;
-                right: 9px;
-                max-height: calc(100dvh - 80px)
-            }
-        }
-
-        @media (max-width:380px) {
-            .topbar {
-                height: 58px;
-                padding: 0 8px
-            }
-
-            .topbar-logo img {
-                height: 38px;
-                max-width: 72px
-            }
-
-            .mobile-menu-toggle {
-                flex-basis: 40px;
-                width: 40px;
-                height: 40px
-            }
-
-            .mobile-menu {
-                top: 67px;
-                left: 8px;
-                right: 8px
-            }
-
-            .mobile-menu-item {
-                min-height: 48px
-            }
-        }
-
-        @media (max-width:900px) and (orientation:landscape) {
-            .mobile-menu {
-                max-height: calc(100dvh - 76px)
-            }
-        }
-
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --primary: #2563EB;
-            --primary-dark: #1D4ED8;
-            --primary-soft: #EFF6FF;
-            --text: #172033;
-            --muted: #64748B;
-            --line: #E5EAF2;
-            --surface: #FFFFFF;
-            --surface-soft: #F8FAFC;
-            --page: #F3F6FB;
-            --shadow-sm: 0 4px 14px rgba(15, 23, 42, .05);
-            --shadow-md: 0 12px 30px rgba(15, 23, 42, .08);
-        }
-
-        html {
-            background: var(--page);
-        }
-
-        body {
-            font-family: Kanit;
-            background: #F4F7FB;
-            color: #1E293B;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        button,
-        input {
-            font: inherit;
-        }
-
-
-        .wrap {
-            width: min(1280px, 92%);
-            max-width: none;
-            margin: 40px auto;
-            padding: 70px;
-            flex: 1;
-        }
-
-        .card {
-            margin-top: 22px;
-        }
-
-        .page-hd {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 34px;
-            flex-wrap: wrap;
-        }
-
-        .page-title {
-            position: relative;
-            padding-left: 16px;
-            font-size: 28px;
-            line-height: 1.2;
-            font-weight: 800;
-            letter-spacing: -.4px;
-            color: var(--text);
-        }
-
-        .page-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 4px;
-            bottom: 4px;
-            width: 5px;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #60A5FA, #2563EB);
-        }
-
-        .page-title span {
-            color: var(--primary);
-        }
-
-        .view-toggle {
-            display: flex;
-            padding: 4px;
-            gap: 4px;
-            background: rgba(255, 255, 255, .9);
-            border: 1px solid #E2E8F0;
-            border-radius: 13px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .view-btn {
-            min-height: 40px;
-            padding: 0 16px;
-            border-radius: 10px;
-            border: none;
-            background: transparent;
-            color: #64748B;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            transition: all .18s ease;
-        }
-
-        .view-btn:hover {
-            color: var(--text);
-            background: #F8FAFC;
-        }
-
-        .view-btn.active {
-            color: #fff;
-            background: #de8705;
-            box-shadow: 0 6px 14px rgba(15, 23, 42, .18);
-        }
-
-        .tier-tabs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 7px;
-            background: rgba(255, 255, 255, .9);
-            border: 1px solid #E2E8F0;
-            border-radius: 16px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 24px;
-        }
-
-        .tier-tab {
-            min-height: 46px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            padding: 0 12px;
-            border-radius: 11px;
-            border: 1px solid transparent;
-            background: transparent;
-            color: #64748B;
-            font-size: 13px;
-            font-weight: 800;
-            cursor: pointer;
-            transition: all .18s ease;
-        }
-
-        .tier-tab:hover {
-            color: var(--text);
-            background: #F8FAFC;
-        }
-
-        .tier-tab.active-beginner {
-            color: #fff;
-            background: linear-gradient(135deg, #16A34A, #15803D);
-            box-shadow: 0 8px 18px rgba(22, 163, 74, .28);
-        }
-
-        .tier-tab.active-intermediate {
-            color: #fff;
-            background: linear-gradient(135deg, #2563EB, #1D4ED8);
-            box-shadow: 0 8px 18px rgba(37, 99, 235, .28);
-        }
-
-        .tier-tab.active-advance {
-            color: #fff;
-            background: linear-gradient(135deg, #EA580C, #C2410C);
-            box-shadow: 0 8px 18px rgba(234, 88, 12, .28);
-        }
-
-        .tier-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, .18);
-        }
-
-        .card {
-            overflow: hidden;
-            background: rgba(255, 255, 255, .97);
-            border-radius: 18px;
-
-        }
-
-
-        thead.active-beginner th {
-            background: linear-gradient(180deg, #ECFDF5, #D1FAE5);
-            color: #16A34A;
-            font-size: 18px;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-        }
-
-        thead.active-intermediate th {
-            background: linear-gradient(180deg, #DBEAFE, #BFDBFE);
-            color: #2563EB;
-            font-size: 18px;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-        }
-
-        thead.active-advance th {
-            background: linear-gradient(180deg, #FFEDD5, #FED7AA);
-            color: #EA580C;
-            font-size: 18px;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-        }
-
-        .search-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 20px 24px;
-            border-bottom: 1px solid #EDF1F6;
-            background: linear-gradient(180deg, #FFFFFF, #FBFCFE);
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 240px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 14px;
-            background: #F8FAFC;
-            border: 1px solid #DDE5EF;
-            border-radius: 12px;
-            transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
-        }
-
-        .search-box:focus-within {
-            background: #fff;
-            border-color: #93C5FD;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, .09);
-        }
-
-        .search-box i {
-            color: #94A3B8;
-            font-size: 17px;
-        }
-
-        .search-box input {
-            flex: 1;
-            min-width: 0;
-            border: none;
-            background: transparent;
-            color: var(--text);
-            font-size: 13px;
-            outline: none;
-        }
-
-        .search-box input::placeholder {
-            color: #9AA8BA;
-        }
-
-        .count-badge {
-            display: inline-flex;
-            align-items: center;
-            min-height: 32px;
-            padding: 0 11px;
-            border-radius: 999px;
-            background: var(--primary-soft);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .time-info {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #94A3B8;
-            font-size: 11px;
-            white-space: nowrap;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-        th {
-            padding: 13px 16px;
-            text-align: left;
-            background: #F8FAFC;
-            border-bottom: 1px solid #E5EAF2;
-            color: #718096;
-            font-size: 11px;
-            letter-spacing: .55px;
-            text-transform: uppercase;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #EEF2F6;
-            color: #334155;
-            font-size: 13px;
-            vertical-align: middle;
-            background: #fff;
-            transition: background .16s ease;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tbody tr:hover td {
-            background: #F8FBFF;
-        }
-
-        .team-name {
-            color: var(--text);
-            font-size: 18px;
-            font-weight: 800;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-        }
-
-        .team-id {
-            margin-top: 3px;
-            color: var(--primary);
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .team-id.active-beginner {
-            color: #16A34A !important;
-        }
-
-        .score-num {
-            color: var(--primary);
-            font-size: 17px;
-            font-weight: 800;
-        }
-
-        .score-time {
-            display: block;
-            margin-top: 2px;
-            color: #94A3B8;
-            font-size: 11px;
-        }
-
-        .best-score {
-            color: var(--text);
-            font-size: 21px;
-            font-weight: 900;
-        }
-
-        .bar-bg {
-            max-width: 92px;
-            height: 5px;
-            margin-top: 7px;
-            overflow: hidden;
-            background: #E2E8F0;
-            border-radius: 999px;
-        }
-
-        .bar-fill {
-            height: 100%;
-            border-radius: 999px;
-            background: var(--primary);
-        }
-
-        .rank-cell {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-            font-weight: 800;
-        }
-
-        .rank-gold {
-            color: #D97706;
-        }
-
-        .rank-silver {
-            color: #64748B;
-        }
-
-        .rank-bronze {
-            color: #92400E;
-        }
-
-        .rank-other {
-            color: #94A3B8;
-        }
-
-        .empty {
-            padding: 58px 24px;
-            text-align: center;
-            color: #94A3B8;
-        }
-
-        .empty i {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 40px;
-            opacity: .45;
-        }
-
-        .mobile-list {
-            padding: 10px;
-        }
-
-        .mobile-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            padding: 13px 12px;
-            border: 1px solid #EDF1F6;
-            border-radius: 13px;
-            background: #fff;
-        }
-
-        .mobile-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .mobile-num {
-            width: 32px;
-            height: 32px;
-            margin-right: 12px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            background: var(--primary-soft);
-            color: var(--primary);
-            font-size: 12px;
-            font-weight: 800;
-        }
-
-        .mobile-info {
-            flex: 1;
-        }
-
-        .mobile-name {
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .mobile-id {
-            margin-top: 2px;
-            color: var(--primary);
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .mobile-inst {
-            margin-top: 3px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            color: #94A3B8;
-            font-size: 11px;
-        }
-
-        .mobile-arrow {
-            color: #CBD5E1;
-            font-size: 15px;
-        }
-
-        .board-mobile-item {
-            margin: 10px;
-            padding: 15px 14px;
-            border: 1px solid #EDF1F6;
-            border-radius: 14px;
-            background: #fff;
-        }
-
-        .board-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .board-rank-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .board-medal {
-            font-size: 21px;
-        }
-
-        .board-pos {
-            font-size: 15px;
-            font-weight: 900;
-        }
-
-        .board-name {
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 800;
-        }
-
-        .board-inst {
-            color: #94A3B8;
-            font-size: 11px;
-        }
-
-        .board-best-score {
-            color: var(--primary);
-            font-size: 23px;
-            font-weight: 900;
-            text-align: right;
-        }
-
-        .board-best-time {
-            color: #94A3B8;
-            font-size: 10px;
-            text-align: right;
-        }
-
-        .board-rounds {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .board-round {
-            padding: 10px;
-            text-align: center;
-            background: #F8FAFC;
-            border: 1px solid #EEF2F6;
-            border-radius: 11px;
-        }
-
-        .board-round-label {
-            margin-bottom: 3px;
-            color: #64748B;
-            font-size: 10px;
-        }
-
-        .board-round-score {
-            color: var(--text);
-            font-size: 15px;
-            font-weight: 800;
-        }
-
-        .board-round-time {
-            color: #94A3B8;
-            font-size: 10px;
-        }
-
-        .footer {
-            background: #1E293B;
-            padding: 20px;
-            text-align: center;
-            margin-top: 32px;
-        }
-
-        .wrap {
-            width: min(1400px, 92%);
-            margin: 48px auto;
-        }
-
-        .footer img {
-            height: 32px;
-            margin-bottom: 9px;
-            object-fit: contain;
-        }
-
-        .footer-text {
-            color: rgba(255, 255, 255, .48);
-            font-size: 12px;
-            letter-spacing: .35px;
-        }
-
-        @media (min-width: 640px) {
-
-            .mobile-list,
-            .board-mobile-item,
-            .mobile-item {
                 display: none;
             }
-        }
 
-
-        .page-title {
-            font-size: 23px;
-        }
-
-        .page-hd {
-            align-items: stretch;
-        }
-
-        .page-hd>div:last-child {
-            width: 100%;
-        }
-
-        .view-toggle {
-            width: 100%;
-        }
-
-        .view-btn {
-            flex: 1;
-            justify-content: center;
-        }
-
-        .tier-tab {
-            min-height: 42px;
-            padding: 0 6px;
-            font-size: 11px;
-        }
-
-        .search-row {
-            padding: 13px;
-        }
-
-        .search-box {
-            min-width: 100%;
-        }
-        }
-
-
-        @media (max-width: 639px) {
-
-            html,
-            body {
-                width: 100%;
-                max-width: 100%;
-                overflow-x: hidden;
+            .mobile-menu-toggle {
+                margin-left: auto;
+                width: 44px;
+                height: 44px;
+                flex: 0 0 44px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                border: 1px solid rgba(148, 163, 184, .35);
+                border-radius: 12px;
+                background: rgba(255, 255, 255, .92);
+                color: #1E3A8A;
+                box-shadow: 0 5px 16px rgba(15, 23, 42, .08);
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
             }
 
-            /* ---------- PAGE ---------- */
-            .wrap {
-                width: calc(100% - 20px) !important;
-                max-width: 100% !important;
-                margin: 84px auto 24px !important;
-                padding: 0 !important;
+            .mobile-menu-toggle span {
+                width: 21px;
+                height: 2px;
+                border-radius: 999px;
+                background: currentColor;
+                transition: transform .22s ease, opacity .18s ease;
+            }
+
+            .mobile-menu-toggle.is-open span:nth-child(1) {
+                transform: translateY(7px) rotate(45deg);
+            }
+
+            .mobile-menu-toggle.is-open span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .mobile-menu-toggle.is-open span:nth-child(3) {
+                transform: translateY(-7px) rotate(-45deg);
+            }
+
+            .mobile-menu {
+                position: fixed;
+                top: calc(var(--topbar-h) + 6px);
+                right: 12px;
+                z-index: 999;
+                width: min(380px, calc(100% - 24px));
+                max-height: calc(100dvh - var(--topbar-h) - 18px);
+                overflow-y: auto;
+                padding: 8px;
+                visibility: hidden;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(-8px) scale(.985);
+                transform-origin: top right;
+                background: rgba(255, 255, 255, .98);
+                border: 1px solid #DBEAFE;
+                border-radius: 18px;
+                box-shadow: 0 20px 50px rgba(15, 23, 42, .18);
+                transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+            }
+
+            .mobile-menu.is-open {
+                visibility: visible;
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+            }
+
+            .mobile-menu-link,
+            .mobile-menu-competition-toggle {
+                width: 100%;
+                min-height: 50px;
+                padding: 9px 12px;
+                display: flex;
+                align-items: center;
+                gap: 11px;
+                border: 0;
+                border-radius: 12px;
+                background: transparent;
+                color: #334155;
+                font-family: 'Kanit', sans-serif;
+                font-size: 15px;
+                font-weight: 700;
+                text-align: left;
+                cursor: pointer;
+            }
+
+            .mobile-menu-link:hover,
+            .mobile-menu-competition-toggle:hover,
+            .mobile-menu-competition-toggle.active {
+                color: var(--primary);
+                background: var(--primary-soft);
+            }
+
+            .mobile-menu-link>i,
+            .mobile-menu-competition-toggle>i:first-child {
+                width: 28px;
+                flex: 0 0 28px;
+                display: grid;
+                place-items: center;
+                color: var(--primary);
+                font-size: 19px;
+            }
+
+            .mobile-menu-link-text {
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                line-height: 1.15;
+            }
+
+            .mobile-menu-link-text strong {
+                font-size: 15px;
+                font-weight: 800;
+            }
+
+            .mobile-menu-link-text small {
+                margin-top: 2px;
+                color: #64748B;
+                font-size: 11px;
+                font-weight: 500;
+            }
+
+            .mobile-chevron {
+                margin-left: auto;
+                color: #64748B;
+                font-size: 17px;
+                transition: transform .2s ease;
+            }
+
+            .mobile-menu-competition-toggle.is-open .mobile-chevron {
+                transform: rotate(180deg);
+            }
+
+            .mobile-submenu {
+                display: none;
+                margin: 0 8px 6px 51px;
+                padding: 5px;
+                background: #F8FAFC;
+                border: 1px solid #E2E8F0;
+                border-radius: 12px;
+            }
+
+            .mobile-submenu.is-open {
+                display: block;
+            }
+
+            .mobile-submenu a {
+                min-height: 42px;
+                padding: 8px 10px;
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                border-radius: 9px;
+                color: #475569;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .mobile-submenu a:hover,
+            .mobile-submenu a.active {
+                color: var(--primary);
+                background: var(--primary-soft);
+            }
+
+            .mobile-submenu a i {
+                color: #64748B;
+                font-size: 16px;
+            }
+
+            .mobile-menu-divider {
+                height: 1px;
+                margin: 6px 4px;
+                background: #E2E8F0;
+            }
+
+            .mobile-login>i {
+                color: #475569 !important;
+            }
+
+            /* 04 — PAGE HEADER / TOGGLES */
+            .page {
+                flex: 1;
+                width: 100%;
+                max-width: calc(var(--content) + var(--gutter) * 2);
+                margin: 0 auto;
+                padding: calc(var(--topbar-h) + 40px) var(--gutter) 64px;
             }
 
             .page-hd {
-                display: block !important;
-                margin-bottom: 18px !important;
+                margin-bottom: 22px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                flex-wrap: wrap;
             }
 
             .page-title {
-                margin-bottom: 16px;
-                padding-left: 14px;
-                font-size: 27px !important;
+                position: relative;
+                padding-left: 16px;
+                color: var(--text);
+                font-size: 32px;
+                font-weight: 800;
                 line-height: 1.2;
             }
 
             .page-title::before {
-                width: 4px;
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 5px;
+                bottom: 5px;
+                width: 5px;
+                border-radius: 999px;
+                background: linear-gradient(180deg, #60A5FA, #2563EB);
             }
 
-            .page-hd>div:last-child {
-                width: 100% !important;
+            .page-title span {
+                color: var(--primary);
             }
 
-            /* ---------- VIEW TOGGLE ---------- */
             .view-toggle {
-                width: 100% !important;
-                display: grid !important;
-                grid-template-columns: 1fr 1fr;
-                padding: 4px !important;
+                display: flex;
                 gap: 4px;
-                border-radius: 14px;
+                padding: 4px;
+                background: rgba(255, 255, 255, .9);
+                border: 1px solid #E2E8F0;
+                border-radius: 13px;
+                box-shadow: var(--shadow-sm);
             }
 
             .view-btn {
-                min-height: 48px !important;
-                padding: 0 8px !important;
-                font-size: 16px !important;
+                min-height: 44px;
+                padding: 0 18px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 gap: 7px;
+                border-radius: 10px;
+                color: #64748B;
+                font-size: 17px;
+                font-weight: 600;
+                transition: all .18s ease;
             }
 
-            /* ---------- TIER TABS ---------- */
+            .view-btn:hover {
+                color: var(--text);
+                background: #F8FAFC;
+            }
+
+            .view-btn.active {
+                color: #fff;
+                background: #DE8705;
+                box-shadow: 0 6px 14px rgba(222, 135, 5, .28);
+            }
+
             .tier-tabs {
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                gap: 5px !important;
-                padding: 5px !important;
-                margin-bottom: 18px !important;
-                border-radius: 14px;
+                margin-bottom: 20px;
+                padding: 7px;
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 8px;
+                background: rgba(255, 255, 255, .9);
+                border: 1px solid #E2E8F0;
+                border-radius: 16px;
+                box-shadow: var(--shadow-sm);
             }
 
             .tier-tab {
-                min-height: 48px !important;
-                padding: 0 4px !important;
-                gap: 5px;
-                font-size: 13px !important;
+                --c: #16A34A;
+                --c2: #15803D;
+                min-height: 48px;
+                padding: 0 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 11px;
+                color: #64748B;
+                font-size: 17px;
+                font-weight: 600;
                 white-space: nowrap;
+                transition: all .18s ease;
+            }
+
+            .tier-tab.tier-intermediate {
+                --c: #2563EB;
+                --c2: #1D4ED8;
+            }
+
+            .tier-tab.tier-advance {
+                --c: #EA580C;
+                --c2: #C2410C;
+            }
+
+            .tier-tab:hover {
+                color: var(--c);
+                background: #F8FAFC;
             }
 
             .tier-dot {
-                width: 6px;
-                height: 6px;
+                flex: 0 0 auto;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--c);
             }
 
-            /* ---------- MAIN CARD ---------- */
+            .tier-tab.active {
+                color: #fff;
+                background: linear-gradient(135deg, var(--c), var(--c2));
+                box-shadow: 0 8px 18px color-mix(in srgb, var(--c) 28%, transparent);
+            }
+
+            .tier-tab.active .tier-dot {
+                background: #fff;
+            }
+
+            /* 05 — CARD / SEARCH / TABLE */
             .card {
-                margin-top: 0 !important;
-                border-radius: 16px !important;
+                --tier: #16A34A;
+                --head-a: #ECFDF5;
+                --head-b: #D1FAE5;
                 overflow: hidden;
+                background: #fff;
+                border: 1px solid #E2E8F0;
+                border-radius: 18px;
+                box-shadow: var(--shadow-md);
             }
 
-            /* ---------- SEARCH ---------- */
+            .card.tier-intermediate {
+                --tier: #2563EB;
+                --head-a: #DBEAFE;
+                --head-b: #BFDBFE;
+            }
+
+            .card.tier-advance {
+                --tier: #EA580C;
+                --head-a: #FFEDD5;
+                --head-b: #FED7AA;
+            }
+
             .search-row {
-                padding: 14px !important;
-                gap: 9px !important;
-                flex-wrap: wrap !important;
+                padding: 18px 22px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex-wrap: wrap;
+                background: linear-gradient(180deg, #fff, #FBFCFE);
+                border-bottom: 1px solid #EDF1F6;
             }
 
             .search-box {
-                width: 100% !important;
-                min-width: 0 !important;
-                min-height: 50px !important;
+                flex: 1;
+                min-width: 240px;
+                min-height: 48px;
+                padding: 0 14px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                background: #F8FAFC;
+                border: 1px solid #DDE5EF;
+                border-radius: 12px;
+                transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+            }
+
+            .search-box:focus-within {
+                background: #fff;
+                border-color: #93C5FD;
+                box-shadow: 0 0 0 4px rgba(37, 99, 235, .09);
+            }
+
+            .search-box i {
+                color: #94A3B8;
+                font-size: 17px;
+            }
+
+            .search-box input {
+                flex: 1;
+                min-width: 0;
+                border: none;
+                outline: none;
+                background: transparent;
+                color: var(--text);
+                font-size: 15px;
+            }
+
+            .search-box input::placeholder {
+                color: #9AA8BA;
             }
 
             .count-badge {
                 min-height: 32px;
-                font-size: 12px;
+                padding: 0 12px;
+                display: inline-flex;
+                align-items: center;
+                border-radius: 999px;
+                background: var(--primary-soft);
+                color: var(--primary);
+                font-size: 13px;
+                font-weight: 700;
+                white-space: nowrap;
             }
 
             .time-info {
-                font-size: 11px;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                color: #94A3B8;
+                font-size: 12px;
+                white-space: nowrap;
             }
 
-            /* =====================================================
-       TEAM VIEW — KEEP A REAL TABLE ON MOBILE
-       Do NOT convert # / ชื่อทีม / สถาบัน into cards.
-    ===================================================== */
-
-            .desktop-table {
-                display: block !important;
-                width: 100% !important;
-                overflow-x: auto !important;
-                overflow-y: hidden !important;
+            .table-scroll {
+                width: 100%;
+                overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
             }
 
-            .desktop-table table {
-                width: 100% !important;
-                min-width: 620px !important;
-                table-layout: fixed;
+            table {
+                width: 100%;
+                border-collapse: separate;
+                border-spacing: 0;
             }
 
-            .desktop-table th,
-            .desktop-table td {
-                white-space: normal;
+            th {
+                padding: 14px 16px;
+                text-align: left;
+                background: linear-gradient(180deg, var(--head-a), var(--head-b));
+                border-bottom: 1px solid #E5EAF2;
+                color: var(--tier);
+                font-size: 17px;
+                font-weight: 700;
+                white-space: nowrap;
             }
 
-            .desktop-table th {
-                padding: 13px 12px !important;
-                font-size: 12px !important;
+            td {
+                padding: 16px;
+                background: #fff;
+                border-bottom: 1px solid #EEF2F6;
+                color: #334155;
+                font-size: 14px;
+                vertical-align: middle;
+                transition: background .16s ease;
             }
 
-            .desktop-table td {
-                padding: 15px 12px !important;
-                font-size: 13px !important;
+            tbody tr:last-child td {
+                border-bottom: none;
             }
 
-            .desktop-table th:nth-child(1),
-            .desktop-table td:nth-child(1) {
-                width: 62px;
+            tbody tr:hover td {
+                background: #F8FBFF;
+            }
+
+            .col-num {
+                width: 72px;
                 text-align: center;
             }
 
-            .desktop-table th:nth-child(2),
-            .desktop-table td:nth-child(2) {
-                width: 235px;
+            td.col-num {
+                color: #94A3B8;
+                font-size: 18px;
             }
 
-            .desktop-table th:nth-child(3),
-            .desktop-table td:nth-child(3) {
-                width: 323px;
+            .c-beginner {
+                color: #16A34A !important;
             }
 
-            .desktop-table .team-name {
-                font-size: 17px !important;
-                line-height: 1.2;
+            .c-intermediate {
+                color: #2563EB !important;
             }
 
-            .desktop-table .team-id {
-                font-size: 11px !important;
+            .c-advance {
+                color: #EA580C !important;
             }
 
-            .desktop-table td:nth-child(3) {
-                font-size: 16px !important;
-                line-height: 1.35;
+            .team-name {
+                font-size: 18px;
+                font-weight: 700;
+                line-height: 1.25;
             }
 
-            .mobile-list {
-                display: none !important;
+            .team-id {
+                margin-top: 3px;
+                font-size: 12px;
+                font-weight: 600;
+                opacity: .85;
             }
 
-            /* ---------- TEAM VIEW: REAL TABLE ---------- */
-            .view-teams .desktop-table {
-                display: block !important;
+            .team-inst {
+                display: flex;
+                align-items: flex-start;
+                gap: 6px;
+                font-size: 17px;
+                line-height: 1.4;
             }
 
-            .view-teams .mobile-list {
-                display: none !important;
+            .team-inst i {
+                flex: 0 0 auto;
+                margin-top: 2px;
+                font-size: 18px;
             }
 
-            /* ---------- BOARD VIEW: MOBILE CARDS ---------- */
-            .view-board .desktop-table {
-                display: none !important;
+            .empty {
+                padding: 58px 24px;
+                color: #94A3B8;
+                font-size: 15px;
+                text-align: center;
             }
 
-            .view-board #boardMobile {
-                display: block !important;
-                padding: 8px !important;
+            .empty i {
+                display: block;
+                margin-bottom: 10px;
+                font-size: 40px;
+                opacity: .45;
             }
 
-            .view-board .board-mobile-item {
-                display: block !important;
-                margin: 0 0 10px !important;
-                padding: 15px !important;
+            /* 06 — BOARD */
+            .rank-cell {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 16px;
+                font-weight: 800;
+            }
+
+            .rank-medal {
+                font-size: 22px;
+            }
+
+            .rank-gold {
+                color: #D97706;
+            }
+
+            .rank-silver {
+                color: #64748B;
+            }
+
+            .rank-bronze {
+                color: #92400E;
+            }
+
+            .rank-other {
+                color: #94A3B8;
+            }
+
+            .score-num {
+                color: var(--primary);
+                font-size: 17px;
+                font-weight: 800;
+            }
+
+            .score-time {
+                display: block;
+                margin-top: 2px;
+                color: #94A3B8;
+                font-size: 11px;
+            }
+
+            .best-score {
+                color: var(--text);
+                font-size: 21px;
+                font-weight: 900;
+            }
+
+            .score-empty {
+                color: #CBD5E1;
+            }
+
+            .team-sub {
+                margin-top: 2px;
+                color: #94A3B8;
+                font-size: 12px;
+            }
+
+            .bar-bg {
+                max-width: 110px;
+                height: 5px;
+                margin-top: 7px;
+                overflow: hidden;
+                background: #E2E8F0;
+                border-radius: 999px;
+            }
+
+            .bar-fill {
+                height: 100%;
+                border-radius: 999px;
+                background: #2563EB;
+            }
+
+            .bar-fill.rank-1 {
+                background: #D97706;
+            }
+
+            .bar-fill.rank-2 {
+                background: #94A3B8;
+            }
+
+            .bar-fill.rank-3 {
+                background: #92400E;
+            }
+
+            .board-mobile {
+                display: none;
+                padding: 10px;
+            }
+
+            .board-mobile-item {
+                margin-bottom: 10px;
+                padding: 15px;
+                background: #fff;
                 border: 1px solid #E2E8F0;
                 border-radius: 15px;
-                background: #fff;
                 box-shadow: 0 5px 16px rgba(15, 23, 42, .045);
             }
 
-            .view-board .board-mobile-item:last-child {
-                margin-bottom: 0 !important;
+            .board-mobile-item:last-child {
+                margin-bottom: 0;
             }
 
-            .view-board .board-top {
-                margin-bottom: 12px !important;
+            .board-top {
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
             }
 
-            .view-board .board-name {
-                font-size: 16px !important;
+            .board-rank-left {
+                min-width: 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
             }
 
-            .view-board .board-inst {
+            .board-pos {
+                flex: 0 0 auto;
+                font-size: 16px;
+                font-weight: 900;
+            }
+
+            .board-name {
+                font-size: 16px;
+                font-weight: 700;
+                line-height: 1.25;
+            }
+
+            .board-inst {
                 margin-top: 3px;
-                font-size: 11px !important;
+                color: #94A3B8;
+                font-size: 11px;
             }
 
-            .view-board .board-best-score {
-                font-size: 30px !important;
+            .board-best-score {
+                color: var(--primary);
+                font-size: 28px;
+                font-weight: 900;
                 line-height: 1;
+                text-align: right;
             }
 
-            .view-board .board-best-time {
+            .board-best-time {
                 margin-top: 4px;
-                font-size: 10px !important;
+                color: #94A3B8;
+                font-size: 10px;
+                text-align: right;
             }
 
-            .view-board .board-rounds {
-                grid-template-columns: 1fr 1fr !important;
-                gap: 8px !important;
-                margin-top: 12px !important;
+            .board-rounds {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
             }
 
-            .view-board .board-round {
-                min-height: 76px;
-                padding: 11px 8px !important;
+            .board-round {
+                padding: 11px 8px;
+                background: #F8FAFC;
+                border: 1px solid #EEF2F6;
+                border-radius: 11px;
+                text-align: center;
             }
 
-            .view-board .board-round-label {
-                font-size: 10px !important;
+            .board-round-label {
+                margin-bottom: 3px;
+                color: #64748B;
+                font-size: 11px;
             }
 
-            .view-board .board-round-score {
-                font-size: 20px !important;
-            }
-        }
-
-        .wrap {
-            width: min(94%, 900px) !important;
-            margin-top: 96px !important;
-            padding: 0 !important;
-        }
-
-        .desktop-table {
-            display: block !important;
-            overflow-x: auto !important;
-        }
-
-        .mobile-list {
-            display: none !important;
-        }
-        }
-
-
-        /* PAGE RESPONSIVE — Competition content only. Master Topbar above owns all Topbar rules. */
-        @media (min-width:640px) {
-
-            .mobile-list,
-            #boardMobile,
-            .mobile-item,
-            .board-mobile-item {
-                display: none !important
-            }
-        }
-
-        @media (max-width:639px) {
-            .body {
-                padding-top: 0
+            .board-round-score {
+                color: var(--text);
+                font-size: 19px;
+                font-weight: 800;
             }
 
-            .wrap {
-                width: calc(100% - 20px);
-                max-width: 100%;
-                margin: 84px auto 24px;
-                padding: 0
-            }
-        }
-
-        @media (max-width:430px) {
-            .wrap {
-                width: calc(100% - 16px) !important;
-                margin-top: 80px !important
+            .board-round-time {
+                color: #94A3B8;
+                font-size: 10px;
             }
 
-            .page-title {
-                font-size: 25px !important
+            /* 07 — FOOTER */
+            .footer {
+                padding: 22px 20px;
+                background: #1E293B;
+                text-align: center;
             }
 
-            .view-btn {
-                min-height: 46px !important;
-                font-size: 15px !important
+            .footer img {
+                height: 36px;
+                margin-bottom: 8px;
+                object-fit: contain;
             }
 
-            .tier-tab {
-                min-height: 46px !important;
-                font-size: 12px !important
+            .footer-text {
+                color: rgba(255, 255, 255, .5);
+                font-size: 12px;
+                letter-spacing: .35px;
             }
 
-            .desktop-table table {
-                min-width: 570px !important
+            @media (prefers-reduced-motion: reduce) {
+
+                *,
+                *::before,
+                *::after {
+                    transition: none !important;
+                }
             }
 
-            .desktop-table th:nth-child(1),
-            .desktop-table td:nth-child(1) {
-                width: 54px
+            /* 08 — RESPONSIVE */
+            @media (min-width: 1440px) {
+                .topbar {
+                    padding-inline: 48px;
+                }
+
+                .topbar-nav {
+                    margin-left: 22px;
+                    gap: 4px;
+                }
+
+                .nav-link {
+                    padding-inline: 16px;
+                }
             }
 
-            .desktop-table th:nth-child(2),
-            .desktop-table td:nth-child(2) {
-                width: 215px
+            @media (max-width: 1199px) {
+                :root {
+                    --gutter: 20px;
+                }
+
+                .topbar {
+                    padding-inline: 20px;
+                }
+
+                .topbar-logo img {
+                    height: 54px;
+                    max-width: 136px;
+                }
+
+                .topbar-nav {
+                    margin-left: 10px;
+                    gap: 0;
+                }
+
+                .nav-link {
+                    padding-inline: 9px;
+                    letter-spacing: .5px;
+                }
+
+                .nav-link span:first-child {
+                    font-size: 15px;
+                }
+
+                .nav-link span:last-child {
+                    font-size: 10px;
+                }
+
+                .certificate-btn {
+                    min-width: 126px;
+                    padding-inline: 12px;
+                }
+
+                .btn-login {
+                    padding-inline: 13px;
+                    font-size: 14px;
+                }
             }
 
-            .desktop-table th:nth-child(3),
-            .desktop-table td:nth-child(3) {
-                width: 301px
-            }
-        }
+            @media (max-width: 1100px) {
+                :root {
+                    --topbar-h: 70px;
+                }
 
-        @media (max-width:380px) {
-            .wrap {
-                margin-top: 76px !important
-            }
+                .topbar-nav,
+                .topbar-actions {
+                    display: none;
+                }
 
-            .page-title {
-                font-size: 23px !important
-            }
+                .mobile-menu-toggle {
+                    display: flex;
+                }
 
-            .view-btn {
-                font-size: 14px !important
-            }
+                .mobile-menu {
+                    display: block;
+                }
 
-            .tier-tab {
-                font-size: 11px !important
-            }
-
-            .desktop-table table {
-                min-width: 540px !important
-            }
-        }
-
-        @media (min-width:641px) and (max-width:900px) {
-            .wrap {
-                width: min(94%, 900px) !important;
-                margin-top: 96px !important;
-                padding: 0 !important
+                .topbar-logo img {
+                    height: 50px;
+                    max-width: 124px;
+                }
             }
 
-            .desktop-table {
-                display: block !important;
-                overflow-x: auto !important
+            @media (max-width: 900px) {
+                .page {
+                    padding-top: calc(var(--topbar-h) + 28px);
+                }
+
+                .page-hd {
+                    flex-direction: column;
+                    align-items: stretch;
+                }
+
+                .view-toggle {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                }
             }
 
-            .mobile-list {
-                display: none !important
+            @media (max-width: 639px) {
+                :root {
+                    --gutter: 10px;
+                    --topbar-h: 60px;
+                }
+
+                .topbar {
+                    padding: 0 12px;
+                }
+
+                .topbar-logo img {
+                    height: 42px;
+                    max-width: 90px;
+                }
+
+                .page {
+                    padding-top: calc(var(--topbar-h) + 22px);
+                    padding-bottom: 32px;
+                }
+
+                .page-hd {
+                    margin-bottom: 16px;
+                    gap: 14px;
+                }
+
+                .page-title {
+                    padding-left: 14px;
+                    font-size: 26px;
+                }
+
+                .page-title::before {
+                    width: 4px;
+                }
+
+                .view-btn {
+                    min-height: 46px;
+                    padding: 0 8px;
+                    font-size: 15px;
+                }
+
+                .tier-tabs {
+                    margin-bottom: 14px;
+                    padding: 5px;
+                    gap: 5px;
+                    border-radius: 14px;
+                }
+
+                .tier-tab {
+                    min-height: 46px;
+                    padding: 0 4px;
+                    gap: 5px;
+                    font-size: 13px;
+                }
+
+                .tier-dot {
+                    width: 6px;
+                    height: 6px;
+                }
+
+                .card {
+                    border-radius: 16px;
+                }
+
+                .search-row {
+                    padding: 12px;
+                    gap: 8px;
+                }
+
+                .search-box {
+                    width: 100%;
+                    min-width: 0;
+                    flex-basis: 100%;
+                }
+
+                /* Teams: keep the real table, scroll sideways */
+                .teams-table {
+                    min-width: 560px;
+                    table-layout: fixed;
+                }
+
+                .teams-table .col-num {
+                    width: 54px;
+                }
+
+                .teams-table .col-name {
+                    width: 220px;
+                }
+
+                th {
+                    padding: 12px;
+                    font-size: 14px;
+                }
+
+                td {
+                    padding: 14px 12px;
+                }
+
+                .team-name {
+                    font-size: 16px;
+                }
+
+                .team-inst {
+                    font-size: 15px;
+                }
+
+                /* Board: cards instead of table */
+                .board-table {
+                    display: none;
+                }
+
+                .board-mobile {
+                    display: block;
+                }
             }
-        }
 
-        /* =========================================================
-           RCL 2026 — BOARD MOBILE / TABLE OVERLAP FIX
-           Only one board representation is visible at a time.
-        ========================================================= */
-        @media (max-width: 639px) {
-            .view-board .desktop-table {
-                display: none !important;
-                visibility: hidden !important;
-                height: 0 !important;
-                overflow: hidden !important;
+            @media (max-width: 380px) {
+                .page-title {
+                    font-size: 23px;
+                }
+
+                .view-btn {
+                    font-size: 14px;
+                }
+
+                .tier-tab {
+                    font-size: 11px;
+                }
+
+                .board-best-score {
+                    font-size: 24px;
+                }
             }
+        </style>
+    </head>
 
-            .view-board #boardMobile {
-                display: block !important;
-                visibility: visible !important;
-                height: auto !important;
-                overflow: visible !important;
-                padding: 8px !important;
-            }
+    <body>
 
-            .view-board #boardMobile .board-mobile-item {
-                display: block !important;
-                position: relative !important;
-                width: 100% !important;
-                height: auto !important;
-                margin: 0 0 10px !important;
-                clear: both !important;
-            }
-
-            .view-board #boardMobile .board-mobile-item:last-child {
-                margin-bottom: 0 !important;
-            }
-        }
-
-        @media (min-width: 640px) {
-            .view-board .desktop-table {
-                display: block !important;
-                visibility: visible !important;
-                height: auto !important;
-                overflow-x: auto !important;
-            }
-
-            .view-board #boardMobile {
-                display: none !important;
-                visibility: hidden !important;
-                height: 0 !important;
-                overflow: hidden !important;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- TOPBAR -->
-    <div class="topbar">
-        <a href="/" class="topbar-logo">
-            <img src="/RCL Logo.png" alt="RCL">
-        </a>
-
-        <nav class="topbar-nav">
-
-            <a href="/" class="nav-link">
-                <span>HOME</span>
-                <span>หน้าหลัก</span>
+        <!-- TOPBAR -->
+        <header class="topbar">
+            <a href="/" class="topbar-logo">
+                <img src="/RCL Logo.png" alt="RCL">
             </a>
 
-            <a href="/#about" class="nav-link">
-                <span>ABOUT US</span>
-                <span>เกี่ยวกับเรา</span>
-            </a>
-
-            <div class="dropdown">
-                <button class="nav-link" type="button">
-                    <span>COMPETITION</span>
-                    <span>
-                        การแข่งขัน
-                        <i class="ti ti-chevron-down"></i>
-                    </span>
-                </button>
-
-                <div class="dropdown-menu">
-                    <a href="/#tiers" class="dropdown-item">
-                        <i class="ti ti-pencil-plus"></i>
-                        สมัครแข่งขัน
-                    </a>
-                    <a href="/competition?view=teams" class="dropdown-item">
-                        <i class="ti ti-users"></i>
-                        ทีมที่สมัคร
-                    </a>
-                    <a href="/competition?view=board" class="dropdown-item">
-                        <i class="ti ti-chart-bar"></i>
-                        ผลสรุปคะแนน
-                    </a>
-                </div>
-            </div>
-
-            <a href="/docs" class="nav-link">
-                <span>DOCUMENT</span>
-                <span>เอกสาร</span>
-            </a>
-
-            <a href="/preorder" class="nav-link">
-                <span>PRE-ORDER MISSION</span>
-                <span>พรีออเดอร์สนามภารกิจ</span>
-            </a>
-
-            <a href="/certificate" class="nav-link certificate-btn">
-                <span>CERTIFICATE</span>
-                <span>เกียรติบัตร</span>
-            </a>
-
-        </nav>
-
-        <!-- MOBILE HAMBURGER -->
-        <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false"
-            onclick="(function(b){var m=document.getElementById('mobileMenu');var o=m.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');b.setAttribute('aria-label',o?'ปิดเมนู':'เปิดเมนู');b.innerHTML=o?'<i class=&quot;ti ti-x&quot;></i>':'<i class=&quot;ti ti-menu-2&quot;></i>';})(this)">
-            <i class="ti ti-menu-2"></i>
-        </button>
-
-        <!-- MOBILE MENU -->
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="/" class="mobile-menu-item">
-                <i class="ti ti-home-2"></i>
-                <span><b>HOME</b><small>หน้าหลัก</small></span>
-            </a>
-            <a href="/#about" class="mobile-menu-item">
-                <i class="ti ti-users"></i>
-                <span><b>ABOUT US</b><small>เกี่ยวกับเรา</small></span>
-            </a>
-
-            <button class="mobile-menu-item mobile-competition-toggle" type="button" aria-expanded="false"
-                aria-controls="mobileCompetitionSubmenu"
-                onclick="(function(b,e){e.preventDefault();e.stopPropagation();var s=document.getElementById('mobileCompetitionSubmenu');if(!s)return;var o=s.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');})(this,event)">
-                <i class="ti ti-trophy"></i>
-                <span><b>COMPETITION</b><small>การแข่งขัน</small></span>
-                <i class="ti ti-chevron-down mobile-menu-arrow"></i>
+            <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
 
-            <div class="mobile-submenu" id="mobileCompetitionSubmenu">
-                <a href="/#tiers" class="mobile-submenu-item">
-                    <i class="ti ti-pencil-plus"></i>สมัครแข่งขัน
+            <nav class="topbar-nav">
+                <a href="/" class="nav-link">
+                    <span>HOME</span>
+                    <span>หน้าหลัก</span>
                 </a>
-                <a href="/competition?view=teams" class="mobile-submenu-item">
-                    <i class="ti ti-users"></i>ทีมที่สมัคร
+
+                <a href="/#about" class="nav-link">
+                    <span>ABOUT US</span>
+                    <span>เกี่ยวกับเรา</span>
                 </a>
-                <a href="/competition?view=board" class="mobile-submenu-item">
-                    <i class="ti ti-chart-bar"></i>ผลสรุปคะแนน
+
+                <a href="/#awards" class="nav-link">
+                    <span>AWARDS</span>
+                    <span>รางวัล</span>
+                </a>
+
+                <div class="dropdown">
+                    <button class="nav-link active" type="button">
+                        <span>COMPETITION</span>
+                        <span>การแข่งขัน <i class="ti ti-chevron-down"></i></span>
+                    </button>
+
+                    <div class="dropdown-menu">
+                        <a href="/#tiers" class="dropdown-item"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+                        <a href="/competition?view=teams" class="dropdown-item <%= isTeams ? 'active' : '' %>"><i
+                                class="ti ti-users"></i>ทีมที่สมัคร</a>
+                        <a href="/competition?view=board" class="dropdown-item <%= !isTeams ? 'active' : '' %>"><i
+                                class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+                    </div>
+                </div>
+
+                <a href="/docs" class="nav-link">
+                    <span>DOCUMENT</span>
+                    <span>เอกสาร</span>
+                </a>
+
+                <a href="/preorder" class="nav-link">
+                    <span>PRE-ORDER MISSION</span>
+                    <span>พรีออเดอร์สนามภารกิจ</span>
+                </a>
+
+                <a href="/certificate" class="nav-link certificate-btn">
+                    <span>CERTIFICATE</span>
+                    <span>เกียรติบัตร</span>
+                </a>
+            </nav>
+
+            <div class="topbar-actions">
+                <a href="/auth/login" class="btn-login">
+                    <i class="ti ti-lock"></i>
+                    <span>เข้าสู่ระบบ</span>
                 </a>
             </div>
 
-            <a href="/docs" class="mobile-menu-item">
-                <i class="ti ti-file-text"></i>
-                <span><b>DOCUMENT</b><small>เอกสาร</small></span>
-            </a>
-            <a href="/preorder" class="mobile-menu-item">
-                <i class="ti ti-shopping-cart"></i>
-                <span><b>PRE-ORDER MISSION</b><small>พรีออเดอร์สนามภารกิจ</small></span>
-            </a>
-            <a href="/certificate" class="mobile-menu-item" target="_blank">
-                <i class="ti ti-award"></i>
-                <span><b>CERTIFICATE</b><small>เกียรติบัตร</small></span>
-            </a>
-            <a href="/auth/login" class="mobile-menu-item mobile-login-item">
-                <i class="ti ti-lock"></i>
-                <span><b>LOGIN</b><small>เข้าสู่ระบบ</small></span>
-            </a>
-        </div>
+            <!-- MOBILE / TABLET MENU -->
+            <div class="mobile-menu" aria-hidden="true">
+                <a href="/" class="mobile-menu-link">
+                    <i class="ti ti-home"></i>
+                    <span class="mobile-menu-link-text"><strong>HOME</strong><small>หน้าหลัก</small></span>
+                </a>
 
-        <div class="topbar-actions">
-            <a href="/auth/login" class="btn-login">
-                <i class="ti ti-lock"></i>
-                <span>เข้าสู่ระบบ</span>
-            </a>
-        </div>
-    </div>
+                <a href="/#about" class="mobile-menu-link">
+                    <i class="ti ti-info-circle"></i>
+                    <span class="mobile-menu-link-text"><strong>ABOUT US</strong><small>เกี่ยวกับเรา</small></span>
+                </a>
 
-    <div class="wrap">
-        <div class="page-hd">
-            <div class="page-title">
-                <% if (view==='teams' ) { %><span>ทีม</span>ที่สมัคร<% } else { %><span>ผลสรุป</span>คะแนน<% } %>
+                <a href="/#awards" class="mobile-menu-link">
+                    <i class="ti ti-award"></i>
+                    <span class="mobile-menu-link-text"><strong>AWARDS</strong><small>รางวัล</small></span>
+                </a>
+
+                <button class="mobile-menu-competition-toggle active" type="button" aria-expanded="false">
+                    <i class="ti ti-trophy"></i>
+                    <span class="mobile-menu-link-text"><strong>COMPETITION</strong><small>การแข่งขัน</small></span>
+                    <i class="ti ti-chevron-down mobile-chevron"></i>
+                </button>
+
+                <div class="mobile-submenu">
+                    <a href="/#tiers"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+                    <a href="/competition?view=teams" class="<%= isTeams ? 'active' : '' %>"><i
+                            class="ti ti-users"></i>ทีมที่สมัคร</a>
+                    <a href="/competition?view=board" class="<%= !isTeams ? 'active' : '' %>"><i
+                            class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+                </div>
+
+                <a href="/docs" class="mobile-menu-link">
+                    <i class="ti ti-file-text"></i>
+                    <span class="mobile-menu-link-text"><strong>DOCUMENT</strong><small>เอกสาร</small></span>
+                </a>
+
+                <a href="/preorder" class="mobile-menu-link">
+                    <i class="ti ti-shopping-cart"></i>
+                    <span class="mobile-menu-link-text"><strong>PRE-ORDER
+                            MISSION</strong><small>พรีออเดอร์สนามภารกิจ</small></span>
+                </a>
+
+                <a href="/certificate" class="mobile-menu-link" target="_blank">
+                    <i class="ti ti-certificate"></i>
+                    <span class="mobile-menu-link-text"><strong>CERTIFICATE</strong><small>เกียรติบัตร</small></span>
+                </a>
+
+                <div class="mobile-menu-divider"></div>
+
+                <a href="/auth/login" class="mobile-menu-link mobile-login">
+                    <i class="ti ti-lock"></i>
+                    <span class="mobile-menu-link-text"><strong>เข้าสู่ระบบ</strong><small>Login</small></span>
+                </a>
             </div>
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        </header>
+
+        <main class="page">
+            <div class="page-hd">
+                <h1 class="page-title">
+                    <% if (isTeams) { %><span>ทีม</span>ที่สมัคร<% } else { %><span>ผลสรุป</span>คะแนน<% } %>
+                </h1>
+
                 <div class="view-toggle">
                     <a href="/competition?view=teams&tier=<%= activeTier %>"
-                        class="view-btn <%= view==='teams'?'active':'' %>"
-                        style="font-size: large; font-family: Kanit;">
+                        class="view-btn <%= isTeams ? 'active' : '' %>">
                         <i class="ti ti-users"></i> ทีมที่สมัคร
                     </a>
                     <a href="/competition?view=board&tier=<%= activeTier %>"
-                        class="view-btn <%= view==='board'?'active':'' %>"
-                        style="font-size: large; font-family: Kanit;">
+                        class="view-btn <%= !isTeams ? 'active' : '' %>">
                         <i class="ti ti-trophy"></i> ผลสรุปคะแนน
                     </a>
                 </div>
             </div>
-        </div>
 
-        <!-- Tier tabs -->
-        <div style="margin-bottom:14px">
-            <div class="tier-tabs">
+            <!-- Tier tabs -->
+            <nav class="tier-tabs" aria-label="เลือกรุ่น">
                 <a href="/competition?view=<%= view %>&tier=beginner"
-                    class="tier-tab <%= activeTier==='beginner' ? 'active-beginner' : '' %>"
-                    style="font-size: large; font-family: Kanit ;">
-                    <span class="tier-dot"
-                        style="background:<%= activeTier==='beginner'?'#fff':'#16A34A'%> "></span>Beginner
+                    class="tier-tab tier-beginner <%= tierKey === 'beginner' ? 'active' : '' %>">
+                    <span class="tier-dot"></span>Beginner
                 </a>
-
                 <a href="/competition?view=<%= view %>&tier=intermediate"
-                    class="tier-tab <%= activeTier==='intermediate' ? 'active-intermediate' : '' %> "
-                    style="font-size: large; font-family: Kanit ;">
-                    <span class="tier-dot"
-                        style="background:<%= activeTier==='intermediate'?'#fff':'#2563EB' %>"></span>Intermediate
+                    class="tier-tab tier-intermediate <%= tierKey === 'intermediate' ? 'active' : '' %>">
+                    <span class="tier-dot"></span>Intermediate
                 </a>
-
                 <a href="/competition?view=<%= view %>&tier=advance"
-                    class="tier-tab <%= activeTier==='advance' ? 'active-advance' : '' %>"
-                    style="font-size: large; font-family: Kanit ;">
-                    <span class="tier-dot"
-                        style="background:<%= activeTier==='advance'?'#fff':'#EA580C' %>"></span>Advance
+                    class="tier-tab tier-advance <%= tierKey === 'advance' ? 'active' : '' %>">
+                    <span class="tier-dot"></span>Advance
                 </a>
-            </div>
-        </div>
+            </nav>
 
-        <div
-            class="card view-<%= view==='teams'?'teams':'board' %> <%= activeTier==='beginner'?'active-beginner':activeTier==='intermediate'?'active-intermediate':'active-advance' %>">
-            <% if (view==='teams' ) { %>
-                <div class="search-row">
-                    <div class="search-box">
-                        <i class="ti ti-search"></i>
-                        <input id="teamSearch" placeholder="ค้นหา ID ชื่อทีม หรือสถาบัน...">
+            <section class="card tier-<%= tierKey %>">
+                <% if (isTeams) { %>
+
+                    <!-- ================= TEAMS ================= -->
+                    <div class="search-row">
+                        <label class="search-box">
+                            <i class="ti ti-search"></i>
+                            <input id="teamSearch" type="search" placeholder="ค้นหา ID ชื่อทีม หรือสถาบัน..."
+                                autocomplete="off">
+                        </label>
+                        <span class="count-badge" id="visibleCount">
+                            <%= teams ? teams.length : 0 %> ทีม
+                        </span>
+                        <span class="time-info"><i class="ti ti-clock"></i>
+                            <%= timeStr %>
+                        </span>
                     </div>
-                    <span class="count-badge" id="visibleCount">
-                        <%= teams ? teams.length : 0 %> ทีม
-                    </span>
-                    <span class="time-info"><i class="ti ti-clock"></i>
-                        <%= timeStr %>
-                    </span>
-                </div>
 
-                <!-- Desktop table -->
-                <div class="desktop-table" style="overflow-x:auto">
-                    <table>
-                        <thead
-                            class="table-head  <%= activeTier==='beginner'?'active-beginner':activeTier==='intermediate'?'active-intermediate':'active-advance' %>">
-                            <tr>
-                                <th>#</th>
-                                <th>ชื่อทีม</th>
-                                <th>สถาบัน</th>
-                            </tr>
-                        </thead>
-                        <tbody id="teamTableBody">
-                            <% if (!teams || teams.length===0) { %>
-                                <tr>
-                                    <td colspan="3">
-                                        <div class="empty"><i class="ti ti-robot-off"></i>ยังไม่มีทีมในรุ่นนี้</div>
-                                    </td>
-                                </tr>
-                                <% } %>
-                                    <% if (teams) { teams.forEach(function(t, i) { %>
-                                        <tr
-                                            data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                                            <td style="color:#94A3B8;font-size:18px">
-                                                <%= i+1 %>
-                                            </td>
-                                            <td>
-                                                <div class="team-name"
-                                                    style="color:<%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
-                                                    <%= t.name %>
-                                                </div>
-                                                <div class="team-id"
-                                                    style="color:<%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
-                                                    <%= t.id %>
-                                                </div>
-                                            </td>
-                                            <td
-                                                style="font-size:18px; font-family: 'Kanit', 'Sarabun', sans-serif; color:<%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
-                                                <i class="ti ti-school" style="font-size:18px"></i>
-                                                <%= t.institution || '—' %>
-                                            </td>
-                                        </tr>
-                                        <% }) } %>
-                                            <tr id="noResult" style="display:none">
-                                                <td colspan="3">
-                                                    <div class="empty"><i class="ti ti-search-off"></i>ไม่พบทีมที่ค้นหา
-                                                    </div>
-                                                </td>
-                                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Mobile list -->
-                <div class="mobile-list" id="mobileList">
-                    <% if (!teams || teams.length===0) { %>
-                        <div class="empty"><i class="ti ti-robot-off"></i>ยังไม่มีทีมในรุ่นนี้</div>
-                        <% } %>
-                            <% if (teams) { teams.forEach(function(t, i) { %>
-                                <div class="mobile-item"
-                                    data-search="<%= ((t.id||'')+' '+(t.name||'')+' '+(t.institution||'')).toLowerCase() %>">
-                                    <div class="mobile-num">
-                                        <%= i+1 %>
-                                    </div>
-                                    <div class="mobile-info">
-                                        <div class="mobile-name">
-                                            <%= t.name %>
-                                        </div>
-                                        <div class="mobile-id">
-                                            <%= t.id %>
-                                        </div>
-                                        <div class="mobile-inst"><i class="ti ti-school"></i>
-                                            <%= t.institution || '—' %>
-                                        </div>
-                                    </div>
-                                    <i class="ti ti-chevron-right mobile-arrow"></i>
-                                </div>
-                                <% }) } %>
-                                    <div id="noMobileResult" style="display:none" class="empty"><i
-                                            class="ti ti-search-off"></i>ไม่พบทีมที่ค้นหา</div>
-                </div>
-
-                <% } else { %>
-
-                    <!-- Board desktop -->
-                    <div class="desktop-table" style="overflow-x:auto">
-                        <table>
+                    <div class="table-scroll">
+                        <table class="teams-table">
                             <thead>
                                 <tr>
-                                    <th>อันดับ</th>
-                                    <th>ชื่อทีม</th>
-                                    <th>รอบที่ 1</th>
-                                    <th>รอบที่ 2</th>
-                                    <th>คะแนนที่ดีที่สุด</th>
+                                    <th class="col-num">#</th>
+                                    <th class="col-name">ชื่อทีม</th>
+                                    <th>สถาบัน</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <% if (!ranked || ranked.length===0) { %>
+                            <tbody id="teamTableBody">
+                                <% if (!teams || teams.length===0) { %>
                                     <tr>
-                                        <td colspan="5">
-                                            <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน
-                                            </div>
+                                        <td colspan="3">
+                                            <div class="empty"><i class="ti ti-robot-off"></i>ยังไม่มีทีมในรุ่นนี้</div>
                                         </td>
                                     </tr>
-                                    <% } %>
-                                        <% if (ranked) { ranked.forEach(function(t, i) { %>
-                                            <tr>
-                                                <td>
-                                                    <div class="rank-cell">
-                                                        <% if (i===0) { %><span style="font-size:20px">🥇</span><span
-                                                                class="rank-gold">1</span>
-                                                            <% } else if (i===1) { %><span
-                                                                    style="font-size:20px">🥈</span><span
-                                                                    class="rank-silver">2</span>
-                                                                <% } else if (i===2) { %><span
-                                                                        style="font-size:20px">🥉</span><span
-                                                                        class="rank-bronze">3</span>
-                                                                    <% } else { %><span class="rank-other">#<%= i+1 %>
-                                                                        </span>
-                                                                        <% } %>
-                                                    </div>
+                                    <% } else { %>
+                                        <% teams.forEach(function (t, i) { var c='c-' + (t.tier || tierKey); %>
+                                            <tr
+                                                data-search="<%= ((t.id || '') + ' ' + (t.name || '') + ' ' + (t.institution || '')).toLowerCase() %>">
+                                                <td class="col-num">
+                                                    <%= i + 1 %>
                                                 </td>
                                                 <td>
-                                                    <div class="team-name"
-                                                        style="color: <%= t.tier==='beginner'?'#16A34A':t.tier==='intermediate'?'#2563EB':'#EA580C' %>">
+                                                    <div class="team-name <%= c %>">
                                                         <%= t.name %>
                                                     </div>
-                                                    <div style="font-size:11px;color:#94A3B8">
-                                                        <%= t.institution || '' %>
+                                                    <div class="team-id <%= c %>">
+                                                        <%= t.id %>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <% if (parseFloat(t.r1_score)>0) { %>
-                                                        <span class="score-num">
-                                                            <%= parseFloat(t.r1_score) %> pts
+                                                    <div class="team-inst <%= c %>">
+                                                        <i class="ti ti-school"></i>
+                                                        <span>
+                                                            <%= t.institution || '—' %>
                                                         </span>
-                                                        <span class="score-time">
-                                                            <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' sec' : ''
-                                                                %>
-                                                        </span>
-                                                        <% } else { %><span style="color:#CBD5E1">—</span>
-                                                            <% } %>
-                                                </td>
-                                                <td>
-                                                    <% if (parseFloat(t.r2_score)>0) { %>
-                                                        <span class="score-num">
-                                                            <%= parseFloat(t.r2_score) %> pts
-                                                        </span>
-                                                        <span class="score-time">
-                                                            <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' sec' : ''
-                                                                %>
-                                                        </span>
-                                                        <% } else { %><span style="color:#CBD5E1">—</span>
-                                                            <% } %>
-                                                </td>
-                                                <td>
-                                                    <% if (parseFloat(t.best_score)>0) { %>
-                                                        <span class="best-score">
-                                                            <%= parseFloat(t.best_score) %> pts
-                                                        </span>
-                                                        <span class="score-time">
-                                                            <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' sec'
-                                                                : '' %>
-                                                        </span>
-                                                        <div class="bar-bg">
-                                                            <div class="bar-fill"
-                                                                style="width:<%= maxScore>0?Math.round(parseFloat(t.best_score)/maxScore*100):0 %>%;background:<%= i===0?'#D97706':i===1?'#94A3B8':i===2?'#92400E':'#2563EB' %>">
-                                                            </div>
-                                                        </div>
-                                                        <% } else { %><span style="color:#CBD5E1">—</span>
-                                                            <% } %>
+                                                    </div>
                                                 </td>
                                             </tr>
-                                            <% }) } %>
+                                            <% }); %>
+                                                <tr id="noResult" hidden>
+                                                    <td colspan="3">
+                                                        <div class="empty"><i
+                                                                class="ti ti-search-off"></i>ไม่พบทีมที่ค้นหา</div>
+                                                    </td>
+                                                </tr>
+                                                <% } %>
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Board mobile -->
-                    <div style="display:none" id="boardMobile">
-                        <% if (!ranked || ranked.length===0) { %>
-                            <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
-                            <% } %>
-                                <% if (ranked) { ranked.forEach(function(t, i) { %>
-                                    <div class="board-mobile-item">
-                                        <div class="board-top">
-                                            <div class="board-rank-left">
-                                                <% if (i===0) { %><span class="board-medal">🥇</span><span
-                                                        class="board-pos rank-gold">1</span>
-                                                    <% } else if (i===1) { %><span class="board-medal">🥈</span><span
-                                                            class="board-pos rank-silver">2</span>
-                                                        <% } else if (i===2) { %><span
-                                                                class="board-medal">🥉</span><span
-                                                                class="board-pos rank-bronze">3</span>
-                                                            <% } else { %><span class="board-pos rank-other"
-                                                                    style="margin-left:4px">#<%= i+1 %></span>
-                                                                <% } %>
-                                                                    <div>
-                                                                        <div class="board-name">
-                                                                            <%= t.name %>
-                                                                        </div>
-                                                                        <div class="board-inst">
-                                                                            <%= t.institution || '' %>
-                                                                        </div>
-                                                                    </div>
-                                            </div>
-                                            <% if (parseFloat(t.best_score)>0) { %>
-                                                <div>
-                                                    <div class="board-best-score">
-                                                        <%= parseFloat(t.best_score) %>
-                                                    </div>
-                                                    <div class="board-best-time">
-                                                        <%= t.best_time ? parseFloat(t.best_time).toFixed(2)+' sec' : ''
-                                                            %>
-                                                    </div>
+                    <% } else { %>
+
+                        <!-- ================= BOARD: DESKTOP ================= -->
+                        <div class="table-scroll board-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>อันดับ</th>
+                                        <th>ชื่อทีม</th>
+                                        <th>รอบที่ 1</th>
+                                        <th>รอบที่ 2</th>
+                                        <th>คะแนนที่ดีที่สุด</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (!ranked || ranked.length===0) { %>
+                                        <tr>
+                                            <td colspan="5">
+                                                <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน
                                                 </div>
-                                                <% } %>
-                                        </div>
-                                        <div class="board-rounds">
-                                            <div class="board-round">
-                                                <div class="board-round-label">รอบที่ 1</div>
-                                                <% if (parseFloat(t.r1_score)>0) { %>
-                                                    <div class="board-round-score">
-                                                        <%= parseFloat(t.r1_score) %>
+                                            </td>
+                                        </tr>
+                                        <% } else { %>
+                                            <% ranked.forEach(function (t, i) { var c='c-' + (t.tier || tierKey); var
+                                                r1=parseFloat(t.r1_score), r2=parseFloat(t.r2_score),
+                                                best=parseFloat(t.best_score); %>
+                                                <tr>
+                                                    <td>
+                                                        <div class="rank-cell">
+                                                            <% if (i===0) { %><span class="rank-medal">🥇</span><span
+                                                                    class="rank-gold">1</span>
+                                                                <% } else if (i===1) { %><span
+                                                                        class="rank-medal">🥈</span><span
+                                                                        class="rank-silver">2</span>
+                                                                    <% } else if (i===2) { %><span
+                                                                            class="rank-medal">🥉</span><span
+                                                                            class="rank-bronze">3</span>
+                                                                        <% } else { %><span class="rank-other">#<%= i +
+                                                                                    1 %></span>
+                                                                            <% } %>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="team-name <%= c %>">
+                                                            <%= t.name %>
+                                                        </div>
+                                                        <div class="team-sub">
+                                                            <%= t.institution || '' %>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <% if (r1> 0) { %>
+                                                            <span class="score-num">
+                                                                <%= r1 %> pts
+                                                            </span>
+                                                            <span class="score-time">
+                                                                <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)
+                                                                    + ' sec' : '' %>
+                                                            </span>
+                                                            <% } else { %><span class="score-empty">—</span>
+                                                                <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (r2> 0) { %>
+                                                            <span class="score-num">
+                                                                <%= r2 %> pts
+                                                            </span>
+                                                            <span class="score-time">
+                                                                <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)
+                                                                    + ' sec' : '' %>
+                                                            </span>
+                                                            <% } else { %><span class="score-empty">—</span>
+                                                                <% } %>
+                                                    </td>
+                                                    <td>
+                                                        <% if (best> 0) { %>
+                                                            <span class="best-score">
+                                                                <%= best %> pts
+                                                            </span>
+                                                            <span class="score-time">
+                                                                <%= t.best_time ? parseFloat(t.best_time).toFixed(2)
+                                                                    + ' sec' : '' %>
+                                                            </span>
+                                                            <div class="bar-bg">
+                                                                <div class="bar-fill <%= i < 3 ? 'rank-' + (i + 1) : '' %>"
+                                                                    style="width:<%= maxScore > 0 ? Math.round(best / maxScore * 100) : 0 %>%">
+                                                                </div>
+                                                            </div>
+                                                            <% } else { %><span class="score-empty">—</span>
+                                                                <% } %>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ================= BOARD: MOBILE ================= -->
+                        <div class="board-mobile">
+                            <% if (!ranked || ranked.length===0) { %>
+                                <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
+                                <% } else { %>
+                                    <% ranked.forEach(function (t, i) { var c='c-' + (t.tier || tierKey); var
+                                        r1=parseFloat(t.r1_score), r2=parseFloat(t.r2_score),
+                                        best=parseFloat(t.best_score); %>
+                                        <div class="board-mobile-item">
+                                            <div class="board-top">
+                                                <div class="board-rank-left">
+                                                    <% if (i===0) { %><span class="rank-medal">🥇</span><span
+                                                            class="board-pos rank-gold">1</span>
+                                                        <% } else if (i===1) { %><span class="rank-medal">🥈</span><span
+                                                                class="board-pos rank-silver">2</span>
+                                                            <% } else if (i===2) { %><span
+                                                                    class="rank-medal">🥉</span><span
+                                                                    class="board-pos rank-bronze">3</span>
+                                                                <% } else { %><span class="board-pos rank-other">#<%= i
+                                                                            + 1 %></span>
+                                                                    <% } %>
+                                                                        <div>
+                                                                            <div class="board-name <%= c %>">
+                                                                                <%= t.name %>
+                                                                            </div>
+                                                                            <div class="board-inst">
+                                                                                <%= t.institution || '' %>
+                                                                            </div>
+                                                                        </div>
+                                                </div>
+                                                <% if (best> 0) { %>
+                                                    <div>
+                                                        <div class="board-best-score">
+                                                            <%= best %>
+                                                        </div>
+                                                        <div class="board-best-time">
+                                                            <%= t.best_time ? parseFloat(t.best_time).toFixed(2)
+                                                                + ' sec' : '' %>
+                                                        </div>
                                                     </div>
-                                                    <div class="board-round-time">
-                                                        <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2)+' sec' : '' %>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <div style="color:#CBD5E1;font-size:14px">—</div>
-                                                        <% } %>
+                                                    <% } %>
                                             </div>
-                                            <div class="board-round">
-                                                <div class="board-round-label">รอบที่ 2</div>
-                                                <% if (parseFloat(t.r2_score)>0) { %>
-                                                    <div class="board-round-score">
-                                                        <%= parseFloat(t.r2_score) %>
-                                                    </div>
-                                                    <div class="board-round-time">
-                                                        <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2)+' sec' : '' %>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <div style="color:#CBD5E1;font-size:14px">—</div>
-                                                        <% } %>
+
+                                            <div class="board-rounds">
+                                                <div class="board-round">
+                                                    <div class="board-round-label">รอบที่ 1</div>
+                                                    <% if (r1> 0) { %>
+                                                        <div class="board-round-score">
+                                                            <%= r1 %>
+                                                        </div>
+                                                        <div class="board-round-time">
+                                                            <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2) + ' sec'
+                                                                : '' %>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <div class="score-empty">—</div>
+                                                            <% } %>
+                                                </div>
+                                                <div class="board-round">
+                                                    <div class="board-round-label">รอบที่ 2</div>
+                                                    <% if (r2> 0) { %>
+                                                        <div class="board-round-score">
+                                                            <%= r2 %>
+                                                        </div>
+                                                        <div class="board-round-time">
+                                                            <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2) + ' sec'
+                                                                : '' %>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <div class="score-empty">—</div>
+                                                            <% } %>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <% }) } %>
-                    </div>
-                    <% } %>
-        </div>
-    </div>
+                                        <% }); %>
+                                            <% } %>
+                        </div>
 
-    <div class="footer">
-        <img src="/RCL Logo.png" alt="RCL">
-        <div class="footer-text">ROBO CHALLENGE LEAGUE 2026</div>
-    </div>
+                        <% } %>
+            </section>
+        </main>
 
-    <script>
-        (function () {
-            var bm = document.getElementById('boardMobile')
-            var dt = document.querySelector('.view-board .desktop-table')
-            if (window.innerWidth < 640) {
-                if (bm) bm.style.display = 'block'
-                if (dt) dt.style.display = 'none'
-            } else {
-                if (bm) bm.style.display = 'none'
-                if (dt) dt.style.display = 'block'
-            }
-            var input = document.getElementById('teamSearch')
-            if (!input) return
-            var rows = Array.from(document.querySelectorAll('#teamTableBody tr[data-search]'))
-            var items = Array.from(document.querySelectorAll('#mobileList .mobile-item'))
-            var count = document.getElementById('visibleCount')
-            var noResult = document.getElementById('noResult')
-            var noMobile = document.getElementById('noMobileResult')
-            input.addEventListener('input', function () {
-                var kw = input.value.trim().toLowerCase()
-                var visible = 0
-                rows.forEach(function (r) { var m = !kw || r.dataset.search.includes(kw); r.style.display = m ? '' : 'none'; if (m) visible++ })
-                items.forEach(function (r) { var m = !kw || r.dataset.search.includes(kw); r.style.display = m ? '' : 'none' })
-                if (count) count.textContent = visible + ' ทีม'
-                if (noResult) noResult.style.display = visible === 0 ? '' : 'none'
-                if (noMobile) noMobile.style.display = visible === 0 ? 'block' : 'none'
-            })
-        })();
+        <footer class="footer">
+            <img src="/RCL Logo.png" alt="RCL">
+            <div class="footer-text">ROBO CHALLENGE LEAGUE 2026</div>
+        </footer>
 
-            /* MASTER TOPBAR JS — single controller */
+        <script>
+            /* Team search */
             (function () {
-                var dropdowns = document.querySelectorAll('.dropdown')
-                for (var i = 0; i < dropdowns.length; i++) {
-                    (function (dd) {
-                        var menu = dd.querySelector('.dropdown-menu'), trigger = dd.querySelector('.nav-link'), timer
-                        if (!menu || !trigger) return
-                        trigger.addEventListener('click', function (e) {
-                            if (window.innerWidth <= 640) { e.preventDefault(); e.stopPropagation(); return }
-                            e.preventDefault(); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'
-                        })
-                        dd.addEventListener('mouseenter', function () { if (window.innerWidth > 640) { clearTimeout(timer); menu.style.display = 'block' } })
-                        dd.addEventListener('mouseleave', function () { if (window.innerWidth > 640) { timer = setTimeout(function () { menu.style.display = 'none' }, 200) } })
-                    })(dropdowns[i])
-                }
+                var input = document.getElementById('teamSearch');
+                if (!input) return;
+
+                var rows = Array.prototype.slice.call(document.querySelectorAll('#teamTableBody tr[data-search]'));
+                var count = document.getElementById('visibleCount');
+                var noResult = document.getElementById('noResult');
+
+                input.addEventListener('input', function () {
+                    var kw = input.value.trim().toLowerCase();
+                    var visible = 0;
+
+                    rows.forEach(function (r) {
+                        var match = !kw || r.dataset.search.indexOf(kw) !== -1;
+                        r.hidden = !match;
+                        if (match) visible++;
+                    });
+
+                    if (count) count.textContent = visible + ' ทีม';
+                    if (noResult) noResult.hidden = visible !== 0;
+                });
             })();
 
+            /* Mobile / tablet hamburger menu */
             (function () {
-                var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
-                if (!toggle || !menu) return
-                function setOpen(open) {
-                    menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
-                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
-                    toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
-                    if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
+                var toggle = document.querySelector('.mobile-menu-toggle');
+                var mobileMenu = document.querySelector('.mobile-menu');
+                var competitionToggle = document.querySelector('.mobile-menu-competition-toggle');
+                var subMenu = document.querySelector('.mobile-submenu');
+                if (!toggle || !mobileMenu) return;
+
+                function closeMobileMenu() {
+                    toggle.classList.remove('is-open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'เปิดเมนู');
+                    mobileMenu.classList.remove('is-open');
+                    mobileMenu.setAttribute('aria-hidden', 'true');
                 }
-                toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
-                var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
-                document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
-                window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
+
+                toggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var isOpen = mobileMenu.classList.toggle('is-open');
+                    toggle.classList.toggle('is-open', isOpen);
+                    toggle.setAttribute('aria-expanded', String(isOpen));
+                    toggle.setAttribute('aria-label', isOpen ? 'ปิดเมนู' : 'เปิดเมนู');
+                    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+                });
+
+                if (competitionToggle && subMenu) {
+                    competitionToggle.addEventListener('click', function () {
+                        var isOpen = subMenu.classList.toggle('is-open');
+                        competitionToggle.classList.toggle('is-open', isOpen);
+                        competitionToggle.setAttribute('aria-expanded', String(isOpen));
+                    });
+                }
+
+                mobileMenu.querySelectorAll('a').forEach(function (link) {
+                    link.addEventListener('click', closeMobileMenu);
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!mobileMenu.contains(e.target) && !toggle.contains(e.target)) closeMobileMenu();
+                });
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeMobileMenu();
+                });
+
+                window.addEventListener('resize', function () {
+                    if (window.innerWidth > 1100) closeMobileMenu();
+                });
             })();
 
-            // Scroll effect
-            (function () {
-                var topbar = document.querySelector('.topbar')
-                if (!topbar) return
+            /* Desktop dropdown (hover with small delay, click also works) */
+            document.querySelectorAll('.dropdown').forEach(function (dd) {
+                var menu = dd.querySelector('.dropdown-menu');
+                var btn = dd.querySelector('button');
+                var timer;
 
-                function updateTopbar() {
-                    if (window.scrollY > 10) {
-                        topbar.classList.add('scrolled')
-                    } else {
-                        topbar.classList.remove('scrolled')
-                    }
-                }
+                function show() { clearTimeout(timer); menu.style.display = 'block'; }
+                function hideSoon() { timer = setTimeout(function () { menu.style.display = 'none'; }, 200); }
 
-                window.addEventListener('scroll', updateTopbar, { passive: true })
-                updateTopbar()
-            })()
+                dd.addEventListener('mouseenter', show);
+                dd.addEventListener('mouseleave', hideSoon);
+                btn.addEventListener('click', function () {
+                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+        </script>
 
-    </script>
-</body>
+    </body>
 
-</html>
+    </html>

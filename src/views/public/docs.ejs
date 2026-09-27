@@ -9,28 +9,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Sarabun:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
     <style>
         /* =========================================================
-           VARIABLES / RESET
-        ========================================================= */
+       RCL 2026 — DOCUMENTS PAGE
+       01 Tokens / Reset
+       02 Topbar + Dropdown   (same as home / competition)
+       03 Mobile menu         (same as home / competition)
+       04 Page hero + notice
+       05 Layout / sections
+       06 Doc cards
+       07 Tier tabs
+       08 Sidebar
+       09 Footer
+       10 Responsive
+    ========================================================= */
+
+        /* 01 — TOKENS / RESET */
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-soft: #eff6ff;
-            --navy: #0f172a;
-            --text: #1e293b;
-            --muted: #64748b;
-            --line: #e2e8f0;
-            --surface: #ffffff;
-            --page: #f5f8fc;
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-soft: #EFF6FF;
+            --navy: #0F172A;
+            --text: #1E293B;
+            --muted: #64748B;
+            --line: #E2E8F0;
+            --page: #F5F8FC;
             --shadow: 0 12px 32px rgba(15, 23, 42, .08);
+            --content: 1180px;
+            --gutter: 24px;
+            --topbar-h: 82px;
         }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         html {
@@ -38,62 +55,62 @@
         }
 
         body {
-            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            color: var(--text);
             background:
                 radial-gradient(circle at 15% 4%, rgba(37, 99, 235, .10), transparent 27%),
                 radial-gradient(circle at 88% 18%, rgba(14, 165, 233, .08), transparent 24%),
                 var(--page);
-            font-family: Kanit;
-            color: var(--text);
-            min-height: 100vh;
+            font-family: 'Kanit', 'Sarabun', sans-serif;
         }
 
         a {
             color: inherit;
+            text-decoration: none;
         }
 
-        /* =========================================================
-   RCL 2026 — MASTER TOPBAR
-   SINGLE SOURCE OF TRUTH — use on every page
-========================================================= */
+        button {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid #93C5FD;
+            outline-offset: 2px;
+        }
+
+        /* 02 — TOPBAR + DROPDOWN (solid on this page — no hero behind it) */
         .topbar {
             position: fixed;
-            inset: 0 0 auto 0;
+            inset: 0 0 auto;
             z-index: 1000;
-            width: 100%;
-            height: 84px;
+            height: var(--topbar-h);
             padding: 0 30px;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-sizing: border-box;
-            background: transparent;
-            border-bottom: 1px solid transparent;
-            transition: background .25s ease, border-color .25s ease, box-shadow .25s ease
-        }
-
-        .topbar.scrolled {
             background: rgba(255, 255, 255, .92);
-            border-bottom-color: rgba(226, 232, 240, .9);
-            box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+            border-bottom: 1px solid rgba(226, 232, 240, .9);
+            box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px)
+            -webkit-backdrop-filter: blur(16px);
         }
 
         .topbar-logo {
             flex: 0 0 auto;
-            width: auto;
             display: inline-flex;
             align-items: center;
-            justify-content: center
         }
 
         .topbar-logo img {
             display: block;
             width: auto;
-            max-width: 130px;
-            height: 120px;
-            object-fit: contain
+            height: 58px;
+            max-width: 150px;
+            object-fit: contain;
         }
 
         .topbar-nav {
@@ -102,73 +119,65 @@
             margin-left: 18px;
             display: flex;
             align-items: center;
-            gap: 6px
+            gap: 2px;
         }
 
         .nav-link {
             min-height: 52px;
-            padding: 0 18px;
-            display: inline-flex;
+            padding: 0 14px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-            gap: 4px;
-            flex: 0 0 auto;
-            border: 0 !important;
+            gap: 2px;
+            border: 0;
             border-radius: 11px;
-            background: transparent !important;
+            background: transparent;
             color: #334155;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            text-decoration: none;
+            font-family: 'Kanit', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 1.15;
             white-space: nowrap;
             cursor: pointer;
-            transition: color .2s ease, background .2s ease, transform .2s ease
+            transition: color .2s ease, transform .2s ease;
         }
 
         .nav-link span:first-child {
-            font-size: 16px;
-            line-height: 1.05;
-            font-weight: 700;
-            letter-spacing: 1px
+            font-size: 17px;
+            font-weight: 800;
         }
 
         .nav-link span:last-child {
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            font-size: 13px;
-            line-height: 1.05;
-            font-weight: 500;
-            letter-spacing: 0
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 1px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .2px;
         }
 
-        .nav-link i {
-            font-size: 17px
-        }
-
-        .nav-link:hover {
-            color: #2563EB;
-            background: #F4F8FF !important;
-            transform: translateY(-1px)
-        }
-
+        .nav-link:hover,
         .nav-link.active {
-            color: #2563EB !important;
-            background: #EFF6FF !important
+            color: var(--primary);
+            transform: translateY(-1px);
         }
 
         .certificate-btn {
-            background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
-            color: #92400E !important;
-            border: 1px solid #FCD34D !important;
-            border-radius: 90px !important;
-            box-shadow: 0 4px 12px rgba(180, 120, 20, .18)
+            min-width: 150px;
+            padding: 8px 16px;
+            border: 1px solid #F6D365;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #FFF8D8, #FFF0B8);
+            color: #92400E;
+            box-shadow: 0 6px 16px rgba(180, 120, 20, .12);
         }
 
         .certificate-btn:hover {
-            background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
-            color: #78350F !important;
-            border-color: #F59E0B !important;
-            box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
-            transform: translateY(-2px)
+            background: linear-gradient(135deg, #FDE68A, #FCD34D);
+            border-color: #F59E0B;
+            color: #78350F;
         }
 
         .topbar-actions {
@@ -176,237 +185,212 @@
             margin-left: auto;
             display: flex;
             align-items: center;
-            gap: 10px
+            gap: 10px;
         }
 
-        .btn-reg,
         .btn-login {
             min-height: 52px;
-            padding: 0 20px;
+            padding: 0 18px;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 7px;
+            border: 1px solid #E2E8F0;
             border-radius: 11px;
-            font: 800 16px 'Sarabun', sans-serif;
-            text-decoration: none;
-            white-space: nowrap;
-            box-sizing: border-box;
-            transition: all .2s ease
-        }
-
-        .btn-reg {
-            color: #fff;
-            background: linear-gradient(135deg, #3478F6, #2563EB);
-            border: 1px solid transparent;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, .24)
-        }
-
-        .btn-reg:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
-        }
-
-        .btn-login {
-            color: #334155;
             background: #fff;
-            border: 1px solid #E2E8F0
+            color: #334155;
+            white-space: nowrap;
+            transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
         }
 
         .btn-login:hover {
-            color: #2563EB;
             background: #F8FAFC;
             transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(15, 23, 42, .07)
-        }
-
-        .btn-login i {
-            font-size: 16px
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
         }
 
         .dropdown {
-            position: relative
+            position: relative;
         }
 
         .dropdown-menu {
             position: absolute;
-            top: calc(100% + 10px);
+            top: calc(100% + 8px);
             left: 0;
             z-index: 1100;
             display: none;
-            min-width: 215px;
+            min-width: 205px;
             padding: 8px;
             background: rgba(255, 255, 255, .98);
             border: 1px solid #E2E8F0;
             border-radius: 14px;
             box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px)
         }
 
         .dropdown-item {
-            min-height: 44px;
+            min-height: 42px;
             padding: 0 12px;
             display: flex;
             align-items: center;
             gap: 10px;
             border-radius: 10px;
             color: #334155;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
             font-size: 14px;
             font-weight: 700;
-            text-decoration: none;
-            transition: color .18s ease, background .18s ease
+            white-space: nowrap;
+        }
+
+        .dropdown-item i {
+            color: #64748B;
+            font-size: 17px;
         }
 
         .dropdown-item:hover,
         .dropdown-item.active {
-            color: #2563EB;
-            background: #EFF6FF
+            background: var(--primary-soft);
+            color: var(--primary);
         }
 
-        .dropdown-item:first-child:hover {
-            background: #FEF2F2;
-            color: #DC2626
+        .dropdown-item.active i {
+            color: var(--primary);
         }
 
-        .dropdown-item i {
-            font-size: 17px;
-            color: #64748B
+        /* 03 — MOBILE MENU (shown ≤1100px) */
+        .mobile-menu-toggle,
+        .mobile-menu {
+            display: none;
         }
 
         .mobile-menu-toggle {
-            display: none;
-            position: relative;
-            z-index: 1202;
-            flex: 0 0 44px;
+            margin-left: auto;
             width: 44px;
             height: 44px;
-            padding: 0;
-            margin-left: auto;
+            flex: 0 0 44px;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 5px;
             border: 1px solid rgba(148, 163, 184, .35);
             border-radius: 12px;
-            background: rgba(255, 255, 255, .96);
-            color: #334155;
-            box-shadow: 0 6px 18px rgba(15, 23, 42, .07);
+            background: rgba(255, 255, 255, .92);
+            color: #1E3A8A;
+            box-shadow: 0 5px 16px rgba(15, 23, 42, .08);
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .mobile-menu-toggle i {
-            font-size: 25px;
-            line-height: 1
+        .mobile-menu-toggle span {
+            width: 21px;
+            height: 2px;
+            border-radius: 999px;
+            background: currentColor;
+            transition: transform .22s ease, opacity .18s ease;
         }
 
-        .mobile-menu-toggle.is-open {
-            color: #2563EB;
-            background: #EFF6FF;
-            border-color: #BFDBFE
+        .mobile-menu-toggle.is-open span:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .mobile-menu-toggle.is-open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.is-open span:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
         }
 
         .mobile-menu {
-            display: none;
             position: fixed;
-            top: 94px;
-            left: 12px;
+            top: calc(var(--topbar-h) + 6px);
             right: 12px;
-            z-index: 1201;
-            max-height: calc(100dvh - 106px);
+            z-index: 999;
+            width: min(380px, calc(100% - 24px));
+            max-height: calc(100dvh - var(--topbar-h) - 18px);
             overflow-y: auto;
-            box-sizing: border-box;
             padding: 8px;
-            background: rgba(255, 255, 255, .98);
-            border: 1px solid #DBEAFE;
-            border-radius: 17px;
-            box-shadow: 0 20px 50px rgba(15, 23, 42, .16);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
             visibility: hidden;
             opacity: 0;
             pointer-events: none;
             transform: translateY(-8px) scale(.985);
-            transform-origin: top center;
-            transition: opacity .18s ease, transform .18s ease, visibility .18s ease
+            transform-origin: top right;
+            background: rgba(255, 255, 255, .98);
+            border: 1px solid #DBEAFE;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, .18);
+            transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
         }
 
         .mobile-menu.is-open {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            pointer-events: auto !important;
-            transform: translateY(0) scale(1)
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            transform: none;
         }
 
-        .mobile-menu-item {
+        .mobile-menu-link,
+        .mobile-menu-competition-toggle {
             width: 100%;
-            min-height: 52px;
-            padding: 8px 12px;
+            min-height: 50px;
+            padding: 9px 12px;
             display: flex;
             align-items: center;
             gap: 11px;
-            box-sizing: border-box;
             border: 0;
-            border-radius: 11px;
+            border-radius: 12px;
             background: transparent;
             color: #334155;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
-            text-decoration: none;
+            font-family: 'Kanit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
             text-align: left;
-            cursor: pointer
+            cursor: pointer;
         }
 
-        .mobile-menu-item:hover,
-        .mobile-menu-item:active {
-            background: #F4F8FF;
-            color: #2563EB
+        .mobile-menu-link:hover,
+        .mobile-menu-link.active,
+        .mobile-menu-competition-toggle:hover,
+        .mobile-menu-competition-toggle.active {
+            color: var(--primary);
+            background: var(--primary-soft);
         }
 
-        .mobile-menu-item>i:first-child {
+        .mobile-menu-link>i,
+        .mobile-menu-competition-toggle>i:first-child {
             width: 28px;
-            min-width: 28px;
-            text-align: center;
-            font-size: 20px;
-            color: #64748B
+            flex: 0 0 28px;
+            display: grid;
+            place-items: center;
+            color: var(--primary);
+            font-size: 19px;
         }
 
-        .mobile-menu-item>span {
+        .mobile-menu-link-text {
             min-width: 0;
-            flex: 1;
             display: flex;
             flex-direction: column;
-            line-height: 1.1
+            line-height: 1.15;
         }
 
-        .mobile-menu-item b {
+        .mobile-menu-link-text strong {
             font-size: 15px;
             font-weight: 800;
-            letter-spacing: .2px
         }
 
-        .mobile-menu-item small {
-            margin-top: 3px;
+        .mobile-menu-link-text small {
+            margin-top: 2px;
+            color: #64748B;
             font-size: 11px;
             font-weight: 500;
-            color: #94A3B8
         }
 
-        .mobile-menu-arrow {
-            width: auto !important;
-            min-width: 0 !important;
-            font-size: 18px !important;
-            color: #94A3B8 !important;
-            transition: transform .2s ease
+        .mobile-chevron {
+            margin-left: auto;
+            color: #64748B;
+            font-size: 17px;
+            transition: transform .2s ease;
         }
 
-        .mobile-competition-toggle.is-open {
-            background: #EFF6FF;
-            color: #2563EB
-        }
-
-        .mobile-competition-toggle.is-open .mobile-menu-arrow {
-            transform: rotate(180deg)
+        .mobile-menu-competition-toggle.is-open .mobile-chevron {
+            transform: rotate(180deg);
         }
 
         .mobile-submenu {
@@ -415,252 +399,79 @@
             padding: 5px;
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
-            border-radius: 12px
+            border-radius: 12px;
         }
 
         .mobile-submenu.is-open {
-            display: block
+            display: block;
         }
 
-        .mobile-submenu-item {
+        .mobile-submenu a {
             min-height: 42px;
-            padding: 0 10px;
+            padding: 8px 10px;
             display: flex;
             align-items: center;
             gap: 9px;
-            border-radius: 8px;
+            border-radius: 9px;
             color: #475569;
-            font-family: 'Kanit', 'Sarabun', sans-serif;
             font-size: 13px;
-            font-weight: 700;
-            text-decoration: none
+            font-weight: 600;
         }
 
-        .mobile-submenu-item:hover {
-            color: #2563EB;
-            background: #EFF6FF
+        .mobile-submenu a:hover,
+        .mobile-submenu a.active {
+            color: var(--primary);
+            background: var(--primary-soft);
         }
 
-        .mobile-submenu-item i {
+        .mobile-submenu a i {
+            color: #64748B;
             font-size: 16px;
-            color: #64748B
         }
 
-        .mobile-login-item {
-            margin-top: 4px;
-            border-top: 1px solid #EEF2F6;
-            border-radius: 0 0 11px 11px
+        .mobile-menu-divider {
+            height: 1px;
+            margin: 6px 4px;
+            background: #E2E8F0;
         }
 
-        @media (min-width:901px) and (max-width:1199px) {
-            .topbar {
-                height: 78px;
-                padding: 0 20px;
-                gap: 7px
-            }
-
-            .topbar-logo img {
-                height: 96px;
-                max-width: 112px
-            }
-
-            .topbar-nav {
-                margin-left: 8px;
-                gap: 2px
-            }
-
-            .nav-link {
-                min-height: 48px;
-                padding: 0 10px
-            }
-
-            .nav-link span:first-child {
-                font-size: 14px;
-                letter-spacing: .7px
-            }
-
-            .nav-link span:last-child {
-                font-size: 11px
-            }
-
-            .btn-reg,
-            .btn-login {
-                min-height: 48px;
-                padding: 0 14px;
-                font-size: 14px
-            }
+        .mobile-login>i {
+            color: #475569 !important;
         }
 
-        @media (min-width:641px) and (max-width:900px) {
-            .topbar {
-                height: 72px;
-                padding: 0 16px;
-                gap: 6px
-            }
-
-            .topbar-logo img {
-                height: 76px;
-                max-width: 92px
-            }
-
-            .topbar-nav {
-                margin-left: 4px;
-                gap: 1px
-            }
-
-            .nav-link {
-                min-height: 46px;
-                padding: 0 8px
-            }
-
-            .nav-link span:first-child {
-                font-size: 12px;
-                letter-spacing: .4px
-            }
-
-            .nav-link span:last-child {
-                font-size: 10px
-            }
-
-            .btn-reg,
-            .btn-login {
-                min-height: 44px;
-                padding: 0 11px;
-                font-size: 13px
-            }
-
-            .mobile-menu-toggle,
-            .mobile-menu {
-                display: none !important
-            }
-        }
-
-        @media (max-width:640px) {
-            .topbar {
-                height: 62px;
-                padding: 0 12px;
-                gap: 8px;
-                background: rgba(255, 255, 255, .94);
-                border-bottom-color: rgba(226, 232, 240, .9);
-                box-shadow: 0 4px 18px rgba(15, 23, 42, .07);
-                backdrop-filter: blur(16px);
-                -webkit-backdrop-filter: blur(16px)
-            }
-
-            .topbar-logo img {
-                height: 44px;
-                max-width: 86px
-            }
-
-            .topbar-nav,
-            .topbar-actions {
-                display: none !important
-            }
-
-            .mobile-menu-toggle {
-                display: inline-flex !important
-            }
-
-            .mobile-menu {
-                top: 72px;
-                left: 12px;
-                right: 12px;
-                max-height: calc(100dvh - 84px)
-            }
-        }
-
-        @media (max-width:430px) {
-            .topbar {
-                height: 60px;
-                padding: 0 9px
-            }
-
-            .topbar-logo img {
-                height: 40px;
-                max-width: 76px
-            }
-
-            .mobile-menu-toggle {
-                flex-basis: 42px;
-                width: 42px;
-                height: 42px
-            }
-
-            .mobile-menu {
-                top: 70px;
-                left: 9px;
-                right: 9px;
-                max-height: calc(100dvh - 80px)
-            }
-        }
-
-        @media (max-width:380px) {
-            .topbar {
-                height: 58px;
-                padding: 0 8px
-            }
-
-            .topbar-logo img {
-                height: 38px;
-                max-width: 72px
-            }
-
-            .mobile-menu-toggle {
-                flex-basis: 40px;
-                width: 40px;
-                height: 40px
-            }
-
-            .mobile-menu {
-                top: 67px;
-                left: 8px;
-                right: 8px
-            }
-
-            .mobile-menu-item {
-                min-height: 48px
-            }
-        }
-
-        @media (max-width:900px) and (orientation:landscape) {
-            .mobile-menu {
-                max-height: calc(100dvh - 76px)
-            }
-        }
-
-        /* =========================================================
-           PAGE CONTENT
-        ========================================================= */
+        /* 04 — PAGE HERO + NOTICE */
         .page-shell {
-            width: min(1060px, calc(100% - 32px));
+            flex: 1;
+            width: 100%;
+            max-width: calc(var(--content) + var(--gutter) * 2);
             margin: 0 auto;
-            padding: 120px 0 56px;
+            padding: calc(var(--topbar-h) + 36px) var(--gutter) 56px;
         }
 
-        .hero {
+        .docs-hero {
             position: relative;
             overflow: hidden;
+            margin-bottom: 20px;
+            padding: 34px 36px;
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: minmax(0, 1fr) auto;
             align-items: center;
             gap: 28px;
-            padding: 34px 36px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, .98), rgba(239, 246, 255, .98));
             border: 1px solid rgba(191, 219, 254, .9);
             border-radius: 26px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, .98), rgba(239, 246, 255, .98));
             box-shadow: var(--shadow);
-            margin-bottom: 24px;
         }
 
-        .hero::before,
-        .hero::after {
-            content: "";
+        .docs-hero::before,
+        .docs-hero::after {
+            content: '';
             position: absolute;
             border-radius: 999px;
             pointer-events: none;
         }
 
-        .hero::before {
+        .docs-hero::before {
             width: 280px;
             height: 280px;
             right: -90px;
@@ -668,7 +479,7 @@
             background: rgba(37, 99, 235, .10);
         }
 
-        .hero::after {
+        .docs-hero::after {
             width: 150px;
             height: 150px;
             right: 120px;
@@ -676,128 +487,124 @@
             background: rgba(14, 165, 233, .10);
         }
 
-        .hero-copy {
+        .docs-hero>* {
             position: relative;
             z-index: 1;
         }
 
         .eyebrow {
+            margin-bottom: 12px;
+            padding: 7px 12px;
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            margin-bottom: 12px;
-            padding: 7px 12px;
             border-radius: 999px;
+            background: #DBEAFE;
             color: var(--primary-dark);
-            background: #dbeafe;
             font-size: 12px;
             font-weight: 800;
             letter-spacing: .25px;
         }
 
-        .hero h1 {
+        .docs-hero h1 {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin: 0;
             color: var(--navy);
             font-size: clamp(27px, 4vw, 40px);
-            line-height: 1.22;
             font-weight: 800;
+            line-height: 1.22;
         }
 
-        .hero h1 .title-icon {
+        .title-icon {
+            flex: 0 0 auto;
             width: 52px;
             height: 52px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex: 0 0 auto;
+            display: grid;
+            place-items: center;
             border-radius: 16px;
+            background: linear-gradient(135deg, #2563EB, #0EA5E9);
             color: #fff;
-            background: linear-gradient(135deg, #2563eb, #0ea5e9);
-            box-shadow: 0 10px 22px rgba(37, 99, 235, .24);
             font-size: 27px;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, .24);
         }
 
-        .hero p {
-            max-width: 620px;
-            margin: 14px 0 0;
+        .docs-hero p {
+            max-width: 640px;
+            margin-top: 14px;
             color: var(--muted);
-            font-size: 15px;
+            font-size: 16px;
             line-height: 1.75;
         }
 
         .hero-art {
-            position: relative;
-            z-index: 1;
             width: 128px;
             height: 128px;
             display: grid;
             place-items: center;
             border-radius: 28px;
-            color: var(--primary);
             background: rgba(255, 255, 255, .75);
             border: 1px solid rgba(191, 219, 254, .9);
-            box-shadow: 0 18px 38px rgba(37, 99, 235, .12);
+            color: var(--primary);
             font-size: 62px;
+            box-shadow: 0 18px 38px rgba(37, 99, 235, .12);
         }
 
         .notice {
+            margin-bottom: 28px;
+            padding: 16px 18px;
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            margin-bottom: 28px;
-            padding: 16px 18px;
-            border: 1px solid #fde68a;
+            background: linear-gradient(135deg, #FFFBEB, #FFFDF5);
+            border: 1px solid #FDE68A;
             border-radius: 16px;
-            background: linear-gradient(135deg, #fffbeb, #fffdf5);
-            color: #92400e;
-            font-size: 14px;
+            color: #92400E;
+            font-size: 15px;
             line-height: 1.65;
         }
 
         .notice-icon {
+            flex: 0 0 auto;
             width: 34px;
             height: 34px;
             display: grid;
             place-items: center;
-            flex: 0 0 auto;
             border-radius: 10px;
-            background: #fef3c7;
-            color: #b45309;
+            background: #FEF3C7;
+            color: #B45309;
             font-size: 18px;
         }
 
+        /* 05 — LAYOUT / SECTIONS */
         .content-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 260px;
+            grid-template-columns: minmax(0, 1fr) 280px;
             gap: 24px;
             align-items: start;
         }
 
-        .main-column,
-        .side-card {
+        .main-column {
             min-width: 0;
         }
 
-        .section {
-            margin-bottom: 28px;
+        .doc-section+.doc-section {
+            margin-top: 32px;
         }
 
         .section-head {
+            margin-bottom: 14px;
             display: flex;
             align-items: flex-end;
             justify-content: space-between;
             gap: 16px;
-            margin-bottom: 13px;
         }
 
         .section-title {
-            margin: 0;
             color: var(--navy);
             font-size: 25px;
             font-weight: 800;
+            line-height: 1.3;
         }
 
         .section-subtitle {
@@ -807,15 +614,17 @@
         }
 
         .section-count {
-            padding: 5px 10px;
+            flex: 0 0 auto;
+            padding: 5px 11px;
             border-radius: 999px;
+            background: #EAF0F7;
             color: #475569;
-            background: #eaf0f7;
-            font-size: 11px;
-            font-weight: 800;
+            font-size: 12px;
+            font-weight: 700;
             white-space: nowrap;
         }
 
+        /* 06 — DOC CARDS (markup comes from the _doc-card partial) */
         .doc-list {
             display: grid;
             gap: 12px;
@@ -823,34 +632,33 @@
 
         .doc-card {
             position: relative;
+            overflow: hidden;
+            min-height: 86px;
+            padding: 16px 18px;
             display: flex;
             align-items: center;
             gap: 15px;
-            min-height: 86px;
-            padding: 16px 17px;
-            overflow: hidden;
+            background: rgba(255, 255, 255, .96);
             border: 1px solid var(--line);
             border-radius: 18px;
-            background: rgba(255, 255, 255, .94);
             box-shadow: 0 3px 10px rgba(15, 23, 42, .035);
-            text-decoration: none;
-            transition: .22s ease;
+            transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
         }
 
         a.doc-card:hover {
             transform: translateY(-2px);
-            border-color: #bfdbfe;
+            border-color: #BFDBFE;
             box-shadow: 0 14px 30px rgba(37, 99, 235, .10);
         }
 
         a.doc-card::after {
-            content: "";
+            content: '';
             position: absolute;
             inset: 0 auto 0 0;
             width: 4px;
-            background: var(--accent, #2563eb);
+            background: var(--accent, #2563EB);
             opacity: 0;
-            transition: .2s ease;
+            transition: opacity .2s ease;
         }
 
         a.doc-card:hover::after {
@@ -858,38 +666,38 @@
         }
 
         .doc-icon {
+            flex: 0 0 auto;
             width: 52px;
             height: 52px;
             display: grid;
             place-items: center;
-            flex: 0 0 auto;
             border-radius: 15px;
             font-size: 24px;
         }
 
         .doc-icon.red {
-            color: #dc2626;
-            background: #fef2f2;
+            color: #DC2626;
+            background: #FEF2F2;
         }
 
         .doc-icon.blue {
-            color: #2563eb;
-            background: #eff6ff;
+            color: #2563EB;
+            background: #EFF6FF;
         }
 
         .doc-icon.green {
-            color: #16a34a;
-            background: #f0fdf4;
+            color: #16A34A;
+            background: #F0FDF4;
         }
 
         .doc-icon.orange {
-            color: #ea580c;
-            background: #fff7ed;
+            color: #EA580C;
+            background: #FFF7ED;
         }
 
         .doc-icon.yellow {
-            color: #f59e0b;
-            background: #fffbeb;
+            color: #F59E0B;
+            background: #FFFBEB;
         }
 
         .doc-info {
@@ -899,58 +707,69 @@
 
         .doc-name {
             color: var(--text);
-            font-size: 20px;
-            font-weight: 800;
-            line-height: 1.45;
+            font-size: 19px;
+            font-weight: 700;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
         }
 
         .doc-desc {
             margin-top: 4px;
             color: var(--muted);
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.55;
         }
 
         .doc-btn,
         .coming-soon {
+            flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            flex: 0 0 auto;
-            white-space: nowrap;
             border-radius: 10px;
-            font-size: 12px;
-            font-weight: 800;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
         }
 
         .doc-btn {
-            padding: 9px 12px;
-            color: var(--primary-dark);
-            border: 1px solid #bfdbfe;
+            padding: 9px 13px;
             background: var(--primary-soft);
+            border: 1px solid #BFDBFE;
+            color: var(--primary-dark);
+            transition: background .2s ease, color .2s ease;
+        }
+
+        a.doc-card:hover .doc-btn {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
         }
 
         .coming-soon {
-            padding: 8px 11px;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
+            padding: 8px 12px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            color: #64748B;
         }
 
+        /* 07 — TIER TABS (colors match the rest of the site) */
         .tier-tabs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 6px;
             margin-bottom: 14px;
+            padding: 6px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            background: #EDF2F8;
             border: 1px solid var(--line);
             border-radius: 16px;
-            background: #edf2f8;
         }
 
         .tier-tab {
-            min-height: 44px;
+            --c: #16A34A;
+            min-height: 48px;
+            padding: 0 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -958,53 +777,39 @@
             border: 0;
             border-radius: 11px;
             background: transparent;
-            color: #64748b;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 20px;
-            font-weight: 800;
+            color: #64748B;
+            font-size: 18px;
+            font-weight: 600;
+            white-space: nowrap;
             cursor: pointer;
-            transition: .2s ease;
+            transition: background .2s ease, color .2s ease, box-shadow .2s ease;
         }
 
-        .tier-dot {
-            width: 9px;
-            height: 9px;
-            display: inline-block;
-            border-radius: 50%;
-            box-shadow: 0 0 0 4px rgba(148, 163, 184, .12);
+        .tier-tab.t-i {
+            --c: #2563EB;
+        }
+
+        .tier-tab.t-a {
+            --c: #EA580C;
         }
 
         .tier-tab:hover {
-            color: #334155;
+            color: var(--c);
         }
 
         .tier-tab.active {
             background: #fff;
+            color: var(--c);
             box-shadow: 0 6px 14px rgba(15, 23, 42, .07);
         }
 
-        .tier-tab.t-b.active {
-            color: #15803d;
-        }
-
-        .tier-tab.t-i.active {
-            color: #1d4ed8;
-        }
-
-        .tier-tab.t-a.active {
-            color: #dc2626;
-        }
-
-        .t-b .tier-dot {
-            background: #22c55e;
-        }
-
-        .t-i .tier-dot {
-            background: #3b82f6;
-        }
-
-        .t-a .tier-dot {
-            background: #ef4444;
+        .tier-dot {
+            flex: 0 0 auto;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--c);
+            box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 14%, transparent);
         }
 
         .tier-content {
@@ -1024,66 +829,77 @@
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: none;
             }
         }
 
+        /* 08 — SIDEBAR */
         .side-card {
             position: sticky;
-            top: 108px;
+            top: calc(var(--topbar-h) + 20px);
+            min-width: 0;
             padding: 20px;
+            background: rgba(255, 255, 255, .95);
             border: 1px solid var(--line);
             border-radius: 20px;
-            background: rgba(255, 255, 255, .94);
             box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
         }
 
         .side-card-icon {
             width: 44px;
             height: 44px;
+            margin-bottom: 14px;
             display: grid;
             place-items: center;
-            margin-bottom: 14px;
             border-radius: 14px;
+            background: linear-gradient(135deg, #2563EB, #0EA5E9);
             color: #fff;
-            background: linear-gradient(135deg, #2563eb, #0ea5e9);
             font-size: 22px;
         }
 
         .side-card h3 {
-            margin: 0;
             color: var(--navy);
-            font-size: 16px;
-            font-weight: 800;
+            font-size: 18px;
+            font-weight: 700;
         }
 
         .side-card p {
             margin: 8px 0 16px;
             color: var(--muted);
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.65;
         }
 
         .side-link {
+            padding: 11px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 10px;
-            padding: 11px 12px;
             border-radius: 12px;
-            color: var(--primary-dark);
             background: var(--primary-soft);
-            font-size: 13px;
-            font-weight: 800;
-            text-decoration: none;
+            color: var(--primary-dark);
+            font-size: 14px;
+            font-weight: 700;
+            transition: background .2s ease;
+        }
+
+        .side-link:hover {
+            background: #DBEAFE;
+        }
+
+        .side-link span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .side-meta {
-            display: grid;
-            gap: 10px;
             margin-top: 16px;
             padding-top: 16px;
-            border-top: 1px dashed #cbd5e1;
+            display: grid;
+            gap: 10px;
+            border-top: 1px dashed #CBD5E1;
         }
 
         .side-meta div {
@@ -1091,21 +907,25 @@
             align-items: center;
             gap: 9px;
             color: #475569;
-            font-size: 12px;
+            font-size: 13px;
         }
 
+        .side-meta i {
+            color: var(--primary);
+            font-size: 17px;
+        }
+
+        /* 09 — FOOTER */
         .footer {
-            margin-top: 20px;
-            padding: 28px 20px;
+            padding: 26px 20px;
+            background: linear-gradient(135deg, #0F172A, #1E293B);
             text-align: center;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
         }
 
-        .footer-logo img {
+        .footer img {
             height: 36px;
-            width: auto;
-            object-fit: contain;
             margin-bottom: 10px;
+            object-fit: contain;
         }
 
         .footer-text {
@@ -1113,10 +933,103 @@
             font-size: 12px;
         }
 
-        /* =========================================================
-           RESPONSIVE — PAGE CONTENT
-        ========================================================= */
-        @media (max-width: 860px) {
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* 10 — RESPONSIVE */
+        @media (min-width: 1440px) {
+            .topbar {
+                padding-inline: 48px;
+            }
+
+            .topbar-nav {
+                margin-left: 22px;
+                gap: 4px;
+            }
+
+            .nav-link {
+                padding-inline: 16px;
+            }
+        }
+
+        @media (max-width: 1199px) {
+            :root {
+                --gutter: 20px;
+            }
+
+            .topbar {
+                padding-inline: 20px;
+            }
+
+            .topbar-logo img {
+                height: 54px;
+                max-width: 136px;
+            }
+
+            .topbar-nav {
+                margin-left: 10px;
+                gap: 0;
+            }
+
+            .nav-link {
+                padding-inline: 9px;
+                letter-spacing: .5px;
+            }
+
+            .nav-link span:first-child {
+                font-size: 15px;
+            }
+
+            .nav-link span:last-child {
+                font-size: 10px;
+            }
+
+            .certificate-btn {
+                min-width: 126px;
+                padding-inline: 12px;
+            }
+
+            .btn-login {
+                padding-inline: 13px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            :root {
+                --topbar-h: 70px;
+            }
+
+            .topbar-nav,
+            .topbar-actions {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: block;
+            }
+
+            .topbar-logo img {
+                height: 50px;
+                max-width: 124px;
+            }
+        }
+
+        @media (max-width: 900px) {
             .content-grid {
                 grid-template-columns: 1fr;
             }
@@ -1125,58 +1038,131 @@
                 position: static;
             }
 
+            .docs-hero {
+                grid-template-columns: 1fr;
+            }
+
             .hero-art {
                 display: none;
             }
-
-            .hero {
-                grid-template-columns: 1fr;
-            }
         }
 
-        @media (max-width: 620px) {
+        @media (max-width: 640px) {
+            :root {
+                --gutter: 12px;
+                --topbar-h: 60px;
+            }
+
+            .topbar {
+                padding: 0 12px;
+            }
+
+            .topbar-logo img {
+                height: 42px;
+                max-width: 90px;
+            }
+
             .page-shell {
-                padding-top: 84px;
+                padding-top: calc(var(--topbar-h) + 20px);
+                padding-bottom: 40px;
             }
 
-            .hero {
-                padding: 24px 20px;
-                border-radius: 21px;
+            .docs-hero {
+                padding: 22px 18px;
+                border-radius: 20px;
             }
 
-            .hero h1 {
+            .docs-hero h1 {
                 align-items: flex-start;
-                font-size: 26px;
+                font-size: 25px;
             }
 
-            .hero h1 .title-icon {
-                width: 46px;
-                height: 46px;
-                border-radius: 14px;
-                font-size: 23px;
+            .title-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 13px;
+                font-size: 22px;
             }
 
+            .docs-hero p {
+                font-size: 14px;
+            }
+
+            .notice {
+                padding: 14px;
+                font-size: 14px;
+            }
+
+            .section-head {
+                align-items: flex-start;
+            }
+
+            .section-title {
+                font-size: 22px;
+            }
+
+            .section-subtitle {
+                font-size: 13px;
+            }
+
+            /* Doc card: icon + text on top row, button full width below */
             .doc-card {
-                align-items: flex-start;
+                padding: 14px;
                 flex-wrap: wrap;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .doc-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 13px;
+                font-size: 21px;
             }
 
             .doc-info {
-                min-width: calc(100% - 70px);
+                flex: 1 1 calc(100% - 56px);
+            }
+
+            .doc-name {
+                font-size: 17px;
+            }
+
+            .doc-desc {
+                font-size: 13px;
             }
 
             .doc-btn,
             .coming-soon {
-                margin-left: 67px;
+                flex: 1 1 100%;
+                min-height: 40px;
             }
 
             .tier-tabs {
-                grid-template-columns: 1fr;
+                padding: 5px;
+                gap: 5px;
             }
 
             .tier-tab {
-                justify-content: flex-start;
-                padding-left: 16px;
+                min-height: 44px;
+                padding: 0 4px;
+                gap: 6px;
+                font-size: 14px;
+            }
+
+            .tier-dot {
+                width: 7px;
+                height: 7px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .tier-tab {
+                font-size: 12px;
+            }
+
+            .tier-dot {
+                display: none;
             }
         }
     </style>
@@ -1185,13 +1171,18 @@
 <body>
 
     <!-- TOPBAR -->
-    <div class="topbar">
+    <header class="topbar">
         <a href="/" class="topbar-logo">
             <img src="/RCL Logo.png" alt="RCL">
         </a>
 
-        <nav class="topbar-nav">
+        <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
 
+        <nav class="topbar-nav">
             <a href="/" class="nav-link">
                 <span>HOME</span>
                 <span>หน้าหลัก</span>
@@ -1202,32 +1193,26 @@
                 <span>เกี่ยวกับเรา</span>
             </a>
 
+            <a href="/#awards" class="nav-link">
+                <span>AWARDS</span>
+                <span>รางวัล</span>
+            </a>
+
             <div class="dropdown">
                 <button class="nav-link" type="button">
                     <span>COMPETITION</span>
-                    <span>
-                        การแข่งขัน
-                        <i class="ti ti-chevron-down"></i>
-                    </span>
+                    <span>การแข่งขัน <i class="ti ti-chevron-down"></i></span>
                 </button>
 
                 <div class="dropdown-menu">
-                    <a href="/#tiers" class="dropdown-item">
-                        <i class="ti ti-pencil-plus"></i>
-                        สมัครแข่งขัน
-                    </a>
-                    <a href="/competition?view=teams" class="dropdown-item">
-                        <i class="ti ti-users"></i>
-                        ทีมที่สมัคร
-                    </a>
-                    <a href="/competition?view=board" class="dropdown-item">
-                        <i class="ti ti-chart-bar"></i>
-                        ผลสรุปคะแนน
-                    </a>
+                    <a href="/#tiers" class="dropdown-item"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+                    <a href="/competition?view=teams" class="dropdown-item"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+                    <a href="/competition?view=board" class="dropdown-item"><i
+                            class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
                 </div>
             </div>
 
-            <a href="/docs" class="nav-link">
+            <a href="/docs" class="nav-link active" aria-current="page">
                 <span>DOCUMENT</span>
                 <span>เอกสาร</span>
             </a>
@@ -1241,63 +1226,7 @@
                 <span>CERTIFICATE</span>
                 <span>เกียรติบัตร</span>
             </a>
-
         </nav>
-
-        <!-- MOBILE HAMBURGER -->
-        <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false"
-            onclick="(function(b){var m=document.getElementById('mobileMenu');var o=m.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');b.setAttribute('aria-label',o?'ปิดเมนู':'เปิดเมนู');b.innerHTML=o?'<i class=&quot;ti ti-x&quot;></i>':'<i class=&quot;ti ti-menu-2&quot;></i>';})(this)">
-            <i class="ti ti-menu-2"></i>
-        </button>
-
-        <!-- MOBILE MENU -->
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="/" class="mobile-menu-item">
-                <i class="ti ti-home-2"></i>
-                <span><b>HOME</b><small>หน้าหลัก</small></span>
-            </a>
-            <a href="/#about" class="mobile-menu-item">
-                <i class="ti ti-users"></i>
-                <span><b>ABOUT US</b><small>เกี่ยวกับเรา</small></span>
-            </a>
-
-            <button class="mobile-menu-item mobile-competition-toggle" type="button" aria-expanded="false"
-                aria-controls="mobileCompetitionSubmenu"
-                onclick="(function(b,e){e.preventDefault();e.stopPropagation();var s=document.getElementById('mobileCompetitionSubmenu');if(!s)return;var o=s.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');})(this,event)">
-                <i class="ti ti-trophy"></i>
-                <span><b>COMPETITION</b><small>การแข่งขัน</small></span>
-                <i class="ti ti-chevron-down mobile-menu-arrow"></i>
-            </button>
-
-            <div class="mobile-submenu" id="mobileCompetitionSubmenu">
-                <a href="/#tiers" class="mobile-submenu-item">
-                    <i class="ti ti-pencil-plus"></i>สมัครแข่งขัน
-                </a>
-                <a href="/competition?view=teams" class="mobile-submenu-item">
-                    <i class="ti ti-users"></i>ทีมที่สมัคร
-                </a>
-                <a href="/competition?view=board" class="mobile-submenu-item">
-                    <i class="ti ti-chart-bar"></i>ผลสรุปคะแนน
-                </a>
-            </div>
-
-            <a href="/docs" class="mobile-menu-item">
-                <i class="ti ti-file-text"></i>
-                <span><b>DOCUMENT</b><small>เอกสาร</small></span>
-            </a>
-            <a href="/preorder" class="mobile-menu-item">
-                <i class="ti ti-shopping-cart"></i>
-                <span><b>PRE-ORDER MISSION</b><small>พรีออเดอร์สนามภารกิจ</small></span>
-            </a>
-            <a href="/certificate" class="mobile-menu-item" target="_blank">
-                <i class="ti ti-award"></i>
-                <span><b>CERTIFICATE</b><small>เกียรติบัตร</small></span>
-            </a>
-            <a href="/auth/login" class="mobile-menu-item mobile-login-item">
-                <i class="ti ti-lock"></i>
-                <span><b>LOGIN</b><small>เข้าสู่ระบบ</small></span>
-            </a>
-        </div>
 
         <div class="topbar-actions">
             <a href="/auth/login" class="btn-login">
@@ -1305,13 +1234,65 @@
                 <span>เข้าสู่ระบบ</span>
             </a>
         </div>
-    </div>
 
+        <!-- MOBILE / TABLET MENU -->
+        <div class="mobile-menu" aria-hidden="true">
+            <a href="/" class="mobile-menu-link">
+                <i class="ti ti-home"></i>
+                <span class="mobile-menu-link-text"><strong>HOME</strong><small>หน้าหลัก</small></span>
+            </a>
+
+            <a href="/#about" class="mobile-menu-link">
+                <i class="ti ti-info-circle"></i>
+                <span class="mobile-menu-link-text"><strong>ABOUT US</strong><small>เกี่ยวกับเรา</small></span>
+            </a>
+
+            <a href="/#awards" class="mobile-menu-link">
+                <i class="ti ti-award"></i>
+                <span class="mobile-menu-link-text"><strong>AWARDS</strong><small>รางวัล</small></span>
+            </a>
+
+            <button class="mobile-menu-competition-toggle" type="button" aria-expanded="false">
+                <i class="ti ti-trophy"></i>
+                <span class="mobile-menu-link-text"><strong>COMPETITION</strong><small>การแข่งขัน</small></span>
+                <i class="ti ti-chevron-down mobile-chevron"></i>
+            </button>
+
+            <div class="mobile-submenu">
+                <a href="/#tiers"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+                <a href="/competition?view=teams"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+                <a href="/competition?view=board"><i class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+            </div>
+
+            <a href="/docs" class="mobile-menu-link active" aria-current="page">
+                <i class="ti ti-file-text"></i>
+                <span class="mobile-menu-link-text"><strong>DOCUMENT</strong><small>เอกสาร</small></span>
+            </a>
+
+            <a href="/preorder" class="mobile-menu-link">
+                <i class="ti ti-shopping-cart"></i>
+                <span class="mobile-menu-link-text"><strong>PRE-ORDER
+                        MISSION</strong><small>พรีออเดอร์สนามภารกิจ</small></span>
+            </a>
+
+            <a href="/certificate" class="mobile-menu-link" target="_blank">
+                <i class="ti ti-certificate"></i>
+                <span class="mobile-menu-link-text"><strong>CERTIFICATE</strong><small>เกียรติบัตร</small></span>
+            </a>
+
+            <div class="mobile-menu-divider"></div>
+
+            <a href="/auth/login" class="mobile-menu-link mobile-login">
+                <i class="ti ti-lock"></i>
+                <span class="mobile-menu-link-text"><strong>เข้าสู่ระบบ</strong><small>Login</small></span>
+            </a>
+        </div>
+    </header>
 
     <main class="page-shell">
 
-        <section class="hero">
-            <div class="hero-copy">
+        <section class="docs-hero">
+            <div>
                 <div class="eyebrow"><i class="ti ti-trophy"></i> ROBO CHALLENGE LEAGUE</div>
                 <h1>
                     <span class="title-icon"><i class="ti ti-files"></i></span>
@@ -1329,67 +1310,72 @@
         </div>
 
         <div class="content-grid">
-                                <div class="main-column">
-                                
-                                    <!-- เอกสารทั่วไป -->
-                                    <section class="section">
-                                        <div class="section-head">
-                                            <div>
-                                                <h2 class="section-title">เอกสารทั่วไป</h2>
-                                                <div class="section-subtitle">ข้อมูลหลักสำหรับสถานศึกษา โค้ช และผู้สมัคร</div>
-                                            </div>
-                                            <span class="section-count">
-                                                <%= generalDocs.length %> รายการ
-                                            </span>
-                                        </div>
-                                        <div class="doc-list">
-                                            <% generalDocs.forEach(function (item) { %>
-                                                <%- include('_doc-card', { item: item }) %>
-                                                    <% }); %>
-                                        </div>
-                                    </section>
-                                
-                                    <!-- เอกสารแยกรุ่น -->
-                                    <section class="section">
-                                        <div class="section-head">
-                                            <div>
-                                                <h2 class="section-title">เอกสารแยกรุ่น</h2>
-                                                <div class="section-subtitle">กติกาและวิธีต่อตัวภารกิจของแต่ละรุ่น</div>
-                                            </div>
-                                            <span class="section-count">3 รุ่น</span>
-                                        </div>
-                                
-                                        <div class="tier-tabs" role="tablist" aria-label="เลือกรุ่นการแข่งขัน">
-                                            <button class="tier-tab t-b active" role="tab" aria-selected="true" onclick="switchTier('beginner', this)">
-                                                <span class="tier-dot"></span> Beginner
-                                            </button>
-                                            <button class="tier-tab t-i" role="tab" aria-selected="false" onclick="switchTier('intermediate', this)">
-                                                <span class="tier-dot"></span> Intermediate
-                                            </button>
-                                            <button class="tier-tab t-a" role="tab" aria-selected="false" onclick="switchTier('advance', this)">
-                                                <span class="tier-dot"></span> Advance
-                                            </button>
-                                        </div>
-                                
-                                        <% tierDocs.forEach(function (t, idx) { %>
-                                            <div class="tier-content<%= idx === 0 ? ' active' : '' %>" id="tier-<%= t.tier %>" role="tabpanel">
-                                                <div class="doc-list">
-                                                    <% t.docs.forEach(function (item) { %>
-                                                        <%- include('_doc-card', { item: item }) %>
-                                                            <% }); %>
-                                                </div>
-                                            </div>
-                                            <% }); %>
-                                    </section>
-                                
-                                </div>
+            <div class="main-column">
+
+                <!-- เอกสารทั่วไป -->
+                <section class="doc-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">เอกสารทั่วไป</h2>
+                            <div class="section-subtitle">ข้อมูลหลักสำหรับสถานศึกษา โค้ช และผู้สมัคร</div>
+                        </div>
+                        <span class="section-count">
+                            <%= generalDocs.length %> รายการ
+                        </span>
+                    </div>
+
+                    <div class="doc-list">
+                        <% generalDocs.forEach(function (item) { %>
+                            <%- include('_doc-card', { item: item }) %>
+                                <% }); %>
+                    </div>
+                </section>
+
+                <!-- เอกสารแยกรุ่น -->
+                <section class="doc-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">เอกสารแยกรุ่น</h2>
+                            <div class="section-subtitle">กติกาและวิธีต่อตัวภารกิจของแต่ละรุ่น</div>
+                        </div>
+                        <span class="section-count">3 รุ่น</span>
+                    </div>
+
+                    <div class="tier-tabs" role="tablist" aria-label="เลือกรุ่นการแข่งขัน">
+                        <button class="tier-tab t-b active" type="button" role="tab" aria-selected="true"
+                            aria-controls="tier-beginner" data-tier="beginner">
+                            <span class="tier-dot"></span>Beginner
+                        </button>
+                        <button class="tier-tab t-i" type="button" role="tab" aria-selected="false"
+                            aria-controls="tier-intermediate" data-tier="intermediate">
+                            <span class="tier-dot"></span>Intermediate
+                        </button>
+                        <button class="tier-tab t-a" type="button" role="tab" aria-selected="false"
+                            aria-controls="tier-advance" data-tier="advance">
+                            <span class="tier-dot"></span>Advance
+                        </button>
+                    </div>
+
+                    <% tierDocs.forEach(function (t, idx) { %>
+                        <div class="tier-content<%= idx === 0 ? ' active' : '' %>" id="tier-<%= t.tier %>"
+                            role="tabpanel">
+                            <div class="doc-list">
+                                <% t.docs.forEach(function (item) { %>
+                                    <%- include('_doc-card', { item: item }) %>
+                                        <% }); %>
+                            </div>
+                        </div>
+                        <% }); %>
+                </section>
+
+            </div>
 
             <!-- Sidebar -->
             <aside class="side-card">
                 <div class="side-card-icon"><i class="ti ti-help"></i></div>
                 <h3>ต้องการความช่วยเหลือ?</h3>
                 <p>ตรวจสอบรายละเอียดในเอกสารก่อนสมัคร หากยังมีข้อสงสัยสามารถติดต่อทีมงานผ่าน LINE ได้โดยตรง</p>
-                <a href="https://line.me/R/ti/p/@rcl.robo" target="_blank" class="side-link">
+                <a href="https://line.me/R/ti/p/@rcl.robo" target="_blank" rel="noopener" class="side-link">
                     <span><i class="ti ti-brand-line"></i> LINE @rcl.robo</span>
                     <i class="ti ti-arrow-up-right"></i>
                 </a>
@@ -1404,74 +1390,101 @@
     </main>
 
     <footer class="footer">
-        <div class="footer-logo"><img src="/RCL Logo.png" alt="RCL"></div>
+        <img src="/RCL Logo.png" alt="RCL">
         <div class="footer-text">ROBO CHALLENGE LEAGUE — สร้างสรรค์นวัตกรรม พัฒนาทักษะ สู่อนาคต</div>
     </footer>
 
     <script>
-        /* MASTER TOPBAR JS — single controller */
+        /* Tier tabs */
         (function () {
-            var dropdowns = document.querySelectorAll('.dropdown')
-            for (var i = 0; i < dropdowns.length; i++) {
-                (function (dd) {
-                    var menu = dd.querySelector('.dropdown-menu'), trigger = dd.querySelector('.nav-link'), timer
-                    if (!menu || !trigger) return
-                    trigger.addEventListener('click', function (e) {
-                        if (window.innerWidth <= 640) { e.preventDefault(); e.stopPropagation(); return }
-                        e.preventDefault(); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'
-                    })
-                    dd.addEventListener('mouseenter', function () { if (window.innerWidth > 640) { clearTimeout(timer); menu.style.display = 'block' } })
-                    dd.addEventListener('mouseleave', function () { if (window.innerWidth > 640) { timer = setTimeout(function () { menu.style.display = 'none' }, 200) } })
-                })(dropdowns[i])
-            }
-        })();
+            var tabs = Array.prototype.slice.call(document.querySelectorAll('.tier-tab'));
 
-        (function () {
-            var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu')
-            if (!toggle || !menu) return
-            function setOpen(open) {
-                menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open)
-                toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู')
-                toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'
-                if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false') } if (submenu) submenu.classList.remove('is-open') }
-            }
-            toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')) }, true)
-            var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false) })
-            document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false) })
-            window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false) })
-        })();
-
-        // Scroll effect
-        (function () {
-            var topbar = document.querySelector('.topbar')
-            if (!topbar) return
-
-            function updateTopbar() {
-                if (window.scrollY > 10) {
-                    topbar.classList.add('scrolled')
-                } else {
-                    topbar.classList.remove('scrolled')
-                }
+            function activate(tab) {
+                tabs.forEach(function (t) {
+                    var on = t === tab;
+                    t.classList.toggle('active', on);
+                    t.setAttribute('aria-selected', String(on));
+                    var panel = document.getElementById('tier-' + t.dataset.tier);
+                    if (panel) panel.classList.toggle('active', on);
+                });
             }
 
-            window.addEventListener('scroll', updateTopbar, { passive: true })
-            updateTopbar()
-        })();
-
-        // Tier tabs
-        function switchTier(tier, button) {
-            document.querySelectorAll('.tier-content').forEach(function (el) {
-                el.classList.remove('active');
+            tabs.forEach(function (tab, i) {
+                tab.addEventListener('click', function () { activate(tab); });
+                tab.addEventListener('keydown', function (e) {
+                    var next = null;
+                    if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+                    if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+                    if (next) { e.preventDefault(); next.focus(); activate(next); }
+                });
             });
-            document.querySelectorAll('.tier-tab').forEach(function (el) {
-                el.classList.remove('active');
-                el.setAttribute('aria-selected', 'false');
-            });
-            document.getElementById('tier-' + tier).classList.add('active');
-            button.classList.add('active');
-            button.setAttribute('aria-selected', 'true');
-        }
+        })();
 
+        /* Mobile / tablet hamburger menu */
+        (function () {
+            var toggle = document.querySelector('.mobile-menu-toggle');
+            var mobileMenu = document.querySelector('.mobile-menu');
+            var competitionToggle = document.querySelector('.mobile-menu-competition-toggle');
+            var subMenu = document.querySelector('.mobile-submenu');
+            if (!toggle || !mobileMenu) return;
+
+            function closeMobileMenu() {
+                toggle.classList.remove('is-open');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.setAttribute('aria-label', 'เปิดเมนู');
+                mobileMenu.classList.remove('is-open');
+                mobileMenu.setAttribute('aria-hidden', 'true');
+            }
+
+            toggle.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var isOpen = mobileMenu.classList.toggle('is-open');
+                toggle.classList.toggle('is-open', isOpen);
+                toggle.setAttribute('aria-expanded', String(isOpen));
+                toggle.setAttribute('aria-label', isOpen ? 'ปิดเมนู' : 'เปิดเมนู');
+                mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+            });
+
+            if (competitionToggle && subMenu) {
+                competitionToggle.addEventListener('click', function () {
+                    var isOpen = subMenu.classList.toggle('is-open');
+                    competitionToggle.classList.toggle('is-open', isOpen);
+                    competitionToggle.setAttribute('aria-expanded', String(isOpen));
+                });
+            }
+
+            mobileMenu.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', closeMobileMenu);
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!mobileMenu.contains(e.target) && !toggle.contains(e.target)) closeMobileMenu();
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeMobileMenu();
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 1100) closeMobileMenu();
+            });
+        })();
+
+        /* Desktop dropdown (hover with small delay, click also works) */
+        document.querySelectorAll('.dropdown').forEach(function (dd) {
+            var menu = dd.querySelector('.dropdown-menu');
+            var btn = dd.querySelector('button');
+            var timer;
+
+            function show() { clearTimeout(timer); menu.style.display = 'block'; }
+            function hideSoon() { timer = setTimeout(function () { menu.style.display = 'none'; }, 200); }
+
+            dd.addEventListener('mouseenter', show);
+            dd.addEventListener('mouseleave', hideSoon);
+            btn.addEventListener('click', function () {
+                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+            });
+        });
     </script>
 
 </body>

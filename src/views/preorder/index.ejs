@@ -1,2341 +1,2650 @@
-<!DOCTYPE html>
-<html lang="th">
+<% var hasTiers=typeof tiers !=='undefined' && Array.isArray(tiers); var fd=typeof formData !=='undefined' && formData ?
+  formData : {}; %>
+  <!DOCTYPE html>
+  <html lang="th">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pre-order สนามแข่งขัน — RCL 2026</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&family=Kanit:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --bg: #F5F7FB;
-      --surface: #FFFFFF;
-      --text: #0F172A;
-      --muted: #64748B;
-      --line: #E2E8F0;
-      --blue: #2563EB;
-      --blue-soft: #EFF6FF;
-      --green: #16A34A;
-      --orange: #EA580C;
-      --shadow: 0 8px 24px rgba(15, 23, 42, .06);
-      --radius: 16px;
-    }
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-order สนามแข่งขัน — RCL 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800;900&family=Sarabun:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <style>
+      /* =========================================================
+       RCL 2026 — PRE-ORDER PAGE
+       01 Tokens / Reset
+       02 Topbar + Dropdown   (same as every page)
+       03 Mobile menu         (same as every page)
+       04 Hero / promo / alert
+       05 Section heading + field showcase
+       06 Product options
+       07 Checkout form
+       08 Summary
+       09 Success state
+       10 Responsive
+    ========================================================= */
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0
-    }
+      /* 01 — TOKENS / RESET */
+      :root {
+        --primary: #2563EB;
+        --primary-soft: #EFF6FF;
+        --blue: #2563EB;
+        --blue-soft: #EFF6FF;
+        --green: #16A34A;
+        --orange: #EA580C;
+        --red: #DC2626;
+        --bg: #F5F7FB;
+        --surface: #FFFFFF;
+        --text: #0F172A;
+        --muted: #64748B;
+        --line: #E2E8F0;
+        --shadow: 0 8px 24px rgba(15, 23, 42, .06);
+        --content: 1180px;
+        --gutter: 24px;
+        --topbar-h: 82px;
+      }
 
-    html {
-      scroll-behavior: smooth
-    }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      font-family: 'Kanit', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+      html {
+        scroll-behavior: smooth;
+      }
 
-    a {
-      text-decoration: none;
-      color: inherit
-    }
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: var(--text);
+        background: var(--bg);
+        font-family: 'Kanit', 'Sarabun', sans-serif;
+      }
 
-    button,
-    input,
-    textarea {
-      font-family: 'Kanit', sans-serif;
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    .topbar {
-      position: fixed;
-      inset: 0 0 auto;
-      z-index: 1000;
-      height: 82px;
-      padding: 0 30px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: transparent;
-      border-bottom: 1px solid transparent;
-      transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
-    }
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
 
-    .topbar.scrolled {
-      background: rgba(255, 255, 255, .92) !important;
-      border-bottom-color: rgba(226, 232, 240, .9);
-      box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
+      :focus-visible {
+        outline: 3px solid #93C5FD;
+        outline-offset: 2px;
+      }
 
-    .topbar.scrolled .nav-link {
-      color: #334155 !important;
-    }
-
-    .topbar-logo {
-      flex: 0 0 auto;
-      width: auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center
-    }
-
-    .topbar-logo img {
-      display: block;
-      width: auto;
-      max-width: 130px;
-      height: 120px;
-      object-fit: contain
-    }
-
-    .topbar-nav {
-      flex: 1 1 auto;
-      min-width: 0;
-      margin-left: 18px;
-      display: flex;
-      align-items: center;
-      gap: 6px
-    }
-
-    .nav-link {
-      min-height: 52px;
-      padding: 0 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 4px;
-      flex: 0 0 auto;
-      border: 0;
-      border-radius: 11px;
-      background: transparent;
-      color: #c8deff;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: color .2s ease, background .2s ease, transform .2s ease
-    }
-
-    .nav-link span:first-child {
-      font-size: 16px;
-      line-height: 1.05;
-      font-weight: 700;
-      letter-spacing: 1px
-    }
-
-    .nav-link span:last-child {
-      font-size: 13px;
-      line-height: 1.05;
-      font-weight: 500;
-      letter-spacing: 0
-    }
-
-    .nav-link i {
-      font-size: 17px
-    }
-
-    .nav-link:hover {
-      color: #2563EB;
-      background: #F4F8FF !important;
-      transform: translateY(-1px)
-    }
-
-    .nav-link.active {
-      color: #2563EB !important;
-      background: #EFF6FF !important
-    }
-
-    .certificate-btn {
-      background: linear-gradient(135deg, #FFF7D6, #FEF3C7) !important;
-      color: #92400E !important;
-      border: 1px solid #FCD34D !important;
-      border-radius: 90px !important;
-      box-shadow: 0 4px 12px rgba(180, 120, 20, .18)
-    }
-
-    .certificate-btn:hover {
-      background: linear-gradient(135deg, #FDE68A, #FCD34D) !important;
-      color: #78350F !important;
-      border-color: #F59E0B !important;
-      box-shadow: 0 7px 18px rgba(180, 120, 20, .28);
-      transform: translateY(-2px)
-    }
-
-    .topbar-actions {
-      flex: 0 0 auto;
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 10px
-    }
-
-    .btn-reg,
-    .btn-login {
-      min-height: 52px;
-      padding: 0 20px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      border-radius: 11px;
-      font: 800 16px 'Sarabun', sans-serif;
-      text-decoration: none;
-      white-space: nowrap;
-      box-sizing: border-box;
-      transition: all .2s ease
-    }
-
-    .btn-reg {
-      color: #fff;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      border: 1px solid transparent;
-      box-shadow: 0 10px 24px rgba(37, 99, 235, .24)
-    }
-
-    .btn-reg:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(37, 99, 235, .30)
-    }
-
-    .btn-login {
-      color: #334155;
-      background: #fff;
-      border: 1px solid #E2E8F0
-    }
-
-    .btn-login:hover {
-      color: #2563EB;
-      background: #F8FAFC;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, .07)
-    }
-
-    .btn-login i {
-      font-size: 16px
-    }
-
-    .dropdown {
-      position: relative
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      top: calc(100% + 10px);
-      left: 0;
-      z-index: 1100;
-      display: none;
-      min-width: 215px;
-      padding: 8px;
-      background: rgba(255, 255, 255, .98);
-      border: 1px solid #E2E8F0;
-      border-radius: 14px;
-      box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px)
-    }
-
-    .dropdown-item {
-      min-height: 44px;
-      padding: 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-radius: 10px;
-      color: #334155;
-      font-family: 'Kanit', 'Sarabun', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      text-decoration: none;
-      transition: color .18s ease, background .18s ease
-    }
-
-    .dropdown-item:hover,
-    .dropdown-item.active {
-      color: #2563EB;
-      background: #EFF6FF
-    }
-
-    .dropdown-item:first-child:hover {
-      background: #FEF2F2;
-      color: #DC2626
-    }
-
-    .dropdown-item i {
-      font-size: 17px;
-      color: #64748B
-    }
-
-    .mobile-menu-toggle {
-      display: none;
-      position: relative;
-      z-index: 1202;
-      flex: 0 0 44px;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      margin-left: auto;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(148, 163, 184, .35);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, .96);
-      color: #334155;
-      box-shadow: 0 6px 18px rgba(15, 23, 42, .07);
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent
-    }
-
-    .mobile-menu-toggle i {
-      font-size: 25px;
-      line-height: 1
-    }
-
-    .mobile-menu-toggle.is-open {
-      color: #2563EB;
-      background: #EFF6FF;
-      border-color: #BFDBFE
-    }
-
-    .mobile-menu {
-      display: none;
-      position: fixed;
-      top: 94px;
-      left: 12px;
-      right: 12px;
-      z-index: 1201;
-      max-height: calc(100dvh - 106px);
-      overflow-y: auto;
-      box-sizing: border-box;
-      padding: 8px;
-      background: rgba(255, 255, 255, .98);
-      border: 1px solid #DBEAFE;
-      border-radius: 17px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, .16);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      visibility: hidden;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(-8px) scale(.985);
-      transform-origin: top center;
-      transition: opacity .18s ease, transform .18s ease, visibility .18s ease
-    }
-
-    .mobile-menu.is-open {
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      pointer-events: auto !important;
-      transform: translateY(0) scale(1)
-    }
-
-    .mobile-menu-item {
-      width: 100%;
-      min-height: 52px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      box-sizing: border-box;
-      border: 0;
-      border-radius: 11px;
-      background: transparent;
-      color: #334155;
-      font-family: 'Kanit', 'Sarabun', sans-serif;
-      text-decoration: none;
-      text-align: left;
-      cursor: pointer
-    }
-
-    .mobile-menu-item:hover,
-    .mobile-menu-item:active {
-      background: #F4F8FF;
-      color: #2563EB
-    }
-
-    .mobile-menu-item>i:first-child {
-      width: 28px;
-      min-width: 28px;
-      text-align: center;
-      font-size: 20px;
-      color: #64748B
-    }
-
-    .mobile-menu-item>span {
-      min-width: 0;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1
-    }
-
-    .mobile-menu-item b {
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: .2px
-    }
-
-    .mobile-menu-item small {
-      margin-top: 3px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #94A3B8
-    }
-
-    .mobile-menu-arrow {
-      width: auto !important;
-      min-width: 0 !important;
-      font-size: 18px !important;
-      color: #94A3B8 !important;
-      transition: transform .2s ease
-    }
-
-    .mobile-competition-toggle.is-open {
-      background: #EFF6FF;
-      color: #2563EB
-    }
-
-    .mobile-competition-toggle.is-open .mobile-menu-arrow {
-      transform: rotate(180deg)
-    }
-
-    .mobile-submenu {
-      display: none;
-      margin: 0 8px 6px 51px;
-      padding: 5px;
-      background: #F8FAFC;
-      border: 1px solid #E2E8F0;
-      border-radius: 12px
-    }
-
-    .mobile-submenu.is-open {
-      display: block
-    }
-
-    .mobile-submenu-item {
-      min-height: 42px;
-      padding: 0 10px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      border-radius: 8px;
-      color: #475569;
-      font-family: 'Kanit', 'Sarabun', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      text-decoration: none
-    }
-
-    .mobile-submenu-item:hover {
-      color: #2563EB;
-      background: #EFF6FF
-    }
-
-    .mobile-submenu-item i {
-      font-size: 16px;
-      color: #64748B
-    }
-
-    .mobile-login-item {
-      margin-top: 4px;
-      border-top: 1px solid #EEF2F6;
-      border-radius: 0 0 11px 11px
-    }
-
-    @media(min-width:901px) and (max-width:1199px) {
+      /* 02 — TOPBAR + DROPDOWN (solid on this page — no hero behind it) */
       .topbar {
-        height: 78px;
-        padding: 0 20px;
-        gap: 7px
+        position: fixed;
+        inset: 0 0 auto;
+        z-index: 1000;
+        height: var(--topbar-h);
+        padding: 0 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(255, 255, 255, .92);
+        border-bottom: 1px solid rgba(226, 232, 240, .9);
+        box-shadow: 0 4px 18px rgba(15, 23, 42, .05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .topbar-logo {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
       }
 
       .topbar-logo img {
-        height: 96px;
-        max-width: 112px
-      }
-
-      .topbar-nav {
-        margin-left: 8px;
-        gap: 2px
-      }
-
-      .nav-link {
-        min-height: 48px;
-        padding: 0 10px
-      }
-
-      .nav-link span:first-child {
-        font-size: 14px;
-        letter-spacing: .7px
-      }
-
-      .nav-link span:last-child {
-        font-size: 11px
-      }
-
-      .btn-reg,
-      .btn-login {
-        min-height: 48px;
-        padding: 0 14px;
-        font-size: 14px
-      }
-    }
-
-    @media(min-width:641px) and (max-width:900px) {
-      .topbar {
-        height: 72px;
-        padding: 0 16px;
-        gap: 6px
-      }
-
-      .topbar-logo img {
-        height: 76px;
-        max-width: 92px
-      }
-
-      .topbar-nav {
-        margin-left: 4px;
-        gap: 1px
-      }
-
-      .nav-link {
-        min-height: 46px;
-        padding: 0 8px
-      }
-
-      .nav-link span:first-child {
-        font-size: 12px;
-        letter-spacing: .4px
-      }
-
-      .nav-link span:last-child {
-        font-size: 10px
-      }
-
-      .btn-reg,
-      .btn-login {
-        min-height: 44px;
-        padding: 0 11px;
-        font-size: 13px
-      }
-
-      .mobile-menu-toggle,
-      .mobile-menu {
-        display: none !important
-      }
-    }
-
-    @media(max-width:640px) {
-      .topbar {
-        height: 62px;
-        padding: 0 12px;
-        gap: 8px;
-        border-bottom-color: rgba(226, 232, 240, .9);
-        box-shadow: 0 4px 18px rgba(15, 23, 42, .07);
-      }
-
-      .topbar-logo img {
-        height: 44px;
-        max-width: 86px
-      }
-
-      .topbar-nav,
-      .topbar-actions {
-        display: none !important
-      }
-
-      .mobile-menu-toggle {
-        display: inline-flex !important
-      }
-
-      .mobile-menu {
-        top: 72px;
-        left: 12px;
-        right: 12px;
-        max-height: calc(100dvh - 84px)
-      }
-    }
-
-    @media(max-width:430px) {
-      .topbar {
-        height: 60px;
-        padding: 0 9px
-      }
-
-      .topbar-logo img {
-        height: 40px;
-        max-width: 76px
-      }
-
-      .mobile-menu-toggle {
-        flex-basis: 42px;
-        width: 42px;
-        height: 42px
-      }
-
-      .mobile-menu {
-        top: 70px;
-        left: 9px;
-        right: 9px;
-        max-height: calc(100dvh - 80px)
-      }
-    }
-
-    @media(max-width:380px) {
-      .topbar {
+        display: block;
+        width: auto;
         height: 58px;
-        padding: 0 8px
+        max-width: 150px;
+        object-fit: contain;
       }
 
-      .topbar-logo img {
-        height: 38px;
-        max-width: 72px
+      .topbar-nav {
+        flex: 1 1 auto;
+        min-width: 0;
+        margin-left: 18px;
+        display: flex;
+        align-items: center;
+        gap: 2px;
       }
 
-      .mobile-menu-toggle {
-        flex-basis: 40px;
-        width: 40px;
-        height: 40px
+      .nav-link {
+        min-height: 52px;
+        padding: 0 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border: 0;
+        border-radius: 11px;
+        background: transparent;
+        color: #334155;
+        font-family: 'Kanit', sans-serif;
+        font-weight: 700;
+        letter-spacing: 1px;
+        line-height: 1.15;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: color .2s ease, transform .2s ease;
       }
 
-      .mobile-menu {
-        top: 67px;
-        left: 8px;
-        right: 8px
+      .nav-link span:first-child {
+        font-size: 17px;
+        font-weight: 800;
       }
 
-      .mobile-menu-item {
-        min-height: 48px
-      }
-    }
-
-    @media(max-width:900px) and (orientation:landscape) {
-      .mobile-menu {
-        max-height: calc(100dvh - 76px)
-      }
-    }
-
-    .promo-banner {
-      background: linear-gradient(135deg, #EA580C, #DC2626);
-      padding: 10px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .promo-banner-text {
-      color: #fff;
-      font-size: 20px;
-      font-weight: 800
-    }
-
-    .promo-countdown {
-      background: rgba(255, 255, 255, .18);
-      border-radius: 999px;
-      padding: 4px 11px;
-      color: #fff;
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .page-hero {
-      margin-top: 0;
-      background: radial-gradient(circle at 15% 20%, rgba(96, 165, 250, .18), transparent 28%), radial-gradient(circle at 85% 80%, rgba(37, 99, 235, .22), transparent 30%), linear-gradient(135deg, #0B1220 0%, #172554 58%, #1554C7 100%);
-      padding: 90px 10px 30px;
-      text-align: center;
-    }
-
-    .page-hero-eyebrow {
-      color: #60A5FA;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-    }
-
-    .page-hero-title {
-      color: #fff;
-      font-size: clamp(22px, 4vw, 40px);
-      font-weight: 700;
-      line-height: 1.2;
-      margin-bottom: 5px;
-    }
-
-    .page-hero-sub {
-      color: rgba(255, 255, 255, .68);
-      font-size: 12px
-    }
-
-    .page-wrap {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 52px;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 14px;
-      margin: 0 0 13px;
-    }
-
-    .section-heading-title {
-      font-size: 21px;
-      line-height: 1.25;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .section-heading-sub {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .field-showcase {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 28px;
-    }
-
-    .field-showcase-card {
-      --field-color: #2563EB;
-      background: var(--surface);
-      border: 1.5px solid var(--line);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      transition: transform .18s, border-color .18s, box-shadow .18s;
-    }
-
-    .field-showcase-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 30px rgba(15, 23, 42, .09)
-    }
-
-    .field-showcase-card.active {
-      border-color: var(--field-color);
-      box-shadow: 0 0 0 2px var(--field-color), 0 14px 30px rgba(15, 23, 42, .10);
-    }
-
-    .field-showcase-image {
-      position: relative;
-      aspect-ratio: 2/1;
-      overflow: hidden;
-      background: #E2E8F0;
-    }
-
-    .field-showcase-image img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover
-    }
-
-    .field-showcase-card.active .field-showcase-image:after {
-      content: 'กำลังเลือก';
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, .78);
-      color: #fff;
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .field-level-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #fff;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      z-index: 2;
-      box-shadow: 0 3px 9px rgba(15, 23, 42, .18);
-    }
-
-    .field-showcase-body {
-      padding: 15px 16px 14px
-    }
-
-    .field-showcase-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .field-spec-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 14px;
-    }
-
-    .field-mini-spec {
-      font-size: 11px;
-      line-height: 1.45;
-      color: var(--muted);
-    }
-
-    .field-mini-spec strong {
-      display: block;
-      color: #334155;
-      font-size: 11px;
-      font-weight: 800;
-      margin-bottom: 1px;
-    }
-
-    .field-select-hint {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      border-top: 1px solid #F1F5F9;
-      margin-top: 12px;
-      padding-top: 10px;
-      color: var(--blue);
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    .product-options-wrap {
-      display: none;
-      margin: 0 0 24px;
-      animation: productReveal .2s ease-out;
-    }
-
-    .product-options-wrap.active {
-      display: block
-    }
-
-    @keyframes productReveal {
-      from {
-        opacity: 0;
-        transform: translateY(-5px)
+      .nav-link span:last-child {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-top: 1px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: .2px;
       }
 
-      to {
-        opacity: 1;
-        transform: translateY(0)
-      }
-    }
-
-    .product-options-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      color: #fff;
-      padding: 13px 16px;
-      border-radius: 14px 14px 0 0;
-    }
-
-    .product-options-head-title {
-      font-size: 18px;
-      font-weight: 700;
-      line-height: 1.25;
-    }
-
-    .product-options-head-sub {
-      font-size: 11px;
-      opacity: .86;
-      margin-top: 2px;
-    }
-
-    .choose-field-btn {
-      border: 1px solid rgba(255, 255, 255, .3);
-      background: rgba(255, 255, 255, .15);
-      color: #fff;
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .product-options-body {
-      background: #F8FAFC;
-      border: 1px solid var(--line);
-      border-top: 0;
-      border-radius: 0 0 14px 14px;
-      padding: 10px;
-    }
-
-    .product-options-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px
-    }
-
-    .product-item {
-      width: 100%;
-      min-height: auto;
-      background: #fff;
-      border: 1.5px solid var(--line);
-      border-radius: 11px;
-      padding: 10px 14px;
-      display: grid;
-      grid-template-columns: 220px 28px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: .15s;
-    }
-
-    .product-item:hover {
-      border-color: #BFDBFE;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, .07)
-    }
-
-    .product-item.is-selected {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 1px var(--blue), 0 5px 15px rgba(37, 99, 235, .08);
-      background: #FCFEFF;
-    }
-
-    .product-thumb {
-      width: 210px;
-      height: 100px;
-      min-width: 64px;
-      min-height: 64px;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #F1F5F9;
-      border: 1px solid var(--line);
-    }
-
-    .product-thumb img {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover
-    }
-
-    .product-content {
-      min-width: 0;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .product-item-name {
-      font-size: 18px;
-      line-height: 1.35;
-      font-weight: 800;
-      color: #0F172A;
-    }
-
-    .product-item-desc {
-      font-size: 14px;
-      line-height: 1.4;
-      color: var(--muted);
-      margin-top: 1px;
-    }
-
-    .price-wrap {
-      min-width: 105px;
-      text-align: right;
-      justify-self: end;
-      white-space: nowrap;
-    }
-
-    .price-discount-badge {
-      display: inline-block;
-      color: #DC2626;
-      background: #FEF2F2;
-      border-radius: 999px;
-      padding: 2px 6px;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 2px;
-    }
-
-    .price-original {
-      color: #94A3B8;
-      text-decoration: line-through;
-      font-size: 17px;
-      line-height: 1.1;
-    }
-
-    .price-promo {
-      color: #DC2626;
-      font-size: 25px;
-      line-height: 1.15;
-      font-weight: 900;
-    }
-
-    .price-normal {
-      font-size: 25px;
-      font-weight: 900
-    }
-
-    .custom-checkbox {
-      width: 24px;
-      height: 24px;
-      border: 2px solid #CBD5E1;
-      border-radius: 7px;
-      background: #fff;
-      display: grid;
-      place-items: center;
-      color: #fff;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .custom-checkbox i {
-      display: none
-    }
-
-    .qty-wrap {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-top: 6px;
-    }
-
-    .qty-label {
-      font-size: 10px;
-      color: var(--muted);
-      font-weight: 700
-    }
-
-    .qty-control {
-      display: flex;
-      align-items: center;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      overflow: hidden;
-      background: #fff
-    }
-
-    .qty-btn {
-      width: 25px;
-      height: 25px;
-      border: 0;
-      background: #F8FAFC;
-      color: #334155;
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    .qty-num {
-      width: 38px;
-      height: 25px;
-      border: 0;
-      border-left: 1px solid var(--line);
-      border-right: 1px solid var(--line);
-      text-align: center;
-      font-size: 11px;
-      outline: none;
-    }
-
-    .checkout-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 340px;
-      gap: 18px;
-      align-items: start;
-      margin-top: 20px;
-    }
-
-    .checkout-main {
-      min-width: 0
-    }
-
-    .sidebar-sticky {
-      position: sticky;
-      top: 76px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .form-card,
-    .summary-card {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .form-card {
-      padding: 20px
-    }
-
-    .form-card-title,
-    .summary-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #0F172A;
-    }
-
-    .form-card-title {
-      padding-bottom: 12px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid #F1F5F9;
-    }
-
-    .form-card-title i,
-    .summary-head i {
-      color: var(--blue)
-    }
-
-    .fg {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin-bottom: 12px
-    }
-
-    .fl {
-      font-size: 11px;
-      font-weight: 800;
-      color: #475569
-    }
-
-    .fi {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--line);
-      border-radius: 9px;
-      background: #fff;
-      color: #1E293B;
-      font-size: 13px;
-      outline: none;
-      transition: .15s;
-    }
-
-    .fi:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .09);
-    }
-
-    .form-grid-2,
-    .form-grid-3 {
-      display: grid;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .form-grid-2 {
-      grid-template-columns: 1fr 1fr
-    }
-
-    .form-grid-3 {
-      grid-template-columns: 1fr 1fr 1fr
-    }
-
-    textarea.fi {
-      min-height: 78px;
-      resize: vertical
-    }
-
-    .info-note {
-      margin-top: 12px;
-      background: #FFF7ED;
-      border: 1px solid #FED7AA;
-      border-radius: 10px;
-      padding: 10px 12px;
-      color: #92400E;
-      font-size: 11px;
-      display: flex;
-      gap: 8px;
-      line-height: 1.5;
-    }
-
-    #field-detail-card {
-      display: none
-    }
-
-    .summary-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid #F1F5F9;
-    }
-
-    .summary-body {
-      padding: 14px 16px
-    }
-
-    .summary-empty {
-      padding: 20px 10px;
-      text-align: center;
-      color: #94A3B8;
-      font-size: 11px;
-    }
-
-    .summary-divider {
-      height: 1px;
-      background: #F1F5F9;
-      margin: 12px 0
-    }
-
-    .summary-line {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      padding: 6px 0;
-      font-size: 11px;
-    }
-
-    .summary-line-name {
-      flex: 1;
-      color: #334155
-    }
-
-    .summary-line-qty {
-      color: #94A3B8
-    }
-
-    .summary-line-price {
-      font-weight: 800;
-      color: #0F172A
-    }
-
-    .summary-total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 10px;
-      padding-top: 5px;
-    }
-
-    .summary-total-label {
-      font-size: 12px;
-      font-weight: 800;
-      color: #334155
-    }
-
-    .summary-total-price {
-      font-size: 24px;
-      font-weight: 900;
-      color: #DC2626
-    }
-
-    .btn-submit {
-      width: 100%;
-      margin-top: 13px;
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 14px;
-      background: var(--blue);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(37, 99, 235, .18);
-    }
-
-    .btn-submit:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-      box-shadow: none
-    }
-
-    .trust-note {
-      margin-top: 9px;
-      text-align: center;
-      color: #64748B;
-      font-size: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .field-detail-head {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 10px 10px 0 0;
-      font-weight: 800
-    }
-
-    .field-detail-body {
-      padding: 12px
-    }
-
-    .field-detail-empty {
-      text-align: center;
-      color: #94A3B8;
-      font-size: 11px;
-      padding: 20px
-    }
-
-    @media(max-width:1050px) {
-      .checkout-layout {
-        grid-template-columns: minmax(0, 1fr) 320px;
-        gap: 16px
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--primary);
+        transform: translateY(-1px);
       }
 
-      .product-item {
-        grid-template-columns: 68px 26px minmax(0, 1fr) 105px;
+      .certificate-btn {
+        min-width: 150px;
+        padding: 8px 16px;
+        border: 1px solid #F6D365;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #FFF8D8, #FFF0B8);
+        color: #92400E;
+        box-shadow: 0 6px 16px rgba(180, 120, 20, .12);
+      }
+
+      .certificate-btn:hover {
+        background: linear-gradient(135deg, #FDE68A, #FCD34D);
+        border-color: #F59E0B;
+        color: #78350F;
+      }
+
+      .topbar-actions {
+        flex: 0 0 auto;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
         gap: 10px;
       }
 
-      .product-thumb {
-        width: 58px;
-        height: 58px;
-        min-width: 58px;
-        min-height: 58px;
+      .btn-login {
+        min-height: 52px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border: 1px solid #E2E8F0;
+        border-radius: 11px;
+        background: #fff;
+        color: #334155;
+        white-space: nowrap;
+        transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
       }
 
-      .price-wrap {
-        min-width: 105px
-      }
-    }
-
-    @media(max-width:900px) {
-      .page-wrap {
-        width: min(100% - 28px, 760px)
+      .btn-login:hover {
+        background: #F8FAFC;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, .07);
       }
 
-      .field-showcase {
-        grid-template-columns: 1fr;
-        gap: 14px
+      .dropdown {
+        position: relative;
       }
 
-      .checkout-layout {
-        grid-template-columns: 1fr;
-        margin-top: 22px
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        z-index: 1100;
+        display: none;
+        min-width: 205px;
+        padding: 8px;
+        background: rgba(255, 255, 255, .98);
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        box-shadow: 0 18px 44px rgba(15, 23, 42, .14);
       }
 
-      .sidebar-sticky {
-        position: static
+      .dropdown-item {
+        min-height: 42px;
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 10px;
+        color: #334155;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
       }
 
-      .summary-card {
-        order: -1
-      }
-    }
-
-    @media(max-width:640px) {
-      .price-normal {
-        font-size: 20px;
-        font-weight: 900
+      .dropdown-item i {
+        color: #64748B;
+        font-size: 17px;
       }
 
-      .page-wrap {
-        width: calc(100% - 24px);
-        padding: 24px 0 42px
+      .dropdown-item:hover,
+      .dropdown-item.active {
+        background: var(--primary-soft);
+        color: var(--primary);
       }
 
+      .dropdown-item.active i {
+        color: var(--primary);
+      }
+
+      /* 03 — MOBILE MENU (shown ≤1100px) */
+      .mobile-menu-toggle,
+      .mobile-menu {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        margin-left: auto;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        border: 1px solid rgba(148, 163, 184, .35);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, .92);
+        color: #1E3A8A;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, .08);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .mobile-menu-toggle span {
+        width: 21px;
+        height: 2px;
+        border-radius: 999px;
+        background: currentColor;
+        transition: transform .22s ease, opacity .18s ease;
+      }
+
+      .mobile-menu-toggle.is-open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      .mobile-menu-toggle.is-open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .mobile-menu-toggle.is-open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      .mobile-menu {
+        position: fixed;
+        top: calc(var(--topbar-h) + 6px);
+        right: 12px;
+        z-index: 999;
+        width: min(380px, calc(100% - 24px));
+        max-height: calc(100dvh - var(--topbar-h) - 18px);
+        overflow-y: auto;
+        padding: 8px;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-8px) scale(.985);
+        transform-origin: top right;
+        background: rgba(255, 255, 255, .98);
+        border: 1px solid #DBEAFE;
+        border-radius: 18px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, .18);
+        transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+      }
+
+      .mobile-menu.is-open {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: none;
+      }
+
+      .mobile-menu-link,
+      .mobile-menu-competition-toggle {
+        width: 100%;
+        min-height: 50px;
+        padding: 9px 12px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        border: 0;
+        border-radius: 12px;
+        background: transparent;
+        color: #334155;
+        font-family: 'Kanit', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .mobile-menu-link:hover,
+      .mobile-menu-link.active,
+      .mobile-menu-competition-toggle:hover,
+      .mobile-menu-competition-toggle.active {
+        color: var(--primary);
+        background: var(--primary-soft);
+      }
+
+      .mobile-menu-link>i,
+      .mobile-menu-competition-toggle>i:first-child {
+        width: 28px;
+        flex: 0 0 28px;
+        display: grid;
+        place-items: center;
+        color: var(--primary);
+        font-size: 19px;
+      }
+
+      .mobile-menu-link-text {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.15;
+      }
+
+      .mobile-menu-link-text strong {
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .mobile-menu-link-text small {
+        margin-top: 2px;
+        color: #64748B;
+        font-size: 11px;
+        font-weight: 500;
+      }
+
+      .mobile-chevron {
+        margin-left: auto;
+        color: #64748B;
+        font-size: 17px;
+        transition: transform .2s ease;
+      }
+
+      .mobile-menu-competition-toggle.is-open .mobile-chevron {
+        transform: rotate(180deg);
+      }
+
+      .mobile-submenu {
+        display: none;
+        margin: 0 8px 6px 51px;
+        padding: 5px;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+      }
+
+      .mobile-submenu.is-open {
+        display: block;
+      }
+
+      .mobile-submenu a {
+        min-height: 42px;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border-radius: 9px;
+        color: #475569;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .mobile-submenu a:hover,
+      .mobile-submenu a.active {
+        color: var(--primary);
+        background: var(--primary-soft);
+      }
+
+      .mobile-submenu a i {
+        color: #64748B;
+        font-size: 16px;
+      }
+
+      .mobile-menu-divider {
+        height: 1px;
+        margin: 6px 4px;
+        background: #E2E8F0;
+      }
+
+      .mobile-login>i {
+        color: #475569 !important;
+      }
+
+      /* 04 — HERO / PROMO / ALERT */
       .page-hero {
-        padding: 82px 16px 30px;
+        padding: calc(var(--topbar-h) + 34px) 16px 34px;
+        background:
+          radial-gradient(circle at 15% 20%, rgba(96, 165, 250, .18), transparent 28%),
+          radial-gradient(circle at 85% 80%, rgba(37, 99, 235, .22), transparent 30%),
+          linear-gradient(135deg, #0B1220 0%, #172554 58%, #1554C7 100%);
+        text-align: center;
+      }
+
+      .page-hero-eyebrow {
+        margin-bottom: 6px;
+        color: #60A5FA;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 2.5px;
       }
 
       .page-hero-title {
-        font-size: clamp(24px, 7vw, 32px);
-        line-height: 1.25;
+        margin-bottom: 6px;
+        color: #fff;
+        font-size: clamp(26px, 4vw, 42px);
+        font-weight: 700;
+        line-height: 1.2;
       }
 
       .page-hero-sub {
-        font-size: 13px;
-        line-height: 1.55;
+        color: rgba(255, 255, 255, .72);
+        font-size: 15px;
       }
 
+      .promo-banner {
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: linear-gradient(135deg, #EA580C, #DC2626);
+        text-align: center;
+      }
+
+      .promo-banner-text {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #fff;
+        font-size: 20px;
+        font-weight: 800;
+      }
+
+      .promo-countdown {
+        padding: 4px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .18);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .page-wrap {
+        width: 100%;
+        max-width: calc(var(--content) + var(--gutter) * 2);
+        margin: 0 auto;
+        padding: 28px var(--gutter) 56px;
+      }
+
+      .alert-error {
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        border-radius: 10px;
+        color: #B91C1C;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+
+      .alert-error i {
+        flex-shrink: 0;
+        margin-top: 2px;
+        font-size: 18px;
+      }
+
+      /* 05 — SECTION HEADING + FIELD SHOWCASE */
       .section-heading {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
 
       .section-heading-title {
-        font-size: 19px;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 700;
         line-height: 1.3;
       }
 
       .section-heading-sub {
-        font-size: 12px;
-        line-height: 1.5;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 14px;
       }
 
       .field-showcase {
-        gap: 14px;
-        margin-bottom: 24px;
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
       }
 
       .field-showcase-card {
-        border-radius: 16px
+        --field-color: #16A34A;
+        overflow: hidden;
+        background: var(--surface);
+        border: 1.5px solid var(--line);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      }
+
+      .field-showcase-card.tier-intermediate {
+        --field-color: #2563EB;
+      }
+
+      .field-showcase-card.tier-advance {
+        --field-color: #EA580C;
+      }
+
+      .field-showcase-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 30px rgba(15, 23, 42, .09);
+      }
+
+      .field-showcase-card.active {
+        border-color: var(--field-color);
+        box-shadow: 0 0 0 2px var(--field-color), 0 14px 30px rgba(15, 23, 42, .10);
       }
 
       .field-showcase-image {
-        aspect-ratio: 16/9;
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 2 / 1;
+        background: #E2E8F0;
+      }
+
+      .field-showcase-image img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .field-level-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 5px 11px;
+        border-radius: 999px;
+        background: var(--field-color);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 3px 9px rgba(15, 23, 42, .18);
+      }
+
+      .field-showcase-card.active .field-showcase-image::after {
+        content: 'กำลังเลือก';
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, .78);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
       }
 
       .field-showcase-body {
-        padding: 15px;
+        padding: 16px;
       }
 
       .field-showcase-title {
-        font-size: 18px;
-        margin-bottom: 9px;
+        margin-bottom: 10px;
+        color: var(--field-color);
+        font-size: 20px;
+        font-weight: 700;
       }
 
       .field-spec-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 9px 14px;
       }
 
+      .field-mini-spec {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .field-mini-spec strong {
+        display: block;
+        margin-bottom: 1px;
+        color: #334155;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
       .field-select-hint {
-        margin-top: 11px;
+        margin-top: 12px;
         padding-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        border-top: 1px solid #F1F5F9;
+        color: var(--field-color);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      /* 06 — PRODUCT OPTIONS */
+      .product-options-empty {
+        margin-bottom: 24px;
+        padding: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: #fff;
+        border: 1.5px dashed #CBD5E1;
+        border-radius: 14px;
+        color: #94A3B8;
+        font-size: 15px;
+        text-align: center;
+      }
+
+      .product-options-empty.is-hidden {
+        display: none;
+      }
+
+      .product-options-wrap {
+        display: none;
+        margin-bottom: 24px;
+        scroll-margin-top: calc(var(--topbar-h) + 16px);
+        animation: productReveal .2s ease-out;
+      }
+
+      .product-options-wrap.active {
+        display: block;
+      }
+
+      @keyframes productReveal {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
       }
 
       .product-options-head {
-        padding: 12px
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-radius: 14px 14px 0 0;
+        color: #fff;
       }
 
       .product-options-head-title {
-        font-size: 16px
+        font-size: 19px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      .product-options-head-sub {
+        margin-top: 2px;
+        font-size: 13px;
+        opacity: .88;
+      }
+
+      .choose-field-btn {
+        flex: 0 0 auto;
+        padding: 7px 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(255, 255, 255, .16);
+        border: 1px solid rgba(255, 255, 255, .28);
+        border-radius: 9px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .choose-field-btn:hover {
+        background: rgba(255, 255, 255, .26);
+      }
+
+      .product-options-body {
+        padding: 10px;
+        background: #F8FAFC;
+        border: 1px solid var(--line);
+        border-top: 0;
+        border-radius: 0 0 14px 14px;
+      }
+
+      .product-options-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
       }
 
       .product-item {
-        min-height: 84px;
-        grid-template-columns: 58px 22px minmax(0, 1fr) auto;
-        gap: 8px;
-        padding: 10px;
+        --sel: #2563EB;
+        width: 100%;
+        padding: 10px 16px 10px 10px;
+        display: grid;
+        grid-template-columns: 160px 26px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 14px;
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+      }
+
+      .product-item:hover {
+        border-color: #BFDBFE;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, .07);
+      }
+
+      .product-item.is-selected {
+        border-color: var(--sel);
+        box-shadow: 0 0 0 1px var(--sel), 0 5px 15px rgba(37, 99, 235, .08);
+        background: #FCFEFF;
       }
 
       .product-thumb {
-        width: 58px;
-        height: 58px;
-        min-width: 58px;
-        min-height: 58px;
+        width: 160px;
+        aspect-ratio: 2 / 1;
+        overflow: hidden;
+        background: #F1F5F9;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+      }
+
+      .product-thumb img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .custom-checkbox {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+        background: #fff;
+        border: 2px solid #CBD5E1;
+        border-radius: 7px;
+        color: #fff;
+        font-size: 15px;
+        transition: background .15s ease, border-color .15s ease;
+      }
+
+      .custom-checkbox i {
+        opacity: 0;
+        transition: opacity .15s ease;
+      }
+
+      .product-item.is-selected .custom-checkbox {
+        background: var(--sel);
+        border-color: var(--sel);
+      }
+
+      .product-item.is-selected .custom-checkbox i {
+        opacity: 1;
+      }
+
+      .product-content {
+        min-width: 0;
+      }
+
+      .product-item-name {
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+
+      .product-item-desc {
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .qty-wrap {
+        margin-top: 8px;
+        display: none;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .product-item.is-selected .qty-wrap {
+        display: flex;
+      }
+
+      .qty-label {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .qty-control {
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .qty-btn {
+        width: 32px;
+        height: 32px;
+        border: 0;
+        background: #F8FAFC;
+        color: #334155;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .qty-btn:hover {
+        background: #EFF6FF;
+        color: var(--blue);
+      }
+
+      .qty-num {
+        width: 46px;
+        height: 32px;
+        border: 0;
+        border-left: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        outline: none;
+        font-size: 15px;
+        text-align: center;
+        -moz-appearance: textfield;
+      }
+
+      .qty-num::-webkit-outer-spin-button,
+      .qty-num::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
       }
 
       .price-wrap {
-        min-width: 82px
+        min-width: 110px;
+        justify-self: end;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .price-discount-badge {
+        margin-bottom: 2px;
+        padding: 2px 7px;
+        display: inline-block;
+        border-radius: 999px;
+        background: #FEF2F2;
+        color: var(--red);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .price-original {
+        color: #94A3B8;
+        font-size: 16px;
+        line-height: 1.1;
+        text-decoration: line-through;
+      }
+
+      .price-promo,
+      .price-normal {
+        font-size: 25px;
+        font-weight: 900;
+        line-height: 1.15;
       }
 
       .price-promo {
-        font-size: 20px
+        color: var(--red);
+      }
+
+      .price-soldout {
+        padding: 6px 16px;
+        display: inline-block;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        border-radius: 999px;
+        color: #64748B;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .product-item.is-soldout {
+        background: #F8FAFC;
+        cursor: not-allowed;
+      }
+
+      .product-item.is-soldout:hover {
+        border-color: var(--line);
+        box-shadow: none;
+      }
+
+      .product-item.is-soldout .product-thumb img {
+        filter: grayscale(1);
+        opacity: .55;
+      }
+
+      .product-item.is-soldout .product-item-name,
+      .product-item.is-soldout .product-item-desc {
+        opacity: .55;
+      }
+
+      .product-item.is-soldout .custom-checkbox {
+        background: #F1F5F9;
+        border-color: #E2E8F0;
+      }
+
+      /* 07 — CHECKOUT FORM */
+      .checkout-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 20px;
+        align-items: start;
+      }
+
+      .checkout-main {
+        min-width: 0;
+      }
+
+      .form-card,
+      .summary-card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
       }
 
       .form-card {
-        padding: 17px
+        padding: 22px;
       }
 
-      .summary-body {
-        padding: 14px
+      .form-card-title,
+      .summary-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .form-card-title {
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .form-card-title i,
+      .summary-head i {
+        color: var(--blue);
+      }
+
+      .fg {
+        margin-bottom: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .fl {
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .fi {
+        width: 100%;
+        padding: 11px 13px;
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        color: #1E293B;
+        font-size: 15px;
+        outline: none;
+        transition: border-color .15s ease, box-shadow .15s ease;
+      }
+
+      .fi:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .09);
+      }
+
+      textarea.fi {
+        min-height: 76px;
+        resize: vertical;
       }
 
       .form-grid-2,
       .form-grid-3 {
-        grid-template-columns: 1fr
-      }
-    }
-
-        /* ===== สินค้าหมด ===== */
-
-        .alert-error {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      padding: 12px 16px;
-      border-radius: 10px;
-      background: #FEF2F2;
-      border: 1px solid #FECACA;
-      color: #B91C1C;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.5;
-    }
-
-    .alert-error i {
-      font-size: 18px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-    
-    .product-item.is-soldout {
-      cursor: not-allowed;
-      background: #F8FAFC;
-    }
-
-    .product-item.is-soldout:hover {
-      border-color: var(--line);
-      box-shadow: none;
-    }
-
-    .product-item.is-soldout .product-thumb img {
-      filter: grayscale(1);
-      opacity: .55;
-    }
-
-    .product-item.is-soldout .product-item-name,
-    .product-item.is-soldout .product-item-desc {
-      opacity: .55;
-    }
-
-    .product-item.is-soldout .custom-checkbox {
-      background: #F1F5F9;
-      border-color: #E2E8F0;
-    }
-
-    .price-soldout {
-      display: inline-block;
-      padding: 6px 16px;
-      border-radius: 999px;
-      background: #F1F5F9;
-      border: 1px solid #E2E8F0;
-      color: #64748B;
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    @media(max-width:640px) {
-      .price-soldout {
-        font-size: 15px;
-        padding: 4px 11px;
-      }
-    }
-
-    /* =========================
-       PRE-ORDER SUCCESS STATE
-       ปรับเฉพาะหน้าสำเร็จเท่านั้น
-       ========================= */
-    .success-wrap {
-      min-height: 100vh;
-      padding: 112px 24px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 16% 18%, rgba(59, 130, 246, .10), transparent 30%),
-        radial-gradient(circle at 84% 78%, rgba(37, 99, 235, .09), transparent 32%),
-        linear-gradient(180deg, #F8FAFC 0%, #F5F7FB 100%);
-    }
-
-    .success-wrap::before,
-    .success-wrap::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      filter: blur(2px);
-    }
-
-    .success-wrap::before {
-      width: 260px;
-      height: 260px;
-      left: -110px;
-      top: 30%;
-      background: rgba(96, 165, 250, .055);
-    }
-
-    .success-wrap::after {
-      width: 320px;
-      height: 320px;
-      right: -150px;
-      bottom: 5%;
-      background: rgba(37, 99, 235, .045);
-    }
-
-    .success-card {
-      position: relative;
-      z-index: 1;
-      width: min(100%, 500px);
-      padding: 30px 34px 32px;
-      text-align: center;
-      background: rgba(255, 255, 255, .96);
-      border: 1px solid rgba(226, 232, 240, .95);
-      border-radius: 22px;
-      box-shadow: 0 24px 60px rgba(15, 23, 42, .10);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
-    .success-visual {
-      width: 116px;
-      height: 116px;
-      margin: 0 auto 12px;
-      position: relative;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: radial-gradient(circle, #EFF6FF 0%, #F8FBFF 68%, rgba(239, 246, 255, 0) 70%);
-    }
-
-    .success-visual::before {
-      content: '';
-      width: 58px;
-      height: 72px;
-      border: 3px solid #60A5FA;
-      border-radius: 9px;
-      background: #fff;
-      transform: rotate(-5deg);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, .10);
-    }
-
-    .success-visual::after {
-      content: '✓';
-      position: absolute;
-      right: 20px;
-      bottom: 18px;
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: #2563EB;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      font-size: 21px;
-      font-weight: 700;
-      box-shadow: 0 7px 18px rgba(37, 99, 235, .25);
-    }
-
-    .success-visual-icon {
-      position: absolute;
-      z-index: 2;
-      color: #60A5FA;
-      font-size: 29px;
-      transform: translateY(-2px);
-    }
-
-    .success-title {
-      color: #0F172A;
-      font-size: 21px;
-      line-height: 1.35;
-      font-weight: 800;
-      margin-bottom: 13px;
-    }
-
-    .success-order-box {
-      margin: 0 auto 15px;
-      padding: 9px 18px 11px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #EFF6FF, #EAF2FF);
-      border: 1px solid #DBEAFE;
-    }
-
-    .success-order-label {
-      color: #64748B;
-      font-size: 11px;
-      line-height: 1.2;
-      margin-bottom: 1px;
-    }
-
-    .success-order-id {
-      color: #2563EB;
-      font-family: 'Kanit', sans-serif;
-      font-size: 38px;
-      line-height: 1.15;
-      font-weight: 900;
-      letter-spacing: 2px;
-    }
-
-    .success-note {
-      color: #64748B;
-      font-size: 20px;
-      line-height: 1.65;
-      margin: 0 auto 20px;
-    }
-
-    .success-note strong {
-      color: #334155;
-      font-weight: 800;
-    }
-
-    .success-actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .success-card .btn-outline,
-    .success-card .btn-solid {
-      min-height: 46px;
-      padding: 0 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      border-radius: 11px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 14px;
-      font-weight: 800;
-      transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
-    }
-
-    .success-card .btn-outline {
-      color: #2563EB;
-      background: #fff;
-      border: 1px solid #BFDBFE;
-    }
-
-    .success-card .btn-outline:hover {
-      background: #F8FBFF;
-      border-color: #93C5FD;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, .08);
-    }
-
-    .success-card .btn-solid {
-      color: #fff;
-      background: linear-gradient(135deg, #3478F6, #2563EB);
-      border: 1px solid transparent;
-      box-shadow: 0 8px 18px rgba(37, 99, 235, .20);
-    }
-
-    .success-card .btn-solid:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 25px rgba(37, 99, 235, .28);
-    }
-
-    @media(max-width:640px) {
-      .success-wrap {
-        padding: 88px 16px 30px;
+        margin-bottom: 14px;
+        display: grid;
+        gap: 12px;
       }
 
-      .success-card {
-        width: min(100%, 430px);
-        padding: 26px 20px 25px;
-        border-radius: 19px;
+      .form-grid-2 {
+        grid-template-columns: 1fr 1fr;
       }
 
-      .success-visual {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 9px;
+      .form-grid-3 {
+        grid-template-columns: 1fr 1fr 1fr;
       }
 
-      .success-title {
-        font-size: 19px;
+      .form-grid-2 .fg,
+      .form-grid-3 .fg {
+        margin-bottom: 0;
       }
 
-      .success-order-id {
-        font-size: 34px;
-      }
-
-      .success-note {
-        font-size: 20px;
-        margin-bottom: 17px;
-      }
-
-      .success-actions {
+      .choice-list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 8px;
       }
 
-      .success-card .btn-outline,
-      .success-card .btn-solid {
-        min-height: 44px;
-        padding: 0 15px;
+      .choice {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #fff;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        cursor: pointer;
+        transition: border-color .15s ease, background .15s ease;
+      }
+
+      .choice:hover {
+        border-color: #BFDBFE;
+      }
+
+      .choice:has(input:checked) {
+        border-color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .choice input {
+        flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--blue);
+      }
+
+      .choice-title {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .choice-tag {
+        margin-left: 6px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .choice-tag.is-free {
+        color: var(--green);
+      }
+
+      .choice-tag.is-extra {
+        color: var(--orange);
+      }
+
+      .reveal-section {
+        display: none;
+      }
+
+      .reveal-section.is-open {
+        display: block;
+      }
+
+      .info-note {
+        margin-top: 12px;
+        padding: 12px 14px;
+        display: flex;
+        gap: 8px;
+        background: #FFF7ED;
+        border: 1px solid #FED7AA;
+        border-radius: 10px;
+        color: #92400E;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .info-note i {
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      /* 08 — SUMMARY */
+      .sidebar-sticky {
+        position: sticky;
+        top: calc(var(--topbar-h) + 16px);
+      }
+
+      .summary-head {
+        padding: 15px 18px;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .summary-body {
+        padding: 16px 18px;
+      }
+
+      .summary-promo {
+        margin-bottom: 12px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #FEF2F2;
+        border: 1px solid #FECDD3;
+        border-radius: 8px;
+        color: var(--red);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .summary-empty {
+        padding: 20px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: #94A3B8;
+        font-size: 14px;
+        text-align: center;
+      }
+
+      .summary-empty i {
+        font-size: 26px;
+        opacity: .6;
+      }
+
+      .summary-line {
+        padding: 7px 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 14px;
+      }
+
+      .summary-line-name {
+        color: #334155;
+        font-weight: 600;
+      }
+
+      .summary-line-qty {
+        color: #94A3B8;
+        font-size: 12px;
+      }
+
+      .summary-line-price {
+        color: var(--text);
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .summary-divider {
+        height: 1px;
+        margin: 12px 0;
+        background: #F1F5F9;
+      }
+
+      .summary-row {
+        margin-bottom: 6px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        color: #64748B;
+        font-size: 14px;
+      }
+
+      .summary-row .is-strike {
+        color: #94A3B8;
+        text-decoration: line-through;
+      }
+
+      .summary-row.is-discount {
+        color: var(--red);
+        font-weight: 700;
+      }
+
+      .summary-row .is-strong {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .summary-total-row {
+        padding-top: 8px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .summary-total-label {
+        color: #334155;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .summary-total-price {
+        color: var(--red);
+        font-size: 28px;
+        font-weight: 900;
+        line-height: 1.1;
+      }
+
+      .btn-submit {
+        width: 100%;
+        min-height: 50px;
+        margin-top: 14px;
+        padding: 0 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: 0;
+        border-radius: 11px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 14px rgba(37, 99, 235, .18);
+        transition: background .2s ease, transform .2s ease;
+      }
+
+      .btn-submit:hover:not(:disabled) {
+        background: #1D4ED8;
+        transform: translateY(-1px);
+      }
+
+      .btn-submit:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .trust-note {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: #64748B;
+        font-size: 12px;
+      }
+
+      /* 09 — SUCCESS STATE */
+      .success-wrap {
+        position: relative;
+        overflow: hidden;
+        min-height: 100vh;
+        padding: calc(var(--topbar-h) + 30px) 24px 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          radial-gradient(circle at 16% 18%, rgba(59, 130, 246, .10), transparent 30%),
+          radial-gradient(circle at 84% 78%, rgba(37, 99, 235, .09), transparent 32%),
+          linear-gradient(180deg, #F8FAFC 0%, #F5F7FB 100%);
+      }
+
+      .success-card {
+        position: relative;
+        z-index: 1;
+        width: min(100%, 500px);
+        padding: 30px 34px 32px;
+        background: rgba(255, 255, 255, .97);
+        border: 1px solid rgba(226, 232, 240, .95);
+        border-radius: 22px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, .10);
+        text-align: center;
+      }
+
+      .success-visual {
+        position: relative;
+        width: 116px;
+        height: 116px;
+        margin: 0 auto 12px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: radial-gradient(circle, #EFF6FF 0%, #F8FBFF 68%, rgba(239, 246, 255, 0) 70%);
+      }
+
+      .success-visual::before {
+        content: '';
+        width: 58px;
+        height: 72px;
+        background: #fff;
+        border: 3px solid #60A5FA;
+        border-radius: 9px;
+        transform: rotate(-5deg);
+        box-shadow: 0 8px 20px rgba(37, 99, 235, .10);
+      }
+
+      .success-visual::after {
+        content: '✓';
+        position: absolute;
+        right: 20px;
+        bottom: 18px;
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--blue);
+        color: #fff;
+        font-family: Arial, sans-serif;
+        font-size: 21px;
+        font-weight: 700;
+        box-shadow: 0 7px 18px rgba(37, 99, 235, .25);
+      }
+
+      .success-visual-icon {
+        position: absolute;
+        z-index: 2;
+        color: #60A5FA;
+        font-size: 29px;
+        transform: translateY(-2px);
+      }
+
+      .success-title {
+        margin-bottom: 14px;
+        color: var(--text);
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
+      .success-order-box {
+        margin: 0 auto 16px;
+        padding: 10px 18px 12px;
+        background: linear-gradient(135deg, #EFF6FF, #EAF2FF);
+        border: 1px solid #DBEAFE;
+        border-radius: 16px;
+      }
+
+      .success-order-label {
+        color: #64748B;
         font-size: 13px;
       }
-    }
-  </style>
-</head>
 
-<body>
-  <div class="topbar">
-    <a href="/" class="topbar-logo"><img src="/RCL Logo.png" alt="RCL"></a>
-    <nav class="topbar-nav">
-      <a href="/" class="nav-link"><span>HOME</span><span>หน้าหลัก</span></a>
-      <a href="/#about" class="nav-link"><span>ABOUT US</span><span>เกี่ยวกับเรา</span></a>
-      <div class="dropdown">
-        <button class="nav-link" type="button"><span>COMPETITION</span><span>การแข่งขัน <i
-              class="ti ti-chevron-down"></i></span></button>
-        <div class="dropdown-menu">
-          <a href="/#tiers" class="dropdown-item"><i class="ti ti-pencil-plus"></i> สมัครแข่งขัน</a>
-          <a href="/competition?view=teams" class="dropdown-item"><i class="ti ti-users"></i> ทีมที่สมัคร</a>
-          <a href="/competition?view=board" class="dropdown-item"><i class="ti ti-chart-bar"></i> ผลสรุปคะแนน</a>
-        </div>
-      </div>
-      <a href="/docs" class="nav-link"><span>DOCUMENT</span><span>เอกสาร</span></a>
-      <a href="/preorder" class="nav-link"><span>PRE-ORDER MISSION</span><span>พรีออเดอร์สนามภารกิจ</span></a>
-      <a href="/certificate" class="nav-link certificate-btn"><span>CERTIFICATE</span><span>เกียรติบัตร</span></a>
-    </nav>
-    <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false"
-      onclick="(function(b){var m=document.getElementById('mobileMenu');var o=m.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');b.setAttribute('aria-label',o?'ปิดเมนู':'เปิดเมนู');b.innerHTML=o?'<i class=&quot;ti ti-x&quot;></i>':'<i class=&quot;ti ti-menu-2&quot;></i>';})(this)">
-      <i class="ti ti-menu-2"></i>
-    </button>
-    <div class="mobile-menu" id="mobileMenu">
-      <a href="/" class="mobile-menu-item"><i
-          class="ti ti-home-2"></i><span><b>HOME</b><small>หน้าหลัก</small></span></a>
-      <a href="/#about" class="mobile-menu-item"><i class="ti ti-users"></i><span><b>ABOUT
-            US</b><small>เกี่ยวกับเรา</small></span></a>
-      <button class="mobile-menu-item mobile-competition-toggle" type="button" aria-expanded="false"
-        aria-controls="mobileCompetitionSubmenu"
-        onclick="(function(b,e){e.preventDefault();e.stopPropagation();var s=document.getElementById('mobileCompetitionSubmenu');if(!s)return;var o=s.classList.toggle('is-open');b.classList.toggle('is-open',o);b.setAttribute('aria-expanded',o?'true':'false');})(this,event)">
-        <i class="ti ti-trophy"></i><span><b>COMPETITION</b><small>การแข่งขัน</small></span><i
-          class="ti ti-chevron-down mobile-menu-arrow"></i>
+      .success-order-id {
+        color: var(--blue);
+        font-size: 38px;
+        font-weight: 900;
+        line-height: 1.15;
+        letter-spacing: 2px;
+      }
+
+      .success-note {
+        margin: 0 auto 20px;
+        color: #64748B;
+        font-size: 17px;
+        line-height: 1.7;
+      }
+
+      .line-pill {
+        margin: 6px 0;
+        padding: 6px 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #F0FDF4;
+        border: 1px solid #BBF7D0;
+        border-radius: 999px;
+        color: var(--green);
+        font-weight: 800;
+      }
+
+      .line-pill:hover {
+        background: #DCFCE7;
+      }
+
+      .success-deadline {
+        display: block;
+        margin-top: 4px;
+        color: var(--red);
+        font-weight: 800;
+      }
+
+      .success-actions {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn-outline,
+      .btn-solid {
+        min-height: 46px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border-radius: 11px;
+        font-size: 15px;
+        font-weight: 600;
+        transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+      }
+
+      .btn-outline {
+        background: #fff;
+        border: 1px solid #BFDBFE;
+        color: var(--blue);
+      }
+
+      .btn-outline:hover {
+        background: #F8FBFF;
+        border-color: #93C5FD;
+        transform: translateY(-2px);
+      }
+
+      .btn-solid {
+        background: linear-gradient(135deg, #3478F6, #2563EB);
+        border: 1px solid transparent;
+        color: #fff;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, .20);
+      }
+
+      .btn-solid:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(37, 99, 235, .28);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+
+      /* 10 — RESPONSIVE */
+      @media (min-width: 1440px) {
+        .topbar {
+          padding-inline: 48px;
+        }
+
+        .topbar-nav {
+          margin-left: 22px;
+          gap: 4px;
+        }
+
+        .nav-link {
+          padding-inline: 16px;
+        }
+      }
+
+      @media (max-width: 1199px) {
+        :root {
+          --gutter: 20px;
+        }
+
+        .topbar {
+          padding-inline: 20px;
+        }
+
+        .topbar-logo img {
+          height: 54px;
+          max-width: 136px;
+        }
+
+        .topbar-nav {
+          margin-left: 10px;
+          gap: 0;
+        }
+
+        .nav-link {
+          padding-inline: 9px;
+          letter-spacing: .5px;
+        }
+
+        .nav-link span:first-child {
+          font-size: 15px;
+        }
+
+        .nav-link span:last-child {
+          font-size: 10px;
+        }
+
+        .certificate-btn {
+          min-width: 126px;
+          padding-inline: 12px;
+        }
+
+        .btn-login {
+          padding-inline: 13px;
+          font-size: 14px;
+        }
+
+        .checkout-layout {
+          grid-template-columns: minmax(0, 1fr) 320px;
+        }
+
+        .product-item {
+          grid-template-columns: 120px 26px minmax(0, 1fr) auto;
+        }
+
+        .product-thumb {
+          width: 120px;
+        }
+      }
+
+      @media (max-width: 1100px) {
+        :root {
+          --topbar-h: 70px;
+        }
+
+        .topbar-nav,
+        .topbar-actions {
+          display: none;
+        }
+
+        .mobile-menu-toggle {
+          display: flex;
+        }
+
+        .mobile-menu {
+          display: block;
+        }
+
+        .topbar-logo img {
+          height: 50px;
+          max-width: 124px;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .field-showcase {
+          grid-template-columns: 1fr;
+          gap: 14px;
+        }
+
+        .field-showcase-image {
+          aspect-ratio: 16 / 7;
+        }
+
+        /* Form first, summary + submit after it — natural reading order on one column */
+        .checkout-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar-sticky {
+          position: static;
+        }
+      }
+
+      @media (max-width: 640px) {
+        :root {
+          --gutter: 12px;
+          --topbar-h: 60px;
+        }
+
+        .topbar {
+          padding: 0 12px;
+        }
+
+        .topbar-logo img {
+          height: 42px;
+          max-width: 90px;
+        }
+
+        .page-hero {
+          padding: calc(var(--topbar-h) + 24px) 16px 26px;
+        }
+
+        .page-hero-sub {
+          font-size: 14px;
+          line-height: 1.55;
+        }
+
+        .promo-banner-text {
+          font-size: 16px;
+        }
+
+        .promo-countdown {
+          font-size: 13px;
+        }
+
+        .page-wrap {
+          padding-top: 22px;
+          padding-bottom: 40px;
+        }
+
+        .section-heading-title {
+          font-size: 19px;
+        }
+
+        .section-heading-sub {
+          font-size: 13px;
+        }
+
+        .field-showcase-image {
+          aspect-ratio: 16 / 9;
+        }
+
+        .field-showcase-body {
+          padding: 14px;
+        }
+
+        .field-showcase-title {
+          font-size: 18px;
+        }
+
+        .product-options-head {
+          padding: 12px;
+        }
+
+        .product-options-head-title {
+          font-size: 16px;
+        }
+
+        .product-options-head-sub {
+          font-size: 12px;
+        }
+
+        /* thumb | content  /  thumb | price — checkbox sits on the thumbnail */
+        .product-item {
+          position: relative;
+          padding: 10px;
+          grid-template-columns: 72px minmax(0, 1fr) auto;
+          grid-template-areas: "thumb content price";
+          gap: 10px;
+        }
+
+        .product-thumb {
+          grid-area: thumb;
+          width: 72px;
+          aspect-ratio: 1;
+        }
+
+        .product-content {
+          grid-area: content;
+        }
+
+        .price-wrap {
+          grid-area: price;
+          min-width: 0;
+          align-self: start;
+        }
+
+        .custom-checkbox {
+          position: absolute;
+          top: 6px;
+          left: 6px;
+          width: 22px;
+          height: 22px;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, .15);
+        }
+
+        .product-item-name {
+          font-size: 15px;
+        }
+
+        .product-item-desc {
+          font-size: 12px;
+        }
+
+        .price-original {
+          font-size: 13px;
+        }
+
+        .price-promo,
+        .price-normal {
+          font-size: 19px;
+        }
+
+        .price-discount-badge {
+          font-size: 11px;
+        }
+
+        .price-soldout {
+          padding: 4px 11px;
+          font-size: 14px;
+        }
+
+        .form-card {
+          padding: 16px;
+        }
+
+        .form-grid-2,
+        .form-grid-3,
+        .choice-list {
+          grid-template-columns: 1fr;
+        }
+
+        /* 16px inputs stop iOS from zooming in on focus */
+        .fi,
+        .qty-num {
+          font-size: 16px;
+        }
+
+        .summary-body {
+          padding: 14px;
+        }
+
+        .success-wrap {
+          padding: calc(var(--topbar-h) + 24px) 16px 30px;
+        }
+
+        .success-card {
+          padding: 26px 20px 25px;
+          border-radius: 19px;
+        }
+
+        .success-visual {
+          width: 100px;
+          height: 100px;
+          margin-bottom: 9px;
+        }
+
+        .success-title {
+          font-size: 19px;
+        }
+
+        .success-order-id {
+          font-size: 34px;
+        }
+
+        .success-note {
+          font-size: 16px;
+          margin-bottom: 17px;
+        }
+
+        .btn-outline,
+        .btn-solid {
+          flex: 1 1 140px;
+          min-height: 44px;
+          padding: 0 14px;
+          font-size: 14px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <a href="/" class="topbar-logo">
+        <img src="/RCL Logo.png" alt="RCL">
+      </a>
+
+      <button class="mobile-menu-toggle" type="button" aria-label="เปิดเมนู" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
       </button>
-      <div class="mobile-submenu" id="mobileCompetitionSubmenu">
-        <a href="/#tiers" class="mobile-submenu-item"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
-        <a href="/competition?view=teams" class="mobile-submenu-item"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
-        <a href="/competition?view=board" class="mobile-submenu-item"><i class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
-      </div>
-      <a href="/docs" class="mobile-menu-item"><i
-          class="ti ti-file-text"></i><span><b>DOCUMENT</b><small>เอกสาร</small></span></a>
-      <a href="/preorder" class="mobile-menu-item"><i class="ti ti-shopping-cart"></i><span><b>PRE-ORDER
-            MISSION</b><small>พรีออเดอร์สนามภารกิจ</small></span></a>
-      <a href="/certificate" class="mobile-menu-item" target="_blank"><i
-          class="ti ti-award"></i><span><b>CERTIFICATE</b><small>เกียรติบัตร</small></span></a>
-      <a href="/auth/login" class="mobile-menu-item mobile-login-item"><i
-          class="ti ti-lock"></i><span><b>LOGIN</b><small>เข้าสู่ระบบ</small></span></a>
-    </div>
-    <div class="topbar-actions">
-      <a href="/auth/login" class="btn-login"><i class="ti ti-lock"></i><span>เข้าสู่ระบบ</span></a>
-    </div>
-  </div>
 
-  <% if (success) { %>
-    <div class="success-wrap">
-      <div class="success-card">
-        <div class="success-visual" aria-hidden="true">
-          <i class="ti ti-file-check success-visual-icon"></i>
-        </div>
+      <nav class="topbar-nav">
+        <a href="/" class="nav-link">
+          <span>HOME</span>
+          <span>หน้าหลัก</span>
+        </a>
 
-        <div class="success-title">Pre-order ของคุณสำเร็จแล้ว</div>
+        <a href="/#about" class="nav-link">
+          <span>ABOUT US</span>
+          <span>เกี่ยวกับเรา</span>
+        </a>
 
-        <div class="success-order-box">
-          <div class="success-order-label">รหัส Pre-order ของคุณ</div>
-          <div class="success-order-id">#<%= orderId %>
+        <a href="/#awards" class="nav-link">
+          <span>AWARDS</span>
+          <span>รางวัล</span>
+        </a>
+
+        <div class="dropdown">
+          <button class="nav-link" type="button">
+            <span>COMPETITION</span>
+            <span>การแข่งขัน <i class="ti ti-chevron-down"></i></span>
+          </button>
+
+          <div class="dropdown-menu">
+            <a href="/#tiers" class="dropdown-item"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+            <a href="/competition?view=teams" class="dropdown-item"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+            <a href="/competition?view=board" class="dropdown-item"><i class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
           </div>
         </div>
 
-        <div class="success-note">
-          📸 แคปหน้าจอนี้แล้วส่งในไลน์ <br>
-          <a href="https://line.me/R/ti/p/@rcl.robo" target="_blank" class="side-link">
-            <strong style="color: #16A34A;">@rcl.robo</strong>
-          </a>
-          <br>
-          เพื่อชำระเงินและยืนยัน Pre-order
-          <br>
-          <strong style="color: #DC2626;">⏰ โปรดชำระเงินภายใน 3 วัน</strong>
-        </div>
+        <a href="/docs" class="nav-link">
+          <span>DOCUMENT</span>
+          <span>เอกสาร</span>
+        </a>
 
-        <div class="success-actions">
-          <a href="/preorder" class="btn-outline"><i class="ti ti-plus"></i> Pre-order เพิ่ม</a>
-          <a href="/" class="btn-solid"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
-        </div>
-      </div>
-    </div>
-    <% } else { %>
+        <a href="/preorder" class="nav-link active" aria-current="page">
+          <span>PRE-ORDER MISSION</span>
+          <span>พรีออเดอร์สนามภารกิจ</span>
+        </a>
 
-      <div class="page-hero">
-        <div class="page-hero-eyebrow">PRE-ORDER</div>
-        <div class="page-hero-title">สนามแข่งขัน RCL 2026</div>
-        <div class="page-hero-sub">เลือกได้หลายรายการ — คลิกสินค้าเพื่อดูรายละเอียดสนาม</div>
+        <a href="/certificate" class="nav-link certificate-btn">
+          <span>CERTIFICATE</span>
+          <span>เกียรติบัตร</span>
+        </a>
+      </nav>
+
+      <div class="topbar-actions">
+        <a href="/auth/login" class="btn-login">
+          <i class="ti ti-lock"></i>
+          <span>เข้าสู่ระบบ</span>
+        </a>
       </div>
 
-      <% if (promoActive) { %>
-        <div class="promo-banner">
-          <div class="promo-banner-text"><i class="ti ti-tag"></i> โปรโมชั่นพิเศษ! ลดสูงสุด <%= maxDiscount %>%</div>
-          <% if (promoEndDate) { %>
-            <div class="promo-countdown"><i class="ti ti-clock"></i><span>หมดเขต: <%= new
-                  Date(promoEndDate).toLocaleDateString('th-TH',{day:'numeric',month:'long',year:'numeric'}) %></span>
+      <!-- MOBILE / TABLET MENU -->
+      <div class="mobile-menu" aria-hidden="true">
+        <a href="/" class="mobile-menu-link">
+          <i class="ti ti-home"></i>
+          <span class="mobile-menu-link-text"><strong>HOME</strong><small>หน้าหลัก</small></span>
+        </a>
+
+        <a href="/#about" class="mobile-menu-link">
+          <i class="ti ti-info-circle"></i>
+          <span class="mobile-menu-link-text"><strong>ABOUT US</strong><small>เกี่ยวกับเรา</small></span>
+        </a>
+
+        <a href="/#awards" class="mobile-menu-link">
+          <i class="ti ti-award"></i>
+          <span class="mobile-menu-link-text"><strong>AWARDS</strong><small>รางวัล</small></span>
+        </a>
+
+        <button class="mobile-menu-competition-toggle" type="button" aria-expanded="false">
+          <i class="ti ti-trophy"></i>
+          <span class="mobile-menu-link-text"><strong>COMPETITION</strong><small>การแข่งขัน</small></span>
+          <i class="ti ti-chevron-down mobile-chevron"></i>
+        </button>
+
+        <div class="mobile-submenu">
+          <a href="/#tiers"><i class="ti ti-pencil-plus"></i>สมัครแข่งขัน</a>
+          <a href="/competition?view=teams"><i class="ti ti-users"></i>ทีมที่สมัคร</a>
+          <a href="/competition?view=board"><i class="ti ti-chart-bar"></i>ผลสรุปคะแนน</a>
+        </div>
+
+        <a href="/docs" class="mobile-menu-link">
+          <i class="ti ti-file-text"></i>
+          <span class="mobile-menu-link-text"><strong>DOCUMENT</strong><small>เอกสาร</small></span>
+        </a>
+
+        <a href="/preorder" class="mobile-menu-link active" aria-current="page">
+          <i class="ti ti-shopping-cart"></i>
+          <span class="mobile-menu-link-text"><strong>PRE-ORDER
+              MISSION</strong><small>พรีออเดอร์สนามภารกิจ</small></span>
+        </a>
+
+        <a href="/certificate" class="mobile-menu-link" target="_blank">
+          <i class="ti ti-certificate"></i>
+          <span class="mobile-menu-link-text"><strong>CERTIFICATE</strong><small>เกียรติบัตร</small></span>
+        </a>
+
+        <div class="mobile-menu-divider"></div>
+
+        <a href="/auth/login" class="mobile-menu-link mobile-login">
+          <i class="ti ti-lock"></i>
+          <span class="mobile-menu-link-text"><strong>เข้าสู่ระบบ</strong><small>Login</small></span>
+        </a>
+      </div>
+    </header>
+
+    <% if (success) { %>
+
+      <!-- ================= SUCCESS ================= -->
+      <main class="success-wrap">
+        <div class="success-card">
+          <div class="success-visual" aria-hidden="true">
+            <i class="ti ti-file-check success-visual-icon"></i>
+          </div>
+
+          <h1 class="success-title">Pre-order ของคุณสำเร็จแล้ว</h1>
+
+          <div class="success-order-box">
+            <div class="success-order-label">รหัส Pre-order ของคุณ</div>
+            <div class="success-order-id">#<%= orderId %>
             </div>
-            <% } %>
-        </div>
-        <% } %>
+          </div>
 
-          <% if (errorMsg) { %>
-            <div style="max-width:1100px;margin:16px auto;padding:0 16px">
-              <div class="alert-error"><i class="ti ti-alert-circle"></i>
-                <%= errorMsg %>
+          <div class="success-note">
+            📸 แคปหน้าจอนี้แล้วส่งในไลน์<br>
+            <a href="https://line.me/R/ti/p/@rcl.robo" target="_blank" rel="noopener" class="line-pill">
+              <i class="ti ti-brand-line"></i> @rcl.robo
+            </a><br>
+            เพื่อชำระเงินและยืนยัน Pre-order
+            <span class="success-deadline">⏰ โปรดชำระเงินภายใน 3 วัน</span>
+          </div>
+
+          <div class="success-actions">
+            <a href="/preorder" class="btn-outline"><i class="ti ti-plus"></i> Pre-order เพิ่ม</a>
+            <a href="/" class="btn-solid"><i class="ti ti-home"></i> กลับหน้าหลัก</a>
+          </div>
+        </div>
+      </main>
+
+      <% } else { %>
+
+        <!-- ================= ORDER FORM ================= -->
+        <header class="page-hero">
+          <div class="page-hero-eyebrow">PRE-ORDER</div>
+          <h1 class="page-hero-title">สนามแข่งขัน RCL 2026</h1>
+          <div class="page-hero-sub">เลือกได้หลายรายการ — คลิกสนามเพื่อดูสินค้าของรุ่นนั้น</div>
+        </header>
+
+        <% if (promoActive) { %>
+          <div class="promo-banner">
+            <div class="promo-banner-text"><i class="ti ti-tag"></i> โปรโมชั่นพิเศษ! ลดสูงสุด <%= maxDiscount %>%</div>
+            <% if (promoEndDate) { %>
+              <div class="promo-countdown">
+                <i class="ti ti-clock"></i>
+                <span>หมดเขต: <%= new Date(promoEndDate).toLocaleDateString('th-TH', { day: 'numeric' , month: 'long' ,
+                    year: 'numeric' }) %></span>
               </div>
-            </div>
-            <% } %>
-
-              <form method="POST" action="/preorder" id="preorderForm">
-                <input type="hidden" name="items_json" id="items_json" value="">
-                <div class="page-wrap">
-
-                  <div class="section-heading">
-                    <div>
-                      <div class="section-heading-title">🏙️ รายละเอียดสนามแข่งขัน</div>
-                      <div class="section-heading-sub">เปรียบเทียบสนามแต่ละระดับก่อนเลือกสินค้า</div>
-                    </div>
-                  </div>
-
-                  <div class="field-showcase">
-                    <div class="field-showcase-card" onclick="openProductOptions('beginner',this)">
-                      <div class="field-showcase-image"><img src="/images/field-beginner.png" alt="สนาม Beginner"><span
-                          class="field-level-badge" style="background:#16A34A">🌱 Beginner</span></div>
-                      <div class="field-showcase-body">
-                        <div class="field-showcase-title">สนาม Beginner</div>
-                        <div class="field-spec-grid">
-                          <div class="field-mini-spec"><strong>ขนาดสนาม</strong>235 × 114 ซม.</div>
-                          <div class="field-mini-spec"><strong>ภารกิจ</strong>11 ภารกิจ</div>
-                          <div class="field-mini-spec"><strong>คะแนนสูงสุด</strong>215 คะแนน</div>
-                          <div class="field-mini-spec"><strong>เหมาะสำหรับ</strong>อายุไม่เกิน 9 ปี</div>
-                          <div class="field-mini-spec"><strong>วัสดุ</strong>PPคุณภาพสูง กันน้ำ</div>
-                          <div class="field-mini-spec"><strong>การใช้งาน</strong>ใช้ซ้ำได้ / ม้วนเก็บง่าย</div>
-                        </div>
-                        <div class="field-select-hint"><i class="ti ti-hand-click"></i> คลิกเพื่อดูสินค้า</div>
-                      </div>
-                    </div>
-                    <div class="field-showcase-card" onclick="openProductOptions('intermediate',this)">
-                      <div class="field-showcase-image"><img src="/images/field-intermediate.png"
-                          alt="สนาม Intermediate"><span class="field-level-badge" style="background:#2563EB">🔥
-                          Intermediate</span></div>
-                      <div class="field-showcase-body">
-                        <div class="field-showcase-title">สนาม Intermediate</div>
-                        <div class="field-spec-grid">
-                          <div class="field-mini-spec"><strong>ขนาดสนาม</strong>235 × 114 ซม.</div>
-                          <div class="field-mini-spec"><strong>ภารกิจ</strong>7 ภารกิจ</div>
-                          <div class="field-mini-spec"><strong>คะแนนสูงสุด</strong>150 คะแนน</div>
-                          <div class="field-mini-spec"><strong>เหมาะสำหรับ</strong>อายุไม่เกิน 12 ปี</div>
-                          <div class="field-mini-spec"><strong>วัสดุ</strong>PPคุณภาพสูง กันน้ำ</div>
-                          <div class="field-mini-spec"><strong>การใช้งาน</strong>ใช้ซ้ำได้ / ม้วนเก็บง่าย</div>
-                        </div>
-                        <div class="field-select-hint"><i class="ti ti-hand-click"></i> คลิกเพื่อดูสินค้า</div>
-                      </div>
-                    </div>
-                    <div class="field-showcase-card" onclick="openProductOptions('advance',this)">
-                      <div class="field-showcase-image"><img src="/images/field-advance.png" alt="สนาม Advance"><span
-                          class="field-level-badge" style="background:#EA580C">🚀 Advance</span></div>
-                      <div class="field-showcase-body">
-                        <div class="field-showcase-title">สนาม Advance</div>
-                        <div class="field-spec-grid">
-                          <div class="field-mini-spec"><strong>ขนาดสนาม</strong>235 × 114 ซม.</div>
-                          <div class="field-mini-spec"><strong>ภารกิจ</strong>7 ภารกิจ</div>
-                          <div class="field-mini-spec"><strong>คะแนนสูงสุด</strong>125 คะแนน</div>
-                          <div class="field-mini-spec"><strong>เหมาะสำหรับ</strong>อายุไม่เกิน 18 ปี</div>
-                          <div class="field-mini-spec"><strong>วัสดุ</strong>PPคุณภาพสูง กันน้ำ</div>
-                          <div class="field-mini-spec"><strong>การใช้งาน</strong>ใช้ซ้ำได้ / ม้วนเก็บง่าย</div>
-                        </div>
-                        <div class="field-select-hint"><i class="ti ti-hand-click"></i> คลิกเพื่อดูสินค้า</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="section-heading">
-                    <div>
-                      <div class="section-heading-title">🛒 เลือกสินค้า Pre-order</div>
-                      <div class="section-heading-sub">คลิกสนามด้านบนเพื่อเลือกสินค้าของรุ่นนั้น</div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <% for (var ti=0; ti < tiers.length; ti++) { %>
-                      <% var t=tiers[ti]; %>
-                        <div class="product-options-wrap" id="options-<%= t.key %>">
-                          <div class="product-options-head" style="background:<%= t.accent || t.color %>">
-                            <div>
-                              <div class="product-options-head-title">
-                                <%= t.emoji %> เลือกสินค้า <%= t.label %>
-                              </div>
-                              <div class="product-options-head-sub">เลือกได้หลายรายการ และกำหนดจำนวนที่ต้องการ</div>
-                            </div>
-                            <button type="button" class="choose-field-btn" onclick="closeProductOptions(event)"
-                              style="background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.25);color:#fff">
-                              <i class="ti ti-x"></i> ปิด
-                            </button>
-                          </div>
-                          <div class="product-options-body">
-                            <div class="product-options-list">
-                              <% for (var ii=0; ii < t.items.length; ii++) { %>
-                                <% var item=t.items[ii]; %>
-                                   <div class="product-item<%= item.soldOut ? ' is-soldout' : '' %>" id="item-<%= item.key %>"
-                                    onclick="toggleItem('<%= item.key %>',this)">
-                                    <div class="product-thumb"><img src="/images/product/product-<%= item.key %>.png"
-                                        alt="<%= item.name %>" onerror="this.style.display='none'"></div>
-                                    <div class="custom-checkbox" id="cb-<%= item.key %>"><i class="ti ti-check"></i>
-                                    </div>
-                                    <div class="product-content">
-                                      <div class="product-item-name">
-                                        <%= item.name %>
-                                      </div>
-                                      <div class="product-item-desc">
-                                        <%= item.desc %>
-                                      </div>
-                                      <div class="qty-wrap" id="qty-wrap-<%= item.key %>" style="display:none">
-                                        <span class="qty-label">จำนวน:</span>
-                                        <div class="qty-control">
-                                          <button type="button" class="qty-btn"
-                                            onclick="changeQty('<%= item.key %>',-1,event)">−</button>
-                                          <input class="qty-num" type="number" id="qty-<%= item.key %>" value="1"
-                                            min="1" max="99" oninput="updateSummary()">
-                                          <button type="button" class="qty-btn"
-                                            onclick="changeQty('<%= item.key %>',1,event)">+</button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                                                    <div class="price-wrap">
-                                                                      <% if (item.soldOut) { %>
-                                                                        <div class="price-soldout">หมด</div>
-                                                                        <% } else if (promoActive && item.hasDiscount) { %>
-                                                                          <div class="price-discount-badge">-<%= item.discountPct %>%</div>
-                                                                          <div class="price-original">฿<%= item.priceFormatted %>
-                                                                          </div>
-                                                                          <div class="price-promo">฿<%= item.promoPriceFormatted %>
-                                                                          </div>
-                                                                          <% } else { %>
-                                                                            <div class="price-normal" style="color:<%= t.accent %>">฿<%= item.priceFormatted %>.-</div>
-                                                                            <% } %>
-                                                                    </div>
-                                  </div>
-                                  <% } %>
-                            </div>
-                          </div>
-                        </div>
-                        <% } %>
-
-                          <div class="checkout-layout">
-                            <div class="checkout-main">
-                              <div class="form-card">
-                                <div class="form-card-title"><i class="ti ti-school"></i> ข้อมูลผู้สั่งซื้อ</div>
-                                <div class="fg">
-                                  <div class="fl">ชื่อโรงเรียน / สถาบัน *</div>
-                                  <input class="fi" name="school_name" placeholder="ชื่อโรงเรียนหรือสถาบัน" required
-                                    value="<%= formData.school_name || '' %>">
-                                </div>
-                                <div class="form-grid-2">
-                                  <div class="fg" style="margin-bottom:0">
-                                    <div class="fl">ชื่อผู้ติดต่อ *</div>
-                                    <input class="fi" name="contact_name" placeholder="ชื่อ-นามสกุล" required
-                                      value="<%= formData.contact_name || '' %>">
-                                  </div>
-                                  <div class="fg" style="margin-bottom:0">
-                                    <div class="fl">เบอร์โทรศัพท์ *</div>
-                                    <input class="fi" name="phone" type="tel" placeholder="0XX-XXX-XXXX" required
-                                      value="<%= formData.phone || '' %>">
-                                  </div>
-                                </div>
-                                <div class="fg" style="margin-top:12px">
-                                  <div class="fl">อีเมล (ไม่บังคับ)</div>
-                                  <input class="fi" name="email" type="email" placeholder="email@example.com"
-                                    value="<%= formData.email || '' %>">
-                                </div>
-
-                                <!-- วิธีรับสินค้า — เลือกก่อนกรอกที่อยู่ -->
-                                <div class="fg" style="margin-top:4px">
-                                  <div class="fl">วิธีรับสินค้า *</div>
-                                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
-                                    <label
-                                      style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff">
-                                      <input type="radio" name="shipping_method" value="pickup" required
-                                        onchange="updateShipping(this.value)">
-                                      <span><b style="font-size:13px">มารับเอง</b><span
-                                          style="font-size:12px;color:#16A34A;font-weight:700;margin-left:6px">ฟรี</span></span>
-                                    </label>
-                                    <label
-                                      style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff">
-                                      <input type="radio" name="shipping_method" value="delivery"
-                                        onchange="updateShipping(this.value)">
-                                      <span><b style="font-size:13px">จัดส่ง</b><span
-                                          style="font-size:12px;color:#EA580C;font-weight:700;margin-left:6px">+100
-                                          บาท</span></span>
-                                    </label>
-                                  </div>
-                                </div>
-
-                                <!-- ที่อยู่จัดส่ง — แสดงเฉพาะเมื่อเลือก "จัดส่ง" -->
-                                <div id="address-section"
-                                  style="display:<%= formData.shipping_method === 'delivery' ? 'block' : 'none' %>">
-                                  <div class="fg" style="margin-top:12px">
-                                    <div class="fl">ที่อยู่สำหรับจัดส่ง *</div>
-                                    <input class="fi" name="address" id="address-input"
-                                      placeholder="ที่อยู่ เลขที่ ซอย ถนน ตำบล/แขวง"
-                                      value="<%= formData.address || '' %>">
-                                  </div>
-                                  <div class="form-grid-3">
-                                    <div class="fg" style="margin-bottom:0">
-                                      <div class="fl">อำเภอ / เขต</div>
-                                      <input class="fi" name="district" placeholder="อำเภอ / เขต"
-                                        value="<%= formData.district || '' %>">
-                                    </div>
-                                    <div class="fg" style="margin-bottom:0">
-                                      <div class="fl">จังหวัด</div>
-                                      <input class="fi" name="province" placeholder="จังหวัด"
-                                        value="<%= formData.province || '' %>">
-                                    </div>
-                                    <div class="fg" style="margin-bottom:0">
-                                      <div class="fl">รหัสไปรษณีย์</div>
-                                      <input class="fi" name="zipcode" placeholder="XXXXX"
-                                        value="<%= formData.zipcode || '' %>">
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <!-- ใบเสร็จ / ใบกำกับภาษี -->
-                                <div class="fg" style="margin-top:12px">
-                                  <div class="fl">ใบเสร็จ / ใบกำกับภาษี</div>
-                                  <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
-                                    <label
-                                      style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff">
-                                      <input type="radio" name="receipt" value="no" checked onchange="updateReceipt(this.value)">
-                                      <span><b style="font-size:13px">ไม่รับใบเสร็จ</b></span>
-                                    </label>
-                                    <label
-                                      style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 14px;border:1.5px solid var(--line);border-radius:9px;background:#fff">
-                                      <input type="radio" name="receipt" value="yes" onchange="updateReceipt(this.value)">
-                                      <span><b style="font-size:13px">รับใบเสร็จ</b></span>
-                                    </label>
-                                  </div>
-                                </div>
-                                
-                                <div id="receipt-section" style="display:none;margin-top:4px">
-                                  <div class="fg">
-                                    <div class="fl">ชื่อในใบเสร็จ *</div>
-                                    <input class="fi" name="receipt_name" id="receipt_name" placeholder="ชื่อบุคคล / นิติบุคคล"
-                                      value="<%= formData.receipt_name || '' %>">
-                                  </div>
-                                  <div class="fg">
-                                    <div class="fl">ที่อยู่ในใบเสร็จ *</div>
-                                    <textarea class="fi" name="receipt_address" id="receipt_address" placeholder="ที่อยู่สำหรับออกใบเสร็จ"
-                                      style="min-height:70px;resize:vertical"><%= formData.receipt_address || '' %></textarea>
-                                  </div>
-                                  <div class="form-grid-2">
-                                    <div class="fg" style="margin-bottom:0">
-                                      <div class="fl">รหัสไปรษณีย์</div>
-                                      <input class="fi" name="receipt_zipcode" id="receipt_zipcode" placeholder="XXXXX"
-                                        value="<%= formData.receipt_zipcode || '' %>">
-                                    </div>
-                                    <div class="fg" style="margin-bottom:0">
-                                      <div class="fl">เลขประจำตัวผู้เสียภาษี</div>
-                                      <input class="fi" name="receipt_tax_id" id="receipt_tax_id" placeholder="0000000000000" maxlength="13"
-                                        value="<%= formData.receipt_tax_id || '' %>">
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div class="fg" style="margin-top:12px">
-                                  <div class="fl">หมายเหตุ (ไม่บังคับ)</div>
-                                  <textarea class="fi" name="note" placeholder="ข้อมูลเพิ่มเติม"
-                                    style="min-height:70px;resize:vertical"><%= formData.note || '' %></textarea>
-                                </div>
-                              </div>
-                        
-                              <div class="info-note">
-                                <i class="ti ti-info-circle" style="flex-shrink:0;margin-top:1px"></i>
-                                <span>กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน
-                                  ทีมงานจะติดต่อกลับเพื่อยืนยันและแจ้งรายละเอียดการชำระเงิน</span>
-                              </div>
-                            </div>
-
-                            <div class="sidebar-sticky">
-                              <div class="field-detail-card" id="field-detail-card">
-                                <div class="field-detail-head" id="field-detail-head" style="background:#64748B"><i
-                                    class="ti ti-map"></i><span id="field-detail-title">รายละเอียดสนาม</span></div>
-                                <div id="field-detail-body">
-                                  <div class="field-detail-empty"><i class="ti ti-hand-click"></i> คลิก
-                                    "ดูรายละเอียดสนาม"<br>เพื่อแสดงข้อมูลสนาม</div>
-                                </div>
-                              </div>
-                              <div class="summary-card">
-                                <div class="summary-head"><i class="ti ti-clipboard-list"></i> สรุปคำสั่งซื้อ</div>
-                                <div class="summary-body">
-                                  <% if (promoActive) { %>
-                                    <div
-                                      style="background:#FEF2F2;border:1px solid #FECDD3;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#DC2626;font-weight:700;display:flex;align-items:center;gap:6px">
-                                      <i class="ti ti-tag"></i> โปรโมชั่น ลดสูงสุด <%= maxDiscount %>%
-                                    </div>
-                                    <% } %>
-                                      <div id="summary-items">
-                                        <div class="summary-empty"><i
-                                            class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>
-                                      </div>
-                                      <div class="summary-divider"></div>
-                                      <% if (promoActive) { %>
-                                        <div
-                                          style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
-                                          <span style="color:#64748B">ราคาก่อนลด</span><span
-                                            style="color:#94A3B8;text-decoration:line-through"
-                                            id="summary-original">฿0</span>
-                                        </div>
-                                        <div
-                                          style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px">
-                                          <span style="color:#DC2626;font-weight:700">ส่วนลดรวม</span><span
-                                            style="color:#DC2626;font-weight:700" id="summary-discount">-฿0</span>
-                                        </div>
-                                        <% } %>
-                                          <div
-                                            style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px">
-                                            <span style="color:#64748B">ค่าจัดส่ง</span><span style="font-weight:700"
-                                              id="summary-shipping">ฟรี</span>
-                                          </div>
-                                          <div class="summary-total-row">
-                                            <span class="summary-total-label">ยอดรวมทั้งสิ้น</span><span
-                                              class="summary-total-price" id="summary-total">฿0</span>
-                                          </div>
-                                          <button type="submit" class="btn-submit" id="submitBtn" disabled>
-                                            <i class="ti ti-shopping-bag"></i> ยืนยันการสั่งซื้อ (Pre-order)
-                                          </button>
-                                          <div class="trust-note"><i class="ti ti-shield-check"></i>
-                                            ข้อมูลของท่านปลอดภัย 100%</div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                  </div>
-                </div>
-              </form>
-
               <% } %>
+          </div>
+          <% } %>
 
-                <script>
-                  var PROMO_ACTIVE = <%= promoActive ? 'true' : 'false' %>;
-                  var PRICES_ORIGINAL = {};
-                  var PRICES_FINAL = {};
-    <% for (var ti = 0; ti < tiers.length; ti++) { %>
-      <% for (var ii = 0; ii < tiers[ti].items.length; ii++) { %>
-        <% var _item = tiers[ti].items[ii]; %>
-                        PRICES_ORIGINAL['<%= _item.key %>'] = <%= _item.price %>;
-                      PRICES_FINAL['<%= _item.key %>'] = <%= _item.promoPrice %>;
-      <% } %>
-    <% } %>
-    var NAMES = {};
-    <% for (var ti = 0; ti < tiers.length; ti++) { %>
-      <% for (var ii = 0; ii < tiers[ti].items.length; ii++) { %>
-        <% var _item = tiers[ti].items[ii]; %>
-                        NAMES['<%= _item.key %>'] = '<%= _item.name %>';
-      <% } %>
-    <% } %>
-    var CB_COLORS = {
-                    'beginner-full': '#16A34A', 'beginner-mat': '#16A34A', 'beginner-field': '#7C3AED', 'beginner-mission': '#EA580C',
-                    'intermediate-full': '#2563EB', 'intermediate-mat': '#2563EB', 'intermediate-field': '#7C3AED', 'intermediate-mission': '#EA580C',
-                    'advance-full': '#EA580C', 'advance-mat': '#EA580C', 'advance-field': '#7C3AED', 'advance-mission': '#EA580C'
+            <form method="POST" action="/preorder" id="preorderForm" data-promo-active="<%= promoActive ? '1' : '0' %>">
+              <input type="hidden" name="items_json" id="items_json" value="">
+
+              <div class="page-wrap">
+
+                <% if (errorMsg) { %>
+                  <div class="alert-error"><i class="ti ti-alert-circle"></i><span>
+                      <%= errorMsg %>
+                    </span></div>
+                  <% } %>
+
+                    <!-- Field showcase -->
+                    <div class="section-heading">
+                      <h2 class="section-heading-title">🏙️ รายละเอียดสนามแข่งขัน</h2>
+                      <div class="section-heading-sub">เปรียบเทียบสนามแต่ละระดับ แล้วคลิกสนามเพื่อเลือกสินค้า</div>
+                    </div>
+
+                    <% var fields=[ { key: 'beginner' , label: 'Beginner' , emoji: '🌱' ,
+                      img: '/images/field-beginner.png' , missions: 11, score: 215, age: 'อายุไม่เกิน 9 ปี' }, {
+                      key: 'intermediate' , label: 'Intermediate' , emoji: '🔥' , img: '/images/field-intermediate.png'
+                      , missions: 7, score: 150, age: 'อายุไม่เกิน 12 ปี' }, { key: 'advance' , label: 'Advance' ,
+                      emoji: '🚀' , img: '/images/field-advance.png' , missions: 7, score: 125, age: 'อายุไม่เกิน 18 ปี'
+                      } ]; var tierList=hasTiers ? tiers : []; function norm(v) { return String(v==null ? '' :
+                      v).toLowerCase().trim(); } fields.forEach(function (f, i) { var tests=[ function (t) { return
+                      norm(t.key)===f.key; }, function (t) { return norm(t.label)===f.key; }, function (t) { var
+                      k=norm(t.key); return !!k && (f.key.indexOf(k)===0 || k.indexOf(f.key)===0); } ]; var idx=-1;
+                      tests.forEach(function (test) { if (idx>= 0) return;
+                      tierList.forEach(function (t, j) { if (idx < 0 && test(t)) idx=j; }); }); if (idx < 0 &&
+                        tierList[i]) idx=i; f.target=idx>= 0 ? 'options-' + idx : '';
+                        });
+                        %>
+                        <%# Card → product panel: match tier by exact key, then label, then key prefix, then list
+                          position %>
+                          <div class="field-showcase">
+                            <% fields.forEach(function (f) { %>
+                              <div class="field-showcase-card tier-<%= f.key %>" role="button" tabindex="0"
+                                data-tier="<%= f.key %>" data-target="<%= f.target %>" aria-controls="<%= f.target %>"
+                                aria-expanded="false">
+                                <div class="field-showcase-image">
+                                  <img src="<%= f.img %>" alt="สนาม <%= f.label %>">
+                                  <span class="field-level-badge">
+                                    <%= f.emoji %>
+                                      <%= f.label %>
+                                  </span>
+                                </div>
+                                <div class="field-showcase-body">
+                                  <div class="field-showcase-title">สนาม <%= f.label %>
+                                  </div>
+                                  <div class="field-spec-grid">
+                                    <div class="field-mini-spec"><strong>ขนาดสนาม</strong>235 × 114 ซม.</div>
+                                    <div class="field-mini-spec"><strong>ภารกิจ</strong>
+                                      <%= f.missions %> ภารกิจ
+                                    </div>
+                                    <div class="field-mini-spec"><strong>คะแนนสูงสุด</strong>
+                                      <%= f.score %> คะแนน
+                                    </div>
+                                    <div class="field-mini-spec"><strong>เหมาะสำหรับ</strong>
+                                      <%= f.age %>
+                                    </div>
+                                    <div class="field-mini-spec"><strong>วัสดุ</strong>PP คุณภาพสูง กันน้ำ</div>
+                                    <div class="field-mini-spec"><strong>การใช้งาน</strong>ใช้ซ้ำได้ / ม้วนเก็บง่าย
+                                    </div>
+                                  </div>
+                                  <div class="field-select-hint"><i class="ti ti-hand-click"></i> คลิกเพื่อดูสินค้า
+                                  </div>
+                                </div>
+                              </div>
+                              <% }); %>
+                          </div>
+
+                          <!-- Products -->
+                          <div class="section-heading">
+                            <h2 class="section-heading-title">🛒 เลือกสินค้า Pre-order</h2>
+                            <div class="section-heading-sub">เลือกได้หลายรายการจากหลายรุ่น และกำหนดจำนวนที่ต้องการ</div>
+                          </div>
+
+                          <div class="product-options-empty" id="product-options-empty">
+                            <i class="ti ti-hand-click"></i> คลิกสนามด้านบนเพื่อแสดงสินค้าของรุ่นนั้น
+                          </div>
+
+                          <% if (hasTiers) { tiers.forEach(function (t, tIdx) { %>
+                            <div class="product-options-wrap" id="options-<%= tIdx %>" data-tier-key="<%= t.key %>">
+                              <div class="product-options-head" style="background:<%= t.accent || t.color %>">
+                                <div>
+                                  <div class="product-options-head-title">
+                                    <%= t.emoji %> เลือกสินค้า <%= t.label %>
+                                  </div>
+                                  <div class="product-options-head-sub">เลือกได้หลายรายการ และกำหนดจำนวนที่ต้องการ</div>
+                                </div>
+                                <button type="button" class="choose-field-btn" data-close-options>
+                                  <i class="ti ti-x"></i> ปิด
+                                </button>
+                              </div>
+
+                              <div class="product-options-body">
+                                <div class="product-options-list">
+                                  <% t.items.forEach(function (item) { var _p=Number(item.price) || 0; var
+                                    _pp=(item.promoPrice !=null && !isNaN(Number(item.promoPrice))) ?
+                                    Number(item.promoPrice) : _p; %>
+                                    <div class="product-item<%= item.soldOut ? ' is-soldout' : '' %>"
+                                      id="item-<%= item.key %>" data-key="<%= item.key %>"
+                                      data-color="<%= t.accent || t.color || '#2563EB' %>" data-name="<%= item.name %>"
+                                      data-price="<%= _p %>" data-promo-price="<%= _pp %>" role="checkbox"
+                                      aria-checked="false" <%- item.soldOut ? 'aria-disabled="true"' : 'tabindex="0"' %>
+                                      >
+                                      <div class="product-thumb">
+                                        <img src="/images/product/product-<%= item.key %>.png" alt="<%= item.name %>"
+                                          loading="lazy" onerror="this.style.display='none'">
+                                      </div>
+                                      <div class="custom-checkbox" id="cb-<%= item.key %>"><i class="ti ti-check"></i>
+                                      </div>
+                                      <div class="product-content">
+                                        <div class="product-item-name">
+                                          <%= item.name %>
+                                        </div>
+                                        <div class="product-item-desc">
+                                          <%= item.desc %>
+                                        </div>
+                                        <div class="qty-wrap" id="qty-wrap-<%= item.key %>">
+                                          <span class="qty-label">จำนวน:</span>
+                                          <div class="qty-control">
+                                            <button type="button" class="qty-btn" data-qty="-1"
+                                              aria-label="ลดจำนวน">−</button>
+                                            <input class="qty-num" type="number" id="qty-<%= item.key %>" value="1"
+                                              min="1" max="99" inputmode="numeric" aria-label="จำนวน">
+                                            <button type="button" class="qty-btn" data-qty="1"
+                                              aria-label="เพิ่มจำนวน">+</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="price-wrap">
+                                        <% if (item.soldOut) { %>
+                                          <div class="price-soldout">หมด</div>
+                                          <% } else if (promoActive && item.hasDiscount) { %>
+                                            <div class="price-discount-badge">-<%= item.discountPct %>%</div>
+                                            <div class="price-original">฿<%= item.priceFormatted %>
+                                            </div>
+                                            <div class="price-promo">฿<%= item.promoPriceFormatted %>
+                                            </div>
+                                            <% } else { %>
+                                              <div class="price-normal" style="color:<%= t.accent || t.color %>">฿<%=
+                                                  item.priceFormatted %>.-</div>
+                                              <% } %>
+                                      </div>
+                                    </div>
+                                    <% }); %>
+                                </div>
+                              </div>
+                            </div>
+                            <% }); } %>
+
+                              <!-- Checkout -->
+                              <div class="checkout-layout">
+                                <div class="checkout-main">
+                                  <div class="form-card">
+                                    <div class="form-card-title"><i class="ti ti-school"></i> ข้อมูลผู้สั่งซื้อ</div>
+
+                                    <div class="fg">
+                                      <label class="fl" for="school_name">ชื่อโรงเรียน / สถาบัน *</label>
+                                      <input class="fi" id="school_name" name="school_name"
+                                        placeholder="ชื่อโรงเรียนหรือสถาบัน" required
+                                        value="<%= fd.school_name || '' %>">
+                                    </div>
+
+                                    <div class="form-grid-2">
+                                      <div class="fg">
+                                        <label class="fl" for="contact_name">ชื่อผู้ติดต่อ *</label>
+                                        <input class="fi" id="contact_name" name="contact_name"
+                                          placeholder="ชื่อ-นามสกุล" required value="<%= fd.contact_name || '' %>">
+                                      </div>
+                                      <div class="fg">
+                                        <label class="fl" for="phone">เบอร์โทรศัพท์ *</label>
+                                        <input class="fi" id="phone" name="phone" type="tel" placeholder="0XX-XXX-XXXX"
+                                          required value="<%= fd.phone || '' %>">
+                                      </div>
+                                    </div>
+
+                                    <div class="fg">
+                                      <label class="fl" for="email">อีเมล (ไม่บังคับ)</label>
+                                      <input class="fi" id="email" name="email" type="email"
+                                        placeholder="email@example.com" value="<%= fd.email || '' %>">
+                                    </div>
+
+                                    <!-- Shipping method -->
+                                    <div class="fg">
+                                      <div class="fl">วิธีรับสินค้า *</div>
+                                      <div class="choice-list">
+                                        <label class="choice">
+                                          <input type="radio" name="shipping_method" value="pickup" required
+                                            <%=fd.shipping_method==='pickup' ? 'checked' : '' %>>
+                                          <span><span class="choice-title">มารับเอง</span><span
+                                              class="choice-tag is-free">ฟรี</span></span>
+                                        </label>
+                                        <label class="choice">
+                                          <input type="radio" name="shipping_method" value="delivery"
+                                            <%=fd.shipping_method==='delivery' ? 'checked' : '' %>>
+                                          <span><span class="choice-title">จัดส่ง</span><span
+                                              class="choice-tag is-extra">+100 บาท</span></span>
+                                        </label>
+                                      </div>
+                                    </div>
+
+                                    <!-- Shipping address (delivery only) -->
+                                    <div
+                                      class="reveal-section<%= fd.shipping_method === 'delivery' ? ' is-open' : '' %>"
+                                      id="address-section">
+                                      <div class="fg">
+                                        <label class="fl" for="address-input">ที่อยู่สำหรับจัดส่ง *</label>
+                                        <input class="fi" name="address" id="address-input"
+                                          placeholder="ที่อยู่ เลขที่ ซอย ถนน ตำบล/แขวง"
+                                          value="<%= fd.address || '' %>">
+                                      </div>
+                                      <div class="form-grid-3">
+                                        <div class="fg">
+                                          <label class="fl" for="district">อำเภอ / เขต</label>
+                                          <input class="fi" id="district" name="district" placeholder="อำเภอ / เขต"
+                                            value="<%= fd.district || '' %>">
+                                        </div>
+                                        <div class="fg">
+                                          <label class="fl" for="province">จังหวัด</label>
+                                          <input class="fi" id="province" name="province" placeholder="จังหวัด"
+                                            value="<%= fd.province || '' %>">
+                                        </div>
+                                        <div class="fg">
+                                          <label class="fl" for="zipcode">รหัสไปรษณีย์</label>
+                                          <input class="fi" id="zipcode" name="zipcode" placeholder="XXXXX"
+                                            inputmode="numeric" maxlength="5" value="<%= fd.zipcode || '' %>">
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <!-- Receipt -->
+                                    <div class="fg">
+                                      <div class="fl">ใบเสร็จ / ใบกำกับภาษี</div>
+                                      <div class="choice-list">
+                                        <label class="choice">
+                                          <input type="radio" name="receipt" value="no" <%=fd.receipt==='yes' ? ''
+                                            : 'checked' %>>
+                                          <span class="choice-title">ไม่รับใบเสร็จ</span>
+                                        </label>
+                                        <label class="choice">
+                                          <input type="radio" name="receipt" value="yes" <%=fd.receipt==='yes'
+                                            ? 'checked' : '' %>>
+                                          <span class="choice-title">รับใบเสร็จ</span>
+                                        </label>
+                                      </div>
+                                    </div>
+
+                                    <div class="reveal-section<%= fd.receipt === 'yes' ? ' is-open' : '' %>"
+                                      id="receipt-section">
+                                      <div class="fg">
+                                        <label class="fl" for="receipt_name">ชื่อในใบเสร็จ *</label>
+                                        <input class="fi" name="receipt_name" id="receipt_name"
+                                          placeholder="ชื่อบุคคล / นิติบุคคล" value="<%= fd.receipt_name || '' %>">
+                                      </div>
+                                      <div class="fg">
+                                        <label class="fl" for="receipt_address">ที่อยู่ในใบเสร็จ *</label>
+                                        <textarea class="fi" name="receipt_address" id="receipt_address"
+                                          placeholder="ที่อยู่สำหรับออกใบเสร็จ"><%= fd.receipt_address || '' %></textarea>
+                                      </div>
+                                      <div class="form-grid-2">
+                                        <div class="fg">
+                                          <label class="fl" for="receipt_zipcode">รหัสไปรษณีย์</label>
+                                          <input class="fi" name="receipt_zipcode" id="receipt_zipcode"
+                                            placeholder="XXXXX" inputmode="numeric" maxlength="5"
+                                            value="<%= fd.receipt_zipcode || '' %>">
+                                        </div>
+                                        <div class="fg">
+                                          <label class="fl" for="receipt_tax_id">เลขประจำตัวผู้เสียภาษี</label>
+                                          <input class="fi" name="receipt_tax_id" id="receipt_tax_id"
+                                            placeholder="0000000000000" inputmode="numeric" maxlength="13"
+                                            value="<%= fd.receipt_tax_id || '' %>">
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <div class="fg" style="margin-bottom:0">
+                                      <label class="fl" for="note">หมายเหตุ (ไม่บังคับ)</label>
+                                      <textarea class="fi" id="note" name="note"
+                                        placeholder="ข้อมูลเพิ่มเติม"><%= fd.note || '' %></textarea>
+                                    </div>
+                                  </div>
+
+                                  <div class="info-note">
+                                    <i class="ti ti-info-circle"></i>
+                                    <span>กรุณาตรวจสอบข้อมูลให้ถูกต้องก่อนยืนยัน
+                                      ทีมงานจะติดต่อกลับเพื่อยืนยันและแจ้งรายละเอียดการชำระเงิน</span>
+                                  </div>
+                                </div>
+
+                                <!-- Summary -->
+                                <aside class="sidebar-sticky">
+                                  <div class="summary-card">
+                                    <div class="summary-head"><i class="ti ti-clipboard-list"></i> สรุปคำสั่งซื้อ</div>
+                                    <div class="summary-body">
+                                      <% if (promoActive) { %>
+                                        <div class="summary-promo"><i class="ti ti-tag"></i> โปรโมชั่น ลดสูงสุด <%=
+                                            maxDiscount %>%</div>
+                                        <% } %>
+
+                                          <div id="summary-items">
+                                            <div class="summary-empty"><i
+                                                class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>
+                                          </div>
+
+                                          <div class="summary-divider"></div>
+
+                                          <% if (promoActive) { %>
+                                            <div class="summary-row">
+                                              <span>ราคาก่อนลด</span><span class="is-strike"
+                                                id="summary-original">฿0</span>
+                                            </div>
+                                            <div class="summary-row is-discount">
+                                              <span>ส่วนลดรวม</span><span id="summary-discount">-฿0</span>
+                                            </div>
+                                            <% } %>
+
+                                              <div class="summary-row">
+                                                <span>ค่าจัดส่ง</span><span class="is-strong"
+                                                  id="summary-shipping">ฟรี</span>
+                                              </div>
+
+                                              <div class="summary-total-row">
+                                                <span class="summary-total-label">ยอดรวมทั้งสิ้น</span>
+                                                <span class="summary-total-price" id="summary-total">฿0</span>
+                                              </div>
+
+                                              <button type="submit" class="btn-submit" id="submitBtn" disabled>
+                                                <i class="ti ti-shopping-bag"></i> ยืนยันการสั่งซื้อ (Pre-order)
+                                              </button>
+                                              <div class="trust-note"><i class="ti ti-shield-check"></i>
+                                                ข้อมูลของท่านปลอดภัย 100%</div>
+                                    </div>
+                                  </div>
+                                </aside>
+                              </div>
+
+              </div>
+            </form>
+
+            <script>
+              /* ================= PRE-ORDER ================= */
+              (function () {
+                var form = document.getElementById('preorderForm');
+                if (!form) return;
+
+                var PROMO_ACTIVE = form.dataset.promoActive === '1';
+                var PRODUCTS = {};
+                document.querySelectorAll('.product-item[data-key]').forEach(function (el) {
+                  var price = Number(el.dataset.price) || 0;
+                  var promo = Number(el.dataset.promoPrice);
+                  PRODUCTS[el.dataset.key] = {
+                    name: el.dataset.name || el.dataset.key,
+                    price: price,
+                    promoPrice: isNaN(promo) ? price : promo
                   };
-                  var checkedItems = {};
-                  var activeFieldKey = null;
-                  var SHIPPING_FEE = 0;
+                });
+                var CB_COLORS = {
+                  'beginner-field': '#7C3AED', 'intermediate-field': '#7C3AED', 'advance-field': '#7C3AED',
+                  'beginner-mission': '#EA580C', 'intermediate-mission': '#EA580C', 'advance-mission': '#EA580C'
+                };
+                var SHIPPING_DELIVERY = 100;
 
-                  function updateShipping(val) {
-                    SHIPPING_FEE = val === 'delivery' ? 100 : 0;
-                    var section = document.getElementById('address-section');
-                    var addressInput = document.getElementById('address-input');
-                    if (section) {
-                      section.style.display = val === 'delivery' ? 'block' : 'none';
-                      if (addressInput) addressInput.required = val === 'delivery';
-                    }
-                    updateSummary();
-                  }
+                var checkedItems = {};
+                var shippingFee = 0;
 
-                  function openProductOptions(tier, card) {
-                    document.querySelectorAll('.field-showcase-card').forEach(function (c) { c.classList.remove('active'); c.style.removeProperty('--field-color'); });
-                    document.querySelectorAll('.product-options-wrap').forEach(function (o) { o.classList.remove('active'); });
-                    var target = document.getElementById('options-' + tier); if (!target) return;
-                    var colorMap = { beginner: '#16A34A', intermediate: '#2563EB', advance: '#EA580C' };
-                    if (card) { card.classList.add('active'); card.style.setProperty('--field-color', colorMap[tier] || '#2563EB'); }
-                    target.classList.add('active'); activeFieldKey = tier;
-                    setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 30);
+                var emptyHint = document.getElementById('product-options-empty');
+                var fieldCards = Array.prototype.slice.call(document.querySelectorAll('.field-showcase-card'));
+                var optionWraps = Array.prototype.slice.call(document.querySelectorAll('.product-options-wrap'));
+                var emptyDefault = emptyHint ? emptyHint.innerHTML : '';
+
+                function money(n) {
+                  return '฿' + Number(n).toLocaleString();
+                }
+
+                /* ---------- Field cards → product options ---------- */
+                function closeOptions() {
+                  fieldCards.forEach(function (c) { c.classList.remove('active'); c.setAttribute('aria-expanded', 'false'); });
+                  optionWraps.forEach(function (o) { o.classList.remove('active'); });
+                  if (emptyHint) {
+                    emptyHint.innerHTML = emptyDefault;
+                    emptyHint.classList.remove('is-hidden');
                   }
-                  function closeProductOptions(e) {
-                    if (e) e.stopPropagation();
-                    document.querySelectorAll('.field-showcase-card').forEach(function (c) { c.classList.remove('active'); c.style.removeProperty('--field-color'); });
-                    document.querySelectorAll('.product-options-wrap').forEach(function (o) { o.classList.remove('active'); });
-                    activeFieldKey = null;
-                  }
-                  function toggleItem(id, el) {
-                    if (el.classList.contains('is-soldout')) return;
-                    if (event && event.target.closest && event.target.closest('.qty-control')) return;
-                    var isChecked = checkedItems[id]; var cb = document.getElementById('cb-' + id); var qtyWrap = document.getElementById('qty-wrap-' + id);
-                    if (isChecked) { delete checkedItems[id]; el.style.borderColor = '#E2E8F0'; el.classList.remove('is-selected'); cb.style.background = '#fff'; cb.style.borderColor = '#CBD5E1'; cb.querySelector('i').style.opacity = '0'; qtyWrap.style.display = 'none'; }
-                    else { checkedItems[id] = 1; var color = CB_COLORS[id] || '#2563EB'; el.style.borderColor = color; el.classList.add('is-selected'); cb.style.background = color; cb.style.borderColor = color; cb.querySelector('i').style.opacity = '1'; qtyWrap.style.display = 'flex'; }
-                    updateSummary();
-                  }
-                  function changeQty(id, delta, e) {
-                    if (e) e.stopPropagation();
-                    var input = document.getElementById('qty-' + id);
-                    var val = Math.max(1, Math.min(99, (parseInt(input.value) || 1) + delta));
-                    input.value = val; if (checkedItems[id]) checkedItems[id] = val; updateSummary();
-                  }
-                  function updateSummary() {
-                    Object.keys(checkedItems).forEach(function (id) { var input = document.getElementById('qty-' + id); if (input) checkedItems[id] = parseInt(input.value) || 1; });
-                    var keys = Object.keys(checkedItems);
-                    if (keys.length === 0) {
-                      document.getElementById('summary-items').innerHTML = '<div class="summary-empty"><i class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>';
-                      document.getElementById('summary-total').textContent = '฿0';
-                      if (document.getElementById('summary-original')) document.getElementById('summary-original').textContent = '฿0';
-                      if (document.getElementById('summary-discount')) document.getElementById('summary-discount').textContent = '-฿0';
-                      document.getElementById('submitBtn').disabled = true; document.getElementById('items_json').value = ''; return;
+                }
+
+                function openOptions(card) {
+                  var target = card.dataset.target ? document.getElementById(card.dataset.target) : null;
+                  closeOptions();
+                  if (!target) {
+                    if (emptyHint) {
+                      emptyHint.innerHTML = '<i class="ti ti-package-off"></i> ยังไม่มีสินค้าสำหรับสนามนี้';
+                      emptyHint.classList.remove('is-hidden');
                     }
-                    var totalOriginal = 0, totalFinal = 0, html = '';
-                    keys.forEach(function (id) {
-                      var qty = checkedItems[id]; var origPrice = PRICES_ORIGINAL[id] || 0; var finalPrice = PROMO_ACTIVE ? (PRICES_FINAL[id] || 0) : origPrice;
-                      totalOriginal += origPrice * qty; totalFinal += finalPrice * qty;
-                      html += '<div class="summary-line"><div><div class="summary-line-name">' + (NAMES[id] || id) + '</div><div class="summary-line-qty">' + qty + ' ชุด x ' + finalPrice.toLocaleString() + ' บาท</div></div><div class="summary-line-price">฿' + (finalPrice * qty).toLocaleString() + '</div></div>';
-                    });
-                    document.getElementById('summary-items').innerHTML = html;
-                    var grandTotal = totalFinal + SHIPPING_FEE;
-                    document.getElementById('summary-total').textContent = '฿' + grandTotal.toLocaleString();
-                    if (document.getElementById('summary-shipping')) document.getElementById('summary-shipping').textContent = SHIPPING_FEE > 0 ? '+' + '฿' + SHIPPING_FEE.toLocaleString() : 'ฟรี';
-                    if (document.getElementById('summary-original')) document.getElementById('summary-original').textContent = '฿' + totalOriginal.toLocaleString();
-                    if (document.getElementById('summary-discount')) document.getElementById('summary-discount').textContent = '-' + '฿' + (totalOriginal - totalFinal).toLocaleString();
-                    document.getElementById('submitBtn').disabled = false;
-                    document.getElementById('items_json').value = JSON.stringify(checkedItems);
+                    return;
                   }
-                  document.getElementById('preorderForm') && document.getElementById('preorderForm').addEventListener('submit', function (e) {
-                    if (Object.keys(checkedItems).length === 0) { e.preventDefault(); alert('กรุณาเลือกสินค้าอย่างน้อย 1 รายการ'); return; }
-                    var shipping = document.querySelector('input[name="shipping_method"]:checked');
-                    if (!shipping) { e.preventDefault(); alert('กรุณาเลือกวิธีรับสินค้า'); return; }
-                    if (shipping.value === 'delivery') { var addr = document.getElementById('address-input'); if (addr && !addr.value.trim()) { e.preventDefault(); alert('กรุณากรอกที่อยู่สำหรับจัดส่ง'); return; } }
+                  card.classList.add('active');
+                  card.setAttribute('aria-expanded', 'true');
+                  target.classList.add('active');
+                  if (emptyHint) emptyHint.classList.add('is-hidden');
+                  setTimeout(function () { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 30);
+                }
+
+                fieldCards.forEach(function (card) {
+                  card.addEventListener('click', function () {
+                    if (card.classList.contains('active')) return closeOptions();
+                    openOptions(card);
+                  });
+                  card.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+                  });
+                });
+
+                document.querySelectorAll('[data-close-options]').forEach(function (btn) {
+                  btn.addEventListener('click', function (e) { e.stopPropagation(); closeOptions(); });
+                });
+
+                /* ---------- Product items ---------- */
+                function qtyInput(key) {
+                  return document.getElementById('qty-' + key);
+                }
+
+                function readQty(key) {
+                  var input = qtyInput(key);
+                  var v = Math.max(1, Math.min(99, parseInt(input && input.value, 10) || 1));
+                  return v;
+                }
+
+                function toggleItem(el) {
+                  if (el.classList.contains('is-soldout')) return;
+                  var key = el.dataset.key;
+
+                  if (checkedItems[key]) {
+                    delete checkedItems[key];
+                    el.classList.remove('is-selected');
+                    el.setAttribute('aria-checked', 'false');
+                  } else {
+                    checkedItems[key] = readQty(key);
+                    el.style.setProperty('--sel', CB_COLORS[key] || el.dataset.color || '#2563EB');
+                    el.classList.add('is-selected');
+                    el.setAttribute('aria-checked', 'true');
+                  }
+                  updateSummary();
+                }
+
+                document.querySelectorAll('.product-item').forEach(function (el) {
+                  el.addEventListener('click', function (e) {
+                    if (e.target.closest('.qty-control')) return;
+                    toggleItem(el);
+                  });
+                  el.addEventListener('keydown', function (e) {
+                    if (e.target !== el) return;
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleItem(el); }
                   });
 
-                  // restore state on page load (form error case)
-                  (function () {
-                    var checked = document.querySelector('input[name="shipping_method"]:checked');
-                    if (checked) updateShipping(checked.value);
-                  })();
+                  el.querySelectorAll('[data-qty]').forEach(function (btn) {
+                    btn.addEventListener('click', function (e) {
+                      e.stopPropagation();
+                      var key = el.dataset.key;
+                      var input = qtyInput(key);
+                      input.value = Math.max(1, Math.min(99, readQty(key) + Number(btn.dataset.qty)));
+                      if (checkedItems[key]) checkedItems[key] = readQty(key);
+                      updateSummary();
+                    });
+                  });
 
-                  function updateReceipt(val) {
-                      var section = document.getElementById('receipt-section');
-                      var nameInput = document.getElementById('receipt_name');
-                      var addrInput = document.getElementById('receipt_address');
-                      if (section) {
-                        section.style.display = val === 'yes' ? 'block' : 'none';
-                        if (nameInput) nameInput.required = val === 'yes';
-                        if (addrInput) addrInput.required = val === 'yes';
-                      }
-                    }
+                  var input = qtyInput(el.dataset.key);
+                  if (input) {
+                    input.addEventListener('input', function () {
+                      if (checkedItems[el.dataset.key]) checkedItems[el.dataset.key] = readQty(el.dataset.key);
+                      updateSummary();
+                    });
+                    input.addEventListener('blur', function () { input.value = readQty(el.dataset.key); });
+                  }
+                });
 
-                    // restore on page load
-                    (function () {
-                      var checked = document.querySelector('input[name="receipt"]:checked');
-                      if (checked) updateReceipt(checked.value);
-                    })();
-                </script>
+                /* ---------- Summary ---------- */
+                function setText(id, text) {
+                  var el = document.getElementById(id);
+                  if (el) el.textContent = text;
+                }
 
-                <script>
-                  (function () {
-                    var dropdowns = document.querySelectorAll('.dropdown');
-                    for (var i = 0; i < dropdowns.length; i++) {
-                      (function (dd) {
-                        var menu = dd.querySelector('.dropdown-menu'), trigger = dd.querySelector('.nav-link'), timer;
-                        if (!menu || !trigger) return;
-                        trigger.addEventListener('click', function (e) { if (window.innerWidth <= 640) { e.preventDefault(); e.stopPropagation(); return } e.preventDefault(); menu.style.display = menu.style.display === 'block' ? 'none' : 'block'; });
-                        dd.addEventListener('mouseenter', function () { if (window.innerWidth > 640) { clearTimeout(timer); menu.style.display = 'block'; } });
-                        dd.addEventListener('mouseleave', function () { if (window.innerWidth > 640) { timer = setTimeout(function () { menu.style.display = 'none'; }, 200); } });
-                      })(dropdowns[i]);
-                    }
-                  })();
-                  (function () {
-                    var toggle = document.querySelector('.mobile-menu-toggle'), menu = document.getElementById('mobileMenu'), competition = document.querySelector('.mobile-competition-toggle'), submenu = document.querySelector('.mobile-submenu');
-                    if (!toggle || !menu) return;
-                    function setOpen(open) { menu.classList.toggle('is-open', open); toggle.classList.toggle('is-open', open); toggle.setAttribute('aria-expanded', open ? 'true' : 'false'); toggle.setAttribute('aria-label', open ? 'ปิดเมนู' : 'เปิดเมนู'); toggle.innerHTML = open ? '<i class="ti ti-x"></i>' : '<i class="ti ti-menu-2"></i>'; if (!open) { if (competition) { competition.classList.remove('is-open'); competition.setAttribute('aria-expanded', 'false'); } if (submenu) submenu.classList.remove('is-open'); } }
-                    toggle.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setOpen(!menu.classList.contains('is-open')); }, true);
-                    var links = menu.querySelectorAll('a'); for (var j = 0; j < links.length; j++)links[j].addEventListener('click', function () { setOpen(false); });
-                    document.addEventListener('click', function (e) { if (window.innerWidth <= 640 && menu.classList.contains('is-open') && !menu.contains(e.target) && !toggle.contains(e.target)) setOpen(false); });
-                    window.addEventListener('resize', function () { if (window.innerWidth > 640) setOpen(false); });
-                  })();
-                  window.addEventListener('scroll', function () { var topbar = document.querySelector('.topbar'); if (window.scrollY > 10) { topbar.classList.add('scrolled'); } else { topbar.classList.remove('scrolled'); } });
-                </script>
-</body>
+                function updateSummary() {
+                  var keys = Object.keys(checkedItems);
+                  var itemsEl = document.getElementById('summary-items');
+                  var submitBtn = document.getElementById('submitBtn');
+                  var itemsJson = document.getElementById('items_json');
 
-</html>
+                  setText('summary-shipping', shippingFee > 0 ? '+' + money(shippingFee) : 'ฟรี');
+
+                  if (keys.length === 0) {
+                    itemsEl.innerHTML = '<div class="summary-empty"><i class="ti ti-shopping-cart"></i>เลือกสินค้าเพื่อดูสรุป</div>';
+                    setText('summary-total', money(0));
+                    setText('summary-original', money(0));
+                    setText('summary-discount', '-' + money(0));
+                    submitBtn.disabled = true;
+                    itemsJson.value = '';
+                    return;
+                  }
+
+                  var totalOriginal = 0, totalFinal = 0;
+                  itemsEl.innerHTML = '';
+
+                  keys.forEach(function (key) {
+                    var qty = checkedItems[key];
+                    var p = PRODUCTS[key] || { name: key, price: 0, promoPrice: 0 };
+                    var finalPrice = PROMO_ACTIVE ? p.promoPrice : p.price;
+                    totalOriginal += p.price * qty;
+                    totalFinal += finalPrice * qty;
+
+                    var line = document.createElement('div');
+                    line.className = 'summary-line';
+                    line.innerHTML = '<div><div class="summary-line-name"></div><div class="summary-line-qty"></div></div><div class="summary-line-price"></div>';
+                    line.querySelector('.summary-line-name').textContent = p.name;
+                    line.querySelector('.summary-line-qty').textContent = qty + ' ชุด × ' + finalPrice.toLocaleString() + ' บาท';
+                    line.querySelector('.summary-line-price').textContent = money(finalPrice * qty);
+                    itemsEl.appendChild(line);
+                  });
+
+                  setText('summary-total', money(totalFinal + shippingFee));
+                  setText('summary-original', money(totalOriginal));
+                  setText('summary-discount', '-' + money(totalOriginal - totalFinal));
+                  submitBtn.disabled = false;
+                  itemsJson.value = JSON.stringify(checkedItems);
+                }
+
+                /* ---------- Shipping / receipt ---------- */
+                function updateShipping(val) {
+                  var isDelivery = val === 'delivery';
+                  shippingFee = isDelivery ? SHIPPING_DELIVERY : 0;
+                  document.getElementById('address-section').classList.toggle('is-open', isDelivery);
+                  document.getElementById('address-input').required = isDelivery;
+                  updateSummary();
+                }
+
+                function updateReceipt(val) {
+                  var wants = val === 'yes';
+                  document.getElementById('receipt-section').classList.toggle('is-open', wants);
+                  document.getElementById('receipt_name').required = wants;
+                  document.getElementById('receipt_address').required = wants;
+                }
+
+                document.querySelectorAll('input[name="shipping_method"]').forEach(function (r) {
+                  r.addEventListener('change', function () { updateShipping(r.value); });
+                });
+                document.querySelectorAll('input[name="receipt"]').forEach(function (r) {
+                  r.addEventListener('change', function () { updateReceipt(r.value); });
+                });
+
+                /* ---------- Submit guard ---------- */
+                form.addEventListener('submit', function (e) {
+                  if (Object.keys(checkedItems).length === 0) {
+                    e.preventDefault();
+                    alert('กรุณาเลือกสินค้าอย่างน้อย 1 รายการ');
+                    return;
+                  }
+                  var shipping = document.querySelector('input[name="shipping_method"]:checked');
+                  if (!shipping) {
+                    e.preventDefault();
+                    alert('กรุณาเลือกวิธีรับสินค้า');
+                    return;
+                  }
+                  if (shipping.value === 'delivery' && !document.getElementById('address-input').value.trim()) {
+                    e.preventDefault();
+                    alert('กรุณากรอกที่อยู่สำหรับจัดส่ง');
+                  }
+                });
+
+                /* ---------- Restore state after a server-side error ---------- */
+                var s = document.querySelector('input[name="shipping_method"]:checked');
+                if (s) updateShipping(s.value);
+                var r = document.querySelector('input[name="receipt"]:checked');
+                if (r) updateReceipt(r.value);
+                updateSummary();
+              })();
+            </script>
+
+            <% } %>
+
+              <script>
+                /* Mobile / tablet hamburger menu */
+                (function () {
+                  var toggle = document.querySelector('.mobile-menu-toggle');
+                  var mobileMenu = document.querySelector('.mobile-menu');
+                  var competitionToggle = document.querySelector('.mobile-menu-competition-toggle');
+                  var subMenu = document.querySelector('.mobile-submenu');
+                  if (!toggle || !mobileMenu) return;
+
+                  function closeMobileMenu() {
+                    toggle.classList.remove('is-open');
+                    toggle.setAttribute('aria-expanded', 'false');
+                    toggle.setAttribute('aria-label', 'เปิดเมนู');
+                    mobileMenu.classList.remove('is-open');
+                    mobileMenu.setAttribute('aria-hidden', 'true');
+                  }
+
+                  toggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var isOpen = mobileMenu.classList.toggle('is-open');
+                    toggle.classList.toggle('is-open', isOpen);
+                    toggle.setAttribute('aria-expanded', String(isOpen));
+                    toggle.setAttribute('aria-label', isOpen ? 'ปิดเมนู' : 'เปิดเมนู');
+                    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+                  });
+
+                  if (competitionToggle && subMenu) {
+                    competitionToggle.addEventListener('click', function () {
+                      var isOpen = subMenu.classList.toggle('is-open');
+                      competitionToggle.classList.toggle('is-open', isOpen);
+                      competitionToggle.setAttribute('aria-expanded', String(isOpen));
+                    });
+                  }
+
+                  mobileMenu.querySelectorAll('a').forEach(function (link) {
+                    link.addEventListener('click', closeMobileMenu);
+                  });
+
+                  document.addEventListener('click', function (e) {
+                    if (!mobileMenu.contains(e.target) && !toggle.contains(e.target)) closeMobileMenu();
+                  });
+
+                  document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') closeMobileMenu();
+                  });
+
+                  window.addEventListener('resize', function () {
+                    if (window.innerWidth > 1100) closeMobileMenu();
+                  });
+                })();
+
+                /* Desktop dropdown (hover with small delay, click also works) */
+                document.querySelectorAll('.dropdown').forEach(function (dd) {
+                  var menu = dd.querySelector('.dropdown-menu');
+                  var btn = dd.querySelector('button');
+                  var timer;
+
+                  function show() { clearTimeout(timer); menu.style.display = 'block'; }
+                  function hideSoon() { timer = setTimeout(function () { menu.style.display = 'none'; }, 200); }
+
+                  dd.addEventListener('mouseenter', show);
+                  dd.addEventListener('mouseleave', hideSoon);
+                  btn.addEventListener('click', function () {
+                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                  });
+                });
+              </script>
+
+  </body>
+
+  </html>
