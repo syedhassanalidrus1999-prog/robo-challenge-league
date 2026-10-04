@@ -18,13 +18,96 @@ const certUpload = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 });
 
-// ─── GET /board ───────────────────────────────────────────────────────────────
+// ============================================================================
+// CONSTANTS / HELPERS
+// ============================================================================
+
+const TIERS = ["beginner", "intermediate", "advance"];
+
+const CERT_TYPES = [
+  "participation",
+  "rank_1",
+  "rank_2",
+  "rank_3",
+  "gold",
+  "silver",
+  "bronze",
+];
+
+const FONT_SIZE_MIN = 20;
+const FONT_SIZE_MAX = 400;
+
+function safeTier(value) {
+  return TIERS.includes(value) ? value : "beginner";
+}
+
+// หน้าจัดการระบบ (เกณฑ์ / ตั้งค่า / pre-order / เกียรติบัตร / เผยแพร่คะแนน)
+// ให้เฉพาะ admin — กรรมการเข้าได้แค่หน้าสรุปผล
+function requireAdmin(req, res, next) {
+  if (req.session.user && req.session.user.role === "admin") {
+    return next();
+  }
+  req.flash("error", "เฉพาะผู้ดูแลระบบเท่านั้น");
+  return res.redirect("/board");
+}
+
+// ============================================================================
+// RANKING / MAX SCORE (ใช้ร่วมกับไฟล์อื่นผ่าน module.exports)
+// ============================================================================
+//
+// 1. คะแนนสูงสุดมาก่อน
+// 2. คะแนนเท่ากัน → เวลาน้อยกว่ามาก่อน (ถ้า R1 = R2 ใช้เวลาที่ดีที่สุด)
+// 3. ยังเท่ากัน → team id (ผลคงที่ทุกครั้ง)
+// ตรงกับ getRanking ใน certificate.js
+// ============================================================================
+
+async function getRanked(tier) {
+  const result = await query(
+    `SELECT
+      t.id, t.name, t.institution, t.status, t.tier,
+      s1.total_score AS r1_score, s1.time_seconds AS r1_time, s1.is_published AS r1_published,
+      s2.total_score AS r2_score, s2.time_seconds AS r2_time, s2.is_published AS r2_published,
+      GREATEST(COALESCE(s1.total_score, 0), COALESCE(s2.total_score, 0)) AS best_score,
+      CASE
+        WHEN COALESCE(s1.total_score, -1) > COALESCE(s2.total_score, -1) THEN s1.time_seconds
+        WHEN COALESCE(s2.total_score, -1) > COALESCE(s1.total_score, -1) THEN s2.time_seconds
+        ELSE LEAST(s1.time_seconds, s2.time_seconds)
+      END AS best_time
+    FROM teams t
+    LEFT JOIN scores s1 ON s1.team_id = t.id AND s1.round = 1
+    LEFT JOIN scores s2 ON s2.team_id = t.id AND s2.round = 2
+    WHERE t.tier = $1
+    ORDER BY best_score DESC, best_time ASC NULLS LAST, t.id ASC`,
+    [tier],
+  );
+  return result.rows;
+}
+
+// คะแนนเต็ม = max_score × max_pieces ของทุกเกณฑ์
+async function getMaxScore(tier) {
+  const result = await query(
+    `SELECT COALESCE(SUM(COALESCE(max_score, 0) * COALESCE(max_pieces, 1)), 0) AS total
+     FROM criteria
+     WHERE tier = $1`,
+    [tier],
+  );
+  return parseFloat(result.rows[0]?.total || 0);
+}
+
+// ============================================================================
+// GET /board
+// ============================================================================
+
 router.get("/", requireLogin, async (req, res) => {
   const user = req.session.user;
-  const tier = user.role === "admin" ? req.query.tier || "beginner" : user.tier;
+  const tier = user.role === "admin" ? safeTier(req.query.tier) : user.tier;
+
   try {
-    const ranked = await getRanked(tier);
-    const maxScore = await getMaxScore(tier);
+    const [ranked, maxScore] = await Promise.all([
+      getRanked(tier),
+      getMaxScore(tier),
+    ]);
+
     res.render("board/index", {
       title: "สรุปผลคะแนน",
       pageTitle: "<span>สรุปผล</span>การแข่งขัน",
@@ -36,49 +119,24 @@ router.get("/", requireLogin, async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    req.flash("error", "ไม่สามารถโหลดผลคะแนนได้");
-    res.redirect("/board");
+    // ห้าม redirect กลับ /board (จะวนไม่จบ)
+    res.status(500).send("ไม่สามารถโหลดผลคะแนนได้");
   }
 });
 
-// Helper: ดึง ranked teams
-async function getRanked(tier) {
-  const result = await query(
-    `SELECT
-      t.id, t.name, t.institution, t.status, t.tier,
-      s1.total_score AS r1_score, s1.time_seconds AS r1_time, s1.is_published AS r1_published,
-      s2.total_score AS r2_score, s2.time_seconds AS r2_time, s2.is_published AS r2_published,
-      GREATEST(COALESCE(s1.total_score,0), COALESCE(s2.total_score,0)) AS best_score,
-      CASE
-        WHEN COALESCE(s1.total_score,0) >= COALESCE(s2.total_score,0) THEN s1.time_seconds
-        ELSE s2.time_seconds
-      END AS best_time
-    FROM teams t
-    LEFT JOIN scores s1 ON s1.team_id = t.id AND s1.round = 1
-    LEFT JOIN scores s2 ON s2.team_id = t.id AND s2.round = 2
-    WHERE t.tier = $1
-    ORDER BY best_score DESC, best_time ASC`,
-    [tier],
-  );
-  return result.rows;
-}
+// ============================================================================
+// CRITERIA
+// ============================================================================
 
-async function getMaxScore(tier) {
-  const result = await query(
-    "SELECT SUM(max_score) as total FROM criteria WHERE tier = $1",
-    [tier],
-  );
-  return parseFloat(result.rows[0]?.total || 0);
-}
+router.get("/criteria", requireLogin, requireAdmin, async (req, res) => {
+  const tier = safeTier(req.query.tier);
 
-// ─── GET /board/criteria ──────────────────────────────────────────────────────
-router.get("/criteria", requireLogin, async (req, res) => {
-  const tier = req.query.tier || "beginner";
   try {
     const result = await query(
-      "SELECT * FROM criteria ORDER BY tier, mission",
+      "SELECT * FROM criteria ORDER BY tier, mission, id",
       [],
     );
+
     res.render("board/criteria", {
       title: "จัดการเกณฑ์คะแนน",
       pageTitle: "<span>จัดการ</span>เกณฑ์คะแนน",
@@ -94,118 +152,125 @@ router.get("/criteria", requireLogin, async (req, res) => {
   }
 });
 
-router.post("/criteria", requireLogin, async (req, res) => {
-  const { tier, name, max_score, score_type, score_partial } = req.body;
+function parseCriteriaBody(body) {
+  const sType = body.score_type === "both" ? "both" : "full_only";
+
+  return {
+    name: String(body.name || "").trim(),
+    maxScore: parseFloat(body.max_score),
+    scoreType: sType,
+    scorePartial: sType === "both" ? parseFloat(body.score_partial) || 0 : 0,
+    maxPieces: Math.max(1, parseInt(body.max_pieces, 10) || 1),
+  };
+}
+
+router.post("/criteria", requireLogin, requireAdmin, async (req, res) => {
+  const tier = safeTier(req.body.tier);
+  const back = "/board/criteria?tier=" + tier;
 
   try {
+    const c = parseCriteriaBody(req.body);
+
+    if (!c.name || !Number.isFinite(c.maxScore)) {
+      req.flash("error", "กรุณากรอกชื่อภารกิจและคะแนนให้ถูกต้อง");
+      return res.redirect(back);
+    }
+
     const missionResult = await query(
-      `SELECT COALESCE(MAX(mission), 0) AS max_mission
-   FROM criteria
-   WHERE tier = $1`,
+      "SELECT COALESCE(MAX(mission), 0) AS max_mission FROM criteria WHERE tier = $1",
       [tier],
     );
 
     const nextMission = parseInt(missionResult.rows[0].max_mission, 10) + 1;
 
-    const sType = score_type === "both" ? "both" : "full_only";
-
-    const sPartial = sType === "both" ? parseFloat(score_partial) || 0 : 0;
-
     await query(
       `INSERT INTO criteria
-       (tier, mission, name, max_score, score_type, score_partial)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [tier, nextMission, name.trim(), parseFloat(max_score), sType, sPartial],
+         (tier, mission, name, max_score, score_type, score_partial, max_pieces)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [
+        tier,
+        nextMission,
+        c.name,
+        c.maxScore,
+        c.scoreType,
+        c.scorePartial,
+        c.maxPieces,
+      ],
     );
 
     req.flash("success", "เพิ่มภารกิจแล้ว");
-
-    res.redirect("/board/criteria?tier=" + tier);
+    res.redirect(back);
   } catch (err) {
     console.error(err);
-
     req.flash("error", "เพิ่มภารกิจไม่ได้");
-
-    res.redirect("/board/criteria?tier=" + tier);
+    res.redirect(back);
   }
 });
 
-router.post("/criteria/:id", requireLogin, async (req, res) => {
-  const { name, max_score, score_type, score_partial, tier, max_pieces } =
-    req.body;
+async function updateCriteria(req, res) {
+  const tier = safeTier(req.body.tier);
+  const back = "/board/criteria?tier=" + tier;
 
   try {
-    const sType = score_type === "both" ? "both" : "full_only";
-    const sPartial = sType === "both" ? parseFloat(score_partial) || 0 : 0;
+    const c = parseCriteriaBody(req.body);
+
+    if (!c.name || !Number.isFinite(c.maxScore)) {
+      req.flash("error", "กรุณากรอกชื่อภารกิจและคะแนนให้ถูกต้อง");
+      return res.redirect(back);
+    }
 
     await query(
       `UPDATE criteria
-       SET name=$1,
-           max_score=$2,
-           score_type=$3,
-           score_partial=$4,
-           max_pieces=$5
-       WHERE id=$6`,
+       SET name = $1, max_score = $2, score_type = $3, score_partial = $4, max_pieces = $5
+       WHERE id = $6`,
       [
-        name.trim(),
-        parseFloat(max_score),
-        sType,
-        sPartial,
-        parseInt(max_pieces) || 1,
+        c.name,
+        c.maxScore,
+        c.scoreType,
+        c.scorePartial,
+        c.maxPieces,
         req.params.id,
       ],
     );
 
     req.flash("success", "อัปเดตภารกิจแล้ว");
-    res.redirect("/board/criteria?tier=" + tier);
+    res.redirect(back);
   } catch (err) {
     console.error(err);
     req.flash("error", "อัปเดตไม่ได้");
-    res.redirect("/board/criteria?tier=" + tier);
+    res.redirect(back);
   }
-});
+}
 
-router.put("/criteria/:id", requireLogin, async (req, res) => {
-  const { name, max_score, score_type, score_partial, tier, max_pieces } =
-    req.body;
+router.post("/criteria/:id", requireLogin, requireAdmin, updateCriteria);
+router.put("/criteria/:id", requireLogin, requireAdmin, updateCriteria);
+
+router.delete("/criteria/:id", requireLogin, requireAdmin, async (req, res) => {
+  const tier = safeTier(req.query.tier);
 
   try {
-    const sType = score_type === "both" ? "both" : "full_only";
-    const sPartial = sType === "both" ? parseFloat(score_partial) || 0 : 0;
-    await query(
-      "UPDATE criteria SET name=$1, max_score=$2, score_type=$3, score_partial=$4, max_pieces=$5 WHERE id=$6",
-      [name.trim(), parseFloat(max_score), sType, sPartial, parseInt(max_pieces), req.params.id],
-    );
-    req.flash("success", "อัปเดตภารกิจแล้ว");
-    res.redirect("/board/criteria?tier=" + tier);
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "อัปเดตไม่ได้");
-    res.redirect("/board/criteria?tier=" + tier);
-  }
-});
-
-router.delete("/criteria/:id", requireLogin, async (req, res) => {
-  const { tier } = req.query;
-  try {
-    await query("DELETE FROM criteria WHERE id=$1", [req.params.id]);
+    await query("DELETE FROM criteria WHERE id = $1", [req.params.id]);
     req.flash("success", "ลบภารกิจแล้ว");
-    res.redirect("/board/criteria?tier=" + tier);
   } catch (err) {
     console.error(err);
     req.flash("error", "ลบไม่ได้");
-    res.redirect("/board/criteria?tier=" + tier);
   }
+
+  res.redirect("/board/criteria?tier=" + tier);
 });
 
-// ─── GET /board/settings ──────────────────────────────────────────────────────
-router.get("/settings", requireLogin, async (req, res) => {
+// ============================================================================
+// SETTINGS
+// ============================================================================
+
+router.get("/settings", requireLogin, requireAdmin, async (req, res) => {
   try {
     const result = await query("SELECT * FROM settings", []);
     const settings = {};
     result.rows.forEach(function (r) {
       settings[r.key] = r.value;
     });
+
     res.render("board/settings", {
       title: "ตั้งค่า",
       pageTitle: "<span>ตั้งค่า</span>ระบบ",
@@ -220,61 +285,78 @@ router.get("/settings", requireLogin, async (req, res) => {
   }
 });
 
-router.post("/settings", requireLogin, async (req, res) => {
-  const existingResult = await query("SELECT * FROM settings", []);
-  const existing = {};
-  existingResult.rows.forEach(function (r) {
-    existing[r.key] = r.value;
-  });
-  const val = (key, formVal) =>
-    formVal !== undefined ? formVal || null : existing[key] || null;
+const SETTING_KEYS = [
+  "event_date",
+  "event_date_end",
+  "event_date_label",
+  "promo_active",
+  "promo_end_date",
+  "registration_open_date",
+  "registration_close_date",
+  // ราคาสินค้า Pre-order
+  "price_full",
+  "price_mat",
+  "price_field",
+  "price_mission",
+  // ส่วนลดแยกต่อสินค้า
+  "discount_full",
+  "discount_mat",
+  "discount_field",
+  "discount_mission",
+  // สถานะสินค้าหมด ("1" = หมด, "0" = มีสินค้า)
+  "soldout_full",
+  "soldout_mat",
+  "soldout_field",
+  "soldout_mission",
+];
 
-  const keys = [
-    "event_date",
-    "event_date_end",
-    "event_date_label",
-    "promo_active",
-    "promo_end_date",
-    "registration_open_date",
-    "registration_close_date",
-    // ราคาสินค้า Pre-order
-    "price_full",
-    "price_mat",
-    "price_field",
-    "price_mission",
-    // ส่วนลดแยกต่อสินค้า
-    "discount_full",
-    "discount_mat",
-    "discount_field",
-    "discount_mission",
-    // สถานะสินค้าหมด ("1" = หมด, "0" = มีสินค้า)
-    "soldout_full",
-    "soldout_mat",
-    "soldout_field",
-    "soldout_mission",
-  ];
-  for (var k of keys) {
-    await query(
-      "INSERT INTO settings (key,value) VALUES ($1,$2) ON CONFLICT (key) DO UPDATE SET value=$2",
-      [k, val(k, req.body[k])],
-    );
+router.post("/settings", requireLogin, requireAdmin, async (req, res) => {
+  try {
+    const existingResult = await query("SELECT * FROM settings", []);
+    const existing = {};
+    existingResult.rows.forEach(function (r) {
+      existing[r.key] = r.value;
+    });
+
+    const val = (key, formVal) =>
+      formVal !== undefined ? formVal || null : existing[key] || null;
+
+    for (const k of SETTING_KEYS) {
+      await query(
+        "INSERT INTO settings (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2",
+        [k, val(k, req.body[k])],
+      );
+    }
+
+    req.flash("success", "บันทึกการตั้งค่าแล้ว");
+  } catch (err) {
+    console.error(err);
+    req.flash("error", "บันทึกการตั้งค่าไม่ได้");
   }
-  req.flash("success", "บันทึกการตั้งค่าแล้ว");
+
   res.redirect("/board/settings");
 });
- 
-// ─── GET /board/preorders ─────────────────────────────────────────────────────
-router.get("/preorders", requireLogin, async (req, res) => {
+
+// ============================================================================
+// PRE-ORDERS
+// ============================================================================
+
+router.get("/preorders", requireLogin, requireAdmin, async (req, res) => {
   const status = req.query.status || "";
+
   try {
-    var sql = "SELECT * FROM preorders";
-    var params = [];
+    let sql = "SELECT * FROM preorders";
+    const params = [];
+
     if (status) {
       sql += " WHERE status = $1";
       params.push(status);
     }
+
     sql += " ORDER BY created_at DESC";
+
     const result = await query(sql, params);
+
     res.render("board/preorders", {
       title: "Pre-order สนาม",
       pageTitle: "<span>Pre-order</span> สนามแข่งขัน",
@@ -290,411 +372,228 @@ router.get("/preorders", requireLogin, async (req, res) => {
   }
 });
 
-router.post("/preorders/:id/status", requireLogin, async (req, res) => {
-  const { status } = req.body;
-  await query("UPDATE preorders SET status=$1 WHERE id=$2", [
-    status,
-    req.params.id,
-  ]);
-  req.flash("success", "อัปเดตสถานะแล้ว");
-  res.redirect("/board/preorders");
-});
+router.post(
+  "/preorders/:id/status",
+  requireLogin,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      await query("UPDATE preorders SET status = $1 WHERE id = $2", [
+        req.body.status,
+        req.params.id,
+      ]);
+      req.flash("success", "อัปเดตสถานะแล้ว");
+    } catch (err) {
+      console.error(err);
+      req.flash("error", "อัปเดตสถานะไม่ได้");
+    }
 
-router.delete("/preorders/:id", requireLogin, async (req, res) => {
-  try {
-    await query("DELETE FROM preorders WHERE id=$1", [req.params.id]);
-    req.flash("success", "ลบ Pre-order แล้ว");
-  } catch (err) {
-    console.error(err);
-    req.flash("error", "ลบไม่ได้");
-  }
-  res.redirect("/board/preorders");
-});
+    res.redirect("/board/preorders");
+  },
+);
 
-// ─── POST /board/scores/:teamId/:round/publish ────────────────────────────────
+router.delete(
+  "/preorders/:id",
+  requireLogin,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      await query("DELETE FROM preorders WHERE id = $1", [req.params.id]);
+      req.flash("success", "ลบ Pre-order แล้ว");
+    } catch (err) {
+      console.error(err);
+      req.flash("error", "ลบไม่ได้");
+    }
+
+    res.redirect("/board/preorders");
+  },
+);
+
+// ============================================================================
+// POST /board/scores/:teamId/:round/publish
+// ============================================================================
+
 router.post(
   "/scores/:teamId/:round/publish",
   requireLogin,
+  requireAdmin,
   async (req, res) => {
-    const { teamId, round } = req.params;
-    const tier = req.query.tier || "beginner";
+    const { teamId } = req.params;
+    const round = parseInt(req.params.round, 10);
+    const tier = safeTier(req.query.tier);
+
     try {
-      const current = await query(
-        "SELECT is_published FROM scores WHERE team_id = $1 AND round = $2",
-        [teamId, parseInt(round)],
+      // toggle ในคำสั่งเดียว
+      const result = await query(
+        `UPDATE scores
+         SET is_published = NOT COALESCE(is_published, false)
+         WHERE team_id = $1 AND round = $2
+         RETURNING is_published`,
+        [teamId, round],
       );
-      const currentVal = current.rows[0] ? current.rows[0].is_published : false;
-      await query(
-        "UPDATE scores SET is_published = $1 WHERE team_id = $2 AND round = $3",
-        [!currentVal, teamId, parseInt(round)],
-      );
-      req.flash("success", !currentVal ? "เผยแพร่คะแนนแล้ว" : "ซ่อนคะแนนแล้ว");
+
+      if (!result.rows.length) {
+        req.flash("error", "ยังไม่มีคะแนนของรอบนี้");
+      } else {
+        req.flash(
+          "success",
+          result.rows[0].is_published ? "เผยแพร่คะแนนแล้ว" : "ซ่อนคะแนนแล้ว",
+        );
+      }
     } catch (err) {
       console.error(err);
       req.flash("error", "เกิดข้อผิดพลาด");
     }
+
     res.redirect("/board?tier=" + tier);
   },
 );
 
-// ─── GET /board/certificates ────────────────────────────────────────────────
-router.get("/certificates", requireLogin, async (req, res) => {
+// ============================================================================
+// GET /board/certificates
+// ============================================================================
+
+router.get("/certificates", requireLogin, requireAdmin, async (req, res) => {
+  const activeTier = safeTier(req.query.tier);
+
   try {
-    const user = req.session.user;
-
-    // Admin สามารถเลือก tier จาก URL ได้
-    // ถ้าไม่ระบุ ให้ใช้ beginner
-    const activeTier =
-      user?.role === "admin"
-        ? req.query.tier || "beginner"
-        : user?.tier || "beginner";
-
     const result = await query(
-      `
-      SELECT *
-      FROM certificate_templates
-      ORDER BY tier, cert_type
-      `,
-      [],
+      "SELECT * FROM certificate_templates WHERE tier = $1 ORDER BY cert_type",
+      [activeTier],
     );
-
-    const templates = result.rows;
 
     return res.render("board/certificates", {
       title: "จัดการเกียรติบัตร",
       pageTitle: "<span>จัดการ</span>เกียรติบัตร",
-
       tierSelector: true,
-
-      // สำคัญมาก
       activeTier,
-
-      templates,
+      tier: activeTier,
+      templates: result.rows,
     });
   } catch (err) {
-    console.error(
-      "Load certificate templates error:",
-      err,
-    );
-
-    req.flash(
-      "error",
-      "โหลดข้อมูลเกียรติบัตรไม่ได้",
-    );
-
+    console.error("Load certificate templates error:", err);
+    req.flash("error", "โหลดข้อมูลเกียรติบัตรไม่ได้");
     return res.redirect("/board");
   }
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ============================================================================
 // POST /board/certificates/upload
-// อัปโหลด Background + บันทึกตำแหน่งชื่อ
-// ─────────────────────────────────────────────────────────────────────────────
+// อัปโหลด Background + บันทึกตำแหน่ง / ขนาด / สีของชื่อ
+// ถ้ายังไม่มี Template ของประเภทนี้ → สร้างใหม่
+// ============================================================================
+
+function handleCertUpload(req, res, next) {
+  certUpload.single("background")(req, res, function (err) {
+    if (err) {
+      console.error("Certificate upload error:", err);
+      req.flash("error", err.message || "อัปโหลดไฟล์ไม่ได้");
+      return res.redirect(
+        "/board/certificates?tier=" + safeTier(req.body && req.body.tier),
+      );
+    }
+    next();
+  });
+}
 
 router.post(
   "/certificates/upload",
   requireLogin,
-
-  function (req, res, next) {
-    certUpload.single("background")(
-      req,
-      res,
-      function (err) {
-        if (err) {
-          console.error(
-            "Certificate upload error:",
-            err,
-          );
-
-          req.flash(
-            "error",
-            err.message ||
-              "อัปโหลดไฟล์ไม่ได้",
-          );
-
-          return res.redirect(
-            "/board/certificates?tier=" +
-              encodeURIComponent(
-                req.body?.tier ||
-                  "beginner",
-              ),
-          );
-        }
-
-        next();
-      },
-    );
-  },
-
+  requireAdmin,
+  handleCertUpload,
   async (req, res) => {
-    const {
-      tier,
-      cert_type,
-      name_x,
-      name_y,
-      name_font_size,
-      name_color,
-    } = req.body;
+    const tier = safeTier(req.body.tier);
+    const certType = req.body.cert_type;
+    const back = "/board/certificates?tier=" + tier;
 
     try {
-      // ------------------------------------------------------------
-      // ตรวจข้อมูลพื้นฐาน
-      // ------------------------------------------------------------
-
-      if (!tier || !cert_type) {
-        req.flash(
-          "error",
-          "ข้อมูลประเภทเกียรติบัตรไม่ครบ",
-        );
-
-        return res.redirect(
-          "/board/certificates?tier=" +
-            encodeURIComponent(
-              tier || "beginner",
-            ),
-        );
+      if (!TIERS.includes(req.body.tier) || !CERT_TYPES.includes(certType)) {
+        req.flash("error", "ข้อมูลประเภทเกียรติบัตรไม่ถูกต้อง");
+        return res.redirect(back);
       }
 
-      // ------------------------------------------------------------
-      // ต้องมีไฟล์
-      // ------------------------------------------------------------
+      // ---------------- อ่านค่าจากฟอร์ม ----------------
 
       const backgroundUrl =
         req.file?.secure_url || req.file?.path || req.file?.url || null;
-      // ------------------------------------------------------------
-      // หา Template เดิม
-      // ------------------------------------------------------------
 
-      const templateResult =
-        await query(
-          `
-          SELECT *
-          FROM certificate_templates
-          WHERE tier = $1
-            AND cert_type = $2
-          LIMIT 1
-          `,
-          [
-            tier,
-            cert_type,
-          ],
-        );
+      const x = parseFloat(req.body.name_x);
+      const y = parseFloat(req.body.name_y);
 
       if (
-        !templateResult.rows.length
+        !Number.isFinite(x) ||
+        !Number.isFinite(y) ||
+        x < 0 ||
+        x > 100 ||
+        y < 0 ||
+        y > 100
       ) {
-        req.flash(
-          "error",
-          "ไม่พบ Template ของเกียรติบัตรประเภทนี้",
-        );
-
-        return res.redirect(
-          "/board/certificates?tier=" +
-            encodeURIComponent(tier),
-        );
+        req.flash("error", "ตำแหน่ง X / Y ต้องอยู่ระหว่าง 0–100");
+        return res.redirect(back);
       }
 
-      const template =
-        templateResult.rows[0];
+      // เว้นว่าง = อัตโนมัติ (NULL)
+      let fontSize = null;
+      const sizeRaw = String(req.body.name_font_size ?? "").trim();
 
-      // ------------------------------------------------------------
-      // สร้าง UPDATE แบบ Dynamic
-      // ------------------------------------------------------------
-
-      const updateFields = [];
-      const params = [];
-      let idx = 1;
-
-      // Background
-      if (backgroundUrl) {
-        updateFields.push(
-          `background_url = $${idx}`,
-        );
-
-        params.push(
-          backgroundUrl,
-        );
-
-        idx++;
-      }
-
-      // X
-      if (
-        name_x !== undefined &&
-        name_x !== ""
-      ) {
-        const x =
-          parseFloat(name_x);
-
-        if (!Number.isFinite(x)) {
-          req.flash(
-            "error",
-            "ค่า X ไม่ถูกต้อง",
-          );
-
-          return res.redirect(
-            "/board/certificates?tier=" +
-              encodeURIComponent(
-                tier,
-              ),
-          );
-        }
-
-        updateFields.push(
-          `name_x = $${idx}`,
-        );
-
-        params.push(x);
-
-        idx++;
-      }
-
-      // Y
-      if (
-        name_y !== undefined &&
-        name_y !== ""
-      ) {
-        const y =
-          parseFloat(name_y);
-
-        if (!Number.isFinite(y)) {
-          req.flash(
-            "error",
-            "ค่า Y ไม่ถูกต้อง",
-          );
-
-          return res.redirect(
-            "/board/certificates?tier=" +
-              encodeURIComponent(
-                tier,
-              ),
-          );
-        }
-
-        updateFields.push(
-          `name_y = $${idx}`,
-        );
-
-        params.push(y);
-
-        idx++;
-      }
-
-      // Font size
-      if (
-        name_font_size !== undefined &&
-        name_font_size !== ""
-      ) {
-        const fontSize =
-          parseInt(
-            name_font_size,
-            10,
-          );
+      if (sizeRaw !== "") {
+        fontSize = parseInt(sizeRaw, 10);
 
         if (
-          !Number.isInteger(
-            fontSize,
-          )
+          !Number.isInteger(fontSize) ||
+          fontSize < FONT_SIZE_MIN ||
+          fontSize > FONT_SIZE_MAX
         ) {
           req.flash(
             "error",
-            "ขนาดตัวอักษรไม่ถูกต้อง",
+            `ขนาดตัวอักษรต้องอยู่ระหว่าง ${FONT_SIZE_MIN}–${FONT_SIZE_MAX} px`,
           );
+          return res.redirect(back);
+        }
+      }
 
-          return res.redirect(
-            "/board/certificates?tier=" +
-              encodeURIComponent(
-                tier,
-              ),
-          );
+      const color = /^#[0-9a-fA-F]{6}$/.test(req.body.name_color || "")
+        ? req.body.name_color
+        : null;
+
+      // ---------------- บันทึก ----------------
+
+      const existing = await query(
+        "SELECT id FROM certificate_templates WHERE tier = $1 AND cert_type = $2 LIMIT 1",
+        [tier, certType],
+      );
+
+      if (existing.rows.length) {
+        await query(
+          `UPDATE certificate_templates
+           SET background_url = COALESCE($1, background_url),
+               name_x = $2,
+               name_y = $3,
+               name_font_size = $4,
+               name_color = $5
+           WHERE id = $6`,
+          [backgroundUrl, x, y, fontSize, color, existing.rows[0].id],
+        );
+      } else {
+        if (!backgroundUrl) {
+          req.flash("error", "กรุณาเลือกไฟล์ Background ก่อนบันทึกครั้งแรก");
+          return res.redirect(back);
         }
 
-        updateFields.push(
-          `name_font_size = $${idx}`,
-        );
-
-        params.push(
-          fontSize,
-        );
-
-        idx++;
-      }
-
-      // Font color
-      if (
-        name_color !== undefined &&
-        name_color !== ""
-      ) {
-        updateFields.push(
-          `name_color = $${idx}`,
-        );
-
-        params.push(
-          name_color,
-        );
-
-        idx++;
-      }
-
-      // ------------------------------------------------------------
-      // ไม่มีอะไรให้อัปเดต
-      // ------------------------------------------------------------
-
-      if (
-        updateFields.length === 0
-      ) {
-        req.flash(
-          "error",
-          "ไม่มีข้อมูลที่ต้องบันทึก",
-        );
-
-        return res.redirect(
-          "/board/certificates?tier=" +
-            encodeURIComponent(tier),
+        await query(
+          `INSERT INTO certificate_templates
+             (tier, cert_type, background_url, name_x, name_y, name_font_size, name_color)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [tier, certType, backgroundUrl, x, y, fontSize, color],
         );
       }
 
-      // ------------------------------------------------------------
-      // UPDATE โดยใช้ id จาก Database
-      // ------------------------------------------------------------
-
-      params.push(template.id);
-
-      await query(
-        `
-        UPDATE certificate_templates
-        SET ${updateFields.join(", ")}
-        WHERE id = $${idx}
-        `,
-        params,
-      );
-
-      req.flash(
-        "success",
-        "บันทึกเกียรติบัตรเรียบร้อยแล้ว",
-      );
-
-      return res.redirect(
-        "/board/certificates?tier=" +
-          encodeURIComponent(tier),
-      );
+      req.flash("success", "บันทึกเกียรติบัตรเรียบร้อยแล้ว");
+      return res.redirect(back);
     } catch (err) {
-      console.error(
-        "Save certificate template error:",
-        err,
-      );
-
-      req.flash(
-        "error",
-        "เกิดข้อผิดพลาดในการบันทึกเกียรติบัตร",
-      );
-
-      return res.redirect(
-        "/board/certificates?tier=" +
-          encodeURIComponent(
-            tier || "beginner",
-          ),
-      );
+      console.error("Save certificate template error:", err);
+      req.flash("error", "เกิดข้อผิดพลาดในการบันทึกเกียรติบัตร");
+      return res.redirect(back);
     }
   },
 );
