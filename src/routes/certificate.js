@@ -16,6 +16,7 @@ const ALLOWED_TYPES = [
   "silver",
   "bronze",
   "participation",
+  "coach",
   "rank_1",
   "rank_2",
   "rank_3",
@@ -166,6 +167,12 @@ function getStudentList(team) {
 
 function hasAnyStudentCheckedIn(team) {
   return getStudentList(team).some((student) => student.checkedIn);
+}
+
+function getCoachName(team) {
+  return String(team.coach || "")
+    .trim()
+    .replace(/\s+/g, " ");
 }
 
 // หานักเรียนจาก studentName หรือ student_id
@@ -414,16 +421,28 @@ async function validateCertificateRequest(req) {
     return fail(403, "ทีมนี้ยังไม่มีผู้เข้าแข่งขัน Check-in");
   }
 
-  // ---------------- Student ----------------
+  // ---------------- Student / Coach ----------------
 
-  const student = resolveStudent(team, req);
+  let student;
 
-  if (!student) {
-    return fail(400, "ไม่พบชื่อผู้เข้าแข่งขันในทีมนี้");
-  }
+  if (type === "coach") {
+    const coachName = getCoachName(team);
 
-  if (type === "participation" && !student.checkedIn) {
-    return fail(403, "ผู้เข้าแข่งขันยังไม่ได้ Check-in");
+    if (!coachName) {
+      return fail(400, "ทีมนี้ไม่มีชื่อโค้ช");
+    }
+
+    student = { number: "coach", name: coachName, checkedIn: true };
+  } else {
+    student = resolveStudent(team, req);
+
+    if (!student) {
+      return fail(400, "ไม่พบชื่อผู้เข้าแข่งขันในทีมนี้");
+    }
+
+    if (type === "participation" && !student.checkedIn) {
+      return fail(403, "ผู้เข้าแข่งขันยังไม่ได้ Check-in");
+    }
   }
 
   // ---------------- Score ----------------
@@ -616,6 +635,7 @@ function buildExtraText({
 
   const titles = {
     participation: "CERTIFICATE OF PARTICIPATION",
+    coach: "CERTIFICATE OF APPRECIATION",
     rank_1: "FIRST PLACE",
     rank_2: "SECOND PLACE",
     rank_3: "THIRD PLACE",
@@ -903,11 +923,12 @@ router.get("/search", async (req, res) => {
         SELECT *
         FROM teams
         WHERE
-          (
+            (
             LOWER(id) LIKE LOWER($1)
             OR LOWER(REPLACE(id, '_', ' ')) LIKE LOWER($2)
             OR LOWER(name) LIKE LOWER($3)
             OR LOWER(institution) LIKE LOWER($3)
+            OR LOWER(COALESCE(coach, '')) LIKE LOWER($3)
           )
         ORDER BY created_at ASC
         LIMIT 50
@@ -920,6 +941,18 @@ router.get("/search", async (req, res) => {
     if (!foundTeams.length) {
       return res.json({ teams: [] });
     }
+
+    // รุ่นที่มี template โค้ชแล้ว (ยังไม่อัปโหลด = ไม่แสดงปุ่ม)
+    const coachTplResult = await query(
+      `
+        SELECT tier
+        FROM certificate_templates
+        WHERE cert_type = 'coach'
+          AND COALESCE(background_url, '') <> ''
+      `,
+      [],
+    );
+    const coachTemplateTiers = new Set(coachTplResult.rows.map((r) => r.tier));
 
     // ดึงข้อมูลครั้งเดียวต่อ tier แทนการ query ซ้ำทุกทีม
     const tiers = [...new Set(foundTeams.map((t) => t.tier))];
@@ -979,27 +1012,37 @@ router.get("/search", async (req, res) => {
       const maxScore = maxScoreByTier.get(team.tier) || 0;
       const bestScore = getBestScore(scoresByTeam.get(String(team.id)));
       const medal = getMedalType(bestScore, maxScore);
+            const checkedIn = hasAnyStudentCheckedIn(team);
+            const coachName = getCoachName(team);
 
-      return {
-        id: team.id,
-        name: team.name,
-        institution: team.institution,
-        tier: team.tier,
+            return {
+              id: team.id,
+              name: team.name,
+              institution: team.institution,
+              tier: team.tier,
 
-        rank,
+              rank,
 
-        students,
+              students,
 
-        team_cert_types: teamCertTypes,
+              coach: coachName
+                ? {
+                    name: coachName,
+                    checked_in: checkedIn,
+                    has_template: coachTemplateTiers.has(team.tier),
+                  }
+                : null,
 
-        best_score: bestScore,
-        max_score: maxScore,
+              team_cert_types: teamCertTypes,
 
-        medal,
-        medalLabel: getMedalLabel(medal),
+              best_score: bestScore,
+              max_score: maxScore,
 
-        checkedIn: hasAnyStudentCheckedIn(team),
-      };
+              medal,
+              medalLabel: getMedalLabel(medal),
+
+              checkedIn,
+            };
     });
 
     return res.json({ teams });
@@ -1031,12 +1074,15 @@ router.get("/download", async (req, res) => {
       return res.redirect(backToCertificatePage(teamId));
     }
 
-    const params = new URLSearchParams({
-      team_id: String(result.team.id),
-      type: result.type,
-      student_id: String(result.student.number),
-      format: parseFormat(req.query.format),
-    });
+        const params = new URLSearchParams({
+          team_id: String(result.team.id),
+          type: result.type,
+          format: parseFormat(req.query.format),
+        });
+
+        if (result.type !== "coach") {
+          params.set("student_id", String(result.student.number));
+        }
 
     return res.redirect(`/certificate/generate?${params.toString()}`);
   } catch (err) {
@@ -1098,7 +1144,10 @@ router.get("/generate", async (req, res) => {
     const file =
       format === "pdf" ? await pngToPdf(png, canvas.isPortrait) : png;
 
-    const filename = `certificate-${team.id}-${type}-${student.number}.${format}`;
+        const filename =
+          type === "coach"
+            ? `certificate-${team.id}-coach.${format}`
+            : `certificate-${team.id}-${type}-${student.number}.${format}`;
     const asciiFallback = filename
       .replace(/[^\x20-\x7E]/g, "_")
       .replace(/"/g, "");

@@ -873,6 +873,26 @@
             background: #92400E;
         }
 
+                .coach-row {
+            background: #F8FBFF;
+        }
+
+        .coach-row .student-num {
+            background: #DBEAFE;
+            color: #2563EB;
+            font-size: 16px;
+        }
+
+        .btn-coach {
+            background: #EFF6FF;
+            border: 1.5px solid #BFDBFE;
+            color: #2563EB;
+        }
+
+        .btn-coach:hover {
+            background: #DBEAFE;
+        }
+
         @media (prefers-reduced-motion: reduce) {
 
             *,
@@ -1174,14 +1194,14 @@
         <div class="hero">
             <div class="hero-icon" aria-hidden="true"><i class="ti ti-certificate"></i></div>
             <h1 class="hero-title">ดาวน์โหลด<span>เกียรติบัตร</span></h1>
-            <div class="hero-sub">ค้นหาด้วย ID ทีม ชื่อทีม หรือชื่อโรงเรียน</div>
+            <div class="hero-sub">ค้นหาด้วย ID ทีม ชื่อทีม ชื่อโรงเรียน หรือชื่อโค้ช</div>
         </div>
 
         <form class="search-card" id="searchForm" role="search">
             <div class="search-row">
                 <label class="search-input-wrap">
                     <i class="ti ti-search"></i>
-                    <input type="search" id="searchInput" placeholder="พิมพ์ ID ทีม / ชื่อทีม / ชื่อโรงเรียน..."
+                    <input type="search" id="searchInput" placeholder="พิมพ์ ID ทีม / ชื่อทีม / โรงเรียน / ชื่อโค้ช..."
                         autocomplete="off" aria-label="ค้นหาทีม">
                 </label>
                 <button type="submit" class="btn-search" id="searchBtn">
@@ -1297,6 +1317,29 @@
                 return html;
             }
 
+                        function coachHtml(team) {
+                var coach = team.coach;
+                if (!coach || !coach.has_template) return '';
+
+                var html = '<div class="student-row coach-row">' +
+                    '<div class="student-num"><i class="ti ti-user"></i></div>' +
+                    '<div class="student-info">' +
+                    '<div class="student-name">' + esc(coach.name) + '</div>' +
+                    '<div class="student-sub">โค้ช</div>' +
+                    '</div>' +
+                    '<div class="cert-btns">';
+
+                if (coach.checked_in) {
+                    html += '<a class="btn-cert btn-coach" target="_blank" rel="noopener" href="/certificate/download?' +
+                        qs({ teamId: team.id, certType: 'coach' }) + '">' +
+                        '<i class="ti ti-download"></i> เกียรติบัตรโค้ช</a>';
+                } else {
+                    html += '<span class="not-checked"><i class="ti ti-clock"></i> ทีมยังไม่ได้เข้าร่วมงานแข่งขัน</span>';
+                }
+
+                return html + '</div></div>';
+            }
+
             function teamHtml(team) {
                 var tierKey = TIERS[team.tier] ? team.tier : 'advance';
                 var students = team.students || [];
@@ -1318,6 +1361,8 @@
                 } else {
                     students.forEach(function (s, i) { html += studentHtml(team, s, i, medalBlock); });
                 }
+
+                html += coachHtml(team);
 
                 return html + '</article>';
             }
