@@ -3,6 +3,11 @@
       style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
       <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
     </span></div>
+    <a href="/board/export?tier=<%= tier %>" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+              background:#16a34a;color:#fff;border-radius:8px;text-decoration:none;
+              font-weight:500;font-size:14px;">
+      ดาวน์โหลด Excel
+    </a>
   <div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#16A34A">
     <i class="ti ti-point-filled" style="font-size:14px"></i>Live
   </div>

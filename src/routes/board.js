@@ -5,6 +5,7 @@ const { requireLogin } = require("../middleware/auth");
 const cloudinary = require("../config/cloudinary");
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const ExcelJS = require("exceljs");
 
 const certStorage = new CloudinaryStorage({
   cloudinary,
@@ -121,6 +122,125 @@ router.get("/", requireLogin, async (req, res) => {
     console.error(err);
     // ห้าม redirect กลับ /board (จะวนไม่จบ)
     res.status(500).send("ไม่สามารถโหลดผลคะแนนได้");
+  }
+});
+
+// ============================================================================
+// GET /board/export?tier=beginner
+// ดาวน์โหลดสรุปผลเป็น Excel
+// สิทธิ์เหมือนหน้า board: admin เลือก tier ได้ / กรรมการได้แค่ tier ของตัวเอง
+// ============================================================================
+
+// ปรับ key ให้ตรงกับค่าจริงใน teams.status
+const TEAM_STATUS_LABEL = {
+  approved: "เสร็จสิ้น",
+  pending: "รอพิจารณา",
+};
+
+function toNum(v) {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+function publishLabel(score, published) {
+  if (score === null) return "";
+  return published ? "เผยแพร่" : "ซ่อนอยู่";
+}
+
+router.get("/export", requireLogin, async (req, res) => {
+  const user = req.session.user;
+  const tier = user.role === "admin" ? safeTier(req.query.tier) : user.tier;
+
+  try {
+    const [ranked, maxScore] = await Promise.all([
+      getRanked(tier),
+      getMaxScore(tier),
+    ]);
+
+    const tierLabel = tier.charAt(0).toUpperCase() + tier.slice(1);
+
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "Robo Challenge League";
+    const ws = wb.addWorksheet(tierLabel);
+
+    ws.columns = [
+      { header: "อันดับ", key: "rank", width: 8 },
+      { header: "ชื่อทีม", key: "name", width: 34 },
+      { header: "โรงเรียน/สังกัด", key: "institution", width: 32 },
+      { header: "รอบที่ 1 (คะแนน)", key: "r1_score", width: 16 },
+      { header: "รอบที่ 1 (เวลา วิ)", key: "r1_time", width: 16 },
+      { header: "รอบที่ 1 สถานะ", key: "r1_pub", width: 14 },
+      { header: "รอบที่ 2 (คะแนน)", key: "r2_score", width: 16 },
+      { header: "รอบที่ 2 (เวลา วิ)", key: "r2_time", width: 16 },
+      { header: "รอบที่ 2 สถานะ", key: "r2_pub", width: 14 },
+      { header: "คะแนนที่ดีที่สุด", key: "best_score", width: 16 },
+      { header: "เวลาที่ใช้ (วิ)", key: "best_time", width: 14 },
+      { header: "คะแนนเต็ม", key: "max_score", width: 12 },
+      { header: "สถานะทีม", key: "status", width: 14 },
+    ];
+
+    ranked.forEach(function (r, i) {
+      const r1 = toNum(r.r1_score);
+      const r2 = toNum(r.r2_score);
+      const hasScore = r1 !== null || r2 !== null;
+
+      ws.addRow({
+        rank: i + 1,
+        name: r.name,
+        institution: r.institution || "",
+        r1_score: r1,
+        r1_time: toNum(r.r1_time),
+        r1_pub: publishLabel(r1, r.r1_published),
+        r2_score: r2,
+        r2_time: toNum(r.r2_time),
+        r2_pub: publishLabel(r2, r.r2_published),
+        // GREATEST(COALESCE(...,0)) ให้ 0 เสมอ → ถ้ายังไม่มีคะแนนเลยให้เว้นว่าง
+        best_score: hasScore ? toNum(r.best_score) : null,
+        best_time: hasScore ? toNum(r.best_time) : null,
+        max_score: maxScore,
+        status: TEAM_STATUS_LABEL[r.status] || r.status || "",
+      });
+    });
+
+    const header = ws.getRow(1);
+    header.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    header.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FF1E293B" },
+    };
+    header.alignment = {
+      vertical: "middle",
+      horizontal: "center",
+      wrapText: true,
+    };
+    header.height = 28;
+
+    ws.getColumn("rank").alignment = { horizontal: "center" };
+    ws.views = [{ state: "frozen", ySplit: 1 }];
+    ws.autoFilter = { from: "A1", to: "M1" };
+
+    const date = new Date().toISOString().slice(0, 10);
+    const asciiName = `RCL_${tierLabel}_${date}.xlsx`;
+    const thaiName = `RCL_สรุปผล_${tierLabel}_${date}.xlsx`;
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${asciiName}"; filename*=UTF-8''${encodeURIComponent(thaiName)}`,
+    );
+
+    await wb.xlsx.write(res);
+    return res.end();
+  } catch (err) {
+    console.error("Export board error:", err);
+    if (!res.headersSent) {
+      return res.status(500).send("ส่งออกไฟล์ Excel ไม่สำเร็จ");
+    }
   }
 });
 
