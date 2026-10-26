@@ -6,6 +6,7 @@ const cloudinary = require("../config/cloudinary");
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const ExcelJS = require("exceljs");
+const { formatTime } = require("../utils/time");
 
 const certStorage = new CloudinaryStorage({
   cloudinary,
@@ -51,6 +52,11 @@ function requireAdmin(req, res, next) {
   }
   req.flash("error", "เฉพาะผู้ดูแลระบบเท่านั้น");
   return res.redirect("/board");
+}
+
+// admin + viewer (ผู้ดูข้อมูล) สลับดูได้ทุกรุ่น / กรรมการดูได้แค่รุ่นตัวเอง
+function canSeeAllTiers(user) {
+  return Boolean(user) && (user.role === "admin" || user.role === "viewer");
 }
 
 // ============================================================================
@@ -102,7 +108,7 @@ async function getMaxScore(tier) {
 
 router.get("/", requireLogin, async (req, res) => {
   const user = req.session.user;
-  const tier = user.role === "admin" ? safeTier(req.query.tier) : user.tier;
+  const tier = canSeeAllTiers(user) ? safeTier(req.query.tier) : user.tier;
 
   try {
     const [ranked, maxScore] = await Promise.all([
@@ -151,7 +157,7 @@ function publishLabel(score, published) {
 
 router.get("/export", requireLogin, async (req, res) => {
   const user = req.session.user;
-  const tier = user.role === "admin" ? safeTier(req.query.tier) : user.tier;
+  const tier = canSeeAllTiers(user) ? safeTier(req.query.tier) : user.tier;
 
   try {
     const [ranked, maxScore] = await Promise.all([
@@ -170,13 +176,13 @@ router.get("/export", requireLogin, async (req, res) => {
       { header: "ชื่อทีม", key: "name", width: 34 },
       { header: "โรงเรียน/สังกัด", key: "institution", width: 32 },
       { header: "รอบที่ 1 (คะแนน)", key: "r1_score", width: 16 },
-      { header: "รอบที่ 1 (เวลา วิ)", key: "r1_time", width: 16 },
+      { header: "รอบที่ 1 (เวลา)", key: "r1_time", width: 16 },
       { header: "รอบที่ 1 สถานะ", key: "r1_pub", width: 14 },
       { header: "รอบที่ 2 (คะแนน)", key: "r2_score", width: 16 },
-      { header: "รอบที่ 2 (เวลา วิ)", key: "r2_time", width: 16 },
+      { header: "รอบที่ 2 (เวลา)", key: "r2_time", width: 16 },
       { header: "รอบที่ 2 สถานะ", key: "r2_pub", width: 14 },
       { header: "คะแนนที่ดีที่สุด", key: "best_score", width: 16 },
-      { header: "เวลาที่ใช้ (วิ)", key: "best_time", width: 14 },
+      { header: "เวลาที่ใช้", key: "best_time", width: 14 },
       { header: "คะแนนเต็ม", key: "max_score", width: 12 },
       { header: "สถานะทีม", key: "status", width: 14 },
     ];
@@ -191,14 +197,14 @@ router.get("/export", requireLogin, async (req, res) => {
         name: r.name,
         institution: r.institution || "",
         r1_score: r1,
-        r1_time: toNum(r.r1_time),
+        r1_time: formatTime(r.r1_time),
         r1_pub: publishLabel(r1, r.r1_published),
         r2_score: r2,
-        r2_time: toNum(r.r2_time),
+        r2_time: formatTime(r.r2_time),
         r2_pub: publishLabel(r2, r.r2_published),
         // GREATEST(COALESCE(...,0)) ให้ 0 เสมอ → ถ้ายังไม่มีคะแนนเลยให้เว้นว่าง
         best_score: hasScore ? toNum(r.best_score) : null,
-        best_time: hasScore ? toNum(r.best_time) : null,
+        best_time: hasScore ? formatTime(r.best_time) : "",
         max_score: maxScore,
         status: TEAM_STATUS_LABEL[r.status] || r.status || "",
       });
@@ -219,6 +225,9 @@ router.get("/export", requireLogin, async (req, res) => {
     header.height = 28;
 
     ws.getColumn("rank").alignment = { horizontal: "center" };
+    ["r1_time", "r2_time", "best_time"].forEach(function (k) {
+      ws.getColumn(k).alignment = { horizontal: "center" };
+    });
     ws.views = [{ state: "frozen", ySplit: 1 }];
     ws.autoFilter = { from: "A1", to: "M1" };
 

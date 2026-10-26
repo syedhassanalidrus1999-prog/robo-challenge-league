@@ -51,6 +51,10 @@ app.use((req, res, next) => {
   next()
 })
 
+const { viewerGuard } = require("./middleware/viewer");   // ← ใหม่
+app.use(viewerGuard);                                      // ← ใหม่
+
+
 // ── Routes ───────────────────────────────────
 app.use('/', require('./routes/public'))
 app.use('/auth', require('./routes/auth'))
