@@ -570,6 +570,51 @@ router.post(
 );
 
 // ============================================================================
+// POST /board/scores/:teamId/:round/clear
+// ล้างคะแนนของทีม 1 รอบ (เฉพาะ admin)
+// ส่ง ?back=scores เพื่อกลับไปหน้า /scores, ไม่ส่ง = กลับหน้า /board
+// ============================================================================
+
+router.post(
+  "/scores/:teamId/:round/clear",
+  requireLogin,
+  requireAdmin,
+  async (req, res) => {
+    // team id เป็นข้อความ เช่น T007_B
+    const teamId = String(req.params.teamId || "").trim();
+    const round = parseInt(req.params.round, 10);
+    const tier = safeTier(req.query.tier);
+    const back =
+      (req.query.back === "scores" ? "/scores" : "/board") + "?tier=" + tier;
+
+    if (!teamId || (round !== 1 && round !== 2)) {
+      req.flash("error", "ข้อมูลไม่ถูกต้อง");
+      return res.redirect(back);
+    }
+
+    try {
+      const result = await query(
+        `DELETE FROM scores
+         WHERE team_id = $1 AND round = $2
+         RETURNING id`,
+        [teamId, round],
+      );
+
+      if (!result.rows.length) {
+        req.flash("error", "ทีมนี้ยังไม่มีคะแนนรอบที่ " + round);
+      } else {
+        req.flash("success", "ล้างคะแนนรอบที่ " + round + " แล้ว");
+      }
+    } catch (err) {
+      console.error("Clear score error:", err);
+      req.flash("error", "ล้างคะแนนไม่สำเร็จ");
+    }
+
+    return res.redirect(back);
+  },
+);
+
+// ============================================================================
 // GET /board/certificates
 // ============================================================================
 
