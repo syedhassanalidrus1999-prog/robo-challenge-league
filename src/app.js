@@ -5,8 +5,10 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const methodOverride = require('method-override')
 const path = require('path')
-
 const app = express()
+const { formatTime } = require("./utils/time");
+app.locals.formatTime = formatTime;
+
 
 // ── View engine ──────────────────────────────
 app.set('view engine', 'ejs')

@@ -27,6 +27,7 @@ const TIERS = ["beginner", "intermediate", "advance"];
 
 const CERT_TYPES = [
   "participation",
+  "coach",
   "rank_1",
   "rank_2",
   "rank_3",

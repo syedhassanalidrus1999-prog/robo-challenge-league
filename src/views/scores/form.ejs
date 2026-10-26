@@ -395,6 +395,67 @@
       outline: none;
     }
 
+    /* Time: นาที . วินาที . มิลลิวินาที */
+    .time-row,
+    .time-labels {
+      display: grid;
+      grid-template-columns: 1fr 14px 1fr 14px 1.3fr;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .time-part {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      padding: 0 4px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #0F172A;
+      font-family: 'Sarabun', sans-serif;
+      background: #fff;
+      -moz-appearance: textfield;
+    }
+
+    .time-part::-webkit-outer-spin-button,
+    .time-part::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .time-part.invalid {
+      border-color: #DC2626;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, .08);
+    }
+
+    .time-dot {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 900;
+      color: #94A3B8;
+    }
+
+    .time-labels {
+      margin-top: 4px;
+      font-size: 11px;
+      color: #94A3B8;
+      text-align: center;
+    }
+
+    .time-preview {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #64748B;
+      text-align: center;
+      min-height: 16px;
+    }
+
+    .time-preview.error {
+      color: #DC2626;
+      font-weight: 700;
+    }
+
     /* Photo */
     .photo-preview {
       max-height: 300px;
@@ -637,70 +698,88 @@
                   <!-- RIGHT: sidebar -->
                   <div>
 
-                    <!-- เวลา -->
-                    <div class="side-card">
-                      <div class="side-title"><i class="ti ti-clock"></i> เวลา (วินาที)</div>
-                      <input type="number" name="time_seconds" class="fi" step="0.01" min="0"
-                        value="<%= existing && existing.time_seconds !== null && existing.time_seconds !== undefined ? parseFloat(existing.time_seconds).toFixed(2) : '' %>"
-                        placeholder="เช่น 45.30">
-                    </div>
-
-                    <!-- รูปภาพ -->
-                    <div class="side-card">
-                      <div class="side-title"><i class="ti ti-photo"></i> รูปภาพสนาม</div>
-                      <% if (existing && existing.photo_url) { %>
-                        <div style="margin-bottom:10px">
-                          <img src="<%= existing.photo_url %>" class="photo-preview"
-                            data-src="<%= existing.photo_url %>" onclick="openLightbox(this.dataset.src)"
-                            title="คลิกเพื่อดูรูปเต็ม" style="margin-bottom:0">
-                          <div style="text-align:center;font-size:11px;color:#64748B;margin-top:6px">
-                            <i class="ti ti-zoom-in"></i> คลิกที่รูปเพื่อดูภาพเต็ม
-                          </div>
+                    <!-- เวลา: นาที . วินาที . มิลลิวินาที -->
+                    <% var tTotalMs=null; if (existing && existing.time_seconds !==null && existing.time_seconds
+                      !==undefined && existing.time_seconds !=='' ) {
+                      tTotalMs=Math.round(parseFloat(existing.time_seconds) * 1000); if (isNaN(tTotalMs)) tTotalMs=null;
+                      } var tMinV=tTotalMs===null ? '' : Math.floor(tTotalMs / 60000); var tSecV=tTotalMs===null ? '' :
+                      Math.floor((tTotalMs % 60000) / 1000); var tMsV=tTotalMs===null ? '' : (tTotalMs % 1000); %>
+                      <div class="side-card">
+                        <div class="side-title"><i class="ti ti-clock"></i> เวลา</div>
+                        <div class="time-row">
+                          <input type="number" id="timeMin" name="time_min" class="fi time-part" min="0" step="1"
+                            inputmode="numeric" placeholder="0" value="<%= tMinV %>">
+                          <span class="time-dot">.</span>
+                          <input type="number" id="timeSec" name="time_sec" class="fi time-part" min="0" max="59"
+                            step="1" inputmode="numeric" placeholder="00" value="<%= tSecV %>">
+                          <span class="time-dot">.</span>
+                          <input type="number" id="timeMs" name="time_ms" class="fi time-part" min="0" max="999"
+                            step="1" inputmode="numeric" placeholder="000" value="<%= tMsV %>">
                         </div>
-                        <% } %>
-                          <input type="file" name="photo" accept="image/*" class="fi" style="padding:6px">
-                    </div>
-
-                    <!-- ลายเซ็น -->
-                    <div class="side-card">
-                      <div class="side-title"><i class="ti ti-signature"></i> ลายเซ็นผู้แข่งขัน</div>
-
-                      <% if (existing && existing.signature_url) { %>
-                        <div style="margin-bottom:10px">
-                          <img src="<%= existing.signature_url %>" data-src="<%= existing.signature_url %>"
-                            onclick="openLightbox(this.dataset.src)"
-                            style="width:100%;border-radius:8px;border:1px solid #E2E8F0;cursor:zoom-in;background:#fff">
-                          <div style="font-size:11px;color:#94A3B8;margin-top:4px;text-align:center">ลายเซ็นเดิม
-                            (วาดใหม่เพื่อเปลี่ยน)</div>
+                        <div class="time-labels">
+                          <span>นาที</span><span></span><span>วินาที</span><span></span><span>มิลลิวินาที</span>
                         </div>
-                        <% } %>
-
-                          <div class="sig-canvas-wrap">
-                            <canvas id="sigCanvas" width="280" height="140"></canvas>
-                          </div>
-                          <div class="sig-actions">
-                            <button type="button" class="btn btn-outline btn-sm" onclick="clearSig()">
-                              <i class="ti ti-eraser"></i> ล้าง
-                            </button>
-                            <span id="sigStatus"
-                              style="font-size:11px;color:#94A3B8;align-self:center">ยังไม่ได้เซ็น</span>
-                          </div>
-                          <input type="hidden" name="signature_data" id="sigData">
-                    </div>
-
-                    <!-- Total -->
-                    <div class="side-card"
-                      style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-color:#BFDBFE">
-                      <div class="side-title" style="color:#1D4ED8"><i class="ti ti-calculator"></i> คะแนนรวม</div>
-                      <div style="font-size:36px;font-weight:900;color:#1D4ED8;text-align:center" id="totalScore">0.0
+                        <div class="time-preview" id="timePreview"></div>
+                        <!-- ค่าที่ส่งไป server เป็นวินาที เช่น 83.456 -->
+                        <input type="hidden" name="time_seconds" id="timeSeconds">
                       </div>
-                      <div style="text-align:center;font-size:12px;color:#64748B">จาก <%= maxScore %> คะแนน</div>
-                    </div>
 
-                    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:14px"
-                      onclick="prepareSubmit()">
-                      <i class="ti ti-device-floppy"></i> บันทึกคะแนนรอบที่ <%= round %>
-                    </button>
+                      <!-- รูปภาพ -->
+                      <div class="side-card">
+                        <div class="side-title"><i class="ti ti-photo"></i> รูปภาพสนาม</div>
+                        <% if (existing && existing.photo_url) { %>
+                          <div style="margin-bottom:10px">
+                            <img src="<%= existing.photo_url %>" class="photo-preview"
+                              data-src="<%= existing.photo_url %>" onclick="openLightbox(this.dataset.src)"
+                              title="คลิกเพื่อดูรูปเต็ม" style="margin-bottom:0">
+                            <div style="text-align:center;font-size:11px;color:#64748B;margin-top:6px">
+                              <i class="ti ti-zoom-in"></i> คลิกที่รูปเพื่อดูภาพเต็ม
+                            </div>
+                          </div>
+                          <% } %>
+                            <input type="file" name="photo" accept="image/*" class="fi" style="padding:6px">
+                      </div>
+
+                      <!-- ลายเซ็น -->
+                      <div class="side-card">
+                        <div class="side-title"><i class="ti ti-signature"></i> ลายเซ็นผู้แข่งขัน</div>
+
+                        <% if (existing && existing.signature_url) { %>
+                          <div style="margin-bottom:10px">
+                            <img src="<%= existing.signature_url %>" data-src="<%= existing.signature_url %>"
+                              onclick="openLightbox(this.dataset.src)"
+                              style="width:100%;border-radius:8px;border:1px solid #E2E8F0;cursor:zoom-in;background:#fff">
+                            <div style="font-size:11px;color:#94A3B8;margin-top:4px;text-align:center">ลายเซ็นเดิม
+                              (วาดใหม่เพื่อเปลี่ยน)</div>
+                          </div>
+                          <% } %>
+
+                            <div class="sig-canvas-wrap">
+                              <canvas id="sigCanvas" width="280" height="140"></canvas>
+                            </div>
+                            <div class="sig-actions">
+                              <button type="button" class="btn btn-outline btn-sm" onclick="clearSig()">
+                                <i class="ti ti-eraser"></i> ล้าง
+                              </button>
+                              <span id="sigStatus"
+                                style="font-size:11px;color:#94A3B8;align-self:center">ยังไม่ได้เซ็น</span>
+                            </div>
+                            <input type="hidden" name="signature_data" id="sigData">
+                      </div>
+
+                      <!-- Total -->
+                      <div class="side-card"
+                        style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border-color:#BFDBFE">
+                        <div class="side-title" style="color:#1D4ED8"><i class="ti ti-calculator"></i> คะแนนรวม</div>
+                        <div style="font-size:36px;font-weight:900;color:#1D4ED8;text-align:center" id="totalScore">0.0
+                        </div>
+                        <div style="text-align:center;font-size:12px;color:#64748B">จาก <%= maxScore %> คะแนน</div>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary"
+                        style="width:100%;justify-content:center;padding:14px" onclick="prepareSubmit()">
+                        <i class="ti ti-device-floppy"></i> บันทึกคะแนนรอบที่ <%= round %>
+                      </button>
 
                   </div>
                 </div>
@@ -802,6 +881,76 @@
     // คำนวณทันทีเมื่อเปิดหน้า
     document.querySelectorAll('.full-input').forEach(function (input) {
       updateMissionTotal(input.dataset.n);
+    });
+
+    // ── Time: นาที . วินาที . มิลลิวินาที → วินาที ───────────────────────
+    var timeMin = document.getElementById('timeMin');
+    var timeSec = document.getElementById('timeSec');
+    var timeMs = document.getElementById('timeMs');
+    var timeSeconds = document.getElementById('timeSeconds');
+    var timePreview = document.getElementById('timePreview');
+
+    function padNum(n, w) {
+      var s = String(n);
+      while (s.length < w) s = '0' + s;
+      return s;
+    }
+
+    function readPart(input, maxVal) {
+      var v = String(input.value || '').trim();
+      if (v === '') return 0;
+      var n = Number(v);
+      if (!Number.isInteger(n) || n < 0 || (maxVal !== null && n > maxVal)) return NaN;
+      return n;
+    }
+
+    // คืน null = ไม่ได้กรอก, false = ไม่ถูกต้อง, ตัวเลข = วินาที
+    function updateTime() {
+      var allEmpty = !String(timeMin.value).trim() && !String(timeSec.value).trim() && !String(timeMs.value).trim();
+
+      timeMin.classList.remove('invalid');
+      timeSec.classList.remove('invalid');
+      timeMs.classList.remove('invalid');
+      timePreview.classList.remove('error');
+
+      if (allEmpty) {
+        timeSeconds.value = '';
+        timePreview.textContent = 'ยังไม่ได้กรอกเวลา';
+        return null;
+      }
+
+      var m = readPart(timeMin, null);
+      var s = readPart(timeSec, 59);
+      var x = readPart(timeMs, 999);
+
+      if (isNaN(m)) timeMin.classList.add('invalid');
+      if (isNaN(s)) timeSec.classList.add('invalid');
+      if (isNaN(x)) timeMs.classList.add('invalid');
+
+      if (isNaN(m) || isNaN(s) || isNaN(x)) {
+        timeSeconds.value = '';
+        timePreview.textContent = 'วินาที 0–59 และมิลลิวินาที 0–999';
+        timePreview.classList.add('error');
+        return false;
+      }
+
+      var total = (m * 60000 + s * 1000 + x) / 1000;
+      timeSeconds.value = total.toFixed(3);
+      timePreview.textContent = m + '.' + padNum(s, 2) + '.' + padNum(x, 3) + '  (' + total.toFixed(3) + ' วินาที)';
+      return total;
+    }
+
+    [timeMin, timeSec, timeMs].forEach(function (input) {
+      input.addEventListener('input', updateTime);
+    });
+    updateTime();
+
+    document.getElementById('scoreForm').addEventListener('submit', function (e) {
+      if (updateTime() === false) {
+        e.preventDefault();
+        timePreview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        alert('เวลาไม่ถูกต้อง: วินาทีต้องอยู่ระหว่าง 0–59 และมิลลิวินาที 0–999');
+      }
     });
 
     // ── Signature pad ────────────────────────────────────────────────────────────

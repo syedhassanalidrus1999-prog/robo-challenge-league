@@ -9,6 +9,7 @@ const {
 const cloudinary = require("../config/cloudinary");
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { partsToSeconds } = require("../utils/time");
 
 const storage = new CloudinaryStorage({
   cloudinary,
@@ -56,6 +57,40 @@ function parsePieces(value) {
 
 function round2(value) {
   return Math.round(value * 100) / 100;
+}
+
+// เวลาเก็บถึงมิลลิวินาที (ทศนิยม 3 ตำแหน่ง)
+function round3(value) {
+  return Math.round(value * 1000) / 1000;
+}
+
+function firstValue(value) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+// อ่านเวลาจากฟอร์ม
+// 1. ใช้ช่อง นาที / วินาที / มิลลิวินาที เป็นหลัก (ทำงานแม้ JS ฝั่ง browser ไม่ทำงาน)
+// 2. ถ้าไม่มีช่องแยก ใช้ hidden time_seconds แทน
+// คืน null = ไม่ได้กรอก, NaN = ไม่ถูกต้อง, ตัวเลข = วินาที
+function readTimeSeconds(body) {
+  const hasParts =
+    body.time_min !== undefined ||
+    body.time_sec !== undefined ||
+    body.time_ms !== undefined;
+
+  if (hasParts) {
+    return partsToSeconds(
+      firstValue(body.time_min),
+      firstValue(body.time_sec),
+      firstValue(body.time_ms),
+    );
+  }
+
+  const raw = String(firstValue(body.time_seconds) ?? "").trim();
+  if (raw === "") return null;
+
+  const n = parseFloat(raw);
+  return Number.isFinite(n) && n >= 0 ? round3(n) : NaN;
 }
 
 function calcMaxScore(criteria) {
@@ -202,7 +237,7 @@ router.get(
       const criteria = criteriaResult.rows;
       const existing = existingResult.rows[0] || null;
 
-      res.render("scores/form", {
+      return res.render("scores/form", {
         layout: false,
         title: "ลงคะแนน " + team.name + " รอบ " + round,
         pageTitle: "<span>ลงคะแนน</span> — รอบที่ " + round,
@@ -218,7 +253,7 @@ router.get(
     } catch (err) {
       console.error(err);
       req.flash("error", "เกิดข้อผิดพลาด");
-      res.redirect("/scores");
+      return res.redirect("/scores");
     }
   },
 );
@@ -239,6 +274,8 @@ router.post(
       return res.redirect("/scores");
     }
 
+    const formUrl = "/scores/" + encodeURIComponent(teamId) + "/" + round;
+
     try {
       const teamResult = await query("SELECT * FROM teams WHERE id = $1", [
         teamId,
@@ -253,6 +290,18 @@ router.post(
         return res.redirect("/scores");
       }
 
+      // ---------------- เวลา (นาที . วินาที . มิลลิวินาที) ----------------
+      // ตรวจก่อนอัปโหลดลายเซ็น จะได้ไม่อัปโหลดทิ้งเปล่า ๆ ถ้าเวลาผิด
+
+      const timeSeconds = readTimeSeconds(req.body);
+      if (Number.isNaN(timeSeconds)) {
+        req.flash(
+          "error",
+          "เวลาไม่ถูกต้อง (วินาที 0–59, มิลลิวินาที 0–999) — ยังไม่ได้บันทึก",
+        );
+        return res.redirect(formUrl);
+      }
+
       const criteriaResult = await query(CRITERIA_BY_TIER_SQL, [team.tier]);
 
       // ---------------- คะแนน ----------------
@@ -265,21 +314,13 @@ router.post(
       const empty = { total: 0, full: 0, partial: 0 };
       const legacy = [0, 1, 2, 3, 4].map((i) => details[i] || empty);
 
-      // ---------------- เวลา ----------------
-
-      const timeRaw = parseFloat(req.body.time_seconds);
-      const timeSeconds =
-        Number.isFinite(timeRaw) && timeRaw >= 0 ? round2(timeRaw) : null;
-
       // ---------------- รูป / ลายเซ็น ----------------
 
       const photoUrl =
         req.files && req.files.photo ? req.files.photo[0].path : null;
 
       let signatureUrl = null;
-      const sigData = Array.isArray(req.body.signature_data)
-        ? req.body.signature_data[0]
-        : req.body.signature_data;
+      const sigData = firstValue(req.body.signature_data);
 
       if (
         sigData &&
@@ -350,11 +391,11 @@ router.post(
           totalScore +
           " คะแนน)",
       );
-      res.redirect("/scores");
+      return res.redirect("/scores");
     } catch (err) {
       console.error("SCORE POST ERROR:", err.message, err.stack);
       req.flash("error", "ไม่สามารถบันทึกคะแนนได้");
-      res.redirect("/scores");
+      return res.redirect("/scores");
     }
   },
 );
