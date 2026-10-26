@@ -778,6 +778,18 @@
             opacity: .88;
         }
 
+        /* สถานะกำลังสร้างไฟล์ */
+        .is-downloading {
+            opacity: .65;
+            pointer-events: none;
+            cursor: wait;
+        }
+
+        .is-downloading .ti-loader-2 {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
         .not-checked {
             display: inline-flex;
             align-items: center;
@@ -873,7 +885,7 @@
             background: #92400E;
         }
 
-                .coach-row {
+        .coach-row {
             background: #F8FBFF;
         }
 
@@ -1219,6 +1231,63 @@
     </main>
 
     <script>
+        /* ================= CERTIFICATE DOWNLOAD (หน้าเดิม ไม่เปิดแท็บใหม่) ================= */
+        // ลิงก์ทุกปุ่มชี้ไป /certificate/download (ใช้ได้แม้ JS ไม่ทำงาน)
+        // เมื่อ JS ทำงาน จะ fetch จาก /certificate/generate โดยตรง
+        // เพื่อให้ได้ข้อความ error จริงจาก server แทนการถูก redirect กลับมาเงียบ ๆ
+        function downloadCert(url, btn) {
+            if (btn && btn.classList.contains('is-downloading')) return;
+
+            var originalHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.classList.add('is-downloading');
+                btn.setAttribute('aria-busy', 'true');
+                btn.innerHTML = '<i class="ti ti-loader-2"></i> กำลังสร้างเกียรติบัตร…';
+            }
+
+            function done() {
+                if (!btn) return;
+                btn.classList.remove('is-downloading');
+                btn.removeAttribute('aria-busy');
+                btn.innerHTML = originalHtml;
+            }
+
+            var generateUrl = url.replace('/certificate/download', '/certificate/generate');
+
+            fetch(generateUrl, { credentials: 'same-origin' })
+                .then(function (res) {
+                    var type = res.headers.get('content-type') || '';
+                    var isFile = type.indexOf('image/') === 0 || type.indexOf('application/pdf') === 0;
+
+                    if (!res.ok || !isFile) {
+                        return res.text().then(function (text) {
+                            var msg = type.indexOf('text/html') === 0 ? '' : String(text || '').trim();
+                            throw new Error(msg || 'ไม่สามารถดาวน์โหลดเกียรติบัตรได้ กรุณาลองใหม่');
+                        });
+                    }
+
+                    var cd = res.headers.get('content-disposition') || '';
+                    var m = cd.match(/filename\*=UTF-8''([^;]+)/i);
+                    var filename = m ? decodeURIComponent(m[1]) : 'certificate.png';
+
+                    return res.blob().then(function (blob) {
+                        var objectUrl = URL.createObjectURL(blob);
+                        var a = document.createElement('a');
+                        a.href = objectUrl;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        setTimeout(function () { URL.revokeObjectURL(objectUrl); }, 1500);
+                    });
+                })
+                .catch(function (err) {
+                    console.error('Certificate download error:', err);
+                    alert(err.message || 'ไม่สามารถดาวน์โหลดเกียรติบัตรได้');
+                })
+                .then(done);
+        }
+
         /* ================= CERTIFICATE SEARCH ================= */
         (function () {
             var form = document.getElementById('searchForm');
@@ -1267,9 +1336,14 @@
                 return fallback;
             }
 
-            function medalHtml(team) {
+            function dlHref(params) {
+                return '/certificate/download?' + qs(params);
+            }
+
+            // เหรียญเป็นของนักเรียนแต่ละคน → ต้องส่งชื่อนักเรียนไปด้วย
+            function medalHtml(team, student) {
                 var medalKey = pick(team, ['medal', 'medal_type', 'medalType'], '');
-                var medal = MEDALS[medalKey] || (medalKey ? MEDALS.bronze : null);
+                var medal = MEDALS[medalKey];
                 if (!medal) return '';
 
                 var best = Number(pick(team, ['bestScore', 'best_score', 'score'], 0)) || 0;
@@ -1283,13 +1357,13 @@
                     '<div class="medal-cert-title">' + medal.title + '</div>' +
                     '<div class="medal-cert-score">' + esc(info) + '</div>' +
                     '</div>' +
-                    '<a class="btn-medal" target="_blank" rel="noopener" href="/certificate/download?' +
-                    qs({ team_id: team.id, type: medalKey }) + '">' +
+                    '<a class="btn-medal js-cert-dl" href="' +
+                    dlHref({ teamId: team.id, studentName: student.name, certType: medalKey }) + '">' +
                     '<i class="ti ti-download"></i> ' + medal.btn + '</a>' +
                     '</div>';
             }
 
-            function studentHtml(team, s, i, medalBlock) {
+            function studentHtml(team, s, i) {
                 var html = '<div class="student-row">' +
                     '<div class="student-num">' + (i + 1) + '</div>' +
                     '<div class="student-info">' +
@@ -1299,25 +1373,29 @@
                     '<div class="cert-btns">';
 
                 if (s.checked_in) {
-                    html += '<a class="btn-cert btn-participation" target="_blank" rel="noopener" href="/certificate/download?' +
-                        qs({ teamId: team.id, studentName: s.name, certType: 'participation' }) + '">' +
+                    html += '<a class="btn-cert btn-participation js-cert-dl" href="' +
+                        dlHref({ teamId: team.id, studentName: s.name, certType: 'participation' }) + '">' +
                         '<i class="ti ti-download"></i> เกียรติบัตรเข้าร่วม</a>';
 
                     (team.team_cert_types || []).forEach(function (ct) {
                         var rc = RANK_CERTS[ct] || { backend: ct, cls: 'btn-3rd', label: ct };
-                        html += '<a class="btn-cert ' + rc.cls + '" target="_blank" rel="noopener" href="/certificate/download?' +
-                            qs({ teamId: team.id, studentName: s.name, certType: rc.backend }) + '">' +
+                        html += '<a class="btn-cert ' + rc.cls + ' js-cert-dl" href="' +
+                            dlHref({ teamId: team.id, studentName: s.name, certType: rc.backend }) + '">' +
                             '<i class="ti ti-download"></i> ' + esc(rc.label) + '</a>';
                     });
                 } else {
                     html += '<span class="not-checked"><i class="ti ti-clock"></i> ไม่ได้เข้าร่วมงานแข่งขัน</span>';
                 }
 
-                html += '</div>' + medalBlock + '</div>';
-                return html;
+                html += '</div>';
+
+                // แสดงเหรียญเฉพาะนักเรียนที่ Check-in แล้ว (เหมือนเกียรติบัตรอันดับ)
+                if (s.checked_in) html += medalHtml(team, s);
+
+                return html + '</div>';
             }
 
-                        function coachHtml(team) {
+            function coachHtml(team) {
                 var coach = team.coach;
                 if (!coach || !coach.has_template) return '';
 
@@ -1330,8 +1408,8 @@
                     '<div class="cert-btns">';
 
                 if (coach.checked_in) {
-                    html += '<a class="btn-cert btn-coach" target="_blank" rel="noopener" href="/certificate/download?' +
-                        qs({ teamId: team.id, certType: 'coach' }) + '">' +
+                    html += '<a class="btn-cert btn-coach js-cert-dl" href="' +
+                        dlHref({ teamId: team.id, certType: 'coach' }) + '">' +
                         '<i class="ti ti-download"></i> เกียรติบัตรโค้ช</a>';
                 } else {
                     html += '<span class="not-checked"><i class="ti ti-clock"></i> ทีมยังไม่ได้เข้าร่วมงานแข่งขัน</span>';
@@ -1343,7 +1421,6 @@
             function teamHtml(team) {
                 var tierKey = TIERS[team.tier] ? team.tier : 'advance';
                 var students = team.students || [];
-                var medalBlock = medalHtml(team);
                 var sub = [team.institution, team.id].filter(Boolean).map(esc).join(' · ');
 
                 var html = '<article class="team-card tier-' + tierKey + '">' +
@@ -1359,7 +1436,7 @@
                 if (students.length === 0) {
                     html += '<div class="empty-row">ไม่มีรายชื่อนักเรียน</div>';
                 } else {
-                    students.forEach(function (s, i) { html += studentHtml(team, s, i, medalBlock); });
+                    students.forEach(function (s, i) { html += studentHtml(team, s, i); });
                 }
 
                 html += coachHtml(team);
@@ -1403,6 +1480,26 @@
                 e.preventDefault();
                 searchTeam();
             });
+
+            // ปุ่มเกียรติบัตรถูกสร้างใหม่ทุกครั้งที่ค้นหา → ดักคลิกที่ container ครั้งเดียว
+            resultList.addEventListener('click', function (e) {
+                var link = e.target.closest('a.js-cert-dl');
+                if (!link) return;
+
+                // Ctrl / Cmd / คลิกกลาง = ให้เบราว์เซอร์จัดการเอง
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+
+                e.preventDefault();
+                downloadCert(link.getAttribute('href'), link);
+            });
+
+            // เปิดหน้าด้วย ?team_id=... (เช่น ถูก redirect กลับมา) → ค้นหาให้อัตโนมัติ
+            var params = new URLSearchParams(window.location.search);
+            var initialTeam = params.get('team_id');
+            if (initialTeam) {
+                input.value = initialTeam;
+                searchTeam();
+            }
         })();
 
         /* Mobile / tablet hamburger menu */
