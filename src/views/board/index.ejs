@@ -1,167 +1,191 @@
-<div class="page-hd">
-  <div class="page-title">สรุปผล — <span
-      style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
-      <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
-    </span></div>
+<% // ปุ่มเผยแพร่ / ซ่อน กดได้เฉพาะ admin var canPublish=typeof isAdmin !=='undefined' && isAdmin; // เวลาแบบ
+  นาที.วินาที.มิลลิวินาที (ใช้ formatTime จาก app.locals ถ้ามี) var fmtTime=function (v) { if (v===null || v===undefined
+  || v==='' ) return '' ; if (typeof formatTime==='function' ) return formatTime(v); var n=parseFloat(v); return
+  isNaN(n) ? '' : n.toFixed(3) + ' วิ' ; }; %>
+
+  <div class="page-hd">
+    <div class="page-title">สรุปผล — <span
+        style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
+        <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
+      </span></div>
     <a href="/board/export?tier=<%= tier %>" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
                   background:#16a34a;color:#fff;border-radius:8px;text-decoration:none;
                   font-weight:500;font-size:14px;">
-      ดาวน์โหลด Excel
+      <i class="ti ti-file-spreadsheet"></i> ดาวน์โหลด Excel
     </a>
-</div>
-
-<div class="card">
-  <div style="overflow-x:auto">
-    <table>
-      <thead>
-        <tr>
-          <th>อันดับ</th>
-          <th>ชื่อทีม</th>
-          <th>รอบที่ 1</th>
-          <th>รอบที่ 2</th>
-          <th>คะแนนที่ดีที่สุด</th>
-          <th>สถานะ</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (ranked.length===0) { %>
-          <tr>
-            <td colspan="6">
-              <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
-            </td>
-          </tr>
-          <% } %>
-
-            <% ranked.forEach(function(t, i) { %>
-              <tr>
-
-                <!-- อันดับ -->
-                <td>
-                  <div class="rank-cell">
-                    <% if (i===0) { %>
-                      <span style="font-size:20px">🥇</span><span class="rank-gold">
-                        <%= i+1 %>
-                      </span>
-                      <% } else if (i===1) { %>
-                        <span style="font-size:20px">🥈</span><span class="rank-silver">
-                          <%= i+1 %>
-                        </span>
-                        <% } else if (i===2) { %>
-                          <span style="font-size:20px">🥉</span><span class="rank-bronze">
-                            <%= i+1 %>
-                          </span>
-                          <% } else { %>
-                            <span class="rank-other">#<%= i+1 %></span>
-                            <% } %>
-                  </div>
-                </td>
-
-                <!-- ชื่อทีม -->
-                <td>
-                  <div class="team-name">
-                    <%= t.name %>
-                  </div>
-                  <div style="font-size:11px;color:#94A3B8">
-                    <%= t.institution || '' %>
-                  </div>
-                </td>
-
-                <!-- รอบที่ 1 -->
-                <td>
-                  <% if (parseFloat(t.r1_score)> 0) { %>
-                    <span class="score-num">
-                      <%= parseFloat(t.r1_score) %> pts
-                    </span>
-                    <span style="color:#CBD5E1;margin:0 3px">·</span>
-                    <span class="score-time">
-                      <%= t.r1_time ? parseFloat(t.r1_time).toFixed(2) + ' sec' : '' %>
-                    </span>
-                    <br>
-                    <form method="POST" action="/board/scores/<%= t.id %>/1/publish?tier=<%= tier %>"
-                      style="display:inline">
-                      <% if (t.r1_published) { %>
-                        <button type="submit" class="btn btn-sm"
-                          style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0">
-                          <i class="ti ti-eye"></i> เผยแพร่แล้ว
-                        </button>
-                        <% } else { %>
-                          <button type="submit" class="btn btn-sm"
-                            style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F8FAFC;color:#94A3B8;border:1px solid #E2E8F0">
-                            <i class="ti ti-eye-off"></i> ซ่อนอยู่
-                          </button>
-                          <% } %>
-                    </form>
-                    <% } else { %>
-                      <span style="color:#CBD5E1">—</span>
-                      <% } %>
-                </td>
-
-                <!-- รอบที่ 2 -->
-                <td>
-                  <% if (parseFloat(t.r2_score)> 0) { %>
-                    <span class="score-num">
-                      <%= parseFloat(t.r2_score) %> pts
-                    </span>
-                    <span style="color:#CBD5E1;margin:0 3px">·</span>
-                    <span class="score-time">
-                      <%= t.r2_time ? parseFloat(t.r2_time).toFixed(2) + ' sec' : '' %>
-                    </span>
-                    <br>
-                    <form method="POST" action="/board/scores/<%= t.id %>/2/publish?tier=<%= tier %>"
-                      style="display:inline">
-                      <% if (t.r2_published) { %>
-                        <button type="submit" class="btn btn-sm"
-                          style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F0FDF4;color:#16A34A;border:1px solid #BBF7D0">
-                          <i class="ti ti-eye"></i> เผยแพร่แล้ว
-                        </button>
-                        <% } else { %>
-                          <button type="submit" class="btn btn-sm"
-                            style="font-size:10px;padding:2px 8px;margin-top:4px;background:#F8FAFC;color:#94A3B8;border:1px solid #E2E8F0">
-                            <i class="ti ti-eye-off"></i> ซ่อนอยู่
-                          </button>
-                          <% } %>
-                    </form>
-                    <% } else { %>
-                      <span style="color:#CBD5E1">—</span>
-                      <% } %>
-                </td>
-
-                <!-- คะแนนที่ดีที่สุด -->
-                <td>
-                  <% if (parseFloat(t.best_score)> 0) { %>
-                    <div style="display:flex;align-items:baseline;gap:6px">
-                      <span class="best-score">
-                        <%= parseFloat(t.best_score) %> pts
-                      </span>
-                      <span style="color:#CBD5E1">·</span>
-                      <span class="score-time" style="font-size:13px">
-                        <%= t.best_time ? parseFloat(t.best_time).toFixed(2) + ' sec' : '' %>
-                      </span>
-                    </div>
-                    <div class="bar-bg">
-                      <div class="bar-fill"
-                        style="width:<%= maxScore > 0 ? Math.round(parseFloat(t.best_score)/maxScore*100) : 0 %>%;background:<%= i===0?'#D97706':i===1?'#64748B':i===2?'#92400E':'#2563EB' %>">
-                      </div>
-                    </div>
-                    <% } else { %>
-                      <span style="color:#CBD5E1">—</span>
-                      <% } %>
-                </td>
-
-                <!-- สถานะ -->
-                <td>
-                  <% if (t.status==='approved' ) { %>
-                    <span class="badge badge-green badge-dot">เสร็จสิ้น</span>
-                    <% } else if (t.status==='rejected' ) { %>
-                      <span class="badge badge-red badge-dot">ไม่ผ่าน</span>
-                      <% } else { %>
-                        <span class="badge badge-blue badge-dot">รอพิจารณา</span>
-                        <% } %>
-                </td>
-
-              </tr>
-              <% }) %>
-      </tbody>
-    </table>
   </div>
-</div>
+
+  <style>
+    .pub-btn {
+      font-size: 10px;
+      padding: 2px 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-family: inherit;
+    }
+
+    .pub-on {
+      background: #F0FDF4;
+      color: #16A34A;
+      border: 1px solid #BBF7D0;
+    }
+
+    .pub-off {
+      background: #F8FAFC;
+      color: #94A3B8;
+      border: 1px solid #E2E8F0;
+    }
+
+    button.pub-btn {
+      cursor: pointer;
+    }
+
+    span.pub-btn {
+      cursor: default;
+    }
+  </style>
+
+  <div class="card">
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>อันดับ</th>
+            <th>ชื่อทีม</th>
+            <th>รอบที่ 1</th>
+            <th>รอบที่ 2</th>
+            <th>คะแนนที่ดีที่สุด</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (ranked.length===0) { %>
+            <tr>
+              <td colspan="6">
+                <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
+              </td>
+            </tr>
+            <% } %>
+
+              <% ranked.forEach(function(t, i) { %>
+                <% var hasBest=parseFloat(t.best_score)> 0; %>
+                  <tr>
+
+                    <!-- อันดับ (เหรียญเฉพาะทีมที่มีคะแนนแล้ว) -->
+                    <td>
+                      <div class="rank-cell">
+                        <% if (hasBest && i===0) { %>
+                          <span style="font-size:20px">🥇</span><span class="rank-gold">
+                            <%= i + 1 %>
+                          </span>
+                          <% } else if (hasBest && i===1) { %>
+                            <span style="font-size:20px">🥈</span><span class="rank-silver">
+                              <%= i + 1 %>
+                            </span>
+                            <% } else if (hasBest && i===2) { %>
+                              <span style="font-size:20px">🥉</span><span class="rank-bronze">
+                                <%= i + 1 %>
+                              </span>
+                              <% } else { %>
+                                <span class="rank-other">#<%= i + 1 %></span>
+                                <% } %>
+                      </div>
+                    </td>
+
+                    <!-- ชื่อทีม -->
+                    <td>
+                      <div class="team-name">
+                        <%= t.name %>
+                      </div>
+                      <div style="font-size:11px;color:#94A3B8">
+                        <%= t.institution || '' %>
+                      </div>
+                    </td>
+
+                    <!-- รอบที่ 1 / รอบที่ 2 -->
+                    <% [1, 2].forEach(function (rd) { %>
+                      <% var sc=parseFloat(t['r' + rd + '_score' ]); %>
+                        <% var tm=fmtTime(t['r' + rd + '_time' ]); %>
+                          <% var pub=t['r' + rd + '_published' ]; %>
+                            <td>
+                              <% if (sc> 0) { %>
+                                <span class="score-num">
+                                  <%= sc %> pts
+                                </span>
+                                <% if (tm) { %>
+                                  <span style="color:#CBD5E1;margin:0 3px">·</span>
+                                  <span class="score-time">
+                                    <%= tm %>
+                                  </span>
+                                  <% } %>
+                                    <br>
+                                    <% if (canPublish) { %>
+                                      <form method="POST"
+                                        action="/board/scores/<%= encodeURIComponent(t.id) %>/<%= rd %>/publish?tier=<%= tier %>"
+                                        style="display:inline">
+                                        <% if (pub) { %>
+                                          <button type="submit" class="pub-btn pub-on"><i class="ti ti-eye"></i>
+                                            เผยแพร่แล้ว</button>
+                                          <% } else { %>
+                                            <button type="submit" class="pub-btn pub-off"><i class="ti ti-eye-off"></i>
+                                              ซ่อนอยู่</button>
+                                            <% } %>
+                                      </form>
+                                      <% } else { %>
+                                        <% if (pub) { %>
+                                          <span class="pub-btn pub-on"><i class="ti ti-eye"></i> เผยแพร่แล้ว</span>
+                                          <% } else { %>
+                                            <span class="pub-btn pub-off"><i class="ti ti-eye-off"></i> ซ่อนอยู่</span>
+                                            <% } %>
+                                              <% } %>
+                                                <% } else { %>
+                                                  <span style="color:#CBD5E1">—</span>
+                                                  <% } %>
+                            </td>
+                            <% }) %>
+
+                              <!-- คะแนนที่ดีที่สุด -->
+                              <td>
+                                <% if (hasBest) { %>
+                                  <% var bt=fmtTime(t.best_time); %>
+                                    <div style="display:flex;align-items:baseline;gap:6px">
+                                      <span class="best-score">
+                                        <%= parseFloat(t.best_score) %> pts
+                                      </span>
+                                      <% if (bt) { %>
+                                        <span style="color:#CBD5E1">·</span>
+                                        <span class="score-time" style="font-size:13px">
+                                          <%= bt %>
+                                        </span>
+                                        <% } %>
+                                    </div>
+                                    <div class="bar-bg">
+                                      <div class="bar-fill"
+                                        style="width:<%= maxScore > 0 ? Math.min(100, Math.round(parseFloat(t.best_score) / maxScore * 100)) : 0 %>%;background:<%= i===0?'#D97706':i===1?'#64748B':i===2?'#92400E':'#2563EB' %>">
+                                      </div>
+                                    </div>
+                                    <% } else { %>
+                                      <span style="color:#CBD5E1">—</span>
+                                      <% } %>
+                              </td>
+
+                              <!-- สถานะ -->
+                              <td>
+                                <% if (t.status==='approved' ) { %>
+                                  <span class="badge badge-green badge-dot">เสร็จสิ้น</span>
+                                  <% } else if (t.status==='rejected' ) { %>
+                                    <span class="badge badge-red badge-dot">ไม่ผ่าน</span>
+                                    <% } else { %>
+                                      <span class="badge badge-blue badge-dot">รอพิจารณา</span>
+                                      <% } %>
+                              </td>
+
+                  </tr>
+                  <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
