@@ -1,6 +1,6 @@
 // src/middleware/viewer.js
 // ตำแหน่ง Viewer (ผู้ดูข้อมูล): ดูได้แค่หน้าจัดการทีม + หน้าสรุปผลคะแนน
-// และห้ามเพิ่ม / แก้ / ลบ ทุกอย่าง
+// ห้ามเพิ่ม / แก้ / ลบ ทุกอย่าง ยกเว้นสลับสถานะ Check-in นักเรียน
 //
 // ใช้ใน app.js หลัง session + flash:  app.use(viewerGuard);
 // ตรวจที่ server ทุกคำขอ → ซ่อนปุ่มอย่างเดียวไม่พอ (ส่ง POST ตรง ๆ ได้)
@@ -16,8 +16,17 @@ const VIEWER_ALLOWED = [
   /^\/teams\/(export|pdf|print)(\/.*)?$/, // Export PDF (ปรับให้ตรง path จริง)
 ];
 
-// path ที่ Viewer ส่งแบบ POST ได้ (ออกจากระบบ / เข้าสู่ระบบใหม่)
-const VIEWER_POST_ALLOWED = [/^\/auth\//];
+// path ที่ Viewer ส่งแบบ POST ได้
+const VIEWER_POST_ALLOWED = [
+  /^\/auth\//, //                                   ออกจากระบบ / เข้าสู่ระบบใหม่
+  /^\/teams\/[^/]+\/checkin\/[1-3]\/?$/, //            สลับสถานะ Check-in นักเรียน
+];
+
+function hasMethodOverride(req) {
+  const q = req.query && req.query._method;
+  const b = req.body && req.body._method;
+  return Boolean(q || b);
+}
 
 function isUnder(path, prefix) {
   return path === prefix || path.startsWith(prefix + "/");
@@ -55,7 +64,14 @@ function viewerGuard(req, res, next) {
 
   // ---------------- ห้ามเขียนข้อมูล ----------------
   if (method !== "GET" && method !== "HEAD") {
-    if (VIEWER_POST_ALLOWED.some((re) => re.test(path))) return next();
+    // อนุญาตเฉพาะ POST ตรง ๆ (กันการแฝง _method=DELETE / PUT มา)
+    if (
+      method === "POST" &&
+      !hasMethodOverride(req) &&
+      VIEWER_POST_ALLOWED.some((re) => re.test(path))
+    ) {
+      return next();
+    }
     return deny(
       req,
       res,
