@@ -3,9 +3,26 @@ const router = express.Router();
 const { query } = require("../config/database");
 const { requireLogin, requireAdmin } = require("../middleware/auth");
 
+const TIERS = ["beginner", "intermediate", "advance"];
+
+function safeTier(value) {
+  return TIERS.includes(value) ? value : "beginner";
+}
+
+// Check-in: admin + viewer (ผู้ดูข้อมูล) ทำได้
+// ไม่ใช้ requireAdmin เพราะตัวนั้นส่งคนที่ไม่ใช่ admin ไปหน้า /dashboard (404)
+function requireCheckinAccess(req, res, next) {
+  const user = req.session && req.session.user;
+  if (user && (user.role === "admin" || user.role === "viewer")) {
+    return next();
+  }
+  req.flash("error", "ไม่มีสิทธิ์เปลี่ยนสถานะ Check-in");
+  return res.redirect("/board");
+}
+
 // ─── GET /teams ───────────────────────────────────────────────────────────────
 router.get("/", requireLogin, async (req, res) => {
-  const tier = req.query.tier || "beginner";
+  const tier = safeTier(req.query.tier);
   try {
     const [teamsResult, countsResult, participantsResult] = await Promise.all([
       query("SELECT * FROM teams WHERE tier = $1 ORDER BY created_at ASC", [
@@ -188,35 +205,50 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
 });
 
 // ─── POST /teams/:id/checkin/:studentNum ──────────────────────────────────────
+// admin + viewer สลับสถานะ Check-in ได้
 router.post(
   "/:id/checkin/:studentNum",
   requireLogin,
-  requireAdmin,
+  requireCheckinAccess,
   async (req, res) => {
     const { id, studentNum } = req.params;
-    const tier = req.query.tier || "beginner";
-    const validNums = ["1", "2", "3"];
-    if (!validNums.includes(studentNum)) {
+    const tier = safeTier(req.query.tier);
+    const back = "/teams?tier=" + tier;
+
+    if (!["1", "2", "3"].includes(studentNum)) {
       req.flash("error", "ข้อมูลไม่ถูกต้อง");
-      return res.redirect("/teams?tier=" + tier);
+      return res.redirect(back);
     }
+
     const col = "student_" + studentNum + "_checked_in";
+
     try {
-      const current = await query(
-        "SELECT " + col + " FROM teams WHERE id = $1",
+      // สลับค่าในคำสั่งเดียว (กดพร้อมกันหลายเครื่องก็ไม่เพี้ยน)
+      const result = await query(
+        "UPDATE teams SET " +
+          col +
+          " = NOT COALESCE(" +
+          col +
+          ", false) WHERE id = $1 RETURNING " +
+          col +
+          " AS checked_in",
         [id],
       );
-      const currentVal = current.rows[0] ? current.rows[0][col] : false;
-      await query("UPDATE teams SET " + col + " = $1 WHERE id = $2", [
-        !currentVal,
-        id,
-      ]);
-      req.flash("success", !currentVal ? "เช็คชื่อแล้ว" : "ยกเลิกเช็คชื่อแล้ว");
+
+      if (!result.rows.length) {
+        req.flash("error", "ไม่พบทีมนี้");
+      } else {
+        req.flash(
+          "success",
+          result.rows[0].checked_in ? "เช็คชื่อแล้ว" : "ยกเลิกเช็คชื่อแล้ว",
+        );
+      }
     } catch (err) {
       console.error(err);
       req.flash("error", "เกิดข้อผิดพลาด");
     }
-    return res.redirect("/teams?tier=" + tier);
+
+    return res.redirect(back);
   },
 );
 
