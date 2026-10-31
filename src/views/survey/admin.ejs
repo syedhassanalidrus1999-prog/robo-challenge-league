@@ -278,6 +278,84 @@
             font-size: 13px;
         }
 
+
+        .sv-danger {
+            border-color: #FECACA;
+        }
+
+        .sv-danger .sv-card-hd {
+            background: #FEF2F2;
+            border-bottom-color: #FECACA;
+        }
+
+        .sv-danger .sv-card-title {
+            color: #B91C1C;
+        }
+
+        .sv-danger-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 16px 18px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .sv-danger-row:last-child {
+            border-bottom: 0;
+        }
+
+        .sv-danger-text b {
+            display: block;
+            font-size: 14px;
+            color: #0F172A;
+        }
+
+        .sv-danger-text span {
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        .sv-danger-form {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sv-danger-input {
+            height: 40px;
+            min-width: 170px;
+            padding: 0 12px;
+            border: 1.5px solid #FECACA;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .sv-danger-input:focus {
+            border-color: #DC2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, .1);
+        }
+
+        .sv-btn.danger {
+            background: #DC2626;
+            border-color: #DC2626;
+            color: #fff;
+        }
+
+        .sv-btn.danger:hover {
+            background: #B91C1C;
+        }
+
+        .sv-btn.danger-soft {
+            background: #fff;
+            border-color: #FECACA;
+            color: #DC2626;
+        }
+
         @media (max-width: 1000px) {
             .sv-stats {
                 grid-template-columns: repeat(2, 1fr);
@@ -462,6 +540,40 @@
                             <% }) %>
                     </div>
                     <% } %>
+        </div>
+    </div>
+
+    <div class="sv-card sv-danger">
+        <div class="sv-card-hd">
+            <div class="sv-card-title"><i class="ti ti-alert-triangle"></i> รีเซ็ตข้อมูล</div>
+            <div class="sv-overall">ดาวน์โหลด Excel เก็บไว้ก่อนรีเซ็ตทุกครั้ง</div>
+        </div>
+
+        <div class="sv-danger-row">
+            <div class="sv-danger-text">
+                <b>รีเซ็ตผู้ได้รางวัล</b>
+                <span>ยกเลิกผลสุ่มทั้งหมด รหัสทุกใบกลับเข้ากล่องสุ่ม ข้อมูลแบบประเมินยังอยู่ครบ</span>
+            </div>
+            <form method="POST" action="/board/survey/reset" class="sv-danger-form"
+                onsubmit="return confirm('ยกเลิกผู้ได้รางวัลทั้งหมด และคืนทุกรหัสเข้ากล่องสุ่ม?')">
+                <input type="hidden" name="scope" value="winners">
+                <button type="submit" class="sv-btn danger-soft"><i class="ti ti-refresh"></i>
+                    รีเซ็ตผู้ได้รางวัล</button>
+            </form>
+        </div>
+
+        <div class="sv-danger-row">
+            <div class="sv-danger-text">
+                <b>ล้างข้อมูลแบบประเมินทั้งหมด</b>
+                <span>ลบคำตอบ รหัสชิงโชค และผู้ได้รางวัลทั้งหมด กู้คืนไม่ได้ (ใช้ล้างข้อมูลทดสอบก่อนวันงาน)</span>
+            </div>
+            <form method="POST" action="/board/survey/reset" class="sv-danger-form"
+                onsubmit="return confirm('ลบข้อมูลแบบประเมินทั้งหมด? การลบนี้กู้คืนไม่ได้')">
+                <input type="hidden" name="scope" value="all">
+                <input type="text" name="confirm_text" class="sv-danger-input" placeholder="พิมพ์ <%= resetWord %>"
+                    autocomplete="off" aria-label="พิมพ์คำยืนยัน">
+                <button type="submit" class="sv-btn danger"><i class="ti ti-trash"></i> ล้างข้อมูลทั้งหมด</button>
+            </form>
         </div>
     </div>
 

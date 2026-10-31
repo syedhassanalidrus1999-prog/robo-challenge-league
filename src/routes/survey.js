@@ -598,6 +598,7 @@ adminRouter.get("/", async (req, res) => {
       suggestions: suggestionsResult.rows,
       isOpen: open,
       formatThaiDateTime,
+      resetWord: RESET_WORD,
     });
   } catch (err) {
     console.error("Survey admin error:", err);
@@ -622,6 +623,73 @@ adminRouter.post("/toggle", async (req, res) => {
   } catch (err) {
     console.error("Survey toggle error:", err);
     req.flash("error", "เปลี่ยนสถานะไม่สำเร็จ");
+  }
+  return res.redirect("/board/survey");
+});
+
+// ---------------- POST /board/survey/reset ----------------
+// scope=winners → ยกเลิกผู้ได้รางวัลทั้งหมด (ข้อมูลแบบประเมินยังอยู่)
+// scope=all     → ลบข้อมูลแบบประเมินทั้งหมด (ต้องพิมพ์ "ล้างข้อมูล" ยืนยัน)
+
+const RESET_WORD = "ล้างข้อมูล";
+
+adminRouter.post("/reset", async (req, res) => {
+  const scope = cleanText(req.body.scope, 20);
+  const confirmText = cleanText(req.body.confirm_text, 50);
+
+  try {
+    await tableReady;
+
+    if (scope === "winners") {
+      const result = await query(
+        `UPDATE survey_responses SET is_winner = FALSE, prize = NULL, won_at = NULL
+         WHERE is_winner = TRUE`,
+        [],
+      );
+      req.flash(
+        "success",
+        "รีเซ็ตผู้ได้รางวัลแล้ว (" + (result.rowCount || 0) + " รายการ)",
+      );
+      return res.redirect("/board/survey");
+    }
+
+    if (scope === "all") {
+      if (confirmText !== RESET_WORD) {
+        req.flash(
+          "error",
+          'พิมพ์คำว่า "' +
+            RESET_WORD +
+            '" ให้ถูกต้องเพื่อยืนยัน — ยังไม่ได้ลบข้อมูล',
+        );
+        return res.redirect("/board/survey");
+      }
+
+      const count = await query(
+        "SELECT COUNT(*)::int AS cnt FROM survey_responses",
+        [],
+      );
+      await query("TRUNCATE survey_responses RESTART IDENTITY", []);
+
+      console.log(
+        "[survey] ล้างข้อมูลทั้งหมด",
+        count.rows[0] ? count.rows[0].cnt : 0,
+        "รายการ โดย",
+        req.session.user && req.session.user.username,
+      );
+
+      req.flash(
+        "success",
+        "ล้างข้อมูลแบบประเมินทั้งหมดแล้ว (" +
+          (count.rows[0] ? count.rows[0].cnt : 0) +
+          " รายการ)",
+      );
+      return res.redirect("/board/survey");
+    }
+
+    req.flash("error", "ข้อมูลไม่ถูกต้อง");
+  } catch (err) {
+    console.error("Survey reset error:", err);
+    req.flash("error", "รีเซ็ตไม่สำเร็จ");
   }
   return res.redirect("/board/survey");
 });
