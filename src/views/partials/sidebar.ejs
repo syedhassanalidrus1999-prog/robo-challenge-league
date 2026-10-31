@@ -49,6 +49,10 @@
           <a href="/board/documents" class="sb-item <%= currentPath.startsWith('/board/documents') ? 'active' : '' %>">
             <i class="ti ti-file-text"></i> เอกสาร
           </a>
+
+          <a href="/board/survey" class="sb-item <%= currentPath.startsWith('/board/survey') ? 'active' : '' %>">
+            <i class="ti ti-message-star"></i> แบบประเมิน
+          </a>
           <% } %>
 
             <% if (sbRole==='viewer' ) { %>

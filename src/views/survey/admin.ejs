@@ -1,0 +1,477 @@
+<% var typeKeys=Object.keys(types); %>
+
+    <style>
+        .sv-hd {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .sv-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0F172A;
+        }
+
+        .sv-sub {
+            margin-top: 4px;
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        .sv-sub a {
+            color: #2563EB;
+            font-weight: 600;
+        }
+
+        .sv-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sv-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 40px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid #E2E8F0;
+            background: #fff;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sv-btn:hover {
+            background: #F8FAFC;
+        }
+
+        .sv-btn.primary {
+            background: #2563EB;
+            border-color: #2563EB;
+            color: #fff;
+        }
+
+        .sv-btn.excel {
+            background: #16A34A;
+            border-color: #16A34A;
+            color: #fff;
+        }
+
+        .sv-btn.warn {
+            color: #B45309;
+            border-color: #FDE68A;
+            background: #FFFBEB;
+        }
+
+        .sv-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .sv-status.on {
+            background: #F0FDF4;
+            color: #16A34A;
+        }
+
+        .sv-status.off {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .sv-stats {
+            display: grid;
+            grid-template-columns: 1.3fr repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .sv-stat {
+            padding: 14px 16px;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+        }
+
+        .sv-stat-num {
+            font-size: 28px;
+            font-weight: 900;
+            line-height: 1.1;
+            color: #0F172A;
+        }
+
+        .sv-stat-lbl {
+            margin-top: 2px;
+            font-size: 12px;
+            color: #64748B;
+            font-weight: 600;
+        }
+
+        .sv-stat.total {
+            background: #1E3A8A;
+            border-color: #1E3A8A;
+        }
+
+        .sv-stat.total .sv-stat-num {
+            color: #fff;
+        }
+
+        .sv-stat.total .sv-stat-lbl {
+            color: #BFDBFE;
+        }
+
+        .sv-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+
+        .sv-card-hd {
+            padding: 14px 18px;
+            border-bottom: 1px solid #EEF2F7;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sv-card-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0F172A;
+        }
+
+        .sv-overall {
+            font-size: 13px;
+            color: #64748B;
+        }
+
+        .sv-overall b {
+            color: #1E3A8A;
+            font-size: 18px;
+        }
+
+        .sv-tbl-wrap {
+            overflow-x: auto;
+        }
+
+        .sv-tbl {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 760px;
+        }
+
+        .sv-tbl th {
+            padding: 10px 14px;
+            background: #F8FAFC;
+            font-size: 11px;
+            font-weight: 800;
+            color: #94A3B8;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .sv-tbl td {
+            padding: 11px 14px;
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 13px;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .sv-tbl tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .sv-q {
+            font-weight: 600;
+            color: #0F172A;
+        }
+
+        .sv-avg {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 150px;
+        }
+
+        .sv-avg b {
+            width: 38px;
+            font-size: 14px;
+            color: #0F172A;
+        }
+
+        .sv-bar {
+            flex: 1;
+            height: 6px;
+            border-radius: 999px;
+            background: #EEF2F7;
+            overflow: hidden;
+        }
+
+        .sv-bar span {
+            display: block;
+            height: 100%;
+            background: #2563EB;
+        }
+
+        .sv-lvl {
+            font-size: 11px;
+            color: #64748B;
+            white-space: nowrap;
+        }
+
+        .sv-grid2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .sv-list {
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .sv-item {
+            padding: 12px 18px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .sv-item:last-child {
+            border-bottom: 0;
+        }
+
+        .sv-item-meta {
+            font-size: 11px;
+            color: #94A3B8;
+            margin-bottom: 2px;
+        }
+
+        .sv-item-text {
+            font-size: 14px;
+            color: #0F172A;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .sv-empty {
+            padding: 28px 18px;
+            text-align: center;
+            color: #94A3B8;
+            font-size: 13px;
+        }
+
+        @media (max-width: 1000px) {
+            .sv-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sv-stat.total {
+                grid-column: 1 / -1;
+            }
+
+            .sv-grid2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <div class="sv-hd">
+        <div>
+            <div class="sv-title">แบบประเมินความพึงพอใจ</div>
+            <div class="sv-sub">
+                ลิงก์สำหรับทำ QR Code: <a href="/survey" target="_blank" id="surveyLink">/survey</a>
+                <button type="button" class="sv-btn" style="min-height:28px;padding:0 10px;margin-left:6px"
+                    onclick="copySurveyLink()">
+                    <i class="ti ti-copy"></i> คัดลอก
+                </button>
+                <span class="sv-status <%= isOpen ? 'on' : 'off' %>" style="margin-left:6px">
+                    <i class="ti ti-point-filled"></i>
+                    <%= isOpen ? 'เปิดรับอยู่' : 'ปิดรับแล้ว' %>
+                </span>
+            </div>
+        </div>
+        <div class="sv-actions">
+            <form method="POST" action="/board/survey/toggle" onsubmit="return confirm(this.getAttribute('data-msg'))"
+                data-msg="<%= isOpen ? 'ปิดรับแบบประเมิน? ผู้ใช้จะส่งแบบประเมินเพิ่มไม่ได้' : 'เปิดรับแบบประเมินอีกครั้ง?' %>">
+                <button type="submit" class="sv-btn warn">
+                    <i class="ti ti-<%= isOpen ? 'lock' : 'lock-open' %>"></i>
+                    <%= isOpen ? 'ปิดรับแบบประเมิน' : 'เปิดรับแบบประเมิน' %>
+                </button>
+            </form>
+            <a href="/board/survey/export" class="sv-btn excel"><i class="ti ti-file-spreadsheet"></i> ดาวน์โหลด
+                Excel</a>
+            <a href="/board/survey/draw" class="sv-btn primary" target="_blank"><i class="ti ti-gift"></i>
+                หน้าสุ่มรางวัล</a>
+        </div>
+    </div>
+
+    <div class="sv-stats">
+        <div class="sv-stat total">
+            <div class="sv-stat-num">
+                <%= total.cnt || 0 %>
+            </div>
+            <div class="sv-stat-lbl">ผู้ตอบทั้งหมด</div>
+        </div>
+        <% typeKeys.forEach(function (k) { %>
+            <div class="sv-stat">
+                <div class="sv-stat-num">
+                    <%= byType[k] ? byType[k].cnt : 0 %>
+                </div>
+                <div class="sv-stat-lbl">
+                    <%= types[k] %>
+                </div>
+            </div>
+            <% }) %>
+    </div>
+
+    <div class="sv-card">
+        <div class="sv-card-hd">
+            <div class="sv-card-title">ค่าเฉลี่ยความพึงพอใจรายข้อ (เต็ม 5)</div>
+            <div class="sv-overall">ภาพรวมทุกข้อ <b>
+                    <%= fmt(overallAvg) %>
+                </b>
+                <%= overallAvg ? '(' + levelLabel(overallAvg) + ')' : '' %>
+            </div>
+        </div>
+        <% if (!total.cnt) { %>
+            <div class="sv-empty">ยังไม่มีผู้ตอบแบบประเมิน</div>
+            <% } else { %>
+                <div class="sv-tbl-wrap">
+                    <table class="sv-tbl">
+                        <thead>
+                            <tr>
+                                <th>ข้อ</th>
+                                <th>ทั้งหมด</th>
+                                <% typeKeys.forEach(function (k) { %>
+                                    <th>
+                                        <%= types[k] %>
+                                    </th>
+                                    <% }) %>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% questions.forEach(function (q, qi) { %>
+                                <tr>
+                                    <td class="sv-q">
+                                        <%= qi + 1 %>. <%= q.label %>
+                                    </td>
+                                    <td>
+                                        <div class="sv-avg">
+                                            <b>
+                                                <%= fmt(total[q.key]) %>
+                                            </b>
+                                            <div class="sv-bar"><span
+                                                    style="width:<%= total[q.key] ? Math.round(total[q.key] / 5 * 100) : 0 %>%"></span>
+                                            </div>
+                                        </div>
+                                        <div class="sv-lvl">
+                                            <%= levelLabel(total[q.key]) %>
+                                        </div>
+                                    </td>
+                                    <% typeKeys.forEach(function (k) { %>
+                                        <td>
+                                            <%= byType[k] ? fmt(byType[k][q.key]) : '—' %>
+                                        </td>
+                                        <% }) %>
+                                </tr>
+                                <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } %>
+    </div>
+
+    <div class="sv-grid2">
+        <div class="sv-card">
+            <div class="sv-card-hd">
+                <div class="sv-card-title">ผู้ปกครองที่สนใจคอร์ส และยินยอมให้ติดต่อ</div>
+                <div class="sv-overall">สนใจ <%= interest.interested %> คน / ติดต่อได้ <%= interest.contactable %> คน
+                </div>
+            </div>
+            <% if (!leads.length) { %>
+                <div class="sv-empty">ยังไม่มีรายชื่อ</div>
+                <% } else { %>
+                    <div class="sv-list">
+                        <table class="sv-tbl" style="min-width:0">
+                            <thead>
+                                <tr>
+                                    <th>ชื่อ</th>
+                                    <th>เบอร์โทร</th>
+                                    <th>เวลา</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% leads.forEach(function (l) { %>
+                                    <tr>
+                                        <td>
+                                            <%= l.respondent_name || '—' %>
+                                        </td>
+                                        <td><a href="tel:<%= l.phone %>" style="color:#2563EB">
+                                                <%= l.phone %>
+                                            </a></td>
+                                        <td style="color:#94A3B8;font-size:12px">
+                                            <%= formatThaiDateTime(l.created_at) %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+        </div>
+
+        <div class="sv-card">
+            <div class="sv-card-hd">
+                <div class="sv-card-title">ข้อเสนอแนะล่าสุด</div>
+                <div class="sv-overall">
+                    <%= suggestions.length %> รายการ
+                </div>
+            </div>
+            <% if (!suggestions.length) { %>
+                <div class="sv-empty">ยังไม่มีข้อเสนอแนะ</div>
+                <% } else { %>
+                    <div class="sv-list">
+                        <% suggestions.forEach(function (s) { %>
+                            <div class="sv-item">
+                                <div class="sv-item-meta">
+                                    <%= types[s.respondent_type] || s.respondent_type %> | <%=
+                                            formatThaiDateTime(s.created_at) %>
+                                </div>
+                                <div class="sv-item-text">
+                                    <%= s.suggestion %>
+                                </div>
+                            </div>
+                            <% }) %>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+
+    <script>
+        function copySurveyLink() {
+            var url = window.location.origin + '/survey';
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(url).then(function () { alert('คัดลอกแล้ว: ' + url); });
+            } else {
+                window.prompt('คัดลอกลิงก์นี้', url);
+            }
+        }
+    </script>

@@ -56,6 +56,9 @@ app.use(viewerGuard);                                      // ← ใหม่
 
 
 // ── Routes ───────────────────────────────────
+const survey = require("./routes/survey");
+app.use("/survey", survey.publicRouter);
+app.use("/board/survey", survey.adminRouter);
 app.use('/', require('./routes/public'))
 app.use('/auth', require('./routes/auth'))
 app.use('/teams', require('./routes/teams'))

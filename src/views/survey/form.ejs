@@ -1,0 +1,873 @@
+<% var v=locals.values || {}; %>
+    <% var errs=locals.errors || []; %>
+        <% var selType=v.respondent_type || '' ; %>
+            <!DOCTYPE html>
+            <html lang="th">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>แบบประเมินความพึงพอใจ — Robo Challenge League</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link rel="stylesheet"
+                    href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap"
+                    rel="stylesheet">
+                <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+                <style>
+                    :root {
+                        --blue: #2563EB;
+                        --blue-deep: #1E3A8A;
+                        --blue-soft: #EFF6FF;
+                        --ink: #0F172A;
+                        --muted: #64748B;
+                        --line: #E2E8F0;
+                        --gold: #F59E0B;
+                        --bg: #F3F6FB;
+                        --danger: #DC2626;
+                    }
+
+                    * {
+                        box-sizing: border-box;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    body {
+                        min-height: 100vh;
+                        background: var(--bg);
+                        color: var(--ink);
+                        font-family: 'Sarabun', sans-serif;
+                        font-size: 16px;
+                        line-height: 1.6;
+                    }
+
+                    button,
+                    input,
+                    textarea {
+                        font: inherit;
+                        color: inherit;
+                    }
+
+                    :focus-visible {
+                        outline: 3px solid #93C5FD;
+                        outline-offset: 2px;
+                    }
+
+                    .wrap {
+                        width: 100%;
+                        max-width: 640px;
+                        margin: 0 auto;
+                        padding: 0 16px 56px;
+                    }
+
+                    /* Header */
+                    .head {
+                        padding: 28px 0 22px;
+                        text-align: center;
+                    }
+
+                    .head img {
+                        height: 64px;
+                        width: auto;
+                        margin-bottom: 10px;
+                    }
+
+                    .head h1 {
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 26px;
+                        font-weight: 700;
+                        line-height: 1.3;
+                    }
+
+                    .head p {
+                        margin-top: 6px;
+                        color: var(--muted);
+                        font-size: 15px;
+                    }
+
+                    .prize-note {
+                        margin-top: 14px;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 8px 14px;
+                        border-radius: 999px;
+                        background: #FFFBEB;
+                        border: 1px solid #FDE68A;
+                        color: #92400E;
+                        font-size: 14px;
+                        font-weight: 600;
+                    }
+
+                    /* Blocks */
+                    .block {
+                        margin-bottom: 14px;
+                        padding: 20px 18px;
+                        background: #fff;
+                        border: 1px solid var(--line);
+                        border-radius: 16px;
+                    }
+
+                    .block-title {
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 18px;
+                        font-weight: 600;
+                        margin-bottom: 4px;
+                    }
+
+                    .block-sub {
+                        color: var(--muted);
+                        font-size: 14px;
+                        margin-bottom: 14px;
+                    }
+
+                    .req {
+                        color: var(--danger);
+                    }
+
+                    /* Errors */
+                    .errors {
+                        margin-bottom: 14px;
+                        padding: 14px 16px;
+                        background: #FEF2F2;
+                        border: 1px solid #FECACA;
+                        border-radius: 14px;
+                        color: #991B1B;
+                        font-size: 15px;
+                    }
+
+                    .errors li {
+                        margin-left: 18px;
+                    }
+
+                    /* Type choice */
+                    .type-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 10px;
+                    }
+
+                    .type-opt input {
+                        position: absolute;
+                        opacity: 0;
+                        pointer-events: none;
+                    }
+
+                    .type-opt label {
+                        min-height: 84px;
+                        padding: 12px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 4px;
+                        text-align: center;
+                        border: 1.5px solid var(--line);
+                        border-radius: 14px;
+                        background: #fff;
+                        font-weight: 600;
+                        font-size: 15px;
+                        line-height: 1.3;
+                        cursor: pointer;
+                        transition: border-color .15s ease, background .15s ease;
+                    }
+
+                    .type-opt label i {
+                        font-size: 24px;
+                        color: var(--muted);
+                    }
+
+                    .type-opt input:checked+label {
+                        border-color: var(--blue);
+                        background: var(--blue-soft);
+                        color: var(--blue-deep);
+                    }
+
+                    .type-opt input:checked+label i {
+                        color: var(--blue);
+                    }
+
+                    .type-opt input:focus-visible+label {
+                        outline: 3px solid #93C5FD;
+                        outline-offset: 2px;
+                    }
+
+                    /* Fields */
+                    .field {
+                        margin-bottom: 12px;
+                    }
+
+                    .field:last-child {
+                        margin-bottom: 0;
+                    }
+
+                    .field label {
+                        display: block;
+                        margin-bottom: 6px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #334155;
+                    }
+
+                    .input,
+                    textarea.input {
+                        width: 100%;
+                        min-height: 48px;
+                        padding: 10px 14px;
+                        border: 1.5px solid #CBD5E1;
+                        border-radius: 12px;
+                        background: #fff;
+                        font-size: 16px;
+                        outline: none;
+                        transition: border-color .15s ease, box-shadow .15s ease;
+                    }
+
+                    textarea.input {
+                        min-height: 110px;
+                        resize: vertical;
+                    }
+
+                    .input:focus {
+                        border-color: var(--blue);
+                        box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+                    }
+
+                    /* Student search */
+                    .search-results {
+                        margin-top: 10px;
+                        display: grid;
+                        gap: 8px;
+                    }
+
+                    .team-hit {
+                        border: 1px solid var(--line);
+                        border-radius: 12px;
+                        overflow: hidden;
+                    }
+
+                    .team-hit-head {
+                        padding: 8px 12px;
+                        background: #F8FAFC;
+                        font-size: 13px;
+                        color: var(--muted);
+                    }
+
+                    .team-hit-head strong {
+                        color: var(--ink);
+                        font-size: 14px;
+                    }
+
+                    .stu-btn {
+                        width: 100%;
+                        min-height: 46px;
+                        padding: 10px 12px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 10px;
+                        border: 0;
+                        border-top: 1px solid #F1F5F9;
+                        background: #fff;
+                        text-align: left;
+                        font-size: 15px;
+                        cursor: pointer;
+                    }
+
+                    .stu-btn:hover {
+                        background: var(--blue-soft);
+                    }
+
+                    .stu-btn:disabled {
+                        cursor: not-allowed;
+                        color: #94A3B8;
+                        background: #fff;
+                    }
+
+                    .stu-tag {
+                        flex-shrink: 0;
+                        font-size: 12px;
+                        padding: 2px 8px;
+                        border-radius: 999px;
+                        background: #F1F5F9;
+                        color: var(--muted);
+                    }
+
+                    .picked {
+                        display: none;
+                        margin-top: 10px;
+                        padding: 12px 14px;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 10px;
+                        border-radius: 12px;
+                        background: var(--blue-soft);
+                        border: 1.5px solid #BFDBFE;
+                    }
+
+                    .picked.show {
+                        display: flex;
+                    }
+
+                    .picked-name {
+                        font-weight: 700;
+                        color: var(--blue-deep);
+                    }
+
+                    .picked-team {
+                        font-size: 13px;
+                        color: var(--muted);
+                    }
+
+                    .link-btn {
+                        border: 0;
+                        background: none;
+                        color: var(--blue);
+                        font-size: 14px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        white-space: nowrap;
+                    }
+
+                    .hint {
+                        margin-top: 8px;
+                        color: var(--muted);
+                        font-size: 13px;
+                    }
+
+                    /* Rating */
+                    .q {
+                        padding: 16px 0;
+                        border-top: 1px solid #F1F5F9;
+                    }
+
+                    .q:first-of-type {
+                        border-top: 0;
+                        padding-top: 4px;
+                    }
+
+                    .q-label {
+                        display: flex;
+                        gap: 8px;
+                        margin-bottom: 10px;
+                        font-weight: 600;
+                        font-size: 16px;
+                        line-height: 1.45;
+                    }
+
+                    .q-num {
+                        flex-shrink: 0;
+                        color: var(--blue);
+                        font-family: 'Kanit', sans-serif;
+                    }
+
+                    .scale {
+                        display: grid;
+                        grid-template-columns: repeat(5, 1fr);
+                        gap: 6px;
+                    }
+
+                    .scale input {
+                        position: absolute;
+                        opacity: 0;
+                        pointer-events: none;
+                    }
+
+                    .scale label {
+                        min-height: 58px;
+                        padding: 6px 2px;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 1px;
+                        border: 1.5px solid var(--line);
+                        border-radius: 12px;
+                        background: #fff;
+                        cursor: pointer;
+                        text-align: center;
+                        transition: border-color .12s ease, background .12s ease;
+                    }
+
+                    .scale label b {
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 20px;
+                        line-height: 1;
+                    }
+
+                    .scale label span {
+                        font-size: 11px;
+                        color: var(--muted);
+                        line-height: 1.2;
+                    }
+
+                    .scale input:checked+label {
+                        border-color: var(--blue);
+                        background: var(--blue);
+                        color: #fff;
+                    }
+
+                    .scale input:checked+label span {
+                        color: #DBEAFE;
+                    }
+
+                    .scale input:focus-visible+label {
+                        outline: 3px solid #93C5FD;
+                        outline-offset: 2px;
+                    }
+
+                    /* Yes / no */
+                    .yn {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 8px;
+                    }
+
+                    .yn input {
+                        position: absolute;
+                        opacity: 0;
+                        pointer-events: none;
+                    }
+
+                    .yn label {
+                        min-height: 48px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: 1.5px solid var(--line);
+                        border-radius: 12px;
+                        font-weight: 600;
+                        cursor: pointer;
+                    }
+
+                    .yn input:checked+label {
+                        border-color: var(--blue);
+                        background: var(--blue-soft);
+                        color: var(--blue-deep);
+                    }
+
+                    .yn input:focus-visible+label {
+                        outline: 3px solid #93C5FD;
+                        outline-offset: 2px;
+                    }
+
+                    /* Checkbox */
+                    .check {
+                        display: flex;
+                        gap: 10px;
+                        align-items: flex-start;
+                        font-size: 14px;
+                        color: #334155;
+                        cursor: pointer;
+                    }
+
+                    .check input {
+                        width: 20px;
+                        height: 20px;
+                        margin-top: 2px;
+                        flex-shrink: 0;
+                        accent-color: var(--blue);
+                    }
+
+                    .check+.check {
+                        margin-top: 12px;
+                    }
+
+                    /* Submit */
+                    .submit {
+                        width: 100%;
+                        min-height: 56px;
+                        margin-top: 6px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 8px;
+                        border: 0;
+                        border-radius: 14px;
+                        background: var(--blue);
+                        color: #fff;
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 18px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        box-shadow: 0 10px 24px rgba(37, 99, 235, .25);
+                    }
+
+                    .submit:hover {
+                        background: #1D4ED8;
+                    }
+
+                    .submit:disabled {
+                        opacity: .6;
+                        cursor: wait;
+                    }
+
+                    .closed {
+                        padding: 40px 20px;
+                        text-align: center;
+                    }
+
+                    .closed i {
+                        font-size: 44px;
+                        color: #94A3B8;
+                    }
+
+                    .closed h2 {
+                        margin-top: 8px;
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 22px;
+                    }
+
+                    .closed p {
+                        margin-top: 4px;
+                        color: var(--muted);
+                    }
+
+                    [hidden] {
+                        display: none !important;
+                    }
+
+                    @media (max-width: 380px) {
+                        .scale label span {
+                            font-size: 10px;
+                        }
+
+                        .type-opt label {
+                            font-size: 14px;
+                        }
+                    }
+
+                    @media (prefers-reduced-motion: reduce) {
+                        * {
+                            transition: none !important;
+                        }
+                    }
+                </style>
+            </head>
+
+            <body>
+                <main class="wrap">
+
+                    <header class="head">
+                        <img src="/RCL Logo.png" alt="Robo Challenge League">
+                        <h1>แบบประเมินความพึงพอใจ<br>Robo Challenge League</h1>
+                        <% if (eventLabel) { %>
+                            <p>
+                                <%= eventLabel %>
+                            </p>
+                            <% } %>
+                                <% if (isOpen) { %>
+                                    <div class="prize-note"><i class="ti ti-gift"></i> ตอบครบ รับรหัสชิงโชคทันที</div>
+                                    <% } %>
+                    </header>
+
+                    <% if (!isOpen) { %>
+                        <section class="block closed">
+                            <i class="ti ti-lock"></i>
+                            <h2>ปิดรับแบบประเมินแล้ว</h2>
+                            <p>ขอบคุณที่ร่วมกิจกรรม Robo Challenge League</p>
+                        </section>
+                        <% } else { %>
+
+                            <% if (errs.length) { %>
+                                <div class="errors" role="alert">
+                                    <ul>
+                                        <% errs.forEach(function (e) { %>
+                                            <li>
+                                                <%= e %>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                </div>
+                                <% } %>
+
+                                    <form method="POST" action="/survey" id="surveyForm" novalidate>
+
+                                        <!-- ประเภทผู้ตอบ -->
+                                        <section class="block">
+                                            <div class="block-title">คุณคือ <span class="req">*</span></div>
+                                            <div class="block-sub">เลือก 1 ข้อ</div>
+                                            <div class="type-grid">
+                                                <div class="type-opt">
+                                                    <input type="radio" name="respondent_type" id="t_participant"
+                                                        value="participant" <%=selType==='participant' ? 'checked' : ''
+                                                        %>>
+                                                    <label for="t_participant"><i
+                                                            class="ti ti-robot"></i>ผู้เข้าแข่งขัน<br>(นักเรียน)</label>
+                                                </div>
+                                                <div class="type-opt">
+                                                    <input type="radio" name="respondent_type" id="t_coach"
+                                                        value="coach" <%=selType==='coach' ? 'checked' : '' %>>
+                                                    <label for="t_coach"><i class="ti ti-user-star"></i>ผู้คุมทีม<br>/
+                                                        โค้ช</label>
+                                                </div>
+                                                <div class="type-opt">
+                                                    <input type="radio" name="respondent_type" id="t_audience"
+                                                        value="audience" <%=selType==='audience' ? 'checked' : '' %>>
+                                                    <label for="t_audience"><i class="ti ti-users"></i>ผู้ชมทั่วไป<br>/
+                                                        ผู้ปกครอง</label>
+                                                </div>
+                                                <div class="type-opt">
+                                                    <input type="radio" name="respondent_type" id="t_staff"
+                                                        value="staff" <%=selType==='staff' ? 'checked' : '' %>>
+                                                    <label for="t_staff"><i class="ti ti-id-badge-2"></i>คณะกรรมการ<br>/
+                                                        สตาฟ</label>
+                                                </div>
+                                            </div>
+                                        </section>
+
+                                        <!-- นักเรียน: ค้นชื่อจากทีม -->
+                                        <section class="block" id="secStudent" hidden>
+                                            <div class="block-title">ค้นหาชื่อของคุณ <span class="req">*</span></div>
+                                            <div class="block-sub">พิมพ์ชื่อตัวเอง ชื่อทีม หรือรหัสทีม แล้วกดเลือกชื่อ
+                                            </div>
+                                            <input class="input" type="search" id="stuSearch"
+                                                placeholder="เช่น SV-NOVA หรือ ชื่อของคุณ" autocomplete="off">
+                                            <div class="search-results" id="stuResults" aria-live="polite"></div>
+                                            <div class="picked" id="picked">
+                                                <div>
+                                                    <div class="picked-name" id="pickedName"></div>
+                                                    <div class="picked-team" id="pickedTeam"></div>
+                                                </div>
+                                                <button type="button" class="link-btn" id="pickedClear">เปลี่ยน</button>
+                                            </div>
+                                            <input type="hidden" name="team_id" id="teamId"
+                                                value="<%= v.team_id || '' %>">
+                                            <input type="hidden" name="student_number" id="studentNumber"
+                                                value="<%= v.student_number || '' %>">
+                                            <p class="hint">นักเรียน 1 คน ได้รหัสชิงโชค 1 สิทธิ์</p>
+                                        </section>
+
+                                        <!-- โค้ช / ผู้ชม / สตาฟ -->
+                                        <section class="block" id="secContact" hidden>
+                                            <div class="block-title">ข้อมูลติดต่อ</div>
+                                            <div class="block-sub">1 เบอร์ ได้ 1 สิทธิ์ ใช้คู่กับรหัสชิงโชคตอนรับรางวัล
+                                            </div>
+                                            <div class="field">
+                                                <label for="respondentName">ชื่อเล่น หรือชื่อที่ให้เรียก <span
+                                                        style="color:#94A3B8;font-weight:500">(ไม่บังคับ)</span></label>
+                                                <input class="input" type="text" name="respondent_name"
+                                                    id="respondentName" maxlength="200"
+                                                    value="<%= v.respondent_name || '' %>" autocomplete="nickname">
+                                            </div>
+                                            <div class="field">
+                                                <label for="phone">เบอร์โทร <span class="req">*</span></label>
+                                                <input class="input" type="tel" name="phone" id="phone"
+                                                    inputmode="numeric" maxlength="12" placeholder="08xxxxxxxx"
+                                                    value="<%= v.phone || '' %>" autocomplete="tel">
+                                                <p class="hint"><i class="ti ti-lock"></i>
+                                                    ใช้ติดต่อเมื่อได้รับรางวัลเท่านั้น ไม่แสดงต่อสาธารณะ</p>
+                                            </div>
+                                        </section>
+
+                                        <!-- คะแนน -->
+                                        <section class="block">
+                                            <div class="block-title">ความพึงพอใจต่อการจัดงาน <span class="req">*</span>
+                                            </div>
+                                            <div class="block-sub">5 = มากที่สุด · 1 = น้อยที่สุด</div>
+
+                                            <% questions.forEach(function (q, qi) { %>
+                                                <% var cur=String(v[q.key] || '' ); %>
+                                                    <div class="q" role="radiogroup" aria-labelledby="lbl_<%= q.key %>">
+                                                        <div class="q-label" id="lbl_<%= q.key %>"><span class="q-num">
+                                                                <%= qi + 1 %>.
+                                                            </span><span>
+                                                                <%= q.label %>
+                                                            </span></div>
+                                                        <div class="scale">
+                                                            <% [5, 4, 3, 2, 1].forEach(function (n) { %>
+                                                                <% var cap=n===5 ? 'มากที่สุด' : n===4 ? 'มาก' : n===3
+                                                                    ? 'ปานกลาง' : n===2 ? 'น้อย' : 'น้อยที่สุด' ; %>
+                                                                    <div>
+                                                                        <input type="radio" name="<%= q.key %>"
+                                                                            id="<%= q.key %>_<%= n %>" value="<%= n %>"
+                                                                            <%=cur===String(n) ? 'checked' : '' %>>
+                                                                        <label for="<%= q.key %>_<%= n %>"><b>
+                                                                                <%= n %>
+                                                                            </b><span>
+                                                                                <%= cap %>
+                                                                            </span></label>
+                                                                    </div>
+                                                                    <% }) %>
+                                                        </div>
+                                                    </div>
+                                                    <% }) %>
+                                        </section>
+
+                                        <!-- ผู้ชม: สนใจคอร์ส -->
+                                        <section class="block" id="secAudience" hidden>
+                                            <div class="block-title">สนใจให้บุตรหลานเรียนหุ่นยนต์และโค้ดดิ้งไหม</div>
+                                            <div class="block-sub">ไม่บังคับตอบ</div>
+                                            <div class="yn">
+                                                <div>
+                                                    <input type="radio" name="interest_course" id="ic_yes" value="yes"
+                                                        <%=v.interest_course==='yes' ? 'checked' : '' %>>
+                                                    <label for="ic_yes">สนใจ</label>
+                                                </div>
+                                                <div>
+                                                    <input type="radio" name="interest_course" id="ic_no" value="no"
+                                                        <%=v.interest_course==='no' ? 'checked' : '' %>>
+                                                    <label for="ic_no">ยังไม่สนใจ</label>
+                                                </div>
+                                            </div>
+                                            <div style="margin-top:14px">
+                                                <label class="check">
+                                                    <input type="checkbox" name="consent_contact" value="1"
+                                                        <%=v.consent_contact==='1' ? 'checked' : '' %>>
+                                                    <span>ยินยอมให้ ROBO Champion Academy
+                                                        ติดต่อกลับเพื่อแนะนำคอร์สเรียน</span>
+                                                </label>
+                                            </div>
+                                        </section>
+
+                                        <!-- ข้อเสนอแนะ -->
+                                        <section class="block">
+                                            <div class="block-title">ข้อเสนอแนะเพิ่มเติม</div>
+                                            <div class="block-sub">ไม่บังคับตอบ</div>
+                                            <textarea class="input" name="suggestion" maxlength="2000"
+                                                placeholder="สิ่งที่ชอบ หรือสิ่งที่อยากให้ปรับปรุงในปีหน้า"><%= v.suggestion || '' %></textarea>
+                                        </section>
+
+                                        <!-- PDPA -->
+                                        <section class="block">
+                                            <label class="check">
+                                                <input type="checkbox" name="consent_data" value="1"
+                                                    <%=v.consent_data==='1' ? 'checked' : '' %>>
+                                                <span>ยินยอมให้เก็บข้อมูลในแบบประเมินนี้
+                                                    เพื่อใช้ปรับปรุงการจัดงานและติดต่อเรื่องรางวัล <span
+                                                        class="req">*</span></span>
+                                            </label>
+                                        </section>
+
+                                        <button type="submit" class="submit" id="submitBtn"><i class="ti ti-send"></i>
+                                            ส่งแบบประเมิน</button>
+                                    </form>
+                                    <% } %>
+                </main>
+
+                <% if (isOpen) { %>
+                    <script>
+                        (function () {
+                            var form = document.getElementById('surveyForm');
+                            var secStudent = document.getElementById('secStudent');
+                            var secContact = document.getElementById('secContact');
+                            var secAudience = document.getElementById('secAudience');
+                            var searchInput = document.getElementById('stuSearch');
+                            var results = document.getElementById('stuResults');
+                            var picked = document.getElementById('picked');
+                            var pickedName = document.getElementById('pickedName');
+                            var pickedTeam = document.getElementById('pickedTeam');
+                            var teamIdInput = document.getElementById('teamId');
+                            var studentNumInput = document.getElementById('studentNumber');
+                            var submitBtn = document.getElementById('submitBtn');
+                            var timer = null;
+
+                            function esc(s) {
+                                return String(s == null ? '' : s)
+                                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                            }
+
+                            function currentType() {
+                                var c = form.querySelector('input[name="respondent_type"]:checked');
+                                return c ? c.value : '';
+                            }
+
+                            function applyType() {
+                                var t = currentType();
+                                secStudent.hidden = t !== 'participant';
+                                secContact.hidden = !(t === 'coach' || t === 'audience' || t === 'staff');
+                                secAudience.hidden = t !== 'audience';
+                            }
+
+                            function showPicked(name, team) {
+                                pickedName.textContent = name;
+                                pickedTeam.textContent = team;
+                                picked.classList.add('show');
+                                results.innerHTML = '';
+                                searchInput.hidden = true;
+                            }
+
+                            function clearPicked() {
+                                teamIdInput.value = '';
+                                studentNumInput.value = '';
+                                picked.classList.remove('show');
+                                searchInput.hidden = false;
+                                searchInput.value = '';
+                                searchInput.focus();
+                            }
+
+                            function search() {
+                                var q = searchInput.value.trim();
+                                if (q.length < 2) { results.innerHTML = ''; return; }
+
+                                fetch('/survey/students?q=' + encodeURIComponent(q))
+                                    .then(function (r) { return r.json(); })
+                                    .then(function (data) {
+                                        var teams = (data && data.teams) || [];
+                                        if (!teams.length) {
+                                            results.innerHTML = '<p class="hint">ไม่พบชื่อ ลองพิมพ์ชื่อทีมหรือรหัสทีมแทน</p>';
+                                            return;
+                                        }
+                                        results.innerHTML = teams.map(function (t) {
+                                            var html = '<div class="team-hit"><div class="team-hit-head"><strong>' + esc(t.name) + '</strong> ' +
+                                                esc(t.id) + (t.institution ? ' · ' + esc(t.institution) : '') + '</div>';
+                                            t.students.forEach(function (s) {
+                                                html += '<button type="button" class="stu-btn" ' + (s.answered ? 'disabled ' : '') +
+                                                    'data-team="' + esc(t.id) + '" data-num="' + s.number + '" data-name="' + esc(s.name) +
+                                                    '" data-teamname="' + esc(t.name) + '">' +
+                                                    '<span>' + esc(s.name) + '</span>' +
+                                                    (s.answered ? '<span class="stu-tag">ตอบแล้ว</span>' : '<i class="ti ti-chevron-right"></i>') +
+                                                    '</button>';
+                                            });
+                                            return html + '</div>';
+                                        }).join('');
+                                    })
+                                    .catch(function () {
+                                        results.innerHTML = '<p class="hint">ค้นหาไม่สำเร็จ ลองใหม่อีกครั้ง</p>';
+                                    });
+                            }
+
+                            form.querySelectorAll('input[name="respondent_type"]').forEach(function (r) {
+                                r.addEventListener('change', applyType);
+                            });
+
+                            searchInput.addEventListener('input', function () {
+                                clearTimeout(timer);
+                                timer = setTimeout(search, 300);
+                            });
+
+                            results.addEventListener('click', function (e) {
+                                var b = e.target.closest('.stu-btn');
+                                if (!b || b.disabled) return;
+                                teamIdInput.value = b.getAttribute('data-team');
+                                studentNumInput.value = b.getAttribute('data-num');
+                                showPicked(b.getAttribute('data-name'), 'ทีม ' + b.getAttribute('data-teamname') + ' (' + b.getAttribute('data-team') + ')');
+                            });
+
+                            document.getElementById('pickedClear').addEventListener('click', clearPicked);
+
+                            // ส่งไม่ผ่านแล้วกลับมาหน้านี้: แสดงชื่อที่เลือกไว้เดิม
+                            if (teamIdInput.value && studentNumInput.value) {
+                                showPicked('นักเรียนคนที่ ' + studentNumInput.value, 'ทีม ' + teamIdInput.value);
+                            }
+
+                            form.addEventListener('submit', function () {
+                                submitBtn.disabled = true;
+                                submitBtn.innerHTML = 'กำลังส่ง…';
+                            });
+
+                            window.addEventListener('pageshow', function () {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i class="ti ti-send"></i> ส่งแบบประเมิน';
+                            });
+
+                            applyType();
+                        })();
+                    </script>
+                    <% } %>
+            </body>
+
+            </html>

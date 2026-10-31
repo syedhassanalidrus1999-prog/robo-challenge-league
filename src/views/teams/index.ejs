@@ -1047,7 +1047,8 @@
                                         <% if (canCheckin) { %>
                                           <form method="POST"
                                             action="/teams/<%= t.id %>/checkin/<%= si %>?tier=<%= activeTier %>"
-                                            style="display:inline">
+                                            style="display:inline" data-student="<%= sName %>" data-team="<%= t.name %>"
+                                            data-on="<%= sIn ? '1' : '0' %>" onsubmit="return confirmCheckin(this)">
                                             <button type="submit" class="checkin-btn <%= sIn ? 'on' : 'off' %>">
                                               <i class="ti ti-<%= sIn ? 'circle-check-filled' : 'circle-dashed' %>"></i>
                                               <%= sIn ? 'มาแล้ว' : 'ยังไม่มา' %>
@@ -1298,6 +1299,16 @@
                       var inst = rows[i].dataset.inst || '';
                       rows[i].style.display = (!q || name.indexOf(q) > -1 || inst.indexOf(q) > -1) ? '' : 'none';
                     }
+                  }
+
+                  function confirmCheckin(form) {
+                    var student = form.getAttribute('data-student') || '';
+                    var team = form.getAttribute('data-team') || '';
+                    var isOn = form.getAttribute('data-on') === '1';
+                    var msg = isOn
+                      ? 'ยกเลิกเช็คชื่อ ' + student + ' (ทีม ' + team + ') ใช่ไหม?'
+                      : 'เช็คชื่อ ' + student + ' (ทีม ' + team + ') ว่ามาแล้ว ใช่ไหม?';
+                    return window.confirm(msg);
                   }
 
                   function openEditModal(team) {

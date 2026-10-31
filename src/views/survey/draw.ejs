@@ -1,0 +1,493 @@
+<% var typeKeys=Object.keys(types); %>
+    <% var remainAll=0; %>
+        <% typeKeys.forEach(function (k) { remainAll +=remaining[k] || 0; }); %>
+            <!DOCTYPE html>
+            <html lang="th">
+
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>สุ่มรางวัล — Robo Challenge League</title>
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link rel="stylesheet"
+                    href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+                <link
+                    href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800;900&family=Sarabun:wght@400;500;600&display=swap"
+                    rel="stylesheet">
+                <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+                <style>
+                    :root {
+                        --navy: #0B1F4D;
+                        --navy-2: #13306E;
+                        --blue: #2563EB;
+                        --gold: #FBBF24;
+                        --gold-soft: #FDE68A;
+                        --text: #E2E8F0;
+                        --muted: #94A3B8;
+                    }
+
+                    * {
+                        box-sizing: border-box;
+                        margin: 0;
+                        padding: 0;
+                    }
+
+                    body {
+                        min-height: 100vh;
+                        display: flex;
+                        flex-direction: column;
+                        background: radial-gradient(ellipse at 50% 30%, var(--navy-2), var(--navy) 70%);
+                        color: var(--text);
+                        font-family: 'Sarabun', sans-serif;
+                    }
+
+                    button,
+                    input,
+                    select {
+                        font: inherit;
+                    }
+
+                    :focus-visible {
+                        outline: 3px solid var(--gold);
+                        outline-offset: 2px;
+                    }
+
+                    .top {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 12px;
+                        padding: 16px 28px;
+                    }
+
+                    .brand {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #fff;
+                    }
+
+                    .brand img {
+                        height: 44px;
+                    }
+
+                    .back {
+                        color: var(--muted);
+                        text-decoration: none;
+                        font-size: 14px;
+                    }
+
+                    .back:hover {
+                        color: #fff;
+                    }
+
+                    /* Stage */
+                    .stage {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px 24px 10px;
+                        text-align: center;
+                    }
+
+                    .prize-line {
+                        min-height: 44px;
+                        font-family: 'Kanit', sans-serif;
+                        font-size: clamp(22px, 3vw, 34px);
+                        font-weight: 600;
+                        color: var(--gold-soft);
+                    }
+
+                    .code {
+                        font-family: 'Kanit', sans-serif;
+                        font-size: clamp(72px, 15vw, 200px);
+                        font-weight: 900;
+                        letter-spacing: .06em;
+                        line-height: 1.05;
+                        color: #fff;
+                        font-variant-numeric: tabular-nums;
+                    }
+
+                    .code.spinning {
+                        color: #CBD5E1;
+                        filter: blur(.5px);
+                    }
+
+                    .code.win {
+                        color: var(--gold);
+                        text-shadow: 0 0 40px rgba(251, 191, 36, .45);
+                        animation: land .6s cubic-bezier(.2, 1.5, .4, 1);
+                    }
+
+                    @keyframes land {
+                        from {
+                            transform: scale(1.25);
+                        }
+
+                        to {
+                            transform: none;
+                        }
+                    }
+
+                    .who {
+                        min-height: 64px;
+                        margin-top: 10px;
+                        font-size: clamp(18px, 2.4vw, 28px);
+                        color: var(--text);
+                    }
+
+                    .who small {
+                        display: block;
+                        font-size: .7em;
+                        color: var(--muted);
+                    }
+
+                    /* Controls (ซ่อนได้ตอนขึ้นจอ) */
+                    .controls {
+                        display: flex;
+                        flex-wrap: wrap;
+                        align-items: flex-end;
+                        justify-content: center;
+                        gap: 12px;
+                        padding: 18px 24px;
+                        background: rgba(255, 255, 255, .04);
+                        border-top: 1px solid rgba(255, 255, 255, .08);
+                    }
+
+                    .ctl label {
+                        display: block;
+                        margin-bottom: 4px;
+                        font-size: 12px;
+                        color: var(--muted);
+                        text-align: left;
+                    }
+
+                    .ctl select,
+                    .ctl input {
+                        min-width: 220px;
+                        height: 46px;
+                        padding: 0 12px;
+                        border-radius: 10px;
+                        border: 1px solid rgba(255, 255, 255, .18);
+                        background: rgba(255, 255, 255, .08);
+                        color: #fff;
+                    }
+
+                    .ctl select option {
+                        color: #0F172A;
+                    }
+
+                    .draw-btn {
+                        height: 46px;
+                        padding: 0 28px;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
+                        border: 0;
+                        border-radius: 10px;
+                        background: var(--gold);
+                        color: #1F2937;
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 18px;
+                        font-weight: 700;
+                        cursor: pointer;
+                    }
+
+                    .draw-btn:disabled {
+                        opacity: .5;
+                        cursor: wait;
+                    }
+
+                    .ghost-btn {
+                        height: 46px;
+                        padding: 0 16px;
+                        border-radius: 10px;
+                        border: 1px solid rgba(255, 255, 255, .2);
+                        background: transparent;
+                        color: var(--text);
+                        cursor: pointer;
+                    }
+
+                    .remain {
+                        font-size: 13px;
+                        color: var(--muted);
+                        align-self: center;
+                    }
+
+                    /* Winners */
+                    .winners {
+                        padding: 18px 24px 28px;
+                    }
+
+                    .winners h2 {
+                        margin-bottom: 10px;
+                        font-family: 'Kanit', sans-serif;
+                        font-size: 18px;
+                        font-weight: 600;
+                        color: #fff;
+                    }
+
+                    .w-table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        font-size: 14px;
+                    }
+
+                    .w-table th {
+                        padding: 8px 10px;
+                        text-align: left;
+                        color: var(--muted);
+                        font-weight: 600;
+                        border-bottom: 1px solid rgba(255, 255, 255, .12);
+                    }
+
+                    .w-table td {
+                        padding: 10px;
+                        border-bottom: 1px solid rgba(255, 255, 255, .06);
+                    }
+
+                    .w-code {
+                        font-family: 'Kanit', sans-serif;
+                        font-weight: 700;
+                        color: var(--gold-soft);
+                        letter-spacing: 1px;
+                    }
+
+                    .cancel-btn {
+                        border: 1px solid rgba(248, 113, 113, .4);
+                        background: transparent;
+                        color: #FCA5A5;
+                        border-radius: 8px;
+                        padding: 4px 10px;
+                        font-size: 12px;
+                        cursor: pointer;
+                    }
+
+                    .empty {
+                        color: var(--muted);
+                        font-size: 14px;
+                    }
+
+                    body.presenting .controls,
+                    body.presenting .winners,
+                    body.presenting .top .back {
+                        display: none;
+                    }
+
+                    @media (prefers-reduced-motion: reduce) {
+                        .code.win {
+                            animation: none;
+                        }
+                    }
+                </style>
+            </head>
+
+            <body>
+                <header class="top">
+                    <div class="brand"><img src="/RCL Logo.png" alt="">จับรางวัลผู้ตอบแบบประเมิน</div>
+                    <a href="/board/survey" class="back"><i class="ti ti-arrow-left"></i> กลับหน้าแบบประเมิน</a>
+                </header>
+
+                <section class="stage" aria-live="polite">
+                    <div class="prize-line" id="prizeLine"></div>
+                    <div class="code" id="code">RCL-????</div>
+                    <div class="who" id="who"></div>
+                </section>
+
+                <section class="controls">
+                    <div class="ctl">
+                        <label for="pool">สุ่มจาก</label>
+                        <select id="pool">
+                            <option value="all_no_staff">ทุกกลุ่ม ยกเว้นสตาฟ</option>
+                            <option value="all">ทุกกลุ่ม</option>
+                            <% typeKeys.forEach(function (k) { %>
+                                <option value="<%= k %>">
+                                    <%= types[k] %> (เหลือ <%= remaining[k] || 0 %>)
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="ctl">
+                        <label for="prize">ชื่อรางวัล</label>
+                        <input type="text" id="prize" maxlength="200" placeholder="เช่น ชุดหุ่นยนต์ Mini Kit">
+                    </div>
+                    <button type="button" class="draw-btn" id="drawBtn"><i class="ti ti-gift"></i> สุ่มรางวัล</button>
+                    <button type="button" class="ghost-btn" id="presentBtn"
+                        title="ซ่อนแผงควบคุม (กด Esc เพื่อแสดงกลับ)"><i class="ti ti-presentation"></i>
+                        โหมดขึ้นจอ</button>
+                    <span class="remain" id="remain">เหลือในกล่อง <%= remainAll %> รหัส</span>
+                </section>
+
+                <section class="winners">
+                    <h2>รายชื่อผู้ได้รับรางวัล</h2>
+                    <% if (!winners.length) { %>
+                        <p class="empty" id="emptyWinners">ยังไม่มีผู้ได้รับรางวัล</p>
+                        <% } %>
+                            <table class="w-table" id="winnerTable" <%=winners.length ? '' : 'hidden' %>>
+                                <thead>
+                                    <tr>
+                                        <th>รหัส</th>
+                                        <th>ชื่อ</th>
+                                        <th>เลขท้ายเบอร์</th>
+                                        <th>กลุ่ม</th>
+                                        <th>รางวัล</th>
+                                        <th>เวลา</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="winnerBody">
+                                    <% winners.forEach(function (w) { %>
+                                        <tr>
+                                            <td class="w-code">
+                                                <%= w.code %>
+                                            </td>
+                                            <td>
+                                                <%= w.name %>
+                                            </td>
+                                            <td>
+                                                <%= w.phoneTail || '—' %>
+                                            </td>
+                                            <td>
+                                                <%= w.type %>
+                                            </td>
+                                            <td>
+                                                <%= w.prize %>
+                                            </td>
+                                            <td>
+                                                <%= w.wonAt %>
+                                            </td>
+                                            <td>
+                                                <form method="POST" action="/board/survey/winners/<%= w.id %>/cancel"
+                                                    data-code="<%= w.code %>"
+                                                    onsubmit="return confirm('ยกเลิกรางวัลของ ' + this.getAttribute('data-code') + ' และคืนรหัสเข้ากล่องสุ่ม?')">
+                                                    <button type="submit" class="cancel-btn">ยกเลิก</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                </section>
+
+                <script>
+                    (function () {
+                        var codeEl = document.getElementById('code');
+                        var whoEl = document.getElementById('who');
+                        var prizeLine = document.getElementById('prizeLine');
+                        var drawBtn = document.getElementById('drawBtn');
+                        var poolSel = document.getElementById('pool');
+                        var prizeInput = document.getElementById('prize');
+                        var remainEl = document.getElementById('remain');
+                        var winnerBody = document.getElementById('winnerBody');
+                        var winnerTable = document.getElementById('winnerTable');
+                        var emptyWinners = document.getElementById('emptyWinners');
+                        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        var ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+
+                        function esc(s) {
+                            return String(s == null ? '' : s)
+                                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                        }
+
+                        function randomCode() {
+                            var s = 'RCL-';
+                            for (var i = 0; i < 4; i++) s += ALPHA.charAt(Math.floor(Math.random() * ALPHA.length));
+                            return s;
+                        }
+
+                        // หมุนรหัสเร็ว → ค่อย ๆ ช้าลง → หยุดที่ผู้ชนะ
+                        function spin(sample, finalCode, done) {
+                            if (reduceMotion) { done(); return; }
+                            var delays = [];
+                            var d = 45;
+                            for (var i = 0; i < 38; i++) { delays.push(d); d = i < 22 ? d : d * 1.13; }
+                            var step = 0;
+                            codeEl.className = 'code spinning';
+                            function tick() {
+                                if (step >= delays.length) { done(); return; }
+                                codeEl.textContent = sample.length ? sample[step % sample.length] : randomCode();
+                                setTimeout(tick, delays[step]);
+                                step++;
+                            }
+                            tick();
+                        }
+
+                        function addWinnerRow(w) {
+                            var tr = document.createElement('tr');
+                            tr.innerHTML =
+                                '<td class="w-code">' + esc(w.code) + '</td>' +
+                                '<td>' + esc(w.name) + '</td>' +
+                                '<td>' + esc(w.phoneTail || '—') + '</td>' +
+                                '<td>' + esc(w.type) + '</td>' +
+                                '<td>' + esc(w.prize) + '</td>' +
+                                '<td>' + esc(w.wonAt) + '</td>' +
+                                '<td><form method="POST" action="/board/survey/winners/' + Number(w.id) + '/cancel" data-code="' + esc(w.code) +
+                                '" onsubmit="return confirm(\'ยกเลิกรางวัลของ \' + this.getAttribute(\'data-code\') + \' และคืนรหัสเข้ากล่องสุ่ม?\')">' +
+                                '<button type="submit" class="cancel-btn">ยกเลิก</button></form></td>';
+                            winnerBody.insertBefore(tr, winnerBody.firstChild);
+                            winnerTable.hidden = false;
+                            if (emptyWinners) emptyWinners.hidden = true;
+                        }
+
+                        drawBtn.addEventListener('click', function () {
+                            drawBtn.disabled = true;
+                            whoEl.innerHTML = '';
+                            prizeLine.textContent = prizeInput.value.trim();
+
+                            var body = new URLSearchParams();
+                            body.set('pool', poolSel.value);
+                            body.set('prize', prizeInput.value.trim());
+
+                            fetch('/board/survey/draw', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+                                body: body.toString()
+                            })
+                                .then(function (r) { return r.json(); })
+                                .then(function (data) {
+                                    if (!data.ok) {
+                                        codeEl.className = 'code';
+                                        codeEl.textContent = 'RCL-????';
+                                        whoEl.textContent = data.error || 'สุ่มไม่สำเร็จ';
+                                        drawBtn.disabled = false;
+                                        return;
+                                    }
+                                    spin(data.sample || [], data.winner.code, function () {
+                                        codeEl.textContent = data.winner.code;
+                                        codeEl.className = 'code win';
+                                        whoEl.innerHTML = esc(data.winner.maskedName) + '<small>' + esc(data.winner.type) + '</small>';
+                                        remainEl.textContent = 'เหลือในกล่อง (กลุ่มนี้) ' + data.remaining + ' รหัส';
+                                        addWinnerRow(data.winner);
+                                        drawBtn.disabled = false;
+                                    });
+                                })
+                                .catch(function () {
+                                    whoEl.textContent = 'เชื่อมต่อไม่สำเร็จ กรุณาลองใหม่';
+                                    drawBtn.disabled = false;
+                                });
+                        });
+
+                        document.getElementById('presentBtn').addEventListener('click', function () {
+                            document.body.classList.add('presenting');
+                        });
+
+                        document.addEventListener('keydown', function (e) {
+                            if (e.key === 'Escape') document.body.classList.remove('presenting');
+                            if (document.body.classList.contains('presenting') && (e.key === ' ' || e.key === 'Enter') && !drawBtn.disabled) {
+                                e.preventDefault();
+                                drawBtn.click();
+                            }
+                        });
+                    })();
+                </script>
+            </body>
+
+            </html>

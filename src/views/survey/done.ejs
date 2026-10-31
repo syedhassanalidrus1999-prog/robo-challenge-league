@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รหัสชิงโชคของคุณ — Robo Challenge League</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Sarabun:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/css/survey-done.css?v=2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+
+    <style>
+        /* public/css/survey-done.css — หน้ารหัสชิงโชคหลังตอบแบบประเมิน */
+
+:root {
+  --blue: #2563EB;
+  --blue-deep: #1E3A8A;
+  --blue-ink: #172554;
+  --blue-soft: #EFF6FF;
+  --gold: #FBBF24;
+  --gold-soft: #FDE68A;
+  --ink: #0F172A;
+  --muted: #64748B;
+  --line: #E2E8F0;
+  --bg: #F3F6FB;
+  --green: #16A34A;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 32px 16px 48px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid #93C5FD;
+  outline-offset: 3px;
+}
+
+.done {
+  width: 100%;
+  max-width: 440px;
+}
+
+/* ---------- หัวข้อ ---------- */
+
+.done-head {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.done-logo {
+  display: block;
+  height: 56px;
+  width: auto;
+  margin: 0 auto 14px;
+}
+
+.done-check {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #DCFCE7;
+  color: var(--green);
+  font-size: 30px;
+}
+
+.done-title {
+  font-family: 'Kanit', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.done-sub {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ---------- ตั๋ว ---------- */
+
+.ticket {
+  position: relative;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(96, 165, 250, .35), transparent 55%),
+    var(--blue-deep);
+  color: #fff;
+  box-shadow: 0 22px 44px rgba(30, 58, 138, .28);
+  overflow: hidden;
+}
+
+.ticket-top {
+  padding: 22px 22px 20px;
+  text-align: center;
+}
+
+.ticket-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .12);
+  color: #DBEAFE;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ticket-code {
+  margin-top: 12px;
+  font-family: 'Kanit', sans-serif;
+  font-size: clamp(38px, 12.5vw, 62px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: .05em;
+  white-space: nowrap;
+  color: var(--gold-soft);
+  font-variant-numeric: tabular-nums;
+  animation: code-pop .55s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+
+@keyframes code-pop {
+  from {
+    transform: scale(.7);
+    opacity: 0;
+  }
+
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* รอยปรุ */
+.ticket-cut {
+  position: relative;
+  height: 0;
+  margin: 0 20px;
+  border-top: 2px dashed rgba(255, 255, 255, .3);
+}
+
+.ticket-cut::before,
+.ticket-cut::after {
+  content: "";
+  position: absolute;
+  top: -13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.ticket-cut::before {
+  left: -33px;
+}
+
+.ticket-cut::after {
+  right: -33px;
+}
+
+.ticket-bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px 20px;
+}
+
+.ticket-who {
+  min-width: 0;
+}
+
+.ticket-name {
+  font-family: 'Kanit', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.ticket-type {
+  margin-top: 2px;
+  color: #BFDBFE;
+  font-size: 13px;
+}
+
+.ticket-badge {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(251, 191, 36, .16);
+  color: var(--gold);
+  font-size: 28px;
+}
+
+/* ---------- ปุ่ม ---------- */
+
+.done-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn {
+  min-height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 0;
+  font-family: 'Kanit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.btn:active {
+  transform: scale(.98);
+}
+
+.btn-main {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btn-main:hover {
+  background: #1D4ED8;
+}
+
+.btn-main:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+.btn-ghost {
+  background: #fff;
+  color: var(--blue);
+  border: 1.5px solid #BFDBFE;
+}
+
+.btn-ghost:hover {
+  background: var(--blue-soft);
+}
+
+/* ---------- ขั้นตอนรับรางวัล ---------- */
+
+.claim {
+  margin-top: 18px;
+  padding: 18px 18px 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+
+.claim-title {
+  margin-bottom: 10px;
+  font-family: 'Kanit', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.claim-steps {
+  list-style: none;
+  counter-reset: step;
+}
+
+.claim-steps li {
+  position: relative;
+  padding: 0 0 14px 40px;
+  counter-increment: step;
+  font-size: 15px;
+  color: #334155;
+}
+
+.claim-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-family: 'Kanit', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.claim-steps strong {
+  color: var(--ink);
+}
+
+.done-foot {
+  margin-top: 18px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 13px;
+}
+
+@media (max-width: 360px) {
+  .done-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticket-code {
+    animation: none;
+  }
+
+  .btn {
+    transition: none;
+  }
+}
+    </style>
+</head>
+
+<body>
+    <main class="done">
+
+        <header class="done-head">
+            <img class="done-logo" src="/RCL Logo.png" alt="Robo Challenge League">
+            <div class="done-check" aria-hidden="true"><i class="ti ti-check"></i></div>
+            <h1 class="done-title">ขอบคุณที่ตอบแบบประเมิน</h1>
+            <p class="done-sub">นี่คือรหัสชิงโชคของคุณ เก็บไว้ใช้ตอนประกาศรางวัล</p>
+        </header>
+
+        <section class="ticket" aria-label="รหัสชิงโชค">
+            <div class="ticket-top">
+                <span class="ticket-label"><i class="ti ti-ticket"></i> รหัสชิงโชค</span>
+                <div class="ticket-code" id="code">
+                    <%= result.code %>
+                </div>
+            </div>
+            <div class="ticket-cut" aria-hidden="true"></div>
+            <div class="ticket-bottom">
+                <div class="ticket-who">
+                    <div class="ticket-name" id="tName">
+                        <%= result.name || 'ผู้ตอบแบบประเมิน' %>
+                    </div>
+                    <div class="ticket-type" id="tType">
+                        <%= result.type %>
+                    </div>
+                </div>
+                <div class="ticket-badge" aria-hidden="true"><i class="ti ti-gift"></i></div>
+            </div>
+        </section>
+
+        <div class="done-actions">
+            <button type="button" class="btn btn-main" id="saveBtn"><i class="ti ti-download"></i> บันทึกรูป</button>
+            <a href="/" class="btn btn-ghost"><i class="ti ti-home"></i> หน้าหลัก</a>
+        </div>
+
+        <section class="claim">
+            <h2 class="claim-title">วิธีรับรางวัล</h2>
+            <ol class="claim-steps">
+                <li><strong>บันทึกรูปหรือแคปหน้าจอ</strong> เก็บรหัสนี้ไว้</li>
+                <li><strong>รอประกาศผล</strong> บนเวทีภายในงาน</li>
+                <li><strong>ถ้ารหัสของคุณถูกประกาศ</strong> แสดงรหัสนี้กับเจ้าหน้าที่ และบอกเลขท้ายเบอร์โทร 4 ตัว
+                    (ถ้ามี)</li>
+            </ol>
+        </section>
+
+        <p class="done-foot">Robo Challenge League</p>
+    </main>
+
+    <script>
+        (function () {
+            var btn = document.getElementById('saveBtn');
+            var code = document.getElementById('code').textContent.trim();
+            var name = document.getElementById('tName').textContent.trim();
+            var type = document.getElementById('tType').textContent.trim();
+
+            function roundRect(ctx, x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+
+            function draw() {
+                var W = 900, H = 540;
+                var c = document.createElement('canvas');
+                c.width = W;
+                c.height = H;
+                var ctx = c.getContext('2d');
+
+                ctx.fillStyle = '#F3F6FB';
+                ctx.fillRect(0, 0, W, H);
+
+                roundRect(ctx, 40, 40, W - 80, H - 80, 40);
+                ctx.fillStyle = '#1E3A8A';
+                ctx.fill();
+
+                ctx.textAlign = 'center';
+                ctx.fillStyle = '#DBEAFE';
+                ctx.font = '600 28px Sarabun, sans-serif';
+                ctx.fillText('รหัสชิงโชค Robo Challenge League', W / 2, 120);
+
+                ctx.fillStyle = '#FDE68A';
+                ctx.font = '800 128px Kanit, sans-serif';
+                ctx.fillText(code, W / 2, 262);
+
+                ctx.setLineDash([14, 12]);
+                ctx.strokeStyle = 'rgba(255,255,255,.3)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(80, 330);
+                ctx.lineTo(W - 80, 330);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                ctx.fillStyle = '#F3F6FB';
+                ctx.beginPath(); ctx.arc(40, 330, 24, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(W - 40, 330, 24, 0, Math.PI * 2); ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '600 36px Kanit, sans-serif';
+                ctx.fillText(name, W / 2, 400);
+
+                ctx.fillStyle = '#BFDBFE';
+                ctx.font = '400 26px Sarabun, sans-serif';
+                ctx.fillText(type, W / 2, 445);
+
+                return c;
+            }
+
+            btn.addEventListener('click', function () {
+                btn.disabled = true;
+                var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+                ready.then(function () {
+                    var a = document.createElement('a');
+                    a.href = draw().toDataURL('image/png');
+                    a.download = code + '.png';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                }).then(function () {
+                    btn.disabled = false;
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>
