@@ -261,11 +261,11 @@ async function generateCoupons(days, teamIds) {
 
   const teamsResult = teamIds
     ? await query(
-        "SELECT * FROM teams WHERE id = ANY($1) AND COALESCE(status, '') <> 'rejected' ORDER BY created_at ASC",
+        "SELECT * FROM teams WHERE id = ANY($1) AND status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
         [teamIds],
       )
     : await query(
-        "SELECT * FROM teams WHERE COALESCE(status, '') <> 'rejected' ORDER BY created_at ASC",
+        "SELECT * FROM teams WHERE status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
         [],
       );
 
@@ -462,12 +462,26 @@ staffRouter.post("/redeem", async (req, res) => {
       });
     }
 
-    // ต้อง Check-in ก่อน (โค้ช: มีนักเรียนในทีม Check-in อย่างน้อย 1 คน)
+    // ต้อง Check-in ก่อน
+    // - นักเรียน: ตัวเองต้อง Check-in
+    // - โค้ช: ทีมใดทีมหนึ่งที่ดูแล มีนักเรียน Check-in อย่างน้อย 1 คน
     if (team) {
-      const checkedIn =
-        c.holder_type === "student"
-          ? Boolean(team["student_" + c.student_number + "_checked_in"])
-          : [1, 2, 3].some((i) => team["student_" + i + "_checked_in"]);
+      let checkedIn;
+
+      if (c.holder_type === "student") {
+        checkedIn = Boolean(
+          team["student_" + c.student_number + "_checked_in"],
+        );
+      } else {
+        const coachTeams = await query(
+          `SELECT 1 FROM teams
+           WHERE LOWER(REGEXP_REPLACE(TRIM(coach), '\\s+', ' ', 'g')) = $1
+             AND (student_1_checked_in OR student_2_checked_in OR student_3_checked_in)
+           LIMIT 1`,
+          [c.holder_key.slice(2)],
+        );
+        checkedIn = coachTeams.rows.length > 0;
+      }
 
       if (!checkedIn) {
         return res.json({
@@ -691,7 +705,7 @@ adminRouter.get("/print", async (req, res) => {
     const teamsResult = teamId
       ? await query("SELECT * FROM teams WHERE id = $1", [teamId])
       : await query(
-          "SELECT * FROM teams WHERE tier = $1 AND COALESCE(status, '') <> 'rejected' ORDER BY created_at ASC",
+          "SELECT * FROM teams WHERE tier = $1 AND status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
           [tier || "beginner"],
         );
 
