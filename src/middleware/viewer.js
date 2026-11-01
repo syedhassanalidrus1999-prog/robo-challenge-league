@@ -20,6 +20,8 @@ const VIEWER_ALLOWED = [
 const VIEWER_POST_ALLOWED = [
   /^\/auth\//, //                                   ออกจากระบบ / เข้าสู่ระบบใหม่
   /^\/teams\/[^/]+\/checkin\/[1-3]\/?$/, //            สลับสถานะ Check-in นักเรียน
+  /^\/survey\/?$/, //                                 ส่งแบบประเมิน (หน้าสาธารณะ)
+  /^\/coupons\/redeem\/?$/, //                        แลกคูปองที่จุดบริการ
 ];
 
 function hasMethodOverride(req) {

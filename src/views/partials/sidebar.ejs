@@ -53,6 +53,10 @@
           <a href="/board/survey" class="sb-item <%= currentPath.startsWith('/board/survey') ? 'active' : '' %>">
             <i class="ti ti-message-star"></i> แบบประเมิน
           </a>
+
+          <a href="/board/coupons" class="sb-item <%= currentPath.startsWith('/board/coupons') ? 'active' : '' %>">
+            <i class="ti ti-ticket"></i> คูปองอาหาร
+          </a>
           <% } %>
 
             <% if (sbRole==='viewer' ) { %>
@@ -64,6 +68,10 @@
 
               <a href="/board" class="sb-item <%= currentPath === '/board' ? 'active' : '' %>">
                 <i class="ti ti-chart-bar"></i> สรุปผลคะแนน
+              </a>
+
+              <a href="/coupons/scan" class="sb-item <%= currentPath.startsWith('/coupons') ? 'active' : '' %>">
+                <i class="ti ti-scan"></i> สแกนคูปอง
               </a>
               <% } %>
 

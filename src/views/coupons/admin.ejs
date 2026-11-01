@@ -1,0 +1,574 @@
+<style>
+    .cp-hd {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .cp-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .cp-sub {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #64748B;
+    }
+
+    .cp-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .cp-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 40px;
+        padding: 0 14px;
+        border-radius: 10px;
+        border: 1px solid #E2E8F0;
+        background: #fff;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 700;
+        font-family: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .cp-btn:hover {
+        background: #F8FAFC;
+    }
+
+    .cp-btn.primary {
+        background: #2563EB;
+        border-color: #2563EB;
+        color: #fff;
+    }
+
+    .cp-btn.primary:hover {
+        background: #1D4ED8;
+    }
+
+    .cp-btn.green {
+        background: #16A34A;
+        border-color: #16A34A;
+        color: #fff;
+    }
+
+    .cp-btn.sm {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+
+    .cp-btn.danger {
+        background: #DC2626;
+        border-color: #DC2626;
+        color: #fff;
+    }
+
+    .cp-card {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        margin-bottom: 18px;
+        overflow: hidden;
+    }
+
+    .cp-card-hd {
+        padding: 14px 18px;
+        border-bottom: 1px solid #EEF2F7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .cp-card-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .cp-card-note {
+        font-size: 12px;
+        color: #64748B;
+    }
+
+    .cp-card-body {
+        padding: 16px 18px;
+    }
+
+    .cp-warn {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 12px 16px;
+        margin-bottom: 18px;
+        border-radius: 12px;
+        background: #FFFBEB;
+        border: 1px solid #FDE68A;
+        color: #92400E;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .cp-settings {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .cp-field label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748B;
+    }
+
+    .cp-input {
+        height: 40px;
+        padding: 0 10px;
+        border: 1.5px solid #CBD5E1;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .cp-input:focus {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+    }
+
+    .cp-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        font-size: 13px;
+        color: #334155;
+        cursor: pointer;
+    }
+
+    .cp-check input {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563EB;
+    }
+
+    .cp-days {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .cp-day {
+        padding: 16px;
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+    }
+
+    .cp-day.today {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .08);
+    }
+
+    .cp-day-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .cp-day-tag {
+        margin-left: 6px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #2563EB;
+        color: #fff;
+        font-size: 11px;
+    }
+
+    .cp-day-num {
+        margin-top: 6px;
+        font-size: 28px;
+        font-weight: 900;
+        color: #0F172A;
+        line-height: 1.1;
+    }
+
+    .cp-day-num small {
+        font-size: 14px;
+        font-weight: 600;
+        color: #94A3B8;
+    }
+
+    .cp-bar {
+        margin-top: 8px;
+        height: 6px;
+        border-radius: 999px;
+        background: #EEF2F7;
+        overflow: hidden;
+    }
+
+    .cp-bar span {
+        display: block;
+        height: 100%;
+        background: #16A34A;
+    }
+
+    .cp-day-meta {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #64748B;
+    }
+
+    .cp-tbl-wrap {
+        overflow-x: auto;
+    }
+
+    .cp-tbl {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 720px;
+    }
+
+    .cp-tbl th {
+        padding: 10px 14px;
+        background: #F8FAFC;
+        font-size: 11px;
+        font-weight: 800;
+        color: #94A3B8;
+        text-align: left;
+        white-space: nowrap;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .cp-tbl td {
+        padding: 11px 14px;
+        border-bottom: 1px solid #F1F5F9;
+        font-size: 13px;
+        color: #334155;
+        vertical-align: middle;
+    }
+
+    .cp-tbl tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .cp-id {
+        font-weight: 700;
+        color: #2563EB;
+    }
+
+    .cp-name {
+        font-weight: 700;
+        color: #0F172A;
+    }
+
+    .cp-pill {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #F1F5F9;
+        color: #64748B;
+    }
+
+    .cp-pill.ok {
+        background: #F0FDF4;
+        color: #16A34A;
+    }
+
+    .cp-pill.none {
+        background: #FEF2F2;
+        color: #DC2626;
+    }
+
+    .cp-grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .cp-code {
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+
+    .cp-empty {
+        padding: 24px 18px;
+        text-align: center;
+        color: #94A3B8;
+        font-size: 13px;
+    }
+
+    .cp-danger {
+        border-color: #FECACA;
+    }
+
+    .cp-danger .cp-card-hd {
+        background: #FEF2F2;
+        border-bottom-color: #FECACA;
+    }
+
+    .cp-danger .cp-card-title {
+        color: #B91C1C;
+    }
+
+    @media (max-width: 1000px) {
+        .cp-grid2 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="cp-hd">
+    <div>
+        <div class="cp-title">คูปอง<%= couponLabel %>
+        </div>
+        <div class="cp-sub">นักเรียนและโค้ช ได้คนละ 1 ใบต่อวัน · โค้ชที่ดูแลหลายทีมได้ชุดเดียว ·
+            ทีมที่ไม่อนุมัติจะไม่ได้คูปอง</div>
+    </div>
+    <div class="cp-actions">
+        <a href="/coupons/scan" target="_blank" class="cp-btn primary"><i class="ti ti-scan"></i> เปิดหน้าสแกนคูปอง</a>
+        <a href="/board/coupons/export" class="cp-btn green"><i class="ti ti-file-spreadsheet"></i> ดาวน์โหลด Excel</a>
+    </div>
+</div>
+
+<% if (!days.length) { %>
+    <div class="cp-warn"><i class="ti ti-calendar-exclamation"></i> ยังไม่ได้ตั้งวันที่แจกคูปอง
+        กรุณาเลือกวันที่ด้านล่างก่อนสร้างคูปอง</div>
+    <% } %>
+
+        <!-- ตั้งค่า -->
+        <div class="cp-card">
+            <div class="cp-card-hd">
+                <div class="cp-card-title">ตั้งค่าวันที่แจกคูปอง</div>
+                <div class="cp-card-note">ถ้าไม่ได้ตั้ง ระบบจะใช้วันงานจากหน้า "ตั้งค่าหน้าสาธารณะ"</div>
+            </div>
+            <div class="cp-card-body">
+                <form method="POST" action="/board/coupons/settings" class="cp-settings">
+                    <div class="cp-field">
+                        <label for="day1">วันที่ 1</label>
+                        <input class="cp-input" type="date" id="day1" name="day1" value="<%= days[0] || '' %>">
+                    </div>
+                    <div class="cp-field">
+                        <label for="day2">วันที่ 2</label>
+                        <input class="cp-input" type="date" id="day2" name="day2" value="<%= days[1] || '' %>">
+                    </div>
+                    <div class="cp-field">
+                        <label for="day3">วันที่ 3 (ถ้ามี)</label>
+                        <input class="cp-input" type="date" id="day3" name="day3" value="<%= days[2] || '' %>">
+                    </div>
+                    <label class="cp-check">
+                        <input type="checkbox" name="strict_day" value="1" <%=strictDay ? 'checked' : '' %>>
+                        ใช้คูปองได้เฉพาะวันที่ระบุบนคูปอง
+                    </label>
+                    <button type="submit" class="cp-btn primary"><i class="ti ti-device-floppy"></i> บันทึก</button>
+                </form>
+                <% if (!strictDay) { %>
+                    <div class="cp-card-note" style="margin-top:10px;color:#B45309"><i class="ti ti-alert-circle"></i>
+                        ตอนนี้คูปองใช้ข้ามวันได้ (โหมดทดสอบ) อย่าลืมเปิดกลับก่อนวันงาน</div>
+                    <% } %>
+            </div>
+        </div>
+
+        <!-- สถิติรายวัน -->
+        <% if (days.length) { %>
+            <div class="cp-days">
+                <% days.forEach(function (d) { %>
+                    <% var st=statsByDay[d] || { total: 0, used: 0, students: 0, coaches: 0 }; %>
+                        <% var pct=st.total ? Math.round(st.used / st.total * 100) : 0; %>
+                            <div class="cp-day <%= d === today ? 'today' : '' %>">
+                                <div class="cp-day-label">
+                                    <%= dayLabel(d) %>
+                                        <% if (d===today) { %><span class="cp-day-tag">วันนี้</span>
+                                            <% } %>
+                                </div>
+                                <div class="cp-day-num">
+                                    <%= st.used %> <small>/ <%= st.total %> ใบ ใช้แล้ว</small>
+                                </div>
+                                <div class="cp-bar"><span style="width:<%= pct %>%"></span></div>
+                                <div class="cp-day-meta">นักเรียน <%= st.students %> · โค้ช <%= st.coaches %> · เหลือ
+                                            <%= st.total - st.used %> ใบ</div>
+                            </div>
+                            <% }) %>
+            </div>
+            <% } %>
+
+                <!-- รายทีม -->
+                <div class="cp-card">
+                    <div class="cp-card-hd">
+                        <div class="cp-card-title">รุ่น <%= tierLabel %> — <%= teams.length %> ทีม</div>
+                        <div class="cp-actions">
+                            <form method="POST" action="/board/coupons/generate?tier=<%= tier %>"
+                                style="display:inline">
+                                <button type="submit" class="cp-btn sm" <%=days.length ? '' : 'disabled' %>><i
+                                        class="ti ti-sparkles"></i> สร้างคูปองที่ยังขาด (ทุกรุ่น)</button>
+                            </form>
+                            <a href="/board/coupons/print?tier=<%= tier %>" target="_blank" class="cp-btn sm primary"><i
+                                    class="ti ti-printer"></i> พิมพ์ทั้งรุ่น <%= tierLabel %></a>
+                        </div>
+                    </div>
+                    <% if (!teams.length) { %>
+                        <div class="cp-empty">ยังไม่มีทีมในรุ่นนี้</div>
+                        <% } else { %>
+                            <div class="cp-tbl-wrap">
+                                <table class="cp-tbl">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>ชื่อทีม</th>
+                                            <th>สถาบัน</th>
+                                            <th>คน (นักเรียน+โค้ช)</th>
+                                            <th>Check-in</th>
+                                            <th>คูปอง ใช้แล้ว / ทั้งหมด</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% teams.forEach(function (t) { %>
+                                            <tr>
+                                                <td class="cp-id">
+                                                    <%= t.id %>
+                                                </td>
+                                                <td class="cp-name">
+                                                    <%= t.name %>
+                                                        <% if (t.status==='rejected' ) { %> <span
+                                                                class="cp-pill none">ไม่อนุมัติ</span>
+                                                            <% } %>
+                                                </td>
+                                                <td>
+                                                    <%= t.institution || '—' %>
+                                                </td>
+                                                <td>
+                                                    <%= t.people %>
+                                                </td>
+                                                <td><span class="cp-pill <%= t.checkedIn ? 'ok' : '' %>">
+                                                        <%= t.checkedIn %> คน
+                                                    </span></td>
+                                                <td>
+                                                    <% if (!t.total) { %>
+                                                        <span class="cp-pill none">ยังไม่ได้สร้าง</span>
+                                                        <% } else { %>
+                                                            <span class="cp-pill <%= t.used ? 'ok' : '' %>">
+                                                                <%= t.used %> / <%= t.total %>
+                                                            </span>
+                                                            <% } %>
+                                                </td>
+                                                <td>
+                                                    <% if (t.status !=='rejected' ) { %>
+                                                        <a href="/board/coupons/print?team=<%= encodeURIComponent(t.id) %>"
+                                                            target="_blank" class="cp-btn sm"><i
+                                                                class="ti ti-printer"></i> พิมพ์</a>
+                                                        <% } %>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <% } %>
+                </div>
+
+                <div class="cp-grid2">
+                    <!-- ใช้ล่าสุด -->
+                    <div class="cp-card">
+                        <div class="cp-card-hd">
+                            <div class="cp-card-title">แลกล่าสุด</div>
+                            <div class="cp-card-note">15 รายการล่าสุด</div>
+                        </div>
+                        <% if (!recent.length) { %>
+                            <div class="cp-empty">ยังไม่มีการแลกคูปอง</div>
+                            <% } else { %>
+                                <div class="cp-tbl-wrap">
+                                    <table class="cp-tbl" style="min-width:0">
+                                        <thead>
+                                            <tr>
+                                                <th>เวลา</th>
+                                                <th>ชื่อ</th>
+                                                <th>ทีม</th>
+                                                <th>ผู้สแกน</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% recent.forEach(function (r) { %>
+                                                <tr>
+                                                    <td style="white-space:nowrap">
+                                                        <%= r.usedAt %>
+                                                    </td>
+                                                    <td>
+                                                        <%= r.name %> <span class="cp-card-note">(<%= r.role %>)</span>
+                                                    </td>
+                                                    <td>
+                                                        <%= r.teamId %>
+                                                    </td>
+                                                    <td>
+                                                        <%= r.usedBy || '—' %>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } %>
+                    </div>
+
+                    <!-- คูปองหาย -->
+                    <div class="cp-card">
+                        <div class="cp-card-hd">
+                            <div class="cp-card-title">คูปองหาย / ชำรุด</div>
+                        </div>
+                        <div class="cp-card-body">
+                            <p class="cp-card-note" style="margin-bottom:12px">กรอกรหัสใต้ QR ของใบที่หาย (ดูได้จากไฟล์
+                                Excel) ระบบจะยกเลิกใบเดิมทันที แล้วเปิดหน้าพิมพ์ใบใหม่ของทีมนั้น</p>
+                            <form method="POST" action="/board/coupons/reissue" class="cp-settings"
+                                onsubmit="return confirm('ยกเลิกคูปองใบนี้ และออกใบใหม่?')">
+                                <div class="cp-field">
+                                    <label for="reissueCode">รหัสคูปอง</label>
+                                    <input class="cp-input cp-code" id="reissueCode" name="code" placeholder="XXXX-XXXX"
+                                        maxlength="9" autocomplete="off" style="text-transform:uppercase">
+                                </div>
+                                <button type="submit" class="cp-btn"><i class="ti ti-replace"></i>
+                                    ยกเลิกและออกใบใหม่</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ล้างข้อมูล -->
+                <div class="cp-card cp-danger">
+                    <div class="cp-card-hd">
+                        <div class="cp-card-title"><i class="ti ti-alert-triangle"></i> ลบคูปองทั้งหมด</div>
+                        <div class="cp-card-note">ใช้ล้างคูปองทดสอบก่อนวันงาน · คูปองที่พิมพ์ไปแล้วจะใช้ไม่ได้ทั้งหมด
+                        </div>
+                    </div>
+                    <div class="cp-card-body">
+                        <form method="POST" action="/board/coupons/reset" class="cp-settings"
+                            onsubmit="return confirm('ลบคูปองทั้งหมด? คูปองที่พิมพ์แล้วจะใช้ไม่ได้ และกู้คืนไม่ได้')">
+                            <div class="cp-field">
+                                <label for="resetWord">พิมพ์ "<%= resetWord %>" เพื่อยืนยัน</label>
+                                <input class="cp-input" id="resetWord" name="confirm_text" autocomplete="off">
+                            </div>
+                            <button type="submit" class="cp-btn danger"><i class="ti ti-trash"></i>
+                                ลบคูปองทั้งหมด</button>
+                        </form>
+                    </div>
+                </div>

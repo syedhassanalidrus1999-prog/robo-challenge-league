@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>สแกนคูปอง — Robo Challenge League</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700;800&family=Sarabun:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <style>
+        :root {
+            --bg: #0F172A;
+            --panel: #1E293B;
+            --line: rgba(255, 255, 255, .1);
+            --text: #E2E8F0;
+            --muted: #94A3B8;
+            --blue: #2563EB;
+            --ok: #16A34A;
+            --bad: #DC2626;
+            --warn: #D97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Sarabun', sans-serif;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid #93C5FD;
+            outline-offset: 2px;
+        }
+
+        .wrap {
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 14px 14px 32px;
+        }
+
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-top: env(safe-area-inset-top, 0px);
+            margin-bottom: 12px;
+        }
+
+        .top h1 {
+            font-family: 'Kanit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .top small {
+            display: block;
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .top a {
+            color: var(--muted);
+            font-size: 13px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: var(--panel);
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .stat b {
+            color: #fff;
+            font-size: 18px;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .alert {
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            background: rgba(217, 119, 6, .15);
+            border: 1px solid rgba(217, 119, 6, .4);
+            color: #FCD34D;
+            font-size: 14px;
+        }
+
+        /* กล้อง */
+        .cam {
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #000;
+            aspect-ratio: 1 / 1;
+        }
+
+        #reader {
+            width: 100%;
+            height: 100%;
+        }
+
+        #reader video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+        }
+
+        .cam-idle {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .cam-idle i {
+            font-size: 56px;
+            color: #475569;
+        }
+
+        .btn {
+            min-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 20px;
+            border: 0;
+            border-radius: 14px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-main {
+            background: var(--blue);
+            color: #fff;
+        }
+
+        .btn-ghost {
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        .cam-tools {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .cam-tools .btn {
+            flex: 1;
+            min-height: 46px;
+            font-size: 15px;
+        }
+
+        /* กรอกรหัสเอง */
+        .manual {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .manual input {
+            flex: 1;
+            min-width: 0;
+            height: 52px;
+            padding: 0 14px;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: #fff;
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: 18px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            outline: none;
+        }
+
+        .manual input:focus {
+            border-color: var(--blue);
+        }
+
+        /* ผลลัพธ์ */
+        .result {
+            margin-top: 14px;
+            padding: 18px;
+            border-radius: 18px;
+            background: var(--panel);
+            border: 2px solid transparent;
+            text-align: center;
+            min-height: 150px;
+        }
+
+        .result.ok {
+            background: var(--ok);
+            border-color: #4ADE80;
+            color: #fff;
+        }
+
+        .result.bad {
+            background: var(--bad);
+            border-color: #F87171;
+            color: #fff;
+        }
+
+        .result.warn {
+            background: var(--warn);
+            border-color: #FBBF24;
+            color: #fff;
+        }
+
+        .result-icon {
+            font-size: 52px;
+            line-height: 1;
+        }
+
+        .result-title {
+            margin-top: 6px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .result-msg {
+            margin-top: 4px;
+            font-size: 15px;
+            opacity: .95;
+        }
+
+        .result-who {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, .3);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .result-who b {
+            display: block;
+            font-family: 'Kanit', sans-serif;
+            font-size: 20px;
+        }
+
+        .result.idle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* ประวัติ */
+        .history {
+            margin-top: 16px;
+        }
+
+        .history h2 {
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .h-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--panel);
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .h-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .h-dot.ok {
+            background: #4ADE80;
+        }
+
+        .h-dot.bad {
+            background: #F87171;
+        }
+
+        .h-main {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .h-time {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="wrap">
+        <header class="top">
+            <h1>สแกนคูปอง<%= couponLabel %><small>
+                        <%= todayLabel %>
+                    </small></h1>
+            <a href="<%= user && user.role === 'admin' ? '/board/coupons' : '/board' %>"><i
+                    class="ti ti-arrow-left"></i> กลับ</a>
+        </header>
+
+        <% if (!isCouponDay && strictDay) { %>
+            <div class="alert"><i class="ti ti-calendar-off"></i> วันนี้ไม่ใช่วันแจกคูปอง สแกนแล้วจะใช้ไม่ได้</div>
+            <% } %>
+                <% if (!strictDay) { %>
+                    <div class="alert"><i class="ti ti-flask"></i> โหมดทดสอบ: คูปองใช้ข้ามวันได้</div>
+                    <% } %>
+
+                        <div class="stat">
+                            <span>แลกแล้ววันนี้</span>
+                            <span><b id="usedCount">
+                                    <%= stats.used %>
+                                </b> / <%= stats.total %> ใบ</span>
+                        </div>
+
+                        <div class="cam">
+                            <div id="reader"></div>
+                            <div class="cam-idle" id="camIdle">
+                                <i class="ti ti-camera"></i>
+                                <div>กดเพื่อเปิดกล้อง แล้วส่อง QR บนคูปอง</div>
+                                <button type="button" class="btn btn-main" id="startBtn"><i class="ti ti-scan"></i>
+                                    เปิดกล้อง</button>
+                            </div>
+                        </div>
+
+                        <div class="cam-tools" id="camTools" hidden>
+                            <button type="button" class="btn btn-ghost" id="stopBtn"><i class="ti ti-camera-off"></i>
+                                ปิดกล้อง</button>
+                        </div>
+
+                        <form class="manual" id="manualForm" autocomplete="off">
+                            <input type="text" id="manualCode" placeholder="หรือพิมพ์รหัส XXXX-XXXX" maxlength="9"
+                                inputmode="text" aria-label="รหัสคูปอง">
+                            <button type="submit" class="btn btn-main" aria-label="ตรวจรหัส"><i
+                                    class="ti ti-check"></i></button>
+                        </form>
+
+                        <section class="result idle" id="result" aria-live="assertive">พร้อมสแกน</section>
+
+                        <section class="history" id="historyWrap" hidden>
+                            <h2>สแกนล่าสุด (เครื่องนี้)</h2>
+                            <div id="history"></div>
+                        </section>
+    </main>
+
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        (function () {
+            var resultEl = document.getElementById('result');
+            var usedCountEl = document.getElementById('usedCount');
+            var camIdle = document.getElementById('camIdle');
+            var camTools = document.getElementById('camTools');
+            var historyWrap = document.getElementById('historyWrap');
+            var historyEl = document.getElementById('history');
+            var manualForm = document.getElementById('manualForm');
+            var manualInput = document.getElementById('manualCode');
+
+            var scanner = null;
+            var busy = false;
+            var lastCode = '';
+            var lastAt = 0;
+            var audioCtx = null;
+
+            function esc(s) {
+                return String(s == null ? '' : s)
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
+            function beep(ok) {
+                try {
+                    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                    var o = audioCtx.createOscillator();
+                    var g = audioCtx.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = ok ? 1046 : 220;
+                    g.gain.value = 0.15;
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.start();
+                    o.stop(audioCtx.currentTime + (ok ? 0.15 : 0.45));
+                } catch (e) { }
+                if (navigator.vibrate) navigator.vibrate(ok ? 80 : [120, 80, 120]);
+            }
+
+            function showResult(data) {
+                var c = data.coupon || null;
+                var cls, icon, title;
+
+                if (data.ok) {
+                    cls = 'ok'; icon = 'ti-circle-check'; title = 'แลกได้';
+                } else if (data.reason === 'wrong_day' || data.reason === 'not_checked_in') {
+                    cls = 'warn'; icon = 'ti-alert-triangle'; title = 'ยังแลกไม่ได้';
+                } else {
+                    cls = 'bad'; icon = 'ti-circle-x'; title = data.reason === 'used' ? 'ใช้ไปแล้ว' : 'ใช้ไม่ได้';
+                }
+
+                var html = '<div class="result-icon"><i class="ti ' + icon + '"></i></div>' +
+                    '<div class="result-title">' + title + '</div>' +
+                    '<div class="result-msg">' + esc(data.message || data.error || '') + '</div>';
+
+                if (c) {
+                    html += '<div class="result-who"><b>' + esc(c.name) + '</b>' +
+                        esc(c.role) + ' · ทีม ' + esc(c.team) + ' (' + esc(c.teamId) + ')<br>' +
+                        'คูปอง ' + esc(c.code) + ' · ' + esc(c.day) + '</div>';
+                }
+
+                resultEl.className = 'result ' + cls;
+                resultEl.innerHTML = html;
+                beep(Boolean(data.ok));
+
+                if (data.ok) usedCountEl.textContent = String(Number(usedCountEl.textContent || 0) + 1);
+
+                var item = document.createElement('div');
+                item.className = 'h-item';
+                var now = new Date();
+                item.innerHTML = '<span class="h-dot ' + (data.ok ? 'ok' : 'bad') + '"></span>' +
+                    '<span class="h-main">' + esc(c ? c.name + ' · ' + c.teamId : (data.message || '')) + '</span>' +
+                    '<span class="h-time">' + ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + '</span>';
+                historyEl.insertBefore(item, historyEl.firstChild);
+                while (historyEl.children.length > 10) historyEl.removeChild(historyEl.lastChild);
+                historyWrap.hidden = false;
+            }
+
+            function redeem(raw) {
+                var code = String(raw || '').trim();
+                if (!code || busy) return;
+
+                // กันกล้องอ่าน QR เดิมซ้ำรัว ๆ
+                var t = Date.now();
+                if (code === lastCode && t - lastAt < 4000) return;
+                lastCode = code;
+                lastAt = t;
+
+                busy = true;
+                if (scanner) { try { scanner.pause(true); } catch (e) { } }
+
+                resultEl.className = 'result idle';
+                resultEl.textContent = 'กำลังตรวจสอบ ' + code + '…';
+
+                var body = new URLSearchParams();
+                body.set('code', code);
+
+                fetch('/coupons/redeem', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+                    body: body.toString()
+                })
+                    .then(function (r) {
+                        if (r.status === 401 || r.redirected) throw new Error('login');
+                        return r.json();
+                    })
+                    .then(showResult)
+                    .catch(function (err) {
+                        showResult({
+                            ok: false,
+                            reason: 'error',
+                            message: err.message === 'login' ? 'หมดเวลาเข้าสู่ระบบ กรุณา login ใหม่' : 'เชื่อมต่อไม่ได้ ตรวจสอบอินเทอร์เน็ตแล้วสแกนอีกครั้ง'
+                        });
+                    })
+                    .then(function () {
+                        setTimeout(function () {
+                            busy = false;
+                            if (scanner) { try { scanner.resume(); } catch (e) { } }
+                        }, 1800);
+                    });
+            }
+
+            function startCamera() {
+                if (typeof Html5Qrcode === 'undefined') {
+                    resultEl.className = 'result bad';
+                    resultEl.textContent = 'โหลดตัวสแกนไม่สำเร็จ ใช้ช่องพิมพ์รหัสแทน';
+                    return;
+                }
+                scanner = scanner || new Html5Qrcode('reader');
+                scanner.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: function (w, h) { var s = Math.floor(Math.min(w, h) * 0.7); return { width: s, height: s }; } },
+                    function (text) { redeem(text); },
+                    function () { }
+                ).then(function () {
+                    camIdle.hidden = true;
+                    camTools.hidden = false;
+                }).catch(function () {
+                    resultEl.className = 'result bad';
+                    resultEl.textContent = 'เปิดกล้องไม่ได้ กรุณาอนุญาตให้ใช้กล้อง หรือใช้ช่องพิมพ์รหัสแทน';
+                });
+            }
+
+            function stopCamera() {
+                if (!scanner) return;
+                scanner.stop().then(function () {
+                    camIdle.hidden = false;
+                    camTools.hidden = true;
+                }).catch(function () { });
+            }
+
+            document.getElementById('startBtn').addEventListener('click', startCamera);
+            document.getElementById('stopBtn').addEventListener('click', stopCamera);
+
+            manualForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var v = manualInput.value;
+                manualInput.value = '';
+                lastCode = '';
+                redeem(v);
+            });
+        })();
+    </script>
+</body>
+
+</html>

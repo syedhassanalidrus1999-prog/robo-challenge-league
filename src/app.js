@@ -66,6 +66,9 @@ app.use('/scores', require('./routes/scores'))
 app.use('/board', require('./routes/board'))
 app.use("/certificate", require("./routes/certificate"));
 app.use(require("./routes/documents"));
+const coupons = require("./routes/coupons");
+app.use("/coupons", coupons.staffRouter);
+app.use("/board/coupons", coupons.adminRouter);
 
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {

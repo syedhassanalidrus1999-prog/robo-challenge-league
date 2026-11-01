@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>พิมพ์คูปอง — Robo Challenge League</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #E2E8F0;
+            color: #0F172A;
+            font-family: 'Sarabun', sans-serif;
+        }
+
+        /* แถบควบคุม (ไม่พิมพ์) */
+        .toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 12px 20px;
+            background: #0F172A;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .toolbar a,
+        .toolbar button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 38px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 0;
+            font: inherit;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .toolbar a {
+            background: rgba(255, 255, 255, .12);
+            color: #fff;
+        }
+
+        .toolbar button {
+            background: #2563EB;
+            color: #fff;
+        }
+
+        /* หน้า A4 */
+        .sheet {
+            width: 190mm;
+            margin: 16px auto;
+            padding: 0;
+            background: #fff;
+            box-shadow: 0 6px 24px rgba(15, 23, 42, .12);
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .sheet:last-child {
+            page-break-after: auto;
+            break-after: auto;
+        }
+
+        .sheet-hd {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6mm 4mm 3mm;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .sheet-team {
+            font-family: 'Kanit', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+        }
+
+        .sheet-meta {
+            font-size: 10pt;
+            color: #64748B;
+            text-align: right;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        /* คูปอง 1 ใบ */
+        .coupon {
+            position: relative;
+            height: 60mm;
+            display: grid;
+            grid-template-columns: 32mm 1fr;
+            gap: 4mm;
+            align-items: center;
+            padding: 5mm;
+            border-right: 1px dashed #94A3B8;
+            border-bottom: 1px dashed #94A3B8;
+            break-inside: avoid;
+        }
+
+        .coupon:nth-child(2n) {
+            border-right: 0;
+        }
+
+        .qr {
+            width: 32mm;
+            height: 32mm;
+        }
+
+        .qr svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .code {
+            margin-top: 2mm;
+            text-align: center;
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: 10pt;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .info {
+            min-width: 0;
+        }
+
+        .brand {
+            font-size: 8pt;
+            font-weight: 700;
+            color: #2563EB;
+            letter-spacing: .4px;
+        }
+
+        .type {
+            display: inline-block;
+            margin: 1.5mm 0 2mm;
+            padding: 1mm 3mm;
+            border-radius: 2mm;
+            background: #0F172A;
+            color: #fff;
+            font-family: 'Kanit', sans-serif;
+            font-size: 13pt;
+            font-weight: 600;
+        }
+
+        .name {
+            font-family: 'Kanit', sans-serif;
+            font-size: 12pt;
+            font-weight: 600;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        .role,
+        .team {
+            font-size: 9pt;
+            color: #475569;
+            line-height: 1.35;
+        }
+
+        .day {
+            margin-top: 2mm;
+            padding-top: 1.5mm;
+            border-top: 1px solid #E2E8F0;
+            font-size: 10pt;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        .note {
+            font-size: 7.5pt;
+            color: #94A3B8;
+        }
+
+        .used-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg);
+            padding: 2mm 5mm;
+            border: 2px solid #DC2626;
+            border-radius: 2mm;
+            color: #DC2626;
+            font-family: 'Kanit', sans-serif;
+            font-size: 16pt;
+            font-weight: 700;
+            background: rgba(255, 255, 255, .85);
+        }
+
+        .empty {
+            padding: 10mm;
+            text-align: center;
+            color: #94A3B8;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+            }
+
+            .toolbar {
+                display: none;
+            }
+
+            .sheet {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <a href="<%= backUrl %>"><i class="ti ti-arrow-left"></i> กลับ</a>
+        <span>
+            <%= sheets.length %> ทีม · ตัดตามเส้นประ · ตั้งค่าพิมพ์เป็น A4 แนวตั้ง ไม่ย่อขนาด
+        </span>
+        <button type="button" onclick="window.print()"><i class="ti ti-printer"></i> พิมพ์</button>
+    </div>
+
+    <% sheets.forEach(function (s) { %>
+        <section class="sheet">
+            <div class="sheet-hd">
+                <div class="sheet-team">
+                    <%= s.id %> · <%= s.name %>
+                </div>
+                <div class="sheet-meta">
+                    <%= s.institution %><br>
+                        <%= s.tierLabel %> · <%= s.items.length %> ใบ
+                </div>
+            </div>
+
+            <% if (!s.items.length) { %>
+                <div class="empty">ทีมนี้ไม่มีรายชื่อนักเรียนหรือโค้ช</div>
+                <% } else { %>
+                    <div class="grid">
+                        <% s.items.forEach(function (c) { %>
+                            <div class="coupon">
+                                <div>
+                                    <div class="qr"><%- c.qr %></div>
+                                    <div class="code">
+                                        <%= c.code %>
+                                    </div>
+                                </div>
+                                <div class="info">
+                                    <div class="brand">ROBO CHALLENGE LEAGUE</div>
+                                    <div class="type">
+                                        <%= couponLabel %>
+                                    </div>
+                                    <div class="name">
+                                        <%= c.name %>
+                                    </div>
+                                    <div class="role">
+                                        <%= c.role %>
+                                    </div>
+                                    <div class="team">ทีม <%= s.name %> (<%= s.id %>)</div>
+                                    <div class="day">
+                                        <%= c.day %>
+                                    </div>
+                                    <div class="note">ใช้ได้ 1 ครั้ง · แสดงคูปองที่จุดแลกอาหาร</div>
+                                </div>
+                                <% if (c.used) { %>
+                                    <div class="used-stamp">ใช้แล้ว</div>
+                                    <% } %>
+                            </div>
+                            <% }) %>
+                    </div>
+                    <% } %>
+        </section>
+        <% }) %>
+</body>
+
+</html>
