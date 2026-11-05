@@ -987,7 +987,7 @@
 
             <!-- Table -->
             <div class="tbl-wrap">
-              <table class="tbl">
+              <table class="tbl m-cards">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -1021,20 +1021,22 @@
                           <tr class="team-row" data-name="<%= (t.name||'').toLowerCase() %>"
                             data-inst="<%= (t.institution||'').toLowerCase() %>">
 
-                            <td><span style="font-size:12px;font-weight:700;color:<%= tierColor %>">
+                            <td data-label="ID" class="m-id"><span
+                                style="font-size:12px;font-weight:700;color:<%= tierColor %>">
                                 <%= t.id %>
                               </span></td>
-                            <td style="font-weight:700;font-size:14px;color:#0F172A">
+                            <td data-label="ชื่อทีม" class="m-team"
+                              style="font-weight:700;font-size:14px;color:#0F172A">
                               <%= t.name %>
                             </td>
-                            <td style="font-size:13px;color:#334155">
+                            <td data-label="สถาบัน" style="font-size:13px;color:#334155">
                               <%= t.institution || '—' %>
                             </td>
 
                             <% for (var si=1; si <=3; si++) { %>
                               <% var sName=t['student_' + si]; var sDob=t['student_' + si + '_dob' ]; var
                                 sIn=t['student_' + si + '_checked_in' ]; %>
-                                <td>
+                                <td data-label="นักเรียน <%= si %>" class="m-stu">
                                   <% if (sName) { %>
                                     <div class="stu-name">
                                       <%= sName %>
@@ -1066,16 +1068,19 @@
                                 </td>
                                 <% } %>
 
-                                  <td style="font-size:13px;color:#334155">
+                                  <td data-label="โค้ช" style="font-size:13px;color:#334155">
                                     <%= t.coach || '—' %>
                                   </td>
-                                  <td style="font-size:13px;color:#334155">
+                                  <td data-label="อีเมลโค้ช" class="m-hide" style="font-size:13px;color:#334155">
                                     <%= t.coach_email || '—' %>
                                   </td>
-                                  <td style="font-size:13px;color:#334155">
-                                    <%= t.phone || '—' %>
+                                  <td data-label="เบอร์โทร" style="font-size:13px;color:#334155">
+                                    <% if (t.phone) { %><a href="tel:<%= t.phone %>" style="color:inherit">
+                                        <%= t.phone %>
+                                      </a>
+                                      <% } else { %>—<% } %>
                                   </td>
-                                  <td>
+                                  <td data-label="สถานะ">
                                     <% if (t.status==='approved' ) { %>
                                       <span class="badge badge-green"><i class="ti ti-point-filled"></i>
                                         อนุมัติแล้ว</span>
@@ -1087,11 +1092,12 @@
                                             รอพิจารณา</span>
                                           <% } %>
                                   </td>
-                                  <td style="font-size:12px;color:#64748B;max-width:100px">
+                                  <td data-label="โน้ต" class="m-hide"
+                                    style="font-size:12px;color:#64748B;max-width:100px">
                                     <%= t.note || '—' %>
                                   </td>
                                   <% if (canEdit) { %>
-                                    <td>
+                                    <td data-label="จัดการ">
                                       <div class="act-wrap">
                                         <button class="btn-icon" onclick='openEditModal(<%= JSON.stringify(t) %>)'
                                           title="แก้ไข">

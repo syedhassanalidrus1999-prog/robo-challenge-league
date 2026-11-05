@@ -1,6 +1,10 @@
 <% var tbRole=user ? user.role : '' ; %>
   <% var tbCanSwitch=tbRole==='admin' || tbRole==='viewer' ; %>
+    <link rel="stylesheet" href="/css/admin-mobile.css?v=1">
     <div class="topbar">
+      <button type="button" class="mnav-btn" id="mnavBtn" aria-label="เปิดเมนู" aria-expanded="false">
+        <i class="ti ti-menu-2"></i>
+      </button>
       <div class="topbar-title">
         <% if (typeof pageTitle !=='undefined' ) { %>
           <%- pageTitle %>
@@ -24,3 +28,5 @@
               <% } %>
       </div>
     </div>
+    <div class="mnav-overlay" id="mnavOverlay"></div>
+    <script src="/js/admin-mobile.js?v=1" defer></script>

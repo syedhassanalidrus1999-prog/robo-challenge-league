@@ -1,0 +1,305 @@
+/* public/css/admin-mobile.css
+   Responsive สำหรับหลังบ้าน (ใช้ได้ทุก role — เน้นบัญชี Viewer ที่ใช้มือถือหน้างาน)
+   โหลดจาก partials/topbar.ejs */
+
+/* ปุ่มเมนู: ซ่อนบนจอใหญ่ */
+.mnav-btn {
+    display: none;
+}
+
+.mnav-overlay {
+    display: none;
+}
+
+@media (max-width: 900px) {
+
+    /* ---------- โครงหน้า ---------- */
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    body .layout {
+        display: block !important;
+    }
+
+    body .content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    body .main {
+        padding: 14px 12px 40px !important;
+    }
+
+    /* ---------- Sidebar แบบเลื่อนออกจากซ้าย ---------- */
+    body .sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        z-index: 1200 !important;
+        width: 272px !important;
+        max-width: 82vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        overflow-y: auto !important;
+        transform: translateX(-105%);
+        transition: transform .22s ease;
+        box-shadow: 0 0 40px rgba(15, 23, 42, .35);
+    }
+
+    body.mnav-open .sidebar {
+        transform: translateX(0);
+    }
+
+    .mnav-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        background: rgba(15, 23, 42, .45);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease;
+    }
+
+    body.mnav-open .mnav-overlay {
+        display: block;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    body.mnav-open {
+        overflow: hidden;
+    }
+
+    /* ---------- Topbar ---------- */
+    body .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 10px;
+        min-height: 56px;
+        height: auto !important;
+        padding: 8px 12px !important;
+    }
+
+    .mnav-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
+        border: 1px solid #E2E8F0;
+        border-radius: 12px;
+        background: #fff;
+        color: #0F172A;
+        font-size: 22px;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body .topbar-title {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 17px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    body .topbar-right {
+        flex: 1 1 100%;
+        min-width: 0;
+        margin: 0 !important;
+    }
+
+    /* ปุ่มเลือกรุ่น: เต็มความกว้าง กดง่าย */
+    body .tier-toggle {
+        display: flex !important;
+        width: 100%;
+    }
+
+    body .tier-toggle .tier-btn {
+        flex: 1 1 0;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 6px !important;
+        font-size: 13px !important;
+        text-align: center;
+    }
+
+    /* ---------- หัวหน้าเพจ / ปุ่ม ---------- */
+    body .page-hd {
+        display: flex !important;
+        flex-wrap: wrap;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    body .page-actions {
+        width: 100%;
+    }
+
+    body .page-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    body .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 10px !important;
+    }
+
+    body .search-wrap {
+        box-sizing: border-box;
+        min-width: 0 !important;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    body .section-hd {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+}
+
+/* ======================================================================
+   ตาราง → การ์ด (มือถือ)
+   ใช้กับตารางที่มี class "m-cards" และ <td data-label="...">
+   ====================================================================== */
+
+@media (max-width: 700px) {
+
+    body .tbl-wrap,
+    body .card>div[style*="overflow"] {
+        overflow: visible !important;
+        border: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+
+    body table.m-cards {
+        min-width: 0 !important;
+        width: 100% !important;
+        border-collapse: separate !important;
+    }
+
+    body table.m-cards thead {
+        display: none !important;
+    }
+
+    body table.m-cards,
+    body table.m-cards tbody,
+    body table.m-cards tr,
+    body table.m-cards.m-cards td {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    body table.m-cards tbody tr {
+        margin-bottom: 12px;
+        padding: 6px 0;
+        background: #fff !important;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+    }
+
+    body table.m-cards tbody tr:hover td {
+        background: transparent !important;
+    }
+
+    /* label อยู่ซ้าย (absolute) เนื้อหาอยู่ขวา — รองรับเนื้อหาหลายชิ้นในช่องเดียว */
+    body table.m-cards.m-cards td {
+        position: relative;
+        box-sizing: border-box;
+        min-width: 0 !important;
+        min-height: 34px;
+        height: auto !important;
+        padding: 7px 14px 7px 112px !important;
+        border: 0 !important;
+        font-size: 14px !important;
+        text-align: left !important;
+        overflow-wrap: anywhere;
+    }
+
+    body table.m-cards.m-cards td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 14px;
+        top: 9px;
+        width: 88px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #94A3B8;
+        line-height: 1.4;
+    }
+
+    /* แถวว่าง / ไม่มี label */
+    body table.m-cards.m-cards td:not([data-label]) {
+        padding: 24px 14px !important;
+        text-align: center !important;
+    }
+
+    body table.m-cards.m-cards td:not([data-label])::before {
+        content: none;
+    }
+
+    body table.m-cards.m-cards td.m-hide {
+        display: none !important;
+    }
+
+    /* หัวการ์ด: ชื่อทีมตัวใหญ่ */
+    body table.m-cards.m-cards td.m-team {
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        color: #0F172A !important;
+    }
+
+    body table.m-cards.m-cards td.m-id,
+    body table.m-cards.m-cards td.m-rank {
+        padding-top: 10px !important;
+    }
+
+    /* นักเรียน: ปุ่ม Check-in ใหญ่ กดง่าย */
+    body table.m-cards.m-cards td.m-stu {
+        border-top: 1px solid #F1F5F9 !important;
+    }
+
+    body table.m-cards .checkin-btn {
+        min-height: 38px;
+        padding: 6px 14px !important;
+        margin-top: 6px !important;
+        font-size: 13px !important;
+    }
+
+    body table.m-cards .stu-name {
+        font-size: 14px !important;
+    }
+
+    /* หน้าสรุปผล */
+    body table.bd-tbl .bar-bg {
+        max-width: 220px;
+    }
+
+    body table.bd-tbl td.m-rank .rank-cell {
+        justify-content: flex-start;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    body .sidebar,
+    .mnav-overlay {
+        transition: none !important;
+    }
+}

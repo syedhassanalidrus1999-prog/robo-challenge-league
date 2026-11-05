@@ -285,6 +285,41 @@
             font-size: 15px;
         }
 
+
+        .result-meals {
+            margin: 8px auto 2px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .result-meals small {
+            display: block;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .result-list {
+            margin-top: 8px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .result-list .muted {
+            opacity: .8;
+        }
+
+        .result-note {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, .18);
+            font-size: 14px;
+            text-align: left;
+        }
+
         /* ประวัติ */
         .history {
             margin-top: 16px;
@@ -360,17 +395,19 @@
                     <% } %>
 
                         <div class="stat">
-                            <span>แลกแล้ววันนี้</span>
-                            <span><b id="usedCount">
-                                    <%= stats.used %>
-                                </b> / <%= stats.total %> ใบ</span>
+                            <span>วันนี้รับแล้ว <b id="teamCount">
+                                    <%= stats.redeemed %>
+                                </b> / <%= stats.teams %> ทีม</span>
+                            <span>แจก <b id="mealCount">
+                                    <%= stats.meals %>
+                                </b> ชุด</span>
                         </div>
 
                         <div class="cam">
                             <div id="reader"></div>
                             <div class="cam-idle" id="camIdle">
                                 <i class="ti ti-camera"></i>
-                                <div>กดเพื่อเปิดกล้อง แล้วส่อง QR บนคูปอง</div>
+                                <div>กดเพื่อเปิดกล้อง แล้วส่อง QR บนคูปองของทีม</div>
                                 <button type="button" class="btn btn-main" id="startBtn"><i class="ti ti-scan"></i>
                                     เปิดกล้อง</button>
                             </div>
@@ -400,7 +437,8 @@
     <script>
         (function () {
             var resultEl = document.getElementById('result');
-            var usedCountEl = document.getElementById('usedCount');
+            var teamCountEl = document.getElementById('teamCount');
+            var mealCountEl = document.getElementById('mealCount');
             var camIdle = document.getElementById('camIdle');
             var camTools = document.getElementById('camTools');
             var historyWrap = document.getElementById('historyWrap');
@@ -445,30 +483,46 @@
                 } else if (data.reason === 'wrong_day' || data.reason === 'not_checked_in') {
                     cls = 'warn'; icon = 'ti-alert-triangle'; title = 'ยังแลกไม่ได้';
                 } else {
-                    cls = 'bad'; icon = 'ti-circle-x'; title = data.reason === 'used' ? 'ใช้ไปแล้ว' : 'ใช้ไม่ได้';
+                    cls = 'bad'; icon = 'ti-circle-x'; title = data.reason === 'used' ? 'ทีมนี้รับไปแล้ว' : 'ใช้ไม่ได้';
                 }
 
-                var html = '<div class="result-icon"><i class="ti ' + icon + '"></i></div>' +
-                    '<div class="result-title">' + title + '</div>' +
-                    '<div class="result-msg">' + esc(data.message || data.error || '') + '</div>';
+                var html = '';
 
-                if (c) {
-                    html += '<div class="result-who"><b>' + esc(c.name) + '</b>' +
-                        esc(c.role) + ' · ทีม ' + esc(c.team) + ' (' + esc(c.teamId) + ')<br>' +
-                        'คูปอง ' + esc(c.code) + ' · ' + esc(c.day) + '</div>';
+                if (data.ok && c) {
+                    html += '<div class="result-title">ทีม ' + esc(c.teamId) + ' · ' + esc(c.team) + '</div>' +
+                        '<div class="result-meals">' + Number(c.meals) + '<small>ชุด ' + esc('<%= couponLabel %>') + '</small></div>' +
+                        '<div class="result-list"><b>นักเรียน ' + Number(c.studentsGiven) + ' คน:</b> ' + (c.present || []).map(esc).join(', ') +
+                        '<br><b>โค้ช:</b> ' + (c.coachGiven ? esc(c.coach) + ' (1 ชุด)' : '<span class="muted">ไม่นับ</span>');
+                    if (c.absent && c.absent.length) {
+                        html += '<br><span class="muted">ยังไม่ Check-in (ไม่นับ): ' + c.absent.map(esc).join(', ') + '</span>';
+                    }
+                    html += '</div>';
+                    if (c.coachNote) html += '<div class="result-note"><i class="ti ti-info-circle"></i> ' + esc(c.coachNote) + '</div>';
+                } else {
+                    html += '<div class="result-icon"><i class="ti ' + icon + '"></i></div>' +
+                        '<div class="result-title">' + title + '</div>' +
+                        '<div class="result-msg">' + esc(data.message || data.error || '') + '</div>';
+                    if (c) {
+                        html += '<div class="result-who"><b>ทีม ' + esc(c.teamId) + ' · ' + esc(c.team) + '</b>' +
+                            (c.coach ? 'โค้ช ' + esc(c.coach) + '<br>' : '') +
+                            'คูปอง ' + esc(c.code) + ' · ' + esc(c.day) + '</div>';
+                    }
                 }
 
                 resultEl.className = 'result ' + cls;
                 resultEl.innerHTML = html;
                 beep(Boolean(data.ok));
 
-                if (data.ok) usedCountEl.textContent = String(Number(usedCountEl.textContent || 0) + 1);
+                if (data.ok && c) {
+                    teamCountEl.textContent = String(Number(teamCountEl.textContent || 0) + 1);
+                    mealCountEl.textContent = String(Number(mealCountEl.textContent || 0) + Number(c.meals || 0));
+                }
 
                 var item = document.createElement('div');
                 item.className = 'h-item';
                 var now = new Date();
                 item.innerHTML = '<span class="h-dot ' + (data.ok ? 'ok' : 'bad') + '"></span>' +
-                    '<span class="h-main">' + esc(c ? c.name + ' · ' + c.teamId : (data.message || '')) + '</span>' +
+                    '<span class="h-main">' + esc(c ? c.teamId + ' · ' + c.team + (data.ok ? ' · ' + c.meals + ' ชุด' : ' · ' + title) : (data.message || '')) + '</span>' +
                     '<span class="h-time">' + ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2) + '</span>';
                 historyEl.insertBefore(item, historyEl.firstChild);
                 while (historyEl.children.length > 10) historyEl.removeChild(historyEl.lastChild);

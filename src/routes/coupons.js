@@ -1,5 +1,8 @@
 // src/routes/coupons.js
-// ระบบคูปองอาหาร + น้ำ (1 ใบ ต่อคน ต่อวัน) สำหรับนักเรียนและโค้ช
+// คูปองอาหาร + น้ำ แบบรายทีม
+// - 1 ทีม ต่อ 1 วัน = 1 QR (โค้ช / ผู้คุมทีม เป็นคนถือและมารับแทนทั้งทีม)
+// - จำนวนชุด = นักเรียนที่ Check-in แล้ว + โค้ช 1 ชุด
+// - โค้ชที่ดูแลหลายทีม ได้ชุดของตัวเองครั้งเดียวต่อวัน
 //
 // ต้องติดตั้งก่อน:  npm install qrcode
 //
@@ -30,10 +33,13 @@ const TIER_LABEL = {
   advance: "Advance",
 };
 
-// ตัดตัวที่สับสนกันออก (0/O, 1/I/L)
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const RESET_WORD = "ล้างคูปอง";
 const MAX_DAYS = 3;
+
+// ใช้ใน SQL: ชื่อโค้ชแบบตัดช่องว่างซ้ำ + ตัวพิมพ์เล็ก
+const COACH_KEY_SQL =
+  "LOWER(REGEXP_REPLACE(TRIM(COALESCE(t.coach, '')), '\\s+', ' ', 'g'))";
 
 function first(v) {
   return Array.isArray(v) ? v[0] : v;
@@ -54,7 +60,6 @@ function generateCode() {
   return s.slice(0, 4) + "-" + s.slice(4);
 }
 
-// รับได้ทั้ง "k7m2 qx9p", "K7M2QX9P", "K7M2-QX9P"
 function normalizeCode(v) {
   const raw = String(first(v) ?? "")
     .toUpperCase()
@@ -69,11 +74,14 @@ function normalizeName(v) {
     .replace(/\s+/g, " ");
 }
 
+function coachKey(team) {
+  return normalizeName(team && team.coach).toLowerCase();
+}
+
 function isIsoDate(v) {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(v || ""));
 }
 
-// วันนี้ตามเวลาไทย เป็น YYYY-MM-DD
 function todayBangkok() {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Bangkok" }).format(
     new Date(),
@@ -111,6 +119,15 @@ function formatThaiTime(value) {
   });
 }
 
+function formatClock(value) {
+  if (!value) return "";
+  return new Date(value).toLocaleTimeString("th-TH", {
+    timeZone: "Asia/Bangkok",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 function wantsJson(req) {
   return (
     req.xhr ||
@@ -119,22 +136,35 @@ function wantsJson(req) {
   );
 }
 
+function studentsOf(team) {
+  const list = [];
+  for (let i = 1; i <= 3; i++) {
+    const name = normalizeName(team["student_" + i]);
+    if (name) {
+      list.push({
+        number: i,
+        name,
+        checkedIn: Boolean(team["student_" + i + "_checked_in"]),
+      });
+    }
+  }
+  return list;
+}
+
 // ============================================================================
 // TABLE (สร้างอัตโนมัติ)
 // ============================================================================
 
 async function ensureTable() {
   await query(
-    `CREATE TABLE IF NOT EXISTS coupons (
+    `CREATE TABLE IF NOT EXISTS team_coupons (
       id SERIAL PRIMARY KEY,
       code VARCHAR(12) NOT NULL,
       team_id VARCHAR(20) NOT NULL,
-      holder_type VARCHAR(10) NOT NULL,
-      student_number SMALLINT,
-      holder_key VARCHAR(250) NOT NULL,
-      holder_name VARCHAR(200) NOT NULL,
       coupon_day VARCHAR(10) NOT NULL,
       status VARCHAR(10) NOT NULL DEFAULT 'active',
+      students_given SMALLINT,
+      coach_given BOOLEAN,
       used_at TIMESTAMPTZ,
       used_by VARCHAR(100),
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -143,24 +173,19 @@ async function ensureTable() {
   );
 
   await query(
-    "CREATE UNIQUE INDEX IF NOT EXISTS coupons_code_uq ON coupons (code)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS team_coupons_code_uq ON team_coupons (code)",
     [],
   );
 
-  // 1 คน ต่อ 1 วัน มีคูปองที่ยังไม่ถูกยกเลิกได้ใบเดียว
+  // 1 ทีม ต่อ 1 วัน มีคูปองที่ยังไม่ถูกยกเลิกได้ใบเดียว
   await query(
-    `CREATE UNIQUE INDEX IF NOT EXISTS coupons_holder_day_uq
-       ON coupons (holder_key, coupon_day)
+    `CREATE UNIQUE INDEX IF NOT EXISTS team_coupons_team_day_uq
+       ON team_coupons (team_id, coupon_day)
        WHERE status <> 'void'`,
     [],
   );
 
-  await query(
-    "CREATE INDEX IF NOT EXISTS coupons_team_idx ON coupons (team_id)",
-    [],
-  );
-
-  console.log("[coupons] ตาราง coupons พร้อมใช้งาน");
+  console.log("[coupons] ตาราง team_coupons พร้อมใช้งาน");
 }
 
 const tableReady = ensureTable().catch((err) => {
@@ -180,7 +205,6 @@ async function getSettingsMap() {
   return map;
 }
 
-// วันที่แจกคูปอง: ตั้งเองในหน้าคูปอง หรือใช้วันงานจากหน้าตั้งค่า
 function resolveDays(settings) {
   const own = String(settings.coupon_days || "")
     .split(",")
@@ -208,7 +232,6 @@ async function getCouponConfig() {
   const settings = await getSettingsMap();
   return {
     days: resolveDays(settings),
-    // "0" = ใช้คูปองข้ามวันได้ (สำหรับทดสอบ)
     strictDay: settings.coupon_strict_day !== "0",
   };
 }
@@ -221,39 +244,24 @@ async function saveSetting(key, value) {
 }
 
 // ============================================================================
-// GENERATE
+// GENERATE (สร้างเฉพาะใบที่ยังไม่มี · ข้ามทีมที่ไม่อนุมัติ)
 // ============================================================================
-//
-// สร้างเฉพาะใบที่ยังไม่มี (กดซ้ำได้ ไม่สร้างซ้ำ)
-// - นักเรียน: ทุกชื่อในทีม
-// - โค้ช: นับตามชื่อ (โค้ช 1 คนดูแลหลายทีม ได้คูปองชุดเดียว)
-// - ข้ามทีมที่ "ไม่อนุมัติ"
 
-function holdersOfTeam(team) {
-  const list = [];
-  for (let i = 1; i <= 3; i++) {
-    const name = normalizeName(team["student_" + i]);
-    if (name) {
-      list.push({
-        team_id: team.id,
-        holder_type: "student",
-        student_number: i,
-        holder_key: "S:" + team.id + ":" + i,
-        holder_name: name,
-      });
+async function insertCoupon(teamId, day) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      await query(
+        "INSERT INTO team_coupons (code, team_id, coupon_day) VALUES ($1, $2, $3)",
+        [generateCode(), teamId, day],
+      );
+      return true;
+    } catch (err) {
+      if (err.code !== "23505") throw err;
+      if (err.constraint === "team_coupons_code_uq") continue; // รหัสชน → สุ่มใหม่
+      return false; // ทีมนี้มีคูปองของวันนี้แล้ว
     }
   }
-  const coach = normalizeName(team.coach);
-  if (coach) {
-    list.push({
-      team_id: team.id,
-      holder_type: "coach",
-      student_number: null,
-      holder_key: "C:" + coach.toLowerCase(),
-      holder_name: coach,
-    });
-  }
-  return list;
+  return false;
 }
 
 async function generateCoupons(days, teamIds) {
@@ -261,59 +269,29 @@ async function generateCoupons(days, teamIds) {
 
   const teamsResult = teamIds
     ? await query(
-        "SELECT * FROM teams WHERE id = ANY($1) AND status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
+        "SELECT id FROM teams WHERE id = ANY($1) AND status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
         [teamIds],
       )
     : await query(
-        "SELECT * FROM teams WHERE status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
+        "SELECT id FROM teams WHERE status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
         [],
       );
 
   const existing = await query(
-    "SELECT holder_key, coupon_day FROM coupons WHERE status <> 'void' AND coupon_day = ANY($1)",
+    "SELECT team_id, coupon_day FROM team_coupons WHERE status <> 'void' AND coupon_day = ANY($1)",
     [days],
   );
   const have = new Set(
-    existing.rows.map((r) => r.holder_key + "|" + r.coupon_day),
+    existing.rows.map((r) => r.team_id + "|" + r.coupon_day),
   );
 
   let created = 0;
-
-  for (const team of teamsResult.rows) {
-    for (const h of holdersOfTeam(team)) {
-      for (const day of days) {
-        const key = h.holder_key + "|" + day;
-        if (have.has(key)) continue;
-
-        for (let attempt = 0; attempt < 5; attempt++) {
-          try {
-            await query(
-              `INSERT INTO coupons
-                 (code, team_id, holder_type, student_number, holder_key, holder_name, coupon_day)
-               VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-              [
-                generateCode(),
-                h.team_id,
-                h.holder_type,
-                h.student_number,
-                h.holder_key,
-                h.holder_name,
-                day,
-              ],
-            );
-            created++;
-            break;
-          } catch (err) {
-            if (err.code !== "23505") throw err;
-            if (err.constraint === "coupons_code_uq") continue; // รหัสชน → สุ่มใหม่
-            break; // มีคูปองของคนนี้วันนี้แล้ว
-          }
-        }
-        have.add(key);
-      }
+  for (const t of teamsResult.rows) {
+    for (const day of days) {
+      if (have.has(t.id + "|" + day)) continue;
+      if (await insertCoupon(t.id, day)) created++;
     }
   }
-
   return { created };
 }
 
@@ -321,22 +299,20 @@ async function generateCoupons(days, teamIds) {
 // ACCESS
 // ============================================================================
 
-// ไม่ใช้ requireAdmin จาก middleware/auth เพราะตัวนั้น redirect ไป /dashboard (404)
 function requireAdminOnly(req, res, next) {
   const user = req.session && req.session.user;
   if (user && user.role === "admin") return next();
   if (wantsJson(req))
-    return res.status(403).json({ ok: false, error: "เฉพาะผู้ดูแลระบบ" });
+    return res.status(403).json({ ok: false, message: "เฉพาะผู้ดูแลระบบ" });
   req.flash("error", "เฉพาะผู้ดูแลระบบเท่านั้น");
   return res.redirect("/board");
 }
 
-// จุดแลกคูปอง: admin + viewer (ผู้ดูข้อมูล)
 function requireScanner(req, res, next) {
   const user = req.session && req.session.user;
   if (user && (user.role === "admin" || user.role === "viewer")) return next();
   if (wantsJson(req))
-    return res.status(403).json({ ok: false, error: "ไม่มีสิทธิ์สแกนคูปอง" });
+    return res.status(403).json({ ok: false, message: "ไม่มีสิทธิ์สแกนคูปอง" });
   req.flash("error", "ไม่มีสิทธิ์สแกนคูปอง");
   return res.redirect("/board");
 }
@@ -348,6 +324,19 @@ staffRouter.use(requireLogin, requireScanner);
 // STAFF: GET /coupons/scan
 // ============================================================================
 
+async function todayStats(today) {
+  const r = await query(
+    `SELECT COUNT(*) FILTER (WHERE status <> 'void')::int AS teams,
+            COUNT(*) FILTER (WHERE status = 'used')::int AS redeemed,
+            COALESCE(SUM(CASE WHEN status = 'used'
+                              THEN COALESCE(students_given, 0) + CASE WHEN coach_given THEN 1 ELSE 0 END
+                              ELSE 0 END), 0)::int AS meals
+     FROM team_coupons WHERE coupon_day = $1`,
+    [today],
+  );
+  return r.rows[0] || { teams: 0, redeemed: 0, meals: 0 };
+}
+
 staffRouter.get("/", (req, res) => res.redirect("/coupons/scan"));
 
 staffRouter.get("/scan", async (req, res) => {
@@ -356,20 +345,13 @@ staffRouter.get("/scan", async (req, res) => {
     const config = await getCouponConfig();
     const today = todayBangkok();
 
-    const stats = await query(
-      `SELECT COUNT(*) FILTER (WHERE status = 'used')::int AS used,
-              COUNT(*) FILTER (WHERE status <> 'void')::int AS total
-       FROM coupons WHERE coupon_day = $1`,
-      [today],
-    );
-
     return res.render("coupons/scan", {
       layout: false,
       couponLabel: COUPON_LABEL,
       todayLabel: dayLabel(today),
       isCouponDay: config.days.includes(today),
       strictDay: config.strictDay,
-      stats: stats.rows[0] || { used: 0, total: 0 },
+      stats: await todayStats(today),
       user: req.session.user,
     });
   } catch (err) {
@@ -382,17 +364,34 @@ staffRouter.get("/scan", async (req, res) => {
 // STAFF: POST /coupons/redeem  (JSON)
 // ============================================================================
 
-function couponView(c, team) {
+function baseView(c, team) {
   return {
     code: c.code,
-    name: c.holder_name,
-    role: c.holder_type === "coach" ? "โค้ช" : "นักเรียน",
-    team: team ? team.name : c.team_id,
     teamId: c.team_id,
+    team: team ? team.name : c.team_id,
+    coach: team ? normalizeName(team.coach) : "",
     day: shortDayLabel(c.coupon_day),
     usedAt: formatThaiTime(c.used_at),
     usedBy: c.used_by || "",
+    studentsGiven: c.students_given,
+    coachGiven: c.coach_given,
+    meals: (c.students_given || 0) + (c.coach_given ? 1 : 0),
   };
+}
+
+// โค้ชคนนี้รับชุดของตัวเองไปแล้ววันนี้ กับทีมอื่นหรือยัง
+async function coachAlreadyServed(team, day, excludeId) {
+  const key = coachKey(team);
+  if (!key) return null;
+  const r = await query(
+    `SELECT t.id, t.name FROM team_coupons tc
+     JOIN teams t ON t.id = tc.team_id
+     WHERE tc.coupon_day = $1 AND tc.status = 'used' AND tc.coach_given = TRUE
+       AND tc.id <> $2 AND ${COACH_KEY_SQL} = $3
+     LIMIT 1`,
+    [day, excludeId, key],
+  );
+  return r.rows[0] || null;
 }
 
 staffRouter.post("/redeem", async (req, res) => {
@@ -409,11 +408,11 @@ staffRouter.post("/redeem", async (req, res) => {
   try {
     await tableReady;
 
-    const found = await query("SELECT * FROM coupons WHERE code = $1 LIMIT 1", [
-      code,
-    ]);
+    const found = await query(
+      "SELECT * FROM team_coupons WHERE code = $1 LIMIT 1",
+      [code],
+    );
     const c = found.rows[0];
-
     if (!c) {
       return res.json({
         ok: false,
@@ -426,8 +425,16 @@ staffRouter.post("/redeem", async (req, res) => {
       "SELECT * FROM teams WHERE id = $1 LIMIT 1",
       [c.team_id],
     );
-    const team = teamResult.rows[0] || null;
-    const view = couponView(c, team);
+    const team = teamResult.rows[0];
+    if (!team) {
+      return res.json({
+        ok: false,
+        reason: "not_found",
+        message: "ไม่พบทีมของคูปองนี้",
+      });
+    }
+
+    const view = baseView(c, team);
 
     if (c.status === "void") {
       return res.json({
@@ -443,7 +450,9 @@ staffRouter.post("/redeem", async (req, res) => {
         ok: false,
         reason: "used",
         message:
-          "ใช้ไปแล้ว เมื่อ " +
+          "รับไปแล้ว " +
+          view.meals +
+          " ชุด เมื่อ " +
           view.usedAt +
           (view.usedBy ? " โดย " + view.usedBy : ""),
         coupon: view,
@@ -462,71 +471,73 @@ staffRouter.post("/redeem", async (req, res) => {
       });
     }
 
-    // ต้อง Check-in ก่อน
-    // - นักเรียน: ตัวเองต้อง Check-in
-    // - โค้ช: ทีมใดทีมหนึ่งที่ดูแล มีนักเรียน Check-in อย่างน้อย 1 คน
-    if (team) {
-      let checkedIn;
+    const students = studentsOf(team);
+    const present = students.filter((s) => s.checkedIn);
+    const absent = students.filter((s) => !s.checkedIn);
 
-      if (c.holder_type === "student") {
-        checkedIn = Boolean(
-          team["student_" + c.student_number + "_checked_in"],
-        );
-      } else {
-        const coachTeams = await query(
-          `SELECT 1 FROM teams
-           WHERE LOWER(REGEXP_REPLACE(TRIM(coach), '\\s+', ' ', 'g')) = $1
-             AND (student_1_checked_in OR student_2_checked_in OR student_3_checked_in)
-           LIMIT 1`,
-          [c.holder_key.slice(2)],
-        );
-        checkedIn = coachTeams.rows.length > 0;
-      }
-
-      if (!checkedIn) {
-        return res.json({
-          ok: false,
-          reason: "not_checked_in",
-          message:
-            c.holder_type === "student"
-              ? "นักเรียนยังไม่ได้ Check-in ให้ไปลงทะเบียนที่โต๊ะ Check-in ก่อน"
-              : "ทีมยังไม่ได้ Check-in ให้ไปลงทะเบียนที่โต๊ะ Check-in ก่อน",
-          coupon: view,
-        });
-      }
+    if (!present.length) {
+      return res.json({
+        ok: false,
+        reason: "not_checked_in",
+        message:
+          "ทีมนี้ยังไม่มีนักเรียน Check-in ให้ไปลงทะเบียนที่โต๊ะ Check-in ก่อน",
+        coupon: view,
+      });
     }
+
+    const hasCoach = Boolean(coachKey(team));
+    const servedWith = hasCoach
+      ? await coachAlreadyServed(team, c.coupon_day, c.id)
+      : null;
+    const coachGiven = hasCoach && !servedWith;
 
     const user = req.session.user || {};
     const usedBy = String(user.name || user.username || "").slice(0, 100);
 
-    // ใช้ได้ครั้งเดียว: อัปเดตเฉพาะใบที่ยัง active (กันสแกนพร้อมกัน 2 เครื่อง)
+    // ใช้ได้ครั้งเดียว: อัปเดตเฉพาะใบที่ยัง active (กันสแกนพร้อมกันหลายเครื่อง)
     const updated = await query(
-      `UPDATE coupons SET status = 'used', used_at = NOW(), used_by = $2
-       WHERE code = $1 AND status = 'active'
+      `UPDATE team_coupons
+       SET status = 'used', used_at = NOW(), used_by = $2, students_given = $3, coach_given = $4
+       WHERE id = $1 AND status = 'active'
        RETURNING *`,
-      [code, usedBy],
+      [c.id, usedBy, present.length, coachGiven],
     );
 
     if (!updated.rows.length) {
-      const again = await query("SELECT * FROM coupons WHERE code = $1", [
-        code,
+      const again = await query("SELECT * FROM team_coupons WHERE id = $1", [
+        c.id,
       ]);
-      const v2 = couponView(again.rows[0], team);
+      const v2 = baseView(again.rows[0], team);
       return res.json({
         ok: false,
         reason: "used",
         message:
-          "ใช้ไปแล้ว เมื่อ " +
+          "รับไปแล้ว " +
+          v2.meals +
+          " ชุด เมื่อ " +
           v2.usedAt +
           (v2.usedBy ? " โดย " + v2.usedBy : ""),
         coupon: v2,
       });
     }
 
+    const v = baseView(updated.rows[0], team);
+    v.present = present.map((s) => s.name);
+    v.absent = absent.map((s) => s.name);
+    v.coachNote = !hasCoach
+      ? "ทีมนี้ไม่มีชื่อโค้ช"
+      : servedWith
+        ? "โค้ชรับชุดของตัวเองไปแล้วกับทีม " +
+          servedWith.name +
+          " (" +
+          servedWith.id +
+          ")"
+        : "";
+
     return res.json({
       ok: true,
-      message: "แลกสำเร็จ — ให้ " + COUPON_LABEL,
-      coupon: couponView(updated.rows[0], team),
+      message: "ให้ " + COUPON_LABEL + " " + v.meals + " ชุด",
+      coupon: v,
     });
   } catch (err) {
     console.error("Coupon redeem error:", err);
@@ -550,46 +561,68 @@ adminRouter.get("/", async (req, res) => {
     const config = await getCouponConfig();
     const tier = TIERS.includes(req.query.tier) ? req.query.tier : "beginner";
 
-    const [dayStats, teamsResult, couponCounts, recent] = await Promise.all([
-      query(
-        `SELECT coupon_day,
-                COUNT(*) FILTER (WHERE status <> 'void')::int AS total,
-                COUNT(*) FILTER (WHERE status = 'used')::int AS used,
-                COUNT(*) FILTER (WHERE status <> 'void' AND holder_type = 'student')::int AS students,
-                COUNT(*) FILTER (WHERE status <> 'void' AND holder_type = 'coach')::int AS coaches
-         FROM coupons GROUP BY coupon_day ORDER BY coupon_day`,
-        [],
-      ),
-      query(
-        `SELECT id, name, institution, tier, status, coach,
-                student_1, student_2, student_3,
-                student_1_checked_in, student_2_checked_in, student_3_checked_in
-         FROM teams WHERE tier = $1 ORDER BY created_at ASC`,
-        [tier],
-      ),
-      query(
-        `SELECT team_id,
-                COUNT(*) FILTER (WHERE status <> 'void')::int AS total,
-                COUNT(*) FILTER (WHERE status = 'used')::int AS used
-         FROM coupons GROUP BY team_id`,
-        [],
-      ),
-      query(
-        `SELECT code, holder_name, holder_type, team_id, coupon_day, used_at, used_by
-         FROM coupons WHERE status = 'used'
-         ORDER BY used_at DESC LIMIT 15`,
-        [],
-      ),
-    ]);
-
-    const countMap = {};
-    couponCounts.rows.forEach((r) => {
-      countMap[r.team_id] = r;
-    });
+    const [dayStatsResult, teamsResult, couponsResult, recentResult] =
+      await Promise.all([
+        query(
+          `SELECT coupon_day,
+                COUNT(*) FILTER (WHERE status <> 'void')::int AS teams,
+                COUNT(*) FILTER (WHERE status = 'used')::int AS redeemed,
+                COALESCE(SUM(CASE WHEN status = 'used'
+                                  THEN COALESCE(students_given, 0) + CASE WHEN coach_given THEN 1 ELSE 0 END
+                                  ELSE 0 END), 0)::int AS meals
+         FROM team_coupons GROUP BY coupon_day`,
+          [],
+        ),
+        query(`SELECT * FROM teams WHERE tier = $1 ORDER BY created_at ASC`, [
+          tier,
+        ]),
+        query(
+          `SELECT tc.* FROM team_coupons tc
+         JOIN teams t ON t.id = tc.team_id
+         WHERE t.tier = $1 AND tc.status <> 'void'`,
+          [tier],
+        ),
+        query(
+          `SELECT tc.*, t.name AS team_name, t.coach FROM team_coupons tc
+         LEFT JOIN teams t ON t.id = tc.team_id
+         WHERE tc.status = 'used'
+         ORDER BY tc.used_at DESC LIMIT 15`,
+          [],
+        ),
+      ]);
 
     const statsByDay = {};
-    dayStats.rows.forEach((r) => {
+    dayStatsResult.rows.forEach((r) => {
       statsByDay[r.coupon_day] = r;
+    });
+
+    const couponMap = {};
+    couponsResult.rows.forEach((c) => {
+      couponMap[c.team_id + "|" + c.coupon_day] = c;
+    });
+
+    const teams = teamsResult.rows.map((t) => {
+      const students = studentsOf(t);
+      return {
+        id: t.id,
+        name: t.name,
+        coach: normalizeName(t.coach),
+        status: t.status,
+        studentCount: students.length,
+        checkedIn: students.filter((s) => s.checkedIn).length,
+        days: config.days.map((d) => {
+          const c = couponMap[t.id + "|" + d];
+          if (!c) return { state: "none" };
+          if (c.status === "used") {
+            return {
+              state: "used",
+              meals: (c.students_given || 0) + (c.coach_given ? 1 : 0),
+              time: formatClock(c.used_at),
+            };
+          }
+          return { state: "active" };
+        }),
+      };
     });
 
     return res.render("coupons/admin", {
@@ -605,22 +638,12 @@ adminRouter.get("/", async (req, res) => {
       dayLabel,
       shortDayLabel,
       statsByDay,
-      teams: teamsResult.rows.map((t) => ({
-        id: t.id,
-        name: t.name,
-        institution: t.institution,
-        status: t.status,
-        people: holdersOfTeam(t).length,
-        checkedIn: [1, 2, 3].filter((i) => t["student_" + i + "_checked_in"])
-          .length,
-        total: countMap[t.id] ? countMap[t.id].total : 0,
-        used: countMap[t.id] ? countMap[t.id].used : 0,
-      })),
-      recent: recent.rows.map((r) => ({
-        code: r.code,
-        name: r.holder_name,
-        role: r.holder_type === "coach" ? "โค้ช" : "นักเรียน",
+      teams,
+      recent: recentResult.rows.map((r) => ({
         teamId: r.team_id,
+        team: r.team_name || r.team_id,
+        coach: normalizeName(r.coach),
+        meals: (r.students_given || 0) + (r.coach_given ? 1 : 0),
         day: shortDayLabel(r.coupon_day),
         usedAt: formatThaiTime(r.used_at),
         usedBy: r.used_by || "",
@@ -642,14 +665,14 @@ adminRouter.post("/settings", async (req, res) => {
     const days = [req.body.day1, req.body.day2, req.body.day3]
       .map((d) => cleanText(d, 10))
       .filter(isIsoDate);
-    const unique = Array.from(new Set(days)).sort();
-
-    await saveSetting("coupon_days", unique.join(","));
+    await saveSetting(
+      "coupon_days",
+      Array.from(new Set(days)).sort().join(","),
+    );
     await saveSetting(
       "coupon_strict_day",
       first(req.body.strict_day) === "1" ? "1" : "0",
     );
-
     req.flash("success", "บันทึกการตั้งค่าคูปองแล้ว");
   } catch (err) {
     console.error("Coupon settings error:", err);
@@ -661,30 +684,28 @@ adminRouter.post("/settings", async (req, res) => {
 // ---------------- POST /board/coupons/generate ----------------
 
 adminRouter.post("/generate", async (req, res) => {
+  const back =
+    "/board/coupons" +
+    (TIERS.includes(req.query.tier) ? "?tier=" + req.query.tier : "");
   try {
     await tableReady;
     const config = await getCouponConfig();
-
     if (!config.days.length) {
       req.flash("error", "กรุณาตั้งวันที่แจกคูปองก่อน");
-      return res.redirect("/board/coupons");
+      return res.redirect(back);
     }
-
     const { created } = await generateCoupons(config.days, null);
     req.flash(
       "success",
       created
         ? "สร้างคูปองเพิ่ม " + created + " ใบ"
-        : "คูปองครบทุกคนแล้ว ไม่มีใบที่ต้องสร้างเพิ่ม",
+        : "คูปองครบทุกทีมแล้ว ไม่มีใบที่ต้องสร้างเพิ่ม",
     );
   } catch (err) {
     console.error("Coupon generate error:", err);
     req.flash("error", "สร้างคูปองไม่สำเร็จ");
   }
-  return res.redirect(
-    "/board/coupons" +
-      (req.query.tier ? "?tier=" + encodeURIComponent(req.query.tier) : ""),
-  );
+  return res.redirect(back);
 });
 
 // ---------------- GET /board/coupons/print?team=ID | ?tier=beginner ----------------
@@ -693,20 +714,19 @@ adminRouter.get("/print", async (req, res) => {
   try {
     await tableReady;
     const config = await getCouponConfig();
-
     if (!config.days.length) {
       req.flash("error", "กรุณาตั้งวันที่แจกคูปองก่อน");
       return res.redirect("/board/coupons");
     }
 
     const teamId = cleanText(req.query.team, 20);
-    const tier = TIERS.includes(req.query.tier) ? req.query.tier : null;
+    const tier = TIERS.includes(req.query.tier) ? req.query.tier : "beginner";
 
     const teamsResult = teamId
       ? await query("SELECT * FROM teams WHERE id = $1", [teamId])
       : await query(
           "SELECT * FROM teams WHERE tier = $1 AND status IS DISTINCT FROM 'rejected' ORDER BY created_at ASC",
-          [tier || "beginner"],
+          [tier],
         );
 
     const teams = teamsResult.rows;
@@ -715,34 +735,37 @@ adminRouter.get("/print", async (req, res) => {
       return res.redirect("/board/coupons");
     }
 
-    // สร้างใบที่ยังขาดก่อนพิมพ์
     await generateCoupons(
       config.days,
       teams.map((t) => t.id),
     );
 
-    const sheets = [];
+    const couponsResult = await query(
+      `SELECT * FROM team_coupons
+       WHERE status <> 'void' AND team_id = ANY($1) AND coupon_day = ANY($2)`,
+      [teams.map((t) => t.id), config.days],
+    );
+    const couponMap = {};
+    couponsResult.rows.forEach((c) => {
+      couponMap[c.team_id + "|" + c.coupon_day] = c;
+    });
 
-    for (const team of teams) {
-      // รวมคูปองโค้ชที่ผูกไว้กับทีมอื่นด้วย (โค้ชคนเดียวหลายทีม)
-      const keys = holdersOfTeam(team).map((h) => h.holder_key);
-      const result = await query(
-        `SELECT * FROM coupons
-         WHERE status <> 'void' AND holder_key = ANY($1) AND coupon_day = ANY($2)
-         ORDER BY holder_type DESC, student_number ASC NULLS LAST, coupon_day ASC`,
-        [keys, config.days],
-      );
-
-      const items = [];
-      for (const c of result.rows) {
+    const items = [];
+    for (const t of teams) {
+      const students = studentsOf(t).map((s) => s.name);
+      for (const d of config.days) {
+        const c = couponMap[t.id + "|" + d];
+        if (!c) continue;
         items.push({
           code: c.code,
-          name: c.holder_name,
-          role:
-            c.holder_type === "coach"
-              ? "โค้ช"
-              : "นักเรียนคนที่ " + c.student_number,
-          day: dayLabel(c.coupon_day),
+          teamId: t.id,
+          team: t.name,
+          institution: t.institution || "",
+          tierLabel: TIER_LABEL[t.tier] || t.tier,
+          coach: normalizeName(t.coach),
+          students,
+          maxMeals: students.length + (normalizeName(t.coach) ? 1 : 0),
+          day: dayLabel(d),
           used: c.status === "used",
           qr: await QRCode.toString(c.code, {
             type: "svg",
@@ -751,20 +774,13 @@ adminRouter.get("/print", async (req, res) => {
           }),
         });
       }
-
-      sheets.push({
-        id: team.id,
-        name: team.name,
-        institution: team.institution || "",
-        tierLabel: TIER_LABEL[team.tier] || team.tier,
-        items,
-      });
     }
 
     return res.render("coupons/print", {
       layout: false,
       couponLabel: COUPON_LABEL,
-      sheets,
+      items,
+      teamCount: teams.length,
       backUrl: "/board/coupons?tier=" + (teams[0].tier || "beginner"),
     });
   } catch (err) {
@@ -775,7 +791,6 @@ adminRouter.get("/print", async (req, res) => {
 });
 
 // ---------------- POST /board/coupons/reissue ----------------
-// คูปองหาย → ยกเลิกใบเดิม แล้วออกใบใหม่ให้คนเดิม วันเดิม
 
 adminRouter.post("/reissue", async (req, res) => {
   const code = normalizeCode(req.body.code);
@@ -786,58 +801,34 @@ adminRouter.post("/reissue", async (req, res) => {
 
   try {
     await tableReady;
-    const found = await query("SELECT * FROM coupons WHERE code = $1", [code]);
+    const found = await query("SELECT * FROM team_coupons WHERE code = $1", [
+      code,
+    ]);
     const c = found.rows[0];
 
     if (!c) {
       req.flash("error", "ไม่พบคูปอง " + code);
       return res.redirect("/board/coupons");
     }
-    if (c.status === "used") {
-      req.flash("error", "คูปอง " + code + " ถูกใช้ไปแล้ว ออกใบใหม่ไม่ได้");
-      return res.redirect("/board/coupons");
-    }
-    if (c.status === "void") {
-      req.flash("error", "คูปอง " + code + " ถูกยกเลิกไปแล้ว");
+    if (c.status !== "active") {
+      req.flash(
+        "error",
+        "คูปอง " +
+          code +
+          (c.status === "used" ? " ถูกใช้ไปแล้ว" : " ถูกยกเลิกไปแล้ว") +
+          " ออกใบใหม่ไม่ได้",
+      );
       return res.redirect("/board/coupons");
     }
 
-    await query("UPDATE coupons SET status = 'void' WHERE id = $1", [c.id]);
-
-    let newCode = "";
-    for (let attempt = 0; attempt < 5 && !newCode; attempt++) {
-      const candidate = generateCode();
-      try {
-        await query(
-          `INSERT INTO coupons
-             (code, team_id, holder_type, student_number, holder_key, holder_name, coupon_day)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [
-            candidate,
-            c.team_id,
-            c.holder_type,
-            c.student_number,
-            c.holder_key,
-            c.holder_name,
-            c.coupon_day,
-          ],
-        );
-        newCode = candidate;
-      } catch (err) {
-        if (err.code !== "23505" || err.constraint !== "coupons_code_uq")
-          throw err;
-      }
-    }
+    await query("UPDATE team_coupons SET status = 'void' WHERE id = $1", [
+      c.id,
+    ]);
+    await insertCoupon(c.team_id, c.coupon_day);
 
     req.flash(
       "success",
-      "ยกเลิก " +
-        code +
-        " และออกใบใหม่ " +
-        newCode +
-        " ให้ " +
-        c.holder_name +
-        " แล้ว",
+      "ยกเลิก " + code + " และออกใบใหม่ให้ทีม " + c.team_id + " แล้ว",
     );
     return res.redirect(
       "/board/coupons/print?team=" + encodeURIComponent(c.team_id),
@@ -855,44 +846,44 @@ adminRouter.get("/export", async (req, res) => {
   try {
     await tableReady;
     const result = await query(
-      `SELECT c.*, t.name AS team_name, t.tier
-       FROM coupons c LEFT JOIN teams t ON t.id = c.team_id
-       ORDER BY c.coupon_day, t.tier, c.team_id, c.holder_type DESC, c.student_number`,
+      `SELECT tc.*, t.name AS team_name, t.tier, t.coach
+       FROM team_coupons tc LEFT JOIN teams t ON t.id = tc.team_id
+       ORDER BY tc.coupon_day, t.tier, tc.team_id`,
       [],
     );
 
     const wb = new ExcelJS.Workbook();
     wb.creator = "Robo Challenge League";
-    const ws = wb.addWorksheet("คูปอง");
+    const ws = wb.addWorksheet("คูปองรายทีม");
 
     ws.columns = [
-      { header: "วันที่", key: "day", width: 14 },
+      { header: "วันที่", key: "day", width: 12 },
       { header: "รหัสคูปอง", key: "code", width: 13 },
       { header: "รุ่น", key: "tier", width: 13 },
       { header: "ทีม", key: "team_id", width: 10 },
       { header: "ชื่อทีม", key: "team_name", width: 28 },
-      { header: "ประเภท", key: "role", width: 12 },
-      { header: "ชื่อ", key: "name", width: 28 },
-      { header: "สถานะ", key: "status", width: 12 },
-      { header: "เวลาที่ใช้", key: "used_at", width: 18 },
+      { header: "โค้ช", key: "coach", width: 26 },
+      { header: "สถานะ", key: "status", width: 11 },
+      { header: "นักเรียน (ชุด)", key: "students", width: 13 },
+      { header: "โค้ช (ชุด)", key: "coach_meal", width: 10 },
+      { header: "รวม (ชุด)", key: "meals", width: 10 },
+      { header: "เวลาที่รับ", key: "used_at", width: 18 },
       { header: "ผู้สแกน", key: "used_by", width: 18 },
     ];
 
     result.rows.forEach((r) => {
+      const used = r.status === "used";
       ws.addRow({
         day: shortDayLabel(r.coupon_day),
         code: r.code,
         tier: TIER_LABEL[r.tier] || r.tier || "",
         team_id: r.team_id,
         team_name: r.team_name || "",
-        role: r.holder_type === "coach" ? "โค้ช" : "นักเรียน",
-        name: r.holder_name,
-        status:
-          r.status === "used"
-            ? "ใช้แล้ว"
-            : r.status === "void"
-              ? "ยกเลิก"
-              : "ยังไม่ใช้",
+        coach: normalizeName(r.coach),
+        status: used ? "รับแล้ว" : r.status === "void" ? "ยกเลิก" : "ยังไม่รับ",
+        students: used ? r.students_given || 0 : "",
+        coach_meal: used ? (r.coach_given ? 1 : 0) : "",
+        meals: used ? (r.students_given || 0) + (r.coach_given ? 1 : 0) : "",
         used_at: formatThaiTime(r.used_at),
         used_by: r.used_by || "",
       });
@@ -907,7 +898,7 @@ adminRouter.get("/export", async (req, res) => {
     };
     header.alignment = { vertical: "middle", horizontal: "center" };
     ws.views = [{ state: "frozen", ySplit: 1 }];
-    ws.autoFilter = { from: "A1", to: "J1" };
+    ws.autoFilter = { from: "A1", to: "L1" };
 
     const date = new Date().toISOString().slice(0, 10);
     const thaiName = `RCL_คูปอง_${date}.xlsx`;
@@ -929,7 +920,6 @@ adminRouter.get("/export", async (req, res) => {
 });
 
 // ---------------- POST /board/coupons/reset ----------------
-// ลบคูปองทั้งหมด (ใช้ล้างข้อมูลทดสอบก่อนวันงาน)
 
 adminRouter.post("/reset", async (req, res) => {
   try {
@@ -944,8 +934,11 @@ adminRouter.post("/reset", async (req, res) => {
     }
 
     await tableReady;
-    const count = await query("SELECT COUNT(*)::int AS cnt FROM coupons", []);
-    await query("TRUNCATE coupons RESTART IDENTITY", []);
+    const count = await query(
+      "SELECT COUNT(*)::int AS cnt FROM team_coupons",
+      [],
+    );
+    await query("TRUNCATE team_coupons RESTART IDENTITY", []);
 
     const n = count.rows[0] ? count.rows[0].cnt : 0;
     console.log(

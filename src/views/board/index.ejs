@@ -48,7 +48,7 @@
 
     <div class="card">
       <div style="overflow-x:auto">
-        <table>
+        <table class="m-cards bd-tbl">
           <thead>
             <tr>
               <th>อันดับ</th>
@@ -73,7 +73,7 @@
                     <tr>
 
                       <!-- อันดับ -->
-                      <td>
+                      <td data-label="อันดับ" class="m-rank">
                         <div class="rank-cell">
                           <% if (hasBest && i===0) { %>
                             <span style="font-size:20px">🥇</span><span class="rank-gold">
@@ -94,7 +94,7 @@
                       </td>
 
                       <!-- ชื่อทีม -->
-                      <td>
+                      <td data-label="ชื่อทีม" class="m-team">
                         <div class="team-name">
                           <%= t.name %>
                         </div>
@@ -109,7 +109,7 @@
                           <% var rawT=t['r' + rd + '_time' ]; var tm=(rawT===null || rawT===undefined || rawT==='' )
                             ? '' : (hasFmt ? locals.formatTime(rawT) : parseFloat(rawT).toFixed(3) + ' วิ' ); %>
                             <% var pub=t['r' + rd + '_published' ]; %>
-                              <td>
+                              <td data-label="รอบที่ <%= rd %>">
                                 <% if (sc> 0) { %>
                                   <span class="score-num">
                                     <%= sc %> pts
@@ -148,7 +148,7 @@
                               <% }) %>
 
                                 <!-- คะแนนที่ดีที่สุด -->
-                                <td>
+                                <td data-label="คะแนนดีสุด">
                                   <% if (hasBest) { %>
                                     <% var bt=(t.best_time===null || t.best_time===undefined || t.best_time==='' ) ? ''
                                       : (hasFmt ? locals.formatTime(t.best_time) : parseFloat(t.best_time).toFixed(3)
@@ -175,7 +175,7 @@
                                 </td>
 
                                 <!-- สถานะ -->
-                                <td>
+                                <td data-label="สถานะ">
                                   <% if (t.status==='approved' ) { %>
                                     <span class="badge badge-green badge-dot">เสร็จสิ้น</span>
                                     <% } else if (t.status==='rejected' ) { %>

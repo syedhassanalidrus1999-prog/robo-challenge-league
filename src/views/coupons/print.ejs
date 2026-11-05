@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พิมพ์คูปอง — Robo Challenge League</title>
+    <title>พิมพ์คูปองรายทีม — Robo Challenge League</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -14,7 +14,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 8mm;
         }
 
         * {
@@ -29,7 +29,6 @@
             font-family: 'Sarabun', sans-serif;
         }
 
-        /* แถบควบคุม (ไม่พิมพ์) */
         .toolbar {
             position: sticky;
             top: 0;
@@ -70,41 +69,11 @@
             color: #fff;
         }
 
-        /* หน้า A4 */
-        .sheet {
-            width: 190mm;
+        .paper {
+            width: 194mm;
             margin: 16px auto;
-            padding: 0;
             background: #fff;
             box-shadow: 0 6px 24px rgba(15, 23, 42, .12);
-            page-break-after: always;
-            break-after: page;
-        }
-
-        .sheet:last-child {
-            page-break-after: auto;
-            break-after: auto;
-        }
-
-        .sheet-hd {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 6mm 4mm 3mm;
-            border-bottom: 1px solid #E2E8F0;
-        }
-
-        .sheet-team {
-            font-family: 'Kanit', sans-serif;
-            font-size: 16pt;
-            font-weight: 700;
-        }
-
-        .sheet-meta {
-            font-size: 10pt;
-            color: #64748B;
-            text-align: right;
         }
 
         .grid {
@@ -112,27 +81,34 @@
             grid-template-columns: 1fr 1fr;
         }
 
-        /* คูปอง 1 ใบ */
+        /* คูปอง 1 ใบ = 1 ทีม 1 วัน */
         .coupon {
             position: relative;
-            height: 60mm;
-            display: grid;
-            grid-template-columns: 32mm 1fr;
-            gap: 4mm;
-            align-items: center;
+            height: 69mm;
             padding: 5mm;
+            display: grid;
+            grid-template-columns: 30mm 1fr;
+            gap: 4mm;
             border-right: 1px dashed #94A3B8;
             border-bottom: 1px dashed #94A3B8;
             break-inside: avoid;
+            page-break-inside: avoid;
+            overflow: hidden;
         }
 
         .coupon:nth-child(2n) {
             border-right: 0;
         }
 
+        .left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .qr {
-            width: 32mm;
-            height: 32mm;
+            width: 30mm;
+            height: 30mm;
         }
 
         .qr svg {
@@ -142,63 +118,102 @@
         }
 
         .code {
-            margin-top: 2mm;
-            text-align: center;
+            margin-top: 1.5mm;
             font-family: ui-monospace, Menlo, Consolas, monospace;
-            font-size: 10pt;
+            font-size: 9.5pt;
             font-weight: 700;
-            letter-spacing: .5px;
+            letter-spacing: .4px;
+        }
+
+        .meals {
+            margin-top: 3mm;
+            width: 100%;
+            padding: 1.5mm 0;
+            border-radius: 2mm;
+            background: #0F172A;
+            color: #fff;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        .meals b {
+            display: block;
+            font-family: 'Kanit', sans-serif;
+            font-size: 18pt;
+            font-weight: 700;
+        }
+
+        .meals span {
+            font-size: 7.5pt;
         }
 
         .info {
             min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .brand {
-            font-size: 8pt;
+            font-size: 7.5pt;
             font-weight: 700;
             color: #2563EB;
             letter-spacing: .4px;
         }
 
         .type {
-            display: inline-block;
-            margin: 1.5mm 0 2mm;
-            padding: 1mm 3mm;
-            border-radius: 2mm;
-            background: #0F172A;
-            color: #fff;
-            font-family: 'Kanit', sans-serif;
-            font-size: 13pt;
-            font-weight: 600;
-        }
-
-        .name {
+            margin-top: .5mm;
             font-family: 'Kanit', sans-serif;
             font-size: 12pt;
+            font-weight: 700;
+        }
+
+        .team {
+            margin-top: 1mm;
+            font-family: 'Kanit', sans-serif;
+            font-size: 11pt;
             font-weight: 600;
-            line-height: 1.25;
+            line-height: 1.2;
             overflow-wrap: anywhere;
         }
 
-        .role,
-        .team {
-            font-size: 9pt;
-            color: #475569;
-            line-height: 1.35;
+        .sub {
+            font-size: 8pt;
+            color: #64748B;
         }
 
-        .day {
-            margin-top: 2mm;
-            padding-top: 1.5mm;
-            border-top: 1px solid #E2E8F0;
-            font-size: 10pt;
-            font-weight: 700;
+        .holder {
+            margin-top: 1.5mm;
+            font-size: 8.5pt;
             color: #0F172A;
         }
 
+        .holder b {
+            font-weight: 700;
+        }
+
+        .members {
+            margin-top: 1mm;
+            font-size: 8pt;
+            color: #334155;
+            line-height: 1.35;
+            list-style: none;
+        }
+
+        .members li::before {
+            content: "• ";
+            color: #94A3B8;
+        }
+
+        .day {
+            margin-top: auto;
+            padding-top: 1.5mm;
+            border-top: 1px solid #E2E8F0;
+            font-size: 9.5pt;
+            font-weight: 700;
+        }
+
         .note {
-            font-size: 7.5pt;
+            font-size: 7pt;
             color: #94A3B8;
         }
 
@@ -218,7 +233,7 @@
         }
 
         .empty {
-            padding: 10mm;
+            padding: 12mm;
             text-align: center;
             color: #94A3B8;
         }
@@ -232,7 +247,8 @@
                 display: none;
             }
 
-            .sheet {
+            .paper {
+                width: auto;
                 margin: 0;
                 box-shadow: none;
             }
@@ -244,61 +260,61 @@
     <div class="toolbar">
         <a href="<%= backUrl %>"><i class="ti ti-arrow-left"></i> กลับ</a>
         <span>
-            <%= sheets.length %> ทีม · ตัดตามเส้นประ · ตั้งค่าพิมพ์เป็น A4 แนวตั้ง ไม่ย่อขนาด
+            <%= teamCount %> ทีม · <%= items.length %> ใบ · ตัดตามเส้นประ · A4 แนวตั้ง ไม่ย่อขนาด
         </span>
         <button type="button" onclick="window.print()"><i class="ti ti-printer"></i> พิมพ์</button>
     </div>
 
-    <% sheets.forEach(function (s) { %>
-        <section class="sheet">
-            <div class="sheet-hd">
-                <div class="sheet-team">
-                    <%= s.id %> · <%= s.name %>
-                </div>
-                <div class="sheet-meta">
-                    <%= s.institution %><br>
-                        <%= s.tierLabel %> · <%= s.items.length %> ใบ
-                </div>
-            </div>
-
-            <% if (!s.items.length) { %>
-                <div class="empty">ทีมนี้ไม่มีรายชื่อนักเรียนหรือโค้ช</div>
-                <% } else { %>
-                    <div class="grid">
-                        <% s.items.forEach(function (c) { %>
-                            <div class="coupon">
-                                <div>
-                                    <div class="qr"><%- c.qr %></div>
-                                    <div class="code">
-                                        <%= c.code %>
-                                    </div>
+    <div class="paper">
+        <% if (!items.length) { %>
+            <div class="empty">ไม่มีคูปองสำหรับพิมพ์</div>
+            <% } else { %>
+                <div class="grid">
+                    <% items.forEach(function (c) { %>
+                        <div class="coupon">
+                            <div class="left">
+                                <div class="qr"><%- c.qr %></div>
+                                <div class="code">
+                                    <%= c.code %>
                                 </div>
-                                <div class="info">
-                                    <div class="brand">ROBO CHALLENGE LEAGUE</div>
-                                    <div class="type">
-                                        <%= couponLabel %>
-                                    </div>
-                                    <div class="name">
-                                        <%= c.name %>
-                                    </div>
-                                    <div class="role">
-                                        <%= c.role %>
-                                    </div>
-                                    <div class="team">ทีม <%= s.name %> (<%= s.id %>)</div>
-                                    <div class="day">
-                                        <%= c.day %>
-                                    </div>
-                                    <div class="note">ใช้ได้ 1 ครั้ง · แสดงคูปองที่จุดแลกอาหาร</div>
-                                </div>
-                                <% if (c.used) { %>
-                                    <div class="used-stamp">ใช้แล้ว</div>
-                                    <% } %>
+                                <div class="meals"><b>
+                                        <%= c.maxMeals %>
+                                    </b><span>ชุดสูงสุด</span></div>
                             </div>
-                            <% }) %>
-                    </div>
-                    <% } %>
-        </section>
-        <% }) %>
+                            <div class="info">
+                                <div class="brand">ROBO CHALLENGE LEAGUE</div>
+                                <div class="type">คูปอง<%= couponLabel %> (ทั้งทีม)</div>
+                                <div class="team">
+                                    <%= c.teamId %> · <%= c.team %>
+                                </div>
+                                <div class="sub">
+                                    <%= c.institution %> · <%= c.tierLabel %>
+                                </div>
+                                <div class="holder">ผู้รับ: <b>
+                                        <%= c.coach || 'ตัวแทนทีม' %>
+                                    </b>
+                                    <%= c.coach ? ' (โค้ช)' : '' %>
+                                </div>
+                                <ul class="members">
+                                    <% c.students.forEach(function (n) { %>
+                                        <li>
+                                            <%= n %>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                                <div class="day">
+                                    <%= c.day %>
+                                </div>
+                                <div class="note">ใช้ได้ 1 ครั้ง · ได้ตามจำนวนนักเรียนที่ Check-in + โค้ช 1 ชุด</div>
+                            </div>
+                            <% if (c.used) { %>
+                                <div class="used-stamp">ใช้แล้ว</div>
+                                <% } %>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } %>
+    </div>
 </body>
 
 </html>

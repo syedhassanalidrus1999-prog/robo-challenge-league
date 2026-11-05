@@ -343,8 +343,8 @@
     <div>
         <div class="cp-title">คูปอง<%= couponLabel %>
         </div>
-        <div class="cp-sub">นักเรียนและโค้ช ได้คนละ 1 ใบต่อวัน · โค้ชที่ดูแลหลายทีมได้ชุดเดียว ·
-            ทีมที่ไม่อนุมัติจะไม่ได้คูปอง</div>
+        <div class="cp-sub">1 ทีม = 1 QR ต่อวัน · โค้ชถือคูปองมารับแทนทั้งทีม · จำนวนชุด = นักเรียนที่ Check-in + โค้ช 1
+            ชุด · ทีมที่ไม่อนุมัติจะไม่ได้คูปอง</div>
     </div>
     <div class="cp-actions">
         <a href="/coupons/scan" target="_blank" class="cp-btn primary"><i class="ti ti-scan"></i> เปิดหน้าสแกนคูปอง</a>
@@ -394,8 +394,8 @@
         <% if (days.length) { %>
             <div class="cp-days">
                 <% days.forEach(function (d) { %>
-                    <% var st=statsByDay[d] || { total: 0, used: 0, students: 0, coaches: 0 }; %>
-                        <% var pct=st.total ? Math.round(st.used / st.total * 100) : 0; %>
+                    <% var st=statsByDay[d] || { teams: 0, redeemed: 0, meals: 0 }; %>
+                        <% var pct=st.teams ? Math.round(st.redeemed / st.teams * 100) : 0; %>
                             <div class="cp-day <%= d === today ? 'today' : '' %>">
                                 <div class="cp-day-label">
                                     <%= dayLabel(d) %>
@@ -403,11 +403,12 @@
                                             <% } %>
                                 </div>
                                 <div class="cp-day-num">
-                                    <%= st.used %> <small>/ <%= st.total %> ใบ ใช้แล้ว</small>
+                                    <%= st.redeemed %> <small>/ <%= st.teams %> ทีม รับแล้ว</small>
                                 </div>
                                 <div class="cp-bar"><span style="width:<%= pct %>%"></span></div>
-                                <div class="cp-day-meta">นักเรียน <%= st.students %> · โค้ช <%= st.coaches %> · เหลือ
-                                            <%= st.total - st.used %> ใบ</div>
+                                <div class="cp-day-meta">แจกไปแล้ว <b>
+                                        <%= st.meals %>
+                                    </b> ชุด · เหลือ <%= st.teams - st.redeemed %> ทีม</div>
                             </div>
                             <% }) %>
             </div>
@@ -436,11 +437,14 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>ชื่อทีม</th>
-                                            <th>สถาบัน</th>
-                                            <th>คน (นักเรียน+โค้ช)</th>
+                                            <th>โค้ช (ผู้ถือคูปอง)</th>
                                             <th>Check-in</th>
-                                            <th>คูปอง ใช้แล้ว / ทั้งหมด</th>
-                                            <th></th>
+                                            <% days.forEach(function (d) { %>
+                                                <th>
+                                                    <%= shortDayLabel(d) %>
+                                                </th>
+                                                <% }) %>
+                                                    <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -456,30 +460,30 @@
                                                             <% } %>
                                                 </td>
                                                 <td>
-                                                    <%= t.institution || '—' %>
-                                                </td>
-                                                <td>
-                                                    <%= t.people %>
+                                                    <%= t.coach || '—' %>
                                                 </td>
                                                 <td><span class="cp-pill <%= t.checkedIn ? 'ok' : '' %>">
-                                                        <%= t.checkedIn %> คน
+                                                        <%= t.checkedIn %> / <%= t.studentCount %> คน
                                                     </span></td>
-                                                <td>
-                                                    <% if (!t.total) { %>
-                                                        <span class="cp-pill none">ยังไม่ได้สร้าง</span>
-                                                        <% } else { %>
-                                                            <span class="cp-pill <%= t.used ? 'ok' : '' %>">
-                                                                <%= t.used %> / <%= t.total %>
-                                                            </span>
-                                                            <% } %>
-                                                </td>
-                                                <td>
-                                                    <% if (t.status !=='rejected' ) { %>
-                                                        <a href="/board/coupons/print?team=<%= encodeURIComponent(t.id) %>"
-                                                            target="_blank" class="cp-btn sm"><i
-                                                                class="ti ti-printer"></i> พิมพ์</a>
-                                                        <% } %>
-                                                </td>
+                                                <% t.days.forEach(function (dd) { %>
+                                                    <td>
+                                                        <% if (dd.state==='used' ) { %>
+                                                            <span class="cp-pill ok">รับแล้ว <%= dd.meals %> ชุด · <%=
+                                                                        dd.time %></span>
+                                                            <% } else if (dd.state==='active' ) { %>
+                                                                <span class="cp-pill">ยังไม่รับ</span>
+                                                                <% } else { %>
+                                                                    <span class="cp-pill none">ยังไม่ได้สร้าง</span>
+                                                                    <% } %>
+                                                    </td>
+                                                    <% }) %>
+                                                        <td>
+                                                            <% if (t.status !=='rejected' ) { %>
+                                                                <a href="/board/coupons/print?team=<%= encodeURIComponent(t.id) %>"
+                                                                    target="_blank" class="cp-btn sm"><i
+                                                                        class="ti ti-printer"></i> พิมพ์</a>
+                                                                <% } %>
+                                                        </td>
                                             </tr>
                                             <% }) %>
                                     </tbody>
@@ -503,8 +507,8 @@
                                         <thead>
                                             <tr>
                                                 <th>เวลา</th>
-                                                <th>ชื่อ</th>
                                                 <th>ทีม</th>
+                                                <th>ชุด</th>
                                                 <th>ผู้สแกน</th>
                                             </tr>
                                         </thead>
@@ -515,11 +519,13 @@
                                                         <%= r.usedAt %>
                                                     </td>
                                                     <td>
-                                                        <%= r.name %> <span class="cp-card-note">(<%= r.role %>)</span>
+                                                        <%= r.teamId %> <span class="cp-card-note">
+                                                                <%= r.team %>
+                                                            </span>
                                                     </td>
-                                                    <td>
-                                                        <%= r.teamId %>
-                                                    </td>
+                                                    <td><b>
+                                                            <%= r.meals %>
+                                                        </b></td>
                                                     <td>
                                                         <%= r.usedBy || '—' %>
                                                     </td>
@@ -538,7 +544,7 @@
                         </div>
                         <div class="cp-card-body">
                             <p class="cp-card-note" style="margin-bottom:12px">กรอกรหัสใต้ QR ของใบที่หาย (ดูได้จากไฟล์
-                                Excel) ระบบจะยกเลิกใบเดิมทันที แล้วเปิดหน้าพิมพ์ใบใหม่ของทีมนั้น</p>
+                                Excel ค้นด้วยรหัสทีม) ระบบจะยกเลิกใบเดิมทันที แล้วเปิดหน้าพิมพ์ใบใหม่ของทีมนั้น</p>
                             <form method="POST" action="/board/coupons/reissue" class="cp-settings"
                                 onsubmit="return confirm('ยกเลิกคูปองใบนี้ และออกใบใหม่?')">
                                 <div class="cp-field">
