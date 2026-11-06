@@ -1,0 +1,717 @@
+/* public/css/timer.css — นาฬิกาจับเวลา (หน้าแสดงผล + หน้าควบคุม) */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+/* ======================================================================
+   หน้าแสดงผล (โปรเจกเตอร์)
+   ====================================================================== */
+
+.tdisp {
+    --bg: #0B1A3F;
+    --bg2: #10265A;
+    --fg: #FFFFFF;
+    --accent: #60A5FA;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: radial-gradient(ellipse at 50% 35%, var(--bg2), var(--bg) 70%);
+    color: var(--fg);
+    font-family: 'Kanit', sans-serif;
+    transition: background .6s ease;
+    cursor: default;
+}
+
+.tdisp.is-warn {
+    --bg: #3B2A05;
+    --bg2: #6B4A06;
+    --accent: #FBBF24;
+}
+
+.tdisp.is-danger {
+    --bg: #3F0A0A;
+    --bg2: #7F1D1D;
+    --accent: #F87171;
+}
+
+.td-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2vw;
+    padding: 2.2vh 3vw 0;
+}
+
+.td-brand {
+    display: flex;
+    align-items: center;
+    gap: 1.2vw;
+    font-size: clamp(16px, 1.8vw, 32px);
+    font-weight: 600;
+    letter-spacing: .05em;
+    opacity: .9;
+}
+
+.td-brand img {
+    height: clamp(40px, 7vh, 90px);
+    width: auto;
+}
+
+.td-clock {
+    font-size: clamp(18px, 2.4vw, 44px);
+    font-weight: 500;
+    opacity: .75;
+    font-variant-numeric: tabular-nums;
+}
+
+.td-main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4vw;
+    text-align: center;
+}
+
+.td-label {
+    min-height: 1.2em;
+    font-size: clamp(28px, 5.2vw, 110px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--accent);
+    transition: color .6s ease;
+}
+
+.td-time {
+    font-size: clamp(90px, 19vw, 420px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0.04em 0.12em rgba(0, 0, 0, .35);
+}
+
+.td-bar {
+    width: min(80vw, 1500px);
+    height: clamp(8px, 1.4vh, 22px);
+    margin-top: 2vh;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, .15);
+    overflow: hidden;
+}
+
+.td-bar span {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 99px;
+    background: var(--accent);
+    transition: width .25s linear, background .6s ease;
+}
+
+.td-sub {
+    min-height: 1.3em;
+    margin-top: 1.6vh;
+    font-size: clamp(22px, 3vw, 60px);
+    font-weight: 600;
+    color: #FDE68A;
+}
+
+.state-paused .td-time {
+    opacity: .55;
+}
+
+.is-danger.state-running .td-time {
+    animation: td-pulse 1s ease-in-out infinite;
+}
+
+@keyframes td-pulse {
+    50% {
+        transform: scale(1.03);
+    }
+}
+
+/* ตอนยังไม่จับเวลา */
+.td-idle {
+    display: none;
+}
+
+.state-idle .td-label,
+.state-idle .td-time,
+.state-idle .td-bar,
+.state-idle .td-sub {
+    display: none;
+}
+
+.state-idle .td-idle {
+    display: block;
+}
+
+.td-idle-title {
+    font-size: clamp(48px, 9vw, 200px);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.td-next {
+    margin-top: 3vh;
+    font-size: clamp(26px, 4vw, 84px);
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* ข้อความประกาศ */
+.td-msg {
+    position: fixed;
+    left: 50%;
+    bottom: 5vh;
+    transform: translateX(-50%);
+    max-width: 90vw;
+    padding: 1.4vh 3vw;
+    border-radius: 999px;
+    background: #FDE68A;
+    color: #1F2937;
+    font-size: clamp(22px, 3.2vw, 64px);
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 1vh 4vh rgba(0, 0, 0, .35);
+}
+
+/* หมดเวลา */
+.td-over {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2vh;
+    background: #B91C1C;
+    color: #fff;
+    text-align: center;
+    animation: td-flash 1s steps(2, start) 6;
+}
+
+@keyframes td-flash {
+    to {
+        background: #7F1D1D;
+    }
+}
+
+.td-over-title {
+    font-size: clamp(90px, 18vw, 380px);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.td-over-label {
+    font-size: clamp(28px, 4.5vw, 96px);
+    font-weight: 700;
+}
+
+.td-over-sub {
+    font-size: clamp(22px, 3vw, 64px);
+    font-weight: 500;
+    opacity: .9;
+}
+
+/* ปุ่มเริ่มแสดงผล (ต้องคลิก 1 ครั้งเพื่อเปิดเสียง) */
+.td-start {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: rgba(11, 26, 63, .92);
+    color: #CBD5E1;
+    font-size: 18px;
+}
+
+.td-start button {
+    padding: 22px 48px;
+    border: 0;
+    border-radius: 20px;
+    background: #2563EB;
+    color: #fff;
+    font-size: 30px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+
+/* นับถอยหลังก่อนเริ่ม */
+.td-count {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 45%, #1D4ED8, #0B1A3F 70%);
+    color: #fff;
+    text-align: center;
+}
+
+.td-count-top {
+    font-size: clamp(28px, 4vw, 80px);
+    font-weight: 600;
+    color: #BFDBFE;
+    letter-spacing: .04em;
+}
+
+.td-count-label {
+    margin-top: 1vh;
+    font-size: clamp(36px, 6vw, 130px);
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.td-count-num {
+    font-size: clamp(160px, 38vh, 520px);
+    font-weight: 800;
+    line-height: 1;
+    color: #FDE68A;
+    font-variant-numeric: tabular-nums;
+    animation: td-beat 1s ease-out infinite;
+}
+
+.td-count-sub {
+    font-size: clamp(20px, 2.6vw, 54px);
+    color: #BFDBFE;
+}
+
+@keyframes td-beat {
+    0% {
+        transform: scale(1.12);
+    }
+
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* ประกาศตัวใหญ่เต็มจอ */
+.td-banner {
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2vh;
+    padding: 0 5vw;
+    background: radial-gradient(ellipse at 50% 40%, #10265A, #0B1A3F 70%);
+    color: #fff;
+    text-align: center;
+}
+
+.td-banner-text {
+    font-size: clamp(64px, 13vw, 300px);
+    font-weight: 800;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+    text-shadow: 0 0.05em 0.15em rgba(0, 0, 0, .35);
+}
+
+.td-banner-sub {
+    font-size: clamp(26px, 4.4vw, 100px);
+    font-weight: 600;
+    color: #93C5FD;
+}
+
+.td-banner-timer {
+    margin-top: 3vh;
+    padding: 1vh 2.5vw;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .12);
+    font-size: clamp(22px, 3vw, 64px);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* จุดสถานะเน็ต */
+.td-net {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #64748B;
+    opacity: .6;
+}
+
+.td-net.ok {
+    background: #22C55E;
+}
+
+.td-net.bad {
+    background: #EF4444;
+    opacity: 1;
+    animation: td-pulse 1s infinite;
+}
+
+/* ======================================================================
+   หน้าควบคุม (มือถือ)
+   ====================================================================== */
+
+.tctl {
+    min-height: 100vh;
+    background: #F1F5F9;
+    color: #0F172A;
+    font-family: 'Kanit', sans-serif;
+}
+
+.tc-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 14px 14px 40px;
+}
+
+.tc-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.tc-top h1 {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.tc-links {
+    display: flex;
+    gap: 8px;
+}
+
+.tc-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    color: #334155;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.tc-preview {
+    padding: 18px;
+    border-radius: 18px;
+    background: #0B1A3F;
+    color: #fff;
+    text-align: center;
+    transition: background .4s ease;
+}
+
+.is-warn .tc-preview {
+    background: #6B4A06;
+}
+
+.is-danger .tc-preview {
+    background: #7F1D1D;
+}
+
+.state-finished .tc-preview {
+    background: #B91C1C;
+}
+
+.tc-p-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: #93C5FD;
+}
+
+.tc-p-time {
+    font-size: clamp(44px, 14vw, 68px);
+    font-weight: 800;
+    line-height: 1.05;
+    font-variant-numeric: tabular-nums;
+}
+
+.tc-p-sub {
+    font-size: 14px;
+    opacity: .8;
+}
+
+.tc-status {
+    min-height: 0;
+    margin: 10px 0 0;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .2s ease, padding .2s ease;
+}
+
+.tc-status.ok,
+.tc-status.bad {
+    max-height: 80px;
+    padding: 10px 12px;
+}
+
+.tc-status.ok {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.tc-status.bad {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.tc-card {
+    margin-top: 12px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+}
+
+.tc-card h2,
+.tc-card summary {
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.tc-card summary {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+details[open] summary {
+    margin-bottom: 10px;
+}
+
+.tc-presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.tc-btn {
+    min-height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 14px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    background: #fff;
+    color: #0F172A;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tc-btn:active {
+    transform: scale(.98);
+}
+
+.tc-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.tc-preset {
+    flex-direction: column;
+    gap: 0;
+    min-height: 64px;
+    border-color: #BFDBFE;
+    background: #EFF6FF;
+}
+
+.tc-preset b {
+    font-size: 15px;
+    color: #1E3A8A;
+}
+
+.tc-preset span {
+    font-size: 13px;
+    color: #2563EB;
+}
+
+.tc-primary {
+    border-color: #2563EB;
+    background: #2563EB;
+    color: #fff;
+}
+
+.tc-danger {
+    border-color: #FECACA;
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+.tc-big {
+    min-height: 60px;
+    font-size: 18px;
+}
+
+.tc-full {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.tc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.tc-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.tc-grid-4 .tc-btn {
+    padding: 0 4px;
+    font-size: 13px;
+}
+
+.tc-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.tc-input {
+    flex: 1;
+    min-width: 0;
+    height: 46px;
+    padding: 0 12px;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 15px;
+    outline: none;
+}
+
+.tc-input:focus {
+    border-color: #2563EB;
+}
+
+.tc-num {
+    flex: 0 0 80px;
+    text-align: center;
+}
+
+.tc-area {
+    width: 100%;
+    height: 120px;
+    padding: 10px 12px;
+    resize: vertical;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 14px;
+}
+
+.tc-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #64748B;
+}
+
+
+.tc-cd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #334155;
+}
+
+.tc-cd label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.tc-cd input {
+    accent-color: #2563EB;
+}
+
+.tc-cd label:has(input:checked) {
+    border-color: #2563EB;
+    background: #EFF6FF;
+    color: #1E3A8A;
+}
+
+.tc-banners {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.tc-banner-btn {
+    min-height: 54px;
+    border-color: #FDE68A;
+    background: #FFFBEB;
+    color: #92400E;
+}
+
+.tc-banner-on {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #0B1A3F;
+    color: #fff;
+    font-size: 14px;
+}
+
+.tc-banner-on b {
+    font-size: 18px;
+}
+
+.state-countdown .tc-preview {
+    background: #1D4ED8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .td-over,
+    .td-count-num,
+    .is-danger.state-running .td-time,
+    .td-net.bad {
+        animation: none;
+    }
+}

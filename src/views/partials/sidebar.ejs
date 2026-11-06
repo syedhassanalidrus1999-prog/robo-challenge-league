@@ -61,6 +61,10 @@
           <a href="/board/badges" class="sb-item <%= currentPath.startsWith('/board/badges') ? 'active' : '' %>">
             <i class="ti ti-id-badge-2"></i> ป้ายชื่อ
           </a>
+
+          <a href="/timer/control" class="sb-item <%= currentPath.startsWith('/timer') ? 'active' : '' %>">
+            <i class="ti ti-alarm"></i> นาฬิกาจับเวลา
+          </a>
           <% } %>
 
             <% if (sbRole==='viewer' ) { %>
@@ -76,6 +80,10 @@
 
               <a href="/coupons/scan" class="sb-item <%= currentPath.startsWith('/coupons') ? 'active' : '' %>">
                 <i class="ti ti-scan"></i> สแกนคูปอง
+              </a>
+
+              <a href="/timer/control" class="sb-item <%= currentPath.startsWith('/timer') ? 'active' : '' %>">
+                <i class="ti ti-alarm"></i> นาฬิกาจับเวลา
               </a>
               <% } %>
 

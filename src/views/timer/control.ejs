@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ควบคุมนาฬิกา — Robo Challenge League</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="stylesheet" href="/css/timer.css?v=2">
+</head>
+
+<body class="tctl state-idle">
+    <main class="tc-wrap">
+        <header class="tc-top">
+            <h1>ควบคุมนาฬิกา</h1>
+            <div class="tc-links">
+                <a href="/timer" target="_blank"><i class="ti ti-device-tv"></i> เปิดจอแสดงผล</a>
+                <a href="/board"><i class="ti ti-arrow-left"></i> กลับ</a>
+            </div>
+        </header>
+
+        <!-- ตัวอย่างสิ่งที่อยู่บนจอ -->
+        <section class="tc-preview">
+            <div class="tc-p-label" id="tcLabel">ยังไม่ได้เริ่ม</div>
+            <div class="tc-p-time" id="tcTime">--:--</div>
+            <div class="tc-p-sub" id="tcSub"></div>
+        </section>
+
+        <div class="tc-status" id="tcStatus" role="status"></div>
+
+        <!-- เริ่มจากค่าที่ตั้งไว้ -->
+        <section class="tc-card">
+            <h2>เริ่มจับเวลา</h2>
+            <div class="tc-presets" id="tcPresets">
+                <% presets.forEach(function (p) { %>
+                    <button type="button" class="tc-btn tc-preset" data-label="<%= p.label %>"
+                        data-minutes="<%= p.minutes %>">
+                        <b>
+                            <%= p.label %>
+                        </b><span>
+                            <%= p.minutes %> นาที
+                        </span>
+                    </button>
+                    <% }) %>
+            </div>
+            <div class="tc-row">
+                <input class="tc-input" id="tcCustomLabel" placeholder="ชื่อช่วงเวลา เช่น แข่งขันรอบที่ 1"
+                    maxlength="80">
+                <input class="tc-input tc-num" id="tcCustomMin" type="number" min="1" max="600" step="1"
+                    placeholder="นาที" inputmode="numeric">
+                <button type="button" class="tc-btn tc-primary" id="tcCustomStart"><i class="ti ti-player-play"></i>
+                    เริ่ม</button>
+            </div>
+        </section>
+
+        <!-- ระหว่างจับเวลา -->
+        <section class="tc-card">
+            <h2>ระหว่างจับเวลา</h2>
+            <div class="tc-grid">
+                <button type="button" class="tc-btn tc-big" id="tcPause"><i class="ti ti-player-pause"></i> พัก</button>
+                <button type="button" class="tc-btn tc-big tc-primary" id="tcResume"><i class="ti ti-player-play"></i>
+                    ต่อ</button>
+            </div>
+            <div class="tc-grid tc-grid-4">
+                <button type="button" class="tc-btn" data-add="-60">−1 นาที</button>
+                <button type="button" class="tc-btn" data-add="-10">−10 วิ</button>
+                <button type="button" class="tc-btn" data-add="10">+10 วิ</button>
+                <button type="button" class="tc-btn" data-add="60">+1 นาที</button>
+            </div>
+            <button type="button" class="tc-btn tc-danger tc-full" id="tcReset"><i class="ti ti-refresh"></i> รีเซ็ต
+                (หยุดและล้างจอ)</button>
+        </section>
+
+        <!-- ข้อความขึ้นจอ -->
+        <section class="tc-card">
+            <h2>ข้อความบนจอ</h2>
+            <div class="tc-row">
+                <input class="tc-input" id="tcMsg" placeholder="เช่น กรุณารอสักครู่" maxlength="120">
+                <button type="button" class="tc-btn tc-primary" id="tcMsgSend">แสดง</button>
+                <button type="button" class="tc-btn" id="tcMsgClear">ลบ</button>
+            </div>
+            <div class="tc-row">
+                <input class="tc-input" id="tcNext" placeholder="ถัดไป เช่น ซ้อมรอบที่ 2 · 13:00 น." maxlength="120">
+                <button type="button" class="tc-btn" id="tcNextSave">บันทึก</button>
+            </div>
+            <p class="tc-hint">"ถัดไป" แสดงบนจอตอนที่ยังไม่ได้จับเวลา</p>
+        </section>
+
+        <!-- ปุ่มสำเร็จรูป -->
+        <details class="tc-card">
+            <summary>แก้ไขปุ่มเวลาสำเร็จรูป</summary>
+            <p class="tc-hint">บรรทัดละ 1 ปุ่ม รูปแบบ <b>ชื่อ | นาที</b></p>
+            <textarea class="tc-input tc-area" id="tcPresetText"><% presets.forEach(function (p) { %><%= p.label %> | <%= p.minutes %>
+<% }) %></textarea>
+            <button type="button" class="tc-btn tc-primary tc-full" id="tcPresetSave">บันทึกปุ่ม</button>
+        </details>
+    </main>
+
+    <script src="/js/timer-core.js?v=2"></script>
+    <script src="/js/timer-control.js?v=2"></script>
+</body>
+
+</html>

@@ -70,6 +70,7 @@ const coupons = require("./routes/coupons");
 app.use("/coupons", coupons.staffRouter);
 app.use("/board/coupons", coupons.adminRouter);
 app.use("/board/badges", require("./routes/badges"));
+app.use("/timer", require("./routes/timer"));
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {
   res.status(404).render('404', { layout: 'layouts/public', title: 'ไม่พบหน้านี้' })

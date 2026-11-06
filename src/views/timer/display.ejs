@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>นาฬิกาจับเวลา — Robo Challenge League</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="stylesheet" href="/css/timer.css?v=2">
+</head>
+
+<body class="tdisp state-idle">
+    <div class="td-start" id="tdStart">
+        <button type="button" id="tdStartBtn">แตะเพื่อเริ่มแสดงผล</button>
+        <p>เปิดเสียงเตือนและแสดงเต็มจอ</p>
+    </div>
+
+    <header class="td-head">
+        <div class="td-brand">
+            <img src="/RCL Logo.png" alt="">
+            <span>ROBO CHALLENGE LEAGUE 2026</span>
+        </div>
+        <div class="td-clock" id="tdClock">--:--</div>
+    </header>
+
+    <main class="td-main">
+        <div class="td-label" id="tdLabel"></div>
+        <div class="td-time" id="tdTime">--:--</div>
+        <div class="td-bar"><span id="tdBar"></span></div>
+        <div class="td-sub" id="tdSub"></div>
+
+        <div class="td-idle" id="tdIdle">
+            <div class="td-idle-title">พร้อมจับเวลา</div>
+            <div class="td-next" id="tdNext"></div>
+        </div>
+    </main>
+
+    <div class="td-msg" id="tdMsg" hidden></div>
+
+    <div class="td-over" id="tdOver" hidden>
+        <div class="td-over-title">หมดเวลา</div>
+        <div class="td-over-label" id="tdOverLabel"></div>
+        <div class="td-over-sub">กรุณานำหุ่นยนต์ออกจากสนาม</div>
+    </div>
+
+    <div class="td-net" id="tdNet" title="สถานะการเชื่อมต่อ"></div>
+
+    <script src="/js/timer-core.js?v=2"></script>
+    <script src="/js/timer-display.js?v=2"></script>
+</body>
+
+</html>

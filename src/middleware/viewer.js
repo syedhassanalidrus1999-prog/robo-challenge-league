@@ -22,6 +22,7 @@ const VIEWER_POST_ALLOWED = [
   /^\/teams\/[^/]+\/checkin\/[1-3]\/?$/, //            สลับสถานะ Check-in นักเรียน
   /^\/survey\/?$/, //                                 ส่งแบบประเมิน (หน้าสาธารณะ)
   /^\/coupons\/redeem\/?$/, //                        แลกคูปองที่จุดบริการ
+  /^\/timer\/action\/?$/, //                          ควบคุมนาฬิกาจับเวลา
 ];
 
 function hasMethodOverride(req) {
