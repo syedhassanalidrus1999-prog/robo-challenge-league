@@ -1,0 +1,184 @@
+<style>
+    .bg-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .bg-sub {
+        margin: 4px 0 18px;
+        font-size: 13px;
+        color: #64748B;
+    }
+
+    .bg-card {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 18px;
+    }
+
+    .bg-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .bg-field label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748B;
+    }
+
+    .bg-input {
+        height: 42px;
+        min-width: 180px;
+        padding: 0 10px;
+        border: 1.5px solid #CBD5E1;
+        border-radius: 10px;
+        background: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .bg-input:focus {
+        border-color: #2563EB;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, .1);
+    }
+
+    .bg-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 42px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 10px;
+        background: #2563EB;
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .bg-btn:hover {
+        background: #1D4ED8;
+    }
+
+    .bg-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .bg-stat {
+        padding: 14px 16px;
+        border: 1px solid #E2E8F0;
+        border-radius: 14px;
+        background: #fff;
+    }
+
+    .bg-stat-tier {
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .bg-stat-num {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #334155;
+    }
+
+    .bg-stat-num b {
+        font-size: 20px;
+        color: #0F172A;
+    }
+
+    .bg-note {
+        margin-top: 12px;
+        font-size: 12px;
+        color: #64748B;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 700px) {
+        .bg-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .bg-input,
+        .bg-btn {
+            width: 100%;
+        }
+
+        .bg-field {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="bg-title">ป้ายชื่อ 10 × 14 ซม.</div>
+<div class="bg-sub">สร้างป้ายชื่อจากข้อมูลทีมอัตโนมัติ · นักเรียนใช้แบบ NAME + TEAM NAME · โค้ชใช้แบบ COACH + TEAM NAME
+    · ไม่รวมทีมที่ไม่อนุมัติ</div>
+
+<div class="bg-stats" style="margin-bottom:18px">
+    <% tiers.forEach(function (t) { %>
+        <% var c=counts[t] || { teams: 0, students: 0, coaches: 0 }; %>
+            <div class="bg-stat">
+                <div class="bg-stat-tier"
+                    style="color:<%= t === 'beginner' ? '#5B3A8C' : t === 'intermediate' ? '#0284C7' : '#EF3B3B' %>">
+                    <%= tierLabel[t] %>
+                </div>
+                <div class="bg-stat-num"><b>
+                        <%= c.students %>
+                    </b> นักเรียน · <b>
+                        <%= c.coaches %>
+                    </b> โค้ช · <%= c.teams %> ทีม</div>
+            </div>
+            <% }) %>
+</div>
+
+<div class="bg-card">
+    <form method="GET" action="/board/badges/print" target="_blank" class="bg-form">
+        <div class="bg-field">
+            <label for="bgTier">รุ่น</label>
+            <select class="bg-input" id="bgTier" name="tier">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advance">Advance</option>
+                <option value="all">ทุกรุ่น</option>
+            </select>
+        </div>
+        <div class="bg-field">
+            <label for="bgWho">พิมพ์ป้ายของ</label>
+            <select class="bg-input" id="bgWho" name="who">
+                <option value="students">นักเรียน</option>
+                <option value="coaches">โค้ช</option>
+                <option value="all">นักเรียน + โค้ช</option>
+            </select>
+        </div>
+        <div class="bg-field">
+            <label for="bgLayout">กระดาษ</label>
+            <select class="bg-input" id="bgLayout" name="layout">
+                <option value="a4">A4 (แผ่นละ 4 ป้าย)</option>
+                <option value="label">10 × 14 ซม. (1 ป้ายต่อหน้า)</option>
+            </select>
+        </div>
+        <div class="bg-field">
+            <label for="bgTeam">เฉพาะทีม (ไม่บังคับ)</label>
+            <input class="bg-input" id="bgTeam" name="team" placeholder="เช่น T007_B" maxlength="20" autocomplete="off">
+        </div>
+        <button type="submit" class="bg-btn"><i class="ti ti-id-badge-2"></i> สร้างป้ายชื่อ</button>
+    </form>
+    <div class="bg-note">
+        ตอนพิมพ์: ตั้ง Scale 100% และเปิด "Background graphics" · ถ้าแก้ชื่อในหน้าจัดการทีม ให้กดสร้างใหม่
+        ป้ายจะอัปเดตทันที<br>
+        ป้ายโค้ชพร้อมคูปองอาหารด้านหลัง พิมพ์ได้จากเมนู "คูปองอาหาร" → พิมพ์ → "หน้า + หลัง"
+    </div>
+</div>

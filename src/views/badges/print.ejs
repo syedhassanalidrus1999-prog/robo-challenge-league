@@ -1,0 +1,317 @@
+<% var isLabel=sheetLayout==='label' ; %>
+    <!DOCTYPE html>
+    <html lang="th">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>พิมพ์ป้ายชื่อ — Robo Challenge League</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+        <% if (isLabel) { %>
+            <style>
+                @page {
+                    size: 100mm 140mm;
+                    margin: 0;
+                }
+
+                .page {
+                    width: 100mm;
+                    height: 140mm;
+                }
+            </style>
+            <% } else { %>
+                <style>
+                    @page {
+                        size: A4 portrait;
+                        margin: 0;
+                    }
+
+                    .page {
+                        width: 210mm;
+                        height: 297mm;
+                        padding: 8.5mm 5mm;
+                        display: grid;
+                        grid-template-columns: 100mm 100mm;
+                        grid-template-rows: 140mm 140mm;
+                    }
+
+                    .badge {
+                        outline: 0.2mm dashed #94A3B8;
+                        outline-offset: -0.1mm;
+                    }
+                </style>
+                <% } %>
+                    <style>
+                        * {
+                            box-sizing: border-box;
+                            margin: 0;
+                            padding: 0;
+                        }
+
+                        html {
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+
+                        body {
+                            background: #CBD5E1;
+                            font-family: 'Kanit', sans-serif;
+                        }
+
+                        .toolbar {
+                            position: sticky;
+                            top: 0;
+                            z-index: 5;
+                            padding: 10px 16px;
+                            background: #0F172A;
+                            color: #fff;
+                            font-size: 13px;
+                        }
+
+                        .tb-row {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            flex-wrap: wrap;
+                        }
+
+                        .tb-row+.tb-row {
+                            margin-top: 8px;
+                        }
+
+                        .tb-info {
+                            flex: 1;
+                            min-width: 220px;
+                            color: #CBD5E1;
+                        }
+
+                        .tb-label {
+                            color: #94A3B8;
+                        }
+
+                        .toolbar a,
+                        .toolbar button {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 6px;
+                            height: 34px;
+                            padding: 0 12px;
+                            border-radius: 9px;
+                            border: 0;
+                            font: inherit;
+                            font-weight: 600;
+                            text-decoration: none;
+                            color: #fff;
+                            background: rgba(255, 255, 255, .12);
+                            cursor: pointer;
+                            white-space: nowrap;
+                        }
+
+                        .toolbar a.on {
+                            background: #fff;
+                            color: #0F172A;
+                        }
+
+                        .toolbar button {
+                            background: #2563EB;
+                        }
+
+                        .page {
+                            margin: 16px auto 0;
+                            background: #fff;
+                            overflow: hidden;
+                            page-break-after: always;
+                            break-after: page;
+                        }
+
+                        .page:last-child {
+                            page-break-after: auto;
+                            break-after: auto;
+                        }
+
+                        .badge {
+                            position: relative;
+                            width: 100mm;
+                            height: 140mm;
+                            overflow: hidden;
+                            background: #fff;
+                        }
+
+                        .bg {
+                            position: absolute;
+                            inset: 0;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+
+                        /* ช่องข้อความบนภาพ (วัดจากภาพต้นฉบับ 1181 × 1653 px) */
+                        .field {
+                            position: absolute;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            overflow: hidden;
+                        }
+
+                        .field span {
+                            font-weight: 700;
+                            line-height: 1.12;
+                            overflow-wrap: anywhere;
+                        }
+
+                        /* นักเรียน: NAME : */
+                        .student .f-name {
+                            left: 25.6%;
+                            top: 55%;
+                            width: 64%;
+                            height: 11.2%;
+                        }
+
+                        .student.tier-beginner .f-name {
+                            top: 54.3%;
+                        }
+
+                        /* นักเรียน: TEAM NAME : */
+                        .student .f-team {
+                            left: 37%;
+                            top: 68.7%;
+                            width: 52.5%;
+                            height: 11.4%;
+                        }
+
+                        /* โค้ช: TEAM NAME : (มีชื่อโค้ชบรรทัดเล็กด้านล่าง) */
+                        .coach .f-team {
+                            left: 37.5%;
+                            top: 68.6%;
+                            width: 52%;
+                            height: 11.6%;
+                        }
+
+                        .sub {
+                            margin-top: .6mm;
+                            font-size: 8.5pt;
+                            font-weight: 600 !important;
+                            opacity: .8;
+                        }
+
+                        .tier-beginner .field span {
+                            color: #5B3A8C;
+                        }
+
+                        .tier-intermediate .field span {
+                            color: #0284C7;
+                        }
+
+                        .tier-advance .field span {
+                            color: #EF3B3B;
+                        }
+
+                        .empty {
+                            width: fit-content;
+                            margin: 40px auto;
+                            padding: 20px 28px;
+                            border-radius: 12px;
+                            background: #fff;
+                            color: #64748B;
+                        }
+
+                        @media print {
+                            body {
+                                background: #fff;
+                            }
+
+                            .toolbar {
+                                display: none;
+                            }
+
+                            .page {
+                                margin: 0;
+                            }
+                        }
+                    </style>
+    </head>
+
+    <body>
+        <div class="toolbar">
+            <div class="tb-row">
+                <a href="/board/badges"><i class="ti ti-arrow-left"></i> กลับ</a>
+                <span class="tb-info">
+                    <%= badgeCount %> ป้าย · <%= teamCount %> ทีม · <%= pages.length %> หน้า · พิมพ์ Scale 100% และเปิด
+                                Background graphics
+                </span>
+                <button type="button" onclick="window.print()"><i class="ti ti-printer"></i> พิมพ์</button>
+            </div>
+            <div class="tb-row">
+                <span class="tb-label">ป้ายของ:</span>
+                <a href="<%= links.students %>" class="<%= who === 'students' ? 'on' : '' %>">นักเรียน</a>
+                <a href="<%= links.coaches %>" class="<%= who === 'coaches' ? 'on' : '' %>">โค้ช</a>
+                <a href="<%= links.all %>" class="<%= who === 'all' ? 'on' : '' %>">นักเรียน + โค้ช</a>
+                <span class="tb-label" style="margin-left:10px">กระดาษ:</span>
+                <a href="<%= links.a4 %>" class="<%= isLabel ? '' : 'on' %>">A4 (4 ป้าย)</a>
+                <a href="<%= links.label %>" class="<%= isLabel ? 'on' : '' %>">10×14 ซม.</a>
+            </div>
+        </div>
+
+        <% if (!pages.length) { %>
+            <div class="empty">ไม่มีรายชื่อสำหรับสร้างป้าย</div>
+            <% } %>
+
+                <% pages.forEach(function (pg) { %>
+                    <section class="page">
+                        <% pg.forEach(function (b) { %>
+                            <% if (b.kind==='student' ) { %>
+                                <div class="badge student tier-<%= b.tier %>">
+                                    <img class="bg" src="/images/badges/student-<%= b.tier %>.png" alt="">
+                                    <div class="field f-name"><span class="fit" data-size="18">
+                                            <%= b.name %>
+                                        </span></div>
+                                    <div class="field f-team"><span class="fit" data-size="16">
+                                            <%= b.team %>
+                                        </span><span class="sub">
+                                            <%= b.teamId %>
+                                        </span></div>
+                                </div>
+                                <% } else { %>
+                                    <div class="badge coach tier-<%= b.tier %>">
+                                        <img class="bg" src="/images/badges/coach-<%= b.tier %>.png" alt="">
+                                        <div class="field f-team"><span class="fit" data-size="16">
+                                                <%= b.team %>
+                                            </span><span class="sub">
+                                                <%= b.name %> · <%= b.teamId %>
+                                            </span></div>
+                                    </div>
+                                    <% } %>
+                                        <% }) %>
+                    </section>
+                    <% }) %>
+
+                        <script>
+                            (function () {
+                                // ย่อตัวอักษรให้พอดีช่อง (ชื่อยาว)
+                                function fit() {
+                                    var items = document.querySelectorAll('.fit');
+                                    for (var i = 0; i < items.length; i++) {
+                                        var el = items[i];
+                                        var box = el.parentNode;
+                                        var size = parseFloat(el.getAttribute('data-size')) || 16;
+                                        el.style.fontSize = size + 'pt';
+                                        while (size > 8 && (box.scrollHeight > box.clientHeight + 1 || el.scrollWidth > box.clientWidth + 1)) {
+                                            size -= 0.5;
+                                            el.style.fontSize = size + 'pt';
+                                        }
+                                    }
+                                }
+                                var ready = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+                                ready.then(fit);
+                                window.addEventListener('load', fit);
+                                window.addEventListener('beforeprint', fit);
+                            })();
+                        </script>
+    </body>
+
+    </html>

@@ -750,22 +750,25 @@ adminRouter.get("/print", async (req, res) => {
       couponMap[c.team_id + "|" + c.coupon_day] = c;
     });
 
-    const items = [];
+    // 1 สติกเกอร์ = 1 ทีม (รวม QR ทุกวันไว้ในดวงเดียว)
+    const stickers = [];
     for (const t of teams) {
       const students = studentsOf(t).map((s) => s.name);
-      for (const d of config.days) {
+      const coach = normalizeName(t.coach);
+      const dayItems = [];
+
+      for (let i = 0; i < config.days.length; i++) {
+        const d = config.days[i];
         const c = couponMap[t.id + "|" + d];
         if (!c) continue;
-        items.push({
+        const [y, m, dd] = d.split("-").map(Number);
+        dayItems.push({
+          index: i + 1,
+          weekday: new Date(y, m - 1, dd).toLocaleDateString("th-TH", {
+            weekday: "short",
+          }),
+          date: shortDayLabel(d),
           code: c.code,
-          teamId: t.id,
-          team: t.name,
-          institution: t.institution || "",
-          tierLabel: TIER_LABEL[t.tier] || t.tier,
-          coach: normalizeName(t.coach),
-          students,
-          maxMeals: students.length + (normalizeName(t.coach) ? 1 : 0),
-          day: dayLabel(d),
           used: c.status === "used",
           qr: await QRCode.toString(c.code, {
             type: "svg",
@@ -774,13 +777,51 @@ adminRouter.get("/print", async (req, res) => {
           }),
         });
       }
+
+      if (!dayItems.length) continue;
+
+      stickers.push({
+        tier: t.tier,
+        teamId: t.id,
+        team: t.name,
+        institution: t.institution || "",
+        tierLabel: TIER_LABEL[t.tier] || t.tier,
+        coach,
+        students,
+        maxMeals: students.length + (coach ? 1 : 0),
+        days: dayItems,
+      });
     }
+
+    // layout: a4 = A4 แผ่นละ 4 ดวง / label = 1 ดวงต่อหน้า (10×14 ซม.)
+    // side:   back = คูปอง / front = ป้ายชื่อ / duplex = หน้า+หลัง สลับหน้ากัน (พิมพ์ 2 หน้า)
+    const layout = req.query.layout === "label" ? "label" : "a4";
+    const side = ["front", "back", "duplex"].includes(req.query.side)
+      ? req.query.side
+      : "back";
+    const pages = buildPages(stickers, layout, side);
+
+    const baseQuery = teamId
+      ? "team=" + encodeURIComponent(teamId)
+      : "tier=" + tier;
+    const url = (l, sd) =>
+      "/board/coupons/print?" + baseQuery + "&layout=" + l + "&side=" + sd;
 
     return res.render("coupons/print", {
       layout: false,
       couponLabel: COUPON_LABEL,
-      items,
+      pages,
+      stickerCount: stickers.length,
       teamCount: teams.length,
+      sheetLayout: layout,
+      side,
+      links: {
+        a4: url("a4", side),
+        label: url("label", side),
+        back: url(layout, "back"),
+        front: url(layout, "front"),
+        duplex: url(layout, "duplex"),
+      },
       backUrl: "/board/coupons?tier=" + (teams[0].tier || "beginner"),
     });
   } catch (err) {
@@ -789,6 +830,32 @@ adminRouter.get("/print", async (req, res) => {
     return res.redirect("/board/coupons");
   }
 });
+
+// จัดหน้าพิมพ์
+// A4 แผ่นละ 4 ดวง (2 คอลัมน์ × 2 แถว) — ด้านหลังสลับซ้าย/ขวา
+// เพื่อให้ตรงกับด้านหน้าเมื่อพิมพ์ 2 หน้าแบบพลิกด้านยาว (Flip on long edge)
+function buildPages(stickers, layout, side) {
+  const pages = [];
+
+  if (layout === "label") {
+    stickers.forEach((s) => {
+      if (side === "front" || side === "duplex")
+        pages.push({ side: "front", cells: [s] });
+      if (side === "back" || side === "duplex")
+        pages.push({ side: "back", cells: [s] });
+    });
+    return pages;
+  }
+
+  for (let i = 0; i < stickers.length; i += 4) {
+    const g = [0, 1, 2, 3].map((k) => stickers[i + k] || null);
+    if (side === "front" || side === "duplex")
+      pages.push({ side: "front", cells: g });
+    if (side === "back" || side === "duplex")
+      pages.push({ side: "back", cells: [g[1], g[0], g[3], g[2]] });
+  }
+  return pages;
+}
 
 // ---------------- POST /board/coupons/reissue ----------------
 
