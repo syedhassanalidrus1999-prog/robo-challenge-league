@@ -1,0 +1,320 @@
+<style>
+    .cx-hd {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .cx-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .cx-sub {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #64748B;
+    }
+
+    .cx-card {
+        background: #fff;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+
+    .cx-card-hd {
+        padding: 14px 18px;
+        border-bottom: 1px solid #EEF2F7;
+        font-size: 15px;
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .cx-body {
+        padding: 16px 18px;
+    }
+
+    .cx-form {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .cx-field label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #64748B;
+    }
+
+    .cx-input {
+        height: 42px;
+        min-width: 200px;
+        padding: 0 10px;
+        border: 1.5px solid #CBD5E1;
+        border-radius: 10px;
+        background: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .cx-input:focus {
+        border-color: #2563EB;
+    }
+
+    .cx-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 42px;
+        font-size: 13px;
+        color: #334155;
+        cursor: pointer;
+    }
+
+    .cx-check input {
+        width: 18px;
+        height: 18px;
+        accent-color: #2563EB;
+    }
+
+    .cx-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 42px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 10px;
+        background: #2563EB;
+        color: #fff;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .cx-btn:hover {
+        background: #1D4ED8;
+    }
+
+    .cx-btn.sm {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    .cx-btn.ghost {
+        background: #fff;
+        color: #2563EB;
+        border: 1.5px solid #BFDBFE;
+    }
+
+    .cx-btn.disabled {
+        pointer-events: none;
+        opacity: .4;
+    }
+
+    .cx-tbl {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .cx-tbl th {
+        padding: 10px 14px;
+        background: #F8FAFC;
+        font-size: 11px;
+        font-weight: 800;
+        color: #94A3B8;
+        text-align: left;
+        border-bottom: 1px solid #E2E8F0;
+    }
+
+    .cx-tbl td {
+        padding: 10px 14px;
+        border-bottom: 1px solid #F1F5F9;
+        font-size: 14px;
+        color: #334155;
+    }
+
+    .cx-tbl tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .cx-num {
+        font-weight: 800;
+        color: #0F172A;
+    }
+
+    .cx-pill {
+        display: inline-block;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: #FEF2F2;
+        color: #DC2626;
+    }
+
+    .cx-note {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #64748B;
+        line-height: 1.6;
+    }
+
+    .cx-wait {
+        display: none;
+        margin-top: 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: #EFF6FF;
+        color: #1D4ED8;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .cx-wait.show {
+        display: block;
+    }
+
+    @media (max-width: 700px) {
+
+        .cx-input,
+        .cx-btn,
+        .cx-field {
+            width: 100%;
+        }
+
+        .cx-tbl .cx-hide {
+            display: none;
+        }
+    }
+</style>
+
+<div class="cx-hd">
+    <div>
+        <div class="cx-title">ดาวน์โหลดเกียรติบัตร · <%= tierLabel %>
+        </div>
+        <div class="cx-sub">รวมเป็นไฟล์ PDF ไฟล์เดียว หน้าละ 1 ใบ พร้อมพิมพ์ · ใช้ Template
+            และตำแหน่งชื่อชุดเดียวกับหน้าดาวน์โหลดของผู้เข้าแข่งขัน</div>
+    </div>
+    <a href="/board/certificates?tier=<%= tier %>" class="cx-btn ghost"><i class="ti ti-arrow-left"></i> จัดการ
+        Template</a>
+</div>
+
+<!-- ดาวน์โหลดทั้งรุ่น -->
+<div class="cx-card">
+    <div class="cx-card-hd">ทั้งรุ่น <%= tierLabel %>
+    </div>
+    <table class="cx-tbl">
+        <thead>
+            <tr>
+                <th>ประเภท</th>
+                <th>Check-in แล้ว</th>
+                <th class="cx-hide">ทั้งหมด</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <% types.forEach(function (t) { %>
+                <% var c=counts[t.key]; %>
+                    <tr>
+                        <td>
+                            <%= t.label %>
+                                <% if (!hasTemplate[t.key]) { %> <span class="cx-pill">ยังไม่มี Template</span>
+                                    <% } %>
+                        </td>
+                        <td class="cx-num">
+                            <%= c.checked %> ใบ
+                        </td>
+                        <td class="cx-num cx-hide">
+                            <%= c.all %> ใบ
+                        </td>
+                        <td style="text-align:right;white-space:nowrap">
+                            <a class="cx-btn sm js-dl <%= (!hasTemplate[t.key] || !c.checked) ? 'disabled' : '' %>"
+                                href="/board/cert-export/pdf?tier=<%= tier %>&type=<%= t.key %>&quality=normal"><i
+                                    class="ti ti-download"></i> Check-in แล้ว</a>
+                            <a class="cx-btn sm ghost js-dl <%= (!hasTemplate[t.key] || !c.all) ? 'disabled' : '' %>"
+                                href="/board/cert-export/pdf?tier=<%= tier %>&type=<%= t.key %>&all=1&quality=normal"><i
+                                    class="ti ti-download"></i> ทั้งหมด</a>
+                        </td>
+                    </tr>
+                    <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<!-- เลือกเอง -->
+<div class="cx-card">
+    <div class="cx-card-hd">เลือกเอง (รายทีม / ความละเอียด)</div>
+    <div class="cx-body">
+        <form method="GET" action="/board/cert-export/pdf" class="cx-form js-form">
+            <input type="hidden" name="tier" value="<%= tier %>">
+            <div class="cx-field">
+                <label for="cxType">ประเภท</label>
+                <select class="cx-input" id="cxType" name="type">
+                    <% types.forEach(function (t) { %>
+                        <option value="<%= t.key %>">
+                            <%= t.label %>
+                        </option>
+                        <% }) %>
+                </select>
+            </div>
+            <div class="cx-field">
+                <label for="cxTeam">ทีม</label>
+                <select class="cx-input" id="cxTeam" name="team">
+                    <option value="">ทุกทีมในรุ่น <%= tierLabel %>
+                    </option>
+                    <% teams.forEach(function (t) { %>
+                        <option value="<%= t.id %>">
+                            <%= t.id %> · <%= t.name %>
+                        </option>
+                        <% }) %>
+                </select>
+            </div>
+            <div class="cx-field">
+                <label for="cxQuality">ความละเอียด</label>
+                <select class="cx-input" id="cxQuality" name="quality">
+                    <option value="normal">ปกติ 200 dpi (แนะนำ)</option>
+                    <option value="print">ร้านพิมพ์ 300 dpi (ไฟล์ใหญ่)</option>
+                    <option value="light">เบา 150 dpi (ส่งไลน์ / อีเมล)</option>
+                </select>
+            </div>
+            <label class="cx-check"><input type="checkbox" name="all" value="1"> รวมคนที่ยังไม่ Check-in</label>
+            <button type="submit" class="cx-btn"><i class="ti ti-file-type-pdf"></i> ดาวน์โหลด PDF</button>
+        </form>
+        <div class="cx-wait" id="cxWait"><i class="ti ti-loader-2"></i> กำลังสร้างไฟล์… ใช้เวลาประมาณ 1–2 วินาทีต่อใบ
+            ไฟล์จะดาวน์โหลดอัตโนมัติเมื่อเสร็จ</div>
+        <p class="cx-note">
+            เกียรติบัตรอันดับและเหรียญ ออกให้นักเรียนในทีมที่มีสิทธิ์ตามคะแนนปัจจุบัน (เหมือนหน้าสาธารณะ) ·
+            เกียรติบัตรโค้ช ออก 1 ใบต่อโค้ช แม้ดูแลหลายทีม<br>
+            ถ้าเปลี่ยนชื่อในหน้าจัดการทีม หรือแก้ตำแหน่งชื่อใน Template ให้ดาวน์โหลดใหม่ ไฟล์จะอัปเดตทันที
+        </p>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var wait = document.getElementById('cxWait');
+        function showWait() {
+            wait.classList.add('show');
+            setTimeout(function () { wait.classList.remove('show'); }, 20000);
+        }
+        var links = document.querySelectorAll('.js-dl');
+        for (var i = 0; i < links.length; i++) links[i].addEventListener('click', showWait);
+        var form = document.querySelector('.js-form');
+        if (form) form.addEventListener('submit', showWait);
+    })();
+</script>

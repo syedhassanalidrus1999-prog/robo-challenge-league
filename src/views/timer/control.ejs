@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
-    <link rel="stylesheet" href="/css/timer.css?v=2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3">
+    <link rel="stylesheet" href="/css/timer.css?v=3">
 </head>
 
 <body class="tctl state-idle">
@@ -35,6 +35,13 @@
         <!-- เริ่มจากค่าที่ตั้งไว้ -->
         <section class="tc-card">
             <h2>เริ่มจับเวลา</h2>
+            <div class="tc-cd" role="radiogroup" aria-label="นับถอยหลังก่อนเริ่ม">
+                <span>นับถอยหลังก่อนเริ่ม:</span>
+                <label><input type="radio" name="tcCd" value="0"> ไม่มี</label>
+                <label><input type="radio" name="tcCd" value="5"> 5 วิ</label>
+                <label><input type="radio" name="tcCd" value="10" checked> 10 วิ</label>
+                <label><input type="radio" name="tcCd" value="30"> 30 วิ</label>
+            </div>
             <div class="tc-presets" id="tcPresets">
                 <% presets.forEach(function (p) { %>
                     <button type="button" class="tc-btn tc-preset" data-label="<%= p.label %>"
@@ -75,9 +82,36 @@
                 (หยุดและล้างจอ)</button>
         </section>
 
+        <!-- ประกาศตัวใหญ่เต็มจอ -->
+        <section class="tc-card">
+            <h2>ประกาศตัวใหญ่เต็มจอ</h2>
+            <div class="tc-banner-on" id="tcBannerOn" hidden>กำลังแสดง: <b id="tcBannerNow"></b></div>
+            <div class="tc-banners">
+                <button type="button" class="tc-btn tc-banner-btn" data-banner="พักเบรก">พักเบรก</button>
+                <button type="button" class="tc-btn tc-banner-btn" data-banner="แข่งขันรอบที่ 1">แข่งขันรอบที่
+                    1</button>
+                <button type="button" class="tc-btn tc-banner-btn" data-banner="แข่งขันรอบที่ 2">แข่งขันรอบที่
+                    2</button>
+                <button type="button" class="tc-btn tc-banner-btn" data-banner="พิธีมอบรางวัล">พิธีมอบรางวัล</button>
+            </div>
+            <div class="tc-row">
+                <input class="tc-input" id="tcBannerText" placeholder="ข้อความใหญ่ เช่น พักรับประทานอาหาร"
+                    maxlength="60">
+            </div>
+            <div class="tc-row">
+                <input class="tc-input" id="tcBannerSub" placeholder="บรรทัดรอง (ไม่บังคับ) เช่น กลับมาเวลา 13:00 น."
+                    maxlength="100">
+                <button type="button" class="tc-btn tc-primary" id="tcBannerSend">แสดง</button>
+            </div>
+            <button type="button" class="tc-btn tc-full" id="tcBannerClear"><i class="ti ti-x"></i> ปิดประกาศ
+                (กลับไปหน้านาฬิกา)</button>
+            <p class="tc-hint">ประกาศจะแสดงทับนาฬิกา ถ้ากำลังจับเวลาอยู่จะมีเวลาตัวเล็กด้านล่าง · กดเริ่มจับเวลาใหม่
+                ประกาศจะปิดเอง</p>
+        </section>
+
         <!-- ข้อความขึ้นจอ -->
         <section class="tc-card">
-            <h2>ข้อความบนจอ</h2>
+            <h2>ข้อความแถบล่าง (ตัวเล็ก)</h2>
             <div class="tc-row">
                 <input class="tc-input" id="tcMsg" placeholder="เช่น กรุณารอสักครู่" maxlength="120">
                 <button type="button" class="tc-btn tc-primary" id="tcMsgSend">แสดง</button>
@@ -100,8 +134,8 @@
         </details>
     </main>
 
-    <script src="/js/timer-core.js?v=2"></script>
-    <script src="/js/timer-control.js?v=2"></script>
+    <script src="/js/timer-core.js?v=3"></script>
+    <script src="/js/timer-control.js?v=3"></script>
 </body>
 
 </html>

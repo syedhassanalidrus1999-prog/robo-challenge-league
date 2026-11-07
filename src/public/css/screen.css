@@ -1,0 +1,1228 @@
+/* public/css/screen.css — จอแสดงผล (ฉากต่าง ๆ) + หน้าควบคุม
+   ใช้คู่กับ timer.css (สไตล์นาฬิกา / นับถอยหลัง / ประกาศ) */
+
+/* ======================================================================
+   ฉาก
+   ====================================================================== */
+
+.sc {
+    position: fixed;
+    inset: 0;
+    display: none;
+    overflow: hidden;
+}
+
+.scene-timer .sc-timer {
+    display: flex;
+    flex-direction: column;
+}
+
+.scene-banner .sc-banner,
+.scene-draw .sc-draw,
+.scene-logo .sc-logo {
+    display: flex;
+}
+
+.scene-image .sc-image,
+.scene-video .sc-video,
+.scene-blank .sc-blank {
+    display: block;
+}
+
+.scene-results .sc-results {
+    display: flex;
+    flex-direction: column;
+}
+
+.sc-wait {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0B1A3F;
+    color: #94A3B8;
+    font-family: 'Kanit', sans-serif;
+    font-size: clamp(18px, 2.4vw, 40px);
+}
+
+.sc-missing {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+    font-size: clamp(18px, 2.4vw, 40px);
+}
+
+/* ประกาศ */
+.sc-banner {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2vh;
+    padding: 0 5vw;
+    background: radial-gradient(ellipse at 50% 40%, #10265A, #0B1A3F 70%);
+    text-align: center;
+}
+
+/* รูปภาพ */
+.sc-image {
+    background: #000;
+}
+
+.sc-image img {
+    width: 100%;
+    height: 100%;
+}
+
+.sc-image img.fit-contain {
+    object-fit: contain;
+}
+
+.sc-image img.fit-cover {
+    object-fit: cover;
+}
+
+/* วิดีโอ */
+.sc-video {
+    background: #000;
+}
+
+.sc-video video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #000;
+}
+
+.sc-preview-video {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #CBD5E1;
+    font-size: 5vw;
+    text-align: center;
+    padding: 0 5vw;
+}
+
+/* จอดำ */
+.sc-blank {
+    background: #000;
+}
+
+/* โลโก้ */
+.sc-logo {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4vh;
+    background: radial-gradient(ellipse at 50% 45%, #10265A, #0B1A3F 70%);
+}
+
+.sc-logo img {
+    width: min(60vw, 80vh);
+    max-height: 60vh;
+    object-fit: contain;
+}
+
+.lg-title {
+    font-size: clamp(24px, 4vw, 84px);
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: #fff;
+}
+
+/* ======================================================================
+   จับรางวัล
+   ====================================================================== */
+
+.sc-draw {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 4vw;
+    background: radial-gradient(ellipse at 50% 35%, #13306E, #0B1F4D 70%);
+    color: #fff;
+    text-align: center;
+}
+
+.dr-top {
+    position: absolute;
+    top: 3vh;
+    left: 3vw;
+    display: flex;
+    align-items: center;
+    gap: 1.2vw;
+    font-size: clamp(18px, 2.2vw, 44px);
+    font-weight: 600;
+}
+
+.dr-top img {
+    height: clamp(40px, 8vh, 100px);
+}
+
+.dr-prize {
+    min-height: 1.2em;
+    font-size: clamp(28px, 5vw, 110px);
+    font-weight: 700;
+    color: #FDE68A;
+}
+
+.dr-code {
+    font-size: clamp(90px, 17vw, 380px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: .05em;
+    font-variant-numeric: tabular-nums;
+}
+
+.dr-code.spinning {
+    color: #CBD5E1;
+}
+
+.dr-code.win {
+    color: #FBBF24;
+    text-shadow: 0 0 .25em rgba(251, 191, 36, .45);
+    animation: dr-land .6s cubic-bezier(.2, 1.5, .4, 1);
+}
+
+@keyframes dr-land {
+    from {
+        transform: scale(1.25);
+    }
+}
+
+.dr-who {
+    min-height: 2.6em;
+    margin-top: 2vh;
+    font-size: clamp(26px, 4vw, 90px);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.dr-who small {
+    display: block;
+    font-size: .55em;
+    color: #94A3B8;
+}
+
+.dr-history {
+    position: absolute;
+    right: 3vw;
+    bottom: 4vh;
+    text-align: right;
+    font-size: clamp(14px, 1.6vw, 32px);
+    color: #CBD5E1;
+}
+
+.dr-h-title {
+    margin-bottom: .4em;
+    color: #94A3B8;
+    font-weight: 600;
+}
+
+.dr-h-item b {
+    color: #FDE68A;
+}
+
+.dr-h-item span {
+    color: #94A3B8;
+}
+
+/* ======================================================================
+   ประกาศผล
+   ====================================================================== */
+
+.sc-results {
+    --tier: #7C3AED;
+    padding: 3vh 3vw;
+    background: radial-gradient(ellipse at 50% 20%, #13306E, #0B1A3F 70%);
+    color: #fff;
+}
+
+.sc-results[data-tier="intermediate"] {
+    --tier: #0EA5E9;
+}
+
+.sc-results[data-tier="advance"] {
+    --tier: #EF4444;
+}
+
+.rs-head {
+    display: flex;
+    align-items: center;
+    gap: 2vw;
+    margin-bottom: 2.5vh;
+}
+
+.rs-head img {
+    height: clamp(48px, 10vh, 130px);
+}
+
+.rs-title {
+    font-size: clamp(22px, 2.8vw, 60px);
+    font-weight: 600;
+    color: #CBD5E1;
+    line-height: 1.1;
+}
+
+.rs-tier {
+    font-size: clamp(36px, 5.5vw, 120px);
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--tier);
+    text-transform: uppercase;
+}
+
+.rs-body {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2vw;
+}
+
+
+/* โพเดียม */
+.rs-podium {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    align-items: end;
+    gap: 1.2vw;
+    min-height: 0;
+}
+
+.rs-slot {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 0;
+}
+
+.rs-step {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 1vh;
+    border-radius: 1vw 1vw 0 0;
+    font-size: clamp(40px, 6vw, 140px);
+    font-weight: 800;
+    color: rgba(255, 255, 255, .9);
+}
+
+.rs-slot-1 .rs-step {
+    height: 28vh;
+    background: linear-gradient(180deg, #F59E0B, #B45309);
+}
+
+.rs-slot-2 .rs-step {
+    height: 20vh;
+    background: linear-gradient(180deg, #94A3B8, #475569);
+}
+
+.rs-slot-3 .rs-step {
+    height: 14vh;
+    background: linear-gradient(180deg, #D97706, #7C2D12);
+}
+
+.rs-podium-card {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.2vh;
+    padding: 1.6vh 1vw !important;
+    text-align: center;
+}
+
+.rs-podium-card .rs-rank {
+    display: none;
+}
+
+.rs-podium-card .rs-name {
+    font-size: clamp(18px, 2.3vw, 52px) !important;
+}
+
+.rs-slot-1 .rs-podium-card .rs-name {
+    font-size: clamp(22px, 2.9vw, 64px) !important;
+}
+
+.rs-podium-card .rs-score {
+    align-items: center !important;
+    margin-top: .8vh;
+}
+
+.rs-podium-card.rs-hidden .rs-name {
+    font-size: clamp(40px, 5vw, 110px) !important;
+}
+
+/* รายการ 4–10 */
+.rs-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1vh;
+    list-style: none;
+    min-height: 0;
+}
+
+.rs-card {
+    display: flex;
+    align-items: center;
+    gap: 1.2vw;
+    padding: 1vh 1.2vw;
+    border-radius: 1vw;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.rs-rank {
+    flex: 0 0 auto;
+    min-width: 1.6em;
+    font-size: clamp(22px, 2.6vw, 58px);
+    font-weight: 800;
+    color: var(--tier);
+    text-align: center;
+}
+
+.rs-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.rs-name {
+    font-size: clamp(16px, 1.8vw, 40px);
+    font-weight: 700;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-podium-card .rs-name {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.rs-inst {
+    font-size: clamp(11px, 1.05vw, 24px);
+    color: #94A3B8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rs-score {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.1;
+}
+
+.rs-score b {
+    font-size: clamp(18px, 2vw, 46px);
+    font-weight: 800;
+}
+
+.rs-score span {
+    font-size: clamp(10px, .9vw, 20px);
+    color: #94A3B8;
+}
+
+.rs-score em {
+    font-style: normal;
+    font-size: clamp(11px, 1vw, 22px);
+    color: #CBD5E1;
+}
+
+.rs-hidden {
+    opacity: .35;
+    border-style: dashed;
+}
+
+.rs-pop {
+    animation: rs-pop .7s cubic-bezier(.2, 1.5, .4, 1);
+    border-color: var(--tier);
+    box-shadow: 0 0 2vw rgba(255, 255, 255, .15);
+}
+
+.rs-slot-1 .rs-pop {
+    background: rgba(245, 158, 11, .22);
+    border-color: #FBBF24;
+}
+
+@keyframes rs-pop {
+    from {
+        transform: translateY(2vh) scale(.92);
+        opacity: 0;
+    }
+}
+
+
+/* โหมดการแสดงผลประกาศผล: intro → spot (10–4) → podium (3–1) */
+.rs-intro,
+.rs-spot,
+.sc-results .rs-body {
+    display: none;
+}
+
+.sc-results[data-mode="intro"] .rs-intro,
+.sc-results[data-mode="spot"] .rs-spot {
+    display: flex;
+}
+
+.sc-results[data-mode="podium"] .rs-body {
+    display: grid;
+}
+
+.sc-results[data-mode="intro"] .rs-head,
+.sc-results[data-mode="spot"] .rs-head {
+    opacity: .85;
+}
+
+.rs-intro {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.rs-intro-sub {
+    font-size: clamp(28px, 4vw, 90px);
+    font-weight: 600;
+    color: #CBD5E1;
+}
+
+.rs-intro-tier {
+    font-size: clamp(80px, 15vw, 340px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--tier);
+    text-transform: uppercase;
+}
+
+.rs-spot {
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5vh;
+    padding: 0 5vw 4vh;
+    text-align: center;
+}
+
+.rs-spot-rank {
+    font-size: clamp(30px, 4.5vw, 100px);
+    font-weight: 600;
+    color: #CBD5E1;
+}
+
+.rs-spot-rank b {
+    display: inline-block;
+    min-width: 1.2em;
+    font-size: 1.9em;
+    font-weight: 800;
+    color: var(--tier);
+    vertical-align: -0.12em;
+}
+
+.rs-spot-name {
+    max-width: 92vw;
+    font-size: clamp(56px, 9vw, 220px);
+    font-weight: 800;
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+    text-shadow: 0 0.05em 0.15em rgba(0, 0, 0, .35);
+}
+
+.rs-spot-inst {
+    font-size: clamp(22px, 3vw, 70px);
+    font-weight: 500;
+    color: #94A3B8;
+}
+
+.rs-spot-score {
+    margin-top: 2vh;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1.2vw;
+    padding: 1.4vh 3vw;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .1);
+    font-size: clamp(22px, 3vw, 70px);
+    font-weight: 600;
+}
+
+.rs-spot-score b {
+    font-size: 1.7em;
+    font-weight: 800;
+}
+
+.rs-spot-score span {
+    color: #CBD5E1;
+    font-size: .8em;
+}
+
+.rs-spot-in .rs-spot-rank {
+    animation: rs-rise .5s ease-out both;
+}
+
+.rs-spot-in .rs-spot-name {
+    animation: rs-zoom .7s cubic-bezier(.2, 1.4, .4, 1) .15s both;
+}
+
+.rs-spot-in .rs-spot-inst,
+.rs-spot-in .rs-spot-score {
+    animation: rs-rise .6s ease-out .45s both;
+}
+
+@keyframes rs-rise {
+    from {
+        opacity: 0;
+        transform: translateY(3vh);
+    }
+}
+
+@keyframes rs-zoom {
+    from {
+        opacity: 0;
+        transform: scale(.8);
+    }
+}
+
+/* โพเดียม: ใช้ความกว้างเต็มจอ */
+.sc-results[data-mode="podium"] .rs-podium {
+    width: min(100%, 1500px);
+    margin: 0 auto;
+    height: 100%;
+}
+
+.sc-results[data-mode="podium"] .rs-podium-card .rs-name {
+    font-size: clamp(22px, 3vw, 70px) !important;
+}
+
+.sc-results[data-mode="podium"] .rs-slot-1 .rs-podium-card .rs-name {
+    font-size: clamp(28px, 3.8vw, 90px) !important;
+}
+
+.sc-results[data-mode="podium"] .rs-inst {
+    font-size: clamp(13px, 1.4vw, 32px);
+    white-space: normal;
+}
+
+.sc-results[data-mode="podium"] .rs-score b {
+    font-size: clamp(24px, 2.8vw, 64px);
+}
+
+.sc-results[data-mode="podium"] .rs-score span,
+.sc-results[data-mode="podium"] .rs-score em {
+    font-size: clamp(13px, 1.3vw, 30px);
+}
+
+.sc-results[data-mode="podium"] .rs-slot-1 .rs-step {
+    height: 32vh;
+}
+
+.sc-results[data-mode="podium"] .rs-slot-2 .rs-step {
+    height: 23vh;
+}
+
+.sc-results[data-mode="podium"] .rs-slot-3 .rs-step {
+    height: 16vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .rs-spot-in .rs-spot-rank,
+    .rs-spot-in .rs-spot-name,
+    .rs-spot-in .rs-spot-inst,
+    .rs-spot-in .rs-spot-score {
+        animation: none;
+    }
+}
+
+/* ตัวอย่างในหน้าควบคุม: ไม่มีเคอร์เซอร์ / ไม่ให้คลิก */
+.is-preview {
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .dr-code.win,
+    .rs-pop {
+        animation: none;
+    }
+}
+
+/* ======================================================================
+   หน้าควบคุม
+   ====================================================================== */
+
+.sctl {
+    min-height: 100vh;
+    background: #F1F5F9;
+    color: #0F172A;
+    font-family: 'Kanit', sans-serif;
+}
+
+.sctl * {
+    box-sizing: border-box;
+}
+
+.ct-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 10px 18px;
+    background: #0F172A;
+    color: #fff;
+}
+
+.ct-top h1 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-right: auto;
+}
+
+.ct-top a,
+.ct-top button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 0;
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.ct-top .ct-open {
+    background: #2563EB;
+}
+
+.ct-conn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #CBD5E1;
+}
+
+.ct-conn i {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #EF4444;
+}
+
+.ct-conn.on i {
+    background: #22C55E;
+}
+
+.ct-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 44%) 1fr;
+    gap: 16px;
+    padding: 16px 18px 40px;
+    align-items: start;
+}
+
+.ct-left {
+    position: sticky;
+    top: 70px;
+}
+
+.ct-preview-wrap {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    aspect-ratio: 16 / 9;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .25);
+}
+
+.ct-preview-wrap iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1920px;
+    height: 1080px;
+    border: 0;
+    transform-origin: 0 0;
+}
+
+.ct-live {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #DC2626;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .05em;
+}
+
+.ct-quick {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.ct-quick button {
+    min-height: 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    background: #fff;
+    color: #334155;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ct-quick button i {
+    font-size: 20px;
+}
+
+.ct-quick button.on {
+    border-color: #DC2626;
+    background: #FEF2F2;
+    color: #B91C1C;
+}
+
+.ct-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #64748B;
+    line-height: 1.5;
+}
+
+.ct-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.ct-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 14px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    background: #fff;
+    color: #334155;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ct-tab.active {
+    border-color: #2563EB;
+    background: #2563EB;
+    color: #fff;
+}
+
+.ct-tab .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #DC2626;
+    display: none;
+}
+
+.ct-tab.live .dot {
+    display: inline-block;
+}
+
+.ct-panel {
+    display: none;
+}
+
+.ct-panel.active {
+    display: block;
+}
+
+.ct-card {
+    margin-bottom: 12px;
+    padding: 16px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+}
+
+.ct-card h2 {
+    margin-bottom: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.ct-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.ct-row+.ct-row {
+    margin-top: 8px;
+}
+
+.ct-btn {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 14px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    background: #fff;
+    color: #0F172A;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ct-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.ct-btn.primary {
+    border-color: #2563EB;
+    background: #2563EB;
+    color: #fff;
+}
+
+.ct-btn.live {
+    border-color: #DC2626;
+    background: #DC2626;
+    color: #fff;
+}
+
+.ct-btn.danger {
+    border-color: #FECACA;
+    background: #FEF2F2;
+    color: #DC2626;
+}
+
+.ct-btn.big {
+    min-height: 54px;
+    font-size: 16px;
+    flex: 1;
+}
+
+.ct-btn.preset {
+    flex-direction: column;
+    gap: 0;
+    min-height: 58px;
+    border-color: #BFDBFE;
+    background: #EFF6FF;
+    color: #1E3A8A;
+}
+
+.ct-btn.preset span {
+    font-size: 12px;
+    color: #2563EB;
+}
+
+.ct-btn.banner {
+    min-height: 50px;
+    border-color: #FDE68A;
+    background: #FFFBEB;
+    color: #92400E;
+}
+
+.ct-input {
+    flex: 1;
+    min-width: 140px;
+    height: 42px;
+    padding: 0 12px;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+}
+
+.ct-input:focus {
+    border-color: #2563EB;
+}
+
+.ct-input.num {
+    flex: 0 0 90px;
+    min-width: 0;
+    text-align: center;
+}
+
+.ct-area {
+    width: 100%;
+    height: 100px;
+    padding: 8px 12px;
+    resize: vertical;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.ct-grid2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+}
+
+.ct-cd label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.ct-cd label:has(input:checked) {
+    border-color: #2563EB;
+    background: #EFF6FF;
+    color: #1E3A8A;
+}
+
+.ct-timer-now {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #0B1A3F;
+    color: #fff;
+}
+
+.ct-timer-now b {
+    font-size: 34px;
+    font-variant-numeric: tabular-nums;
+}
+
+.ct-timer-now span {
+    font-size: 14px;
+    color: #93C5FD;
+}
+
+/* รายการไฟล์ */
+.ct-media {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.ct-media button {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    border: 2px solid #E2E8F0;
+    border-radius: 10px;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.ct-media button.on {
+    border-color: #DC2626;
+}
+
+.ct-media img,
+.ct-media .vthumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #0F172A;
+}
+
+.ct-media .vthumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 28px;
+}
+
+.ct-media .nm {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ct-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 2px dashed #93C5FD;
+    border-radius: 12px;
+    background: #EFF6FF;
+    color: #1E3A8A;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ct-file input {
+    display: none;
+}
+
+.ct-progress {
+    height: 8px;
+    margin-top: 10px;
+    border-radius: 99px;
+    background: #E2E8F0;
+    overflow: hidden;
+}
+
+.ct-progress span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: #2563EB;
+}
+
+.ct-small {
+    font-size: 12px;
+    color: #64748B;
+}
+
+/* จับรางวัล / ผล */
+.ct-winner {
+    margin-top: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+}
+
+.ct-winner b {
+    font-size: 22px;
+}
+
+.ct-list {
+    margin-top: 10px;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.ct-list div {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 14px;
+}
+
+.ct-list div:last-child {
+    border-bottom: 0;
+}
+
+.ct-list .rk {
+    width: 28px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.ct-list .nm {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ct-list .shown {
+    background: #F0FDF4;
+}
+
+.ct-list .nextup {
+    background: #FEF3C7;
+}
+
+.ct-status {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    z-index: 50;
+    transform: translateX(-50%);
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+}
+
+.ct-status.ok {
+    opacity: 1;
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.ct-status.bad {
+    opacity: 1;
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+kbd {
+    padding: 1px 6px;
+    border: 1px solid #CBD5E1;
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+@media (max-width: 960px) {
+    .ct-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ct-left {
+        position: static;
+    }
+}

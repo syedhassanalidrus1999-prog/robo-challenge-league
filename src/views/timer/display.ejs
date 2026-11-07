@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
-    <link rel="stylesheet" href="/css/timer.css?v=2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3">
+    <link rel="stylesheet" href="/css/timer.css?v=3">
 </head>
 
 <body class="tdisp state-idle">
@@ -38,6 +38,21 @@
         </div>
     </main>
 
+    <!-- นับถอยหลังก่อนเริ่ม -->
+    <div class="td-count" id="tdCount" hidden>
+        <div class="td-count-top">เตรียมพร้อม</div>
+        <div class="td-count-label" id="tdCountLabel"></div>
+        <div class="td-count-num" id="tdCountNum"></div>
+        <div class="td-count-sub">วินาที</div>
+    </div>
+
+    <!-- ประกาศตัวใหญ่เต็มจอ -->
+    <div class="td-banner" id="tdBanner" hidden>
+        <div class="td-banner-text" id="tdBannerText"></div>
+        <div class="td-banner-sub" id="tdBannerSub"></div>
+        <div class="td-banner-timer" id="tdBannerTimer" hidden></div>
+    </div>
+
     <div class="td-msg" id="tdMsg" hidden></div>
 
     <div class="td-over" id="tdOver" hidden>
@@ -48,8 +63,8 @@
 
     <div class="td-net" id="tdNet" title="สถานะการเชื่อมต่อ"></div>
 
-    <script src="/js/timer-core.js?v=2"></script>
-    <script src="/js/timer-display.js?v=2"></script>
+    <script src="/js/timer-core.js?v=3"></script>
+    <script src="/js/timer-display.js?v=3"></script>
 </body>
 
 </html>

@@ -63,6 +63,7 @@ app.use('/', require('./routes/public'))
 app.use('/auth', require('./routes/auth'))
 app.use('/teams', require('./routes/teams'))
 app.use('/scores', require('./routes/scores'))
+app.use("/board/cert-export", require("./routes/certificate-export"));
 app.use('/board', require('./routes/board'))
 app.use("/certificate", require("./routes/certificate"));
 app.use(require("./routes/documents"));
@@ -70,7 +71,9 @@ const coupons = require("./routes/coupons");
 app.use("/coupons", coupons.staffRouter);
 app.use("/board/coupons", coupons.adminRouter);
 app.use("/board/badges", require("./routes/badges"));
-app.use("/timer", require("./routes/timer"));
+const screen = require("./routes/screen");
+app.use("/screen", screen.router);
+app.use("/timer", screen.legacyTimer);
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {
   res.status(404).render('404', { layout: 'layouts/public', title: 'ไม่พบหน้านี้' })

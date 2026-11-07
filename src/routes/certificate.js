@@ -1183,3 +1183,19 @@ router.get("/generate", async (req, res) => {
 // ============================================================================
 
 module.exports = router;
+module.exports.helpers = {
+  getStudentList,
+  hasAnyStudentCheckedIn,
+  getCoachName,
+  getMaxScore,
+  getBestScore,
+  getRanking,
+  getMedalType,
+  getMedalLabel,
+  loadBackground,
+  getCanvasSize,
+  createCertificateSvg,
+  getFontProblems,
+  FONT_FILES,
+  FONT_FAMILY,
+};
