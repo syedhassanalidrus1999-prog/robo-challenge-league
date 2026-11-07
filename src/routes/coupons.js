@@ -1,8 +1,8 @@
 // src/routes/coupons.js
 // คูปองอาหาร + น้ำ แบบรายทีม
 // - 1 ทีม ต่อ 1 วัน = 1 QR (โค้ช / ผู้คุมทีม เป็นคนถือและมารับแทนทั้งทีม)
-// - จำนวนชุด = นักเรียนที่ Check-in แล้ว + โค้ช 1 ชุด
-// - โค้ชที่ดูแลหลายทีม ได้ชุดของตัวเองครั้งเดียวต่อวัน
+// - จำนวนชุด = นักเรียนที่ Check-in แล้ว + โค้ช 1 ชุด (ทุกทีม)
+// - โค้ชคนเดียวดูแลหลายทีม → นับโค้ช 1 ชุดในทุกทีม (เช่น 2 ทีม = ทีมละ 4 ชุด)
 //
 // ต้องติดตั้งก่อน:  npm install qrcode
 //
@@ -36,10 +36,6 @@ const TIER_LABEL = {
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const RESET_WORD = "ล้างคูปอง";
 const MAX_DAYS = 3;
-
-// ใช้ใน SQL: ชื่อโค้ชแบบตัดช่องว่างซ้ำ + ตัวพิมพ์เล็ก
-const COACH_KEY_SQL =
-  "LOWER(REGEXP_REPLACE(TRIM(COALESCE(t.coach, '')), '\\s+', ' ', 'g'))";
 
 function first(v) {
   return Array.isArray(v) ? v[0] : v;
@@ -379,21 +375,6 @@ function baseView(c, team) {
   };
 }
 
-// โค้ชคนนี้รับชุดของตัวเองไปแล้ววันนี้ กับทีมอื่นหรือยัง
-async function coachAlreadyServed(team, day, excludeId) {
-  const key = coachKey(team);
-  if (!key) return null;
-  const r = await query(
-    `SELECT t.id, t.name FROM team_coupons tc
-     JOIN teams t ON t.id = tc.team_id
-     WHERE tc.coupon_day = $1 AND tc.status = 'used' AND tc.coach_given = TRUE
-       AND tc.id <> $2 AND ${COACH_KEY_SQL} = $3
-     LIMIT 1`,
-    [day, excludeId, key],
-  );
-  return r.rows[0] || null;
-}
-
 staffRouter.post("/redeem", async (req, res) => {
   const code = normalizeCode(req.body.code);
 
@@ -485,11 +466,9 @@ staffRouter.post("/redeem", async (req, res) => {
       });
     }
 
+    // นับโค้ชในทุกทีม แม้เป็นโค้ชคนเดียวกันหลายทีม
     const hasCoach = Boolean(coachKey(team));
-    const servedWith = hasCoach
-      ? await coachAlreadyServed(team, c.coupon_day, c.id)
-      : null;
-    const coachGiven = hasCoach && !servedWith;
+    const coachGiven = hasCoach;
 
     const user = req.session.user || {};
     const usedBy = String(user.name || user.username || "").slice(0, 100);
@@ -524,15 +503,7 @@ staffRouter.post("/redeem", async (req, res) => {
     const v = baseView(updated.rows[0], team);
     v.present = present.map((s) => s.name);
     v.absent = absent.map((s) => s.name);
-    v.coachNote = !hasCoach
-      ? "ทีมนี้ไม่มีชื่อโค้ช"
-      : servedWith
-        ? "โค้ชรับชุดของตัวเองไปแล้วกับทีม " +
-          servedWith.name +
-          " (" +
-          servedWith.id +
-          ")"
-        : "";
+    v.coachNote = hasCoach ? "" : "ทีมนี้ไม่มีชื่อโค้ช";
 
     return res.json({
       ok: true,
