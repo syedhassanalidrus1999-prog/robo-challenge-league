@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/score-form-mobile.css?v=2">
   <style>
     .score-form-wrap {
       max-width: 1100px;
@@ -641,6 +642,8 @@
 
               <form method="POST" action="/scores/<%= team.id %>/<%= round %>" enctype="multipart/form-data"
                 id="scoreForm">
+                <input type="hidden" name="score_version"
+                  value="<%= typeof scoreVersion !== 'undefined' ? scoreVersion : '' %>">
 
                 <div class="score-form-wrap">
 
@@ -1032,6 +1035,7 @@
       if (e.key === 'Escape') closeLightbox();
     });
   </script>
+  <script src="/js/score-form-mobile.js?v=2"></script>
 </body>
 
 </html>

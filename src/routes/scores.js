@@ -18,7 +18,9 @@ const storage = new CloudinaryStorage({
     allowed_formats: ["jpg", "jpeg", "png"],
   },
 });
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+
+// หน้าลงคะแนนย่อรูปในเครื่องก่อนส่งแล้ว (เหลือ ~0.5 MB) — 10 MB เผื่อเครื่องที่ย่อไม่ได้
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
 
 function handleUpload(req, res, next) {
   upload.fields([
@@ -27,8 +29,21 @@ function handleUpload(req, res, next) {
   ])(req, res, function (err) {
     if (err) {
       console.error("Multer error:", err.message);
-      req.flash("error", "อัปโหลดไฟล์ไม่ได้: " + err.message);
-      return res.redirect("/scores");
+      const round = parseInt(req.params.round, 10);
+      const back =
+        "/scores/" +
+        encodeURIComponent(req.params.teamId) +
+        "/" +
+        (VALID_ROUNDS.includes(round) ? round : 1);
+      req.flash(
+        "error",
+        err.code === "LIMIT_FILE_SIZE"
+          ? "รูปใหญ่เกิน 10 MB — ยังไม่ได้บันทึก กรุณาเลือกรูปใหม่หรือไม่ใส่รูป"
+          : "อัปโหลดรูปไม่สำเร็จ (" +
+              err.message +
+              ") — ยังไม่ได้บันทึก ลองอีกครั้ง",
+      );
+      return res.redirect(back);
     }
     next();
   });
@@ -43,6 +58,10 @@ const VALID_ROUNDS = [1, 2];
 // เรียงด้วย id ด้วย เพื่อให้ลำดับคงที่ทุกครั้ง
 const CRITERIA_BY_TIER_SQL =
   "SELECT * FROM criteria WHERE tier = $1 ORDER BY mission, id";
+
+// เวอร์ชันของคะแนน = เวลาบันทึกล่าสุด (ms) ใช้กันกรรมการ 2 คนบันทึกทับกันโดยไม่รู้ตัว
+const VERSION_SQL =
+  "COALESCE(FLOOR(EXTRACT(EPOCH FROM scored_at) * 1000)::bigint, 0)";
 
 function parseRound(value) {
   const round = parseInt(value, 10);
@@ -91,6 +110,15 @@ function readTimeSeconds(body) {
 
   const n = parseFloat(raw);
   return Number.isFinite(n) && n >= 0 ? round3(n) : NaN;
+}
+
+// เวอร์ชันที่ฟอร์มเปิดมา (null = ฟอร์มรุ่นเก่าที่ไม่มีช่องนี้ → ไม่ตรวจ)
+function readVersion(body) {
+  const raw = firstValue(body.score_version);
+  if (raw === undefined || raw === null || String(raw).trim() === "")
+    return null;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
 }
 
 function calcMaxScore(criteria) {
@@ -161,6 +189,27 @@ function calcMissionDetails(criteria, body) {
   });
 }
 
+function formatThaiTime(value) {
+  if (!value) return "";
+  return new Date(value).toLocaleTimeString("th-TH", {
+    timeZone: "Asia/Bangkok",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+async function judgeName(id) {
+  if (!id) return "";
+  try {
+    const r = await query("SELECT * FROM users WHERE id = $1", [id]);
+    const u = r.rows[0];
+    return u ? u.name || u.username || "" : "";
+  } catch (e) {
+    return "";
+  }
+}
+
 // ─── GET /scores ──────────────────────────────────────────────────────────────
 router.get("/", requireLogin, requireJudge, async (req, res) => {
   const user = req.session.user;
@@ -217,10 +266,10 @@ router.get(
     try {
       const [teamResult, existingResult] = await Promise.all([
         query("SELECT * FROM teams WHERE id = $1", [teamId]),
-        query("SELECT * FROM scores WHERE team_id = $1 AND round = $2", [
-          teamId,
-          round,
-        ]),
+        query(
+          `SELECT *, ${VERSION_SQL} AS version_ms FROM scores WHERE team_id = $1 AND round = $2`,
+          [teamId, round],
+        ),
       ]);
 
       const team = teamResult.rows[0];
@@ -247,6 +296,7 @@ router.get(
         round,
         criteria,
         existing,
+        scoreVersion: existing ? String(existing.version_ms) : "0",
         prevMap: buildPrevMap(criteria, existing),
         maxScore: calcMaxScore(criteria),
       });
@@ -338,8 +388,12 @@ router.post(
       }
 
       // ---------------- บันทึก ----------------
+      // ON CONFLICT ... WHERE: บันทึกทับได้เฉพาะเมื่อคะแนนในระบบยังเป็นชุดเดียวกับตอนเปิดฟอร์ม
+      // ถ้ามีคนอื่นบันทึกไปก่อน (version เปลี่ยน) → ไม่บันทึกทับ แล้วแจ้งกรรมการ
 
-      await query(
+      const expectedVersion = readVersion(req.body);
+
+      const saved = await query(
         `INSERT INTO scores (
           team_id, judge_id, round,
           mission_1, mission_1_full, mission_1_partial,
@@ -348,12 +402,12 @@ router.post(
           mission_4, mission_4_full, mission_4_partial,
           mission_5, mission_5_full, mission_5_partial,
           time_seconds, photo_url, signature_url,
-          mission_details, total_score
+          mission_details, total_score, scored_at
         ) VALUES (
           $1,$2,$3,
           $4,$5,$6, $7,$8,$9, $10,$11,$12, $13,$14,$15, $16,$17,$18,
           $19,$20,$21,
-          $22::jsonb, $23
+          $22::jsonb, $23, NOW()
         )
         ON CONFLICT (team_id, round) DO UPDATE SET
           judge_id=$2,
@@ -367,7 +421,10 @@ router.post(
           signature_url=COALESCE($21, scores.signature_url),
           mission_details=$22::jsonb,
           total_score=$23,
-          scored_at=NOW()`,
+          scored_at=NOW()
+        WHERE $24::bigint IS NULL
+           OR COALESCE(FLOOR(EXTRACT(EPOCH FROM scores.scored_at) * 1000)::bigint, 0) = $24::bigint
+        RETURNING team_id`,
         [
           teamId,
           parseInt(user.id, 10),
@@ -378,8 +435,63 @@ router.post(
           signatureUrl,
           JSON.stringify(details),
           totalScore,
+          expectedVersion,
         ],
       );
+
+      if (!saved.rows.length) {
+        // มีคะแนนชุดใหม่กว่าที่ฟอร์มนี้เปิดมา
+        const cur = await query(
+          `SELECT judge_id, total_score, scored_at, EXTRACT(EPOCH FROM (NOW() - scored_at)) AS age
+           FROM scores WHERE team_id = $1 AND round = $2`,
+          [teamId, round],
+        );
+        const row = cur.rows[0] || {};
+
+        // กดบันทึกซ้ำ 2 ครั้งเร็ว ๆ (ครั้งแรกบันทึกไปแล้ว) → ถือว่าสำเร็จ
+        if (
+          String(row.judge_id) === String(user.id) &&
+          parseFloat(row.age) < 60 &&
+          round2(parseFloat(row.total_score)) === totalScore
+        ) {
+          req.flash(
+            "success",
+            "บันทึกคะแนนรอบ " +
+              round +
+              ' ของทีม "' +
+              team.name +
+              '" สำเร็จ (' +
+              totalScore +
+              " คะแนน)",
+          );
+          return res.redirect("/scores");
+        }
+
+        const who = await judgeName(row.judge_id);
+        req.flash(
+          "error",
+          "ยังไม่ได้บันทึก — " +
+            (who ? who : "กรรมการอีกท่าน") +
+            " เพิ่งบันทึกคะแนนรอบ " +
+            round +
+            " ของทีมนี้เมื่อ " +
+            formatThaiTime(row.scored_at) +
+            " (" +
+            parseFloat(row.total_score) +
+            " คะแนน) · ระบบเปิดคะแนนล่าสุดให้แล้ว ตรวจสอบก่อน ถ้าต้องแก้ให้กรอกแล้วบันทึกอีกครั้ง",
+        );
+        console.warn(
+          "[scores] ชนกัน",
+          teamId,
+          "รอบ",
+          round,
+          "โดย",
+          user.username,
+          "ทับ judge",
+          row.judge_id,
+        );
+        return res.redirect(formUrl);
+      }
 
       req.flash(
         "success",
@@ -394,8 +506,8 @@ router.post(
       return res.redirect("/scores");
     } catch (err) {
       console.error("SCORE POST ERROR:", err.message, err.stack);
-      req.flash("error", "ไม่สามารถบันทึกคะแนนได้");
-      return res.redirect("/scores");
+      req.flash("error", "ไม่สามารถบันทึกคะแนนได้ — ลองกดบันทึกอีกครั้ง");
+      return res.redirect(formUrl);
     }
   },
 );

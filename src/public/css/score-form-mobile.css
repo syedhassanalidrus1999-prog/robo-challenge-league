@@ -1,0 +1,255 @@
+/* public/css/score-form-mobile.css — หน้าลงคะแนน: แท็บเล็ต + มือถือ
+   ใช้คู่กับ public/js/score-form-mobile.js (ปุ่ม − / + และแถบบันทึกด้านล่าง) */
+
+/* ปุ่ม − / + ข้างช่องจำนวนชิ้น */
+.sf-step {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr) 52px;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.sf-step .score-num-input {
+    min-width: 0;
+    width: 100% !important;
+}
+
+.sf-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 12px;
+    background: #fff;
+    color: #334155;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.sf-btn:active {
+    transform: scale(.94);
+    background: #F1F5F9;
+}
+
+.sf-btn.plus {
+    border-color: #93C5FD;
+    background: #EFF6FF;
+    color: #1D4ED8;
+}
+
+.sf-btn:disabled {
+    opacity: .35;
+}
+
+/* แถบคะแนนรวม + ปุ่มบันทึก (แสดงเมื่อจอเล็กกว่า 900px) */
+.sf-bar {
+    display: none;
+}
+
+/* ---------- แท็บเล็ตแนวนอน / จอเล็ก ---------- */
+@media (max-width: 1100px) {
+    .score-form-wrap {
+        grid-template-columns: minmax(0, 1fr) 300px !important;
+        gap: 16px !important;
+    }
+
+    .mission-title {
+        font-size: 16px !important;
+    }
+}
+
+/* ---------- แท็บเล็ตแนวตั้ง + มือถือ ---------- */
+@media (max-width: 900px) {
+    .score-form-wrap {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* การ์ดด้านขวา (เวลา / รูป / ลายเซ็น) เรียง 2 คอลัมน์ใต้ภารกิจ */
+    .score-form-wrap>div:last-child {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        align-items: start;
+    }
+
+    .score-form-wrap>div:last-child>.side-card {
+        margin: 0 !important;
+    }
+
+    /* ลายเซ็นกว้างเต็มแถว */
+    .score-form-wrap>div:last-child>.side-card:has(#sigCanvas),
+    .score-form-wrap>div:last-child>.side-card:has(.sig-canvas-wrap) {
+        grid-column: 1 / -1;
+    }
+
+    /* คะแนนรวม + ปุ่มบันทึกเดิม → ย้ายไปแถบด้านล่าง */
+    .score-form-wrap>div:last-child>.side-card:has(#totalScore),
+    .score-form-wrap>div:last-child>.btn-primary {
+        display: none !important;
+    }
+
+    .sf-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
+        background: rgba(255, 255, 255, .96);
+        border-top: 1px solid #E2E8F0;
+        box-shadow: 0 -8px 24px rgba(15, 23, 42, .08);
+        backdrop-filter: blur(6px);
+    }
+
+    .sf-total {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+
+    .sf-total small {
+        font-size: 11px;
+        color: #64748B;
+    }
+
+    .sf-total b {
+        font-size: 26px;
+        font-weight: 900;
+        color: #1D4ED8;
+    }
+
+    .sf-total b span {
+        font-size: 13px;
+        font-weight: 600;
+        color: #94A3B8;
+    }
+
+    .sf-save {
+        flex: 1;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 14px;
+        background: #2563EB;
+        color: #fff;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .sf-save:active {
+        background: #1D4ED8;
+    }
+
+    body.sf-has-bar .main {
+        padding-bottom: 96px !important;
+    }
+
+    .mission-card:hover {
+        transform: none !important;
+    }
+}
+
+/* ---------- มือถือ ---------- */
+@media (max-width: 600px) {
+
+    /* เข้าเต็ม / บางส่วน ยังวางคู่กัน (ตัวเลขสั้น ไม่ต้องเรียงลง) */
+    .mission-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        padding: 0 10px !important;
+    }
+
+    .score-input-box {
+        padding: 10px 8px !important;
+        min-width: 0;
+    }
+
+    .score-input-label {
+        font-size: 12px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sf-step {
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
+        gap: 5px;
+    }
+
+    .sf-btn {
+        font-size: 22px;
+        border-radius: 10px;
+    }
+
+    .score-num-input {
+        height: 52px !important;
+        font-size: 26px !important;
+        padding: 0 2px !important;
+    }
+
+    .score-calc {
+        font-size: 11px !important;
+    }
+
+    .mission-title {
+        font-size: 15px !important;
+    }
+
+    .mission-sub {
+        font-size: 11px !important;
+    }
+
+    /* การ์ดด้านขวาเรียงลงทีละใบ */
+    .score-form-wrap>div:last-child {
+        grid-template-columns: 1fr;
+    }
+
+    .time-part {
+        font-size: 24px !important;
+        height: 56px !important;
+    }
+
+    .page-hd {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .sf-total b {
+        font-size: 24px;
+    }
+}
+
+/* จอแคบมาก (≤360px) */
+@media (max-width: 360px) {
+    .sf-step {
+        grid-template-columns: 34px minmax(0, 1fr) 34px;
+    }
+
+    .score-num-input {
+        font-size: 22px !important;
+    }
+}
+
+.sf-photo-note {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+button[disabled].btn-primary,
+.sf-save[disabled] {
+    opacity: .75;
+    cursor: wait;
+}
