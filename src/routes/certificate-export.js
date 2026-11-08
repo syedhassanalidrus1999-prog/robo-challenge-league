@@ -28,12 +28,12 @@ const TIER_LABEL = {
 const TYPES = [
   { key: "participation", label: "เกียรติบัตรเข้าร่วม (นักเรียน)" },
   { key: "coach", label: "เกียรติบัตรโค้ช" },
-  { key: "rank_1", label: "ชนะเลิศ (อันดับ 1)" },
-  { key: "rank_2", label: "รองชนะเลิศ อันดับ 1 (อันดับ 2)" },
-  { key: "rank_3", label: "รองชนะเลิศ อันดับ 2 (อันดับ 3)" },
-  { key: "gold", label: "เหรียญทอง" },
-  { key: "silver", label: "เหรียญเงิน" },
-  { key: "bronze", label: "เหรียญทองแดง" },
+  { key: "rank_1", label: "ชนะเลิศ (อันดับ 1) · นักเรียน + โค้ช" },
+  { key: "rank_2", label: "รองชนะเลิศ อันดับ 1 (อันดับ 2) · นักเรียน + โค้ช" },
+  { key: "rank_3", label: "รองชนะเลิศ อันดับ 2 (อันดับ 3) · นักเรียน + โค้ช" },
+  { key: "gold", label: "เหรียญทอง · นักเรียน + โค้ช" },
+  { key: "silver", label: "เหรียญเงิน · นักเรียน + โค้ช" },
+  { key: "bronze", label: "เหรียญทองแดง · นักเรียน + โค้ช" },
 ];
 const TYPE_KEYS = TYPES.map((t) => t.key);
 
@@ -140,6 +140,15 @@ async function buildList(tier, type, opts) {
           role: "นักเรียนคนที่ " + s.number,
         }),
       );
+    }
+
+    // เกียรติบัตรอันดับ 1–3 และเหรียญ: โค้ชของทีมได้ด้วย
+    // (1 ใบต่อทีม — โค้ชที่ดูแลหลายทีมที่ได้รางวัล ได้ใบของแต่ละทีม)
+    if (type !== "participation") {
+      const coach = H.getCoachName(team);
+      if (coach && (includeAll || H.hasAnyStudentCheckedIn(team))) {
+        list.push(Object.assign({}, base, { name: coach, role: "โค้ช" }));
+      }
     }
   }
 
