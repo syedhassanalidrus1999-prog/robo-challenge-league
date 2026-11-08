@@ -1341,7 +1341,8 @@
             }
 
             // เหรียญเป็นของนักเรียนแต่ละคน → ต้องส่งชื่อนักเรียนไปด้วย
-            function medalHtml(team, student) {
+            // who = { studentName: ... } (นักเรียน) หรือ { student: 'coach' } (โค้ช)
+            function medalHtml(team, who) {
                 var medalKey = pick(team, ['medal', 'medal_type', 'medalType'], '');
                 var medal = MEDALS[medalKey];
                 if (!medal) return '';
@@ -1358,7 +1359,7 @@
                     '<div class="medal-cert-score">' + esc(info) + '</div>' +
                     '</div>' +
                     '<a class="btn-medal js-cert-dl" href="' +
-                    dlHref({ teamId: team.id, studentName: student.name, certType: medalKey }) + '">' +
+                    dlHref(Object.assign({ teamId: team.id, certType: medalKey }, who)) + '">' +
                     '<i class="ti ti-download"></i> ' + medal.btn + '</a>' +
                     '</div>';
             }
@@ -1390,14 +1391,19 @@
                 html += '</div>';
 
                 // แสดงเหรียญเฉพาะนักเรียนที่ Check-in แล้ว (เหมือนเกียรติบัตรอันดับ)
-                if (s.checked_in) html += medalHtml(team, s);
+                if (s.checked_in) html += medalHtml(team, { studentName: s.name });
 
                 return html + '</div>';
             }
 
+            // โค้ช: เกียรติบัตรโค้ช + เกียรติบัตรอันดับ 1–3 / เหรียญ ชุดเดียวกับนักเรียนของทีม
             function coachHtml(team) {
                 var coach = team.coach;
-                if (!coach || !coach.has_template) return '';
+                if (!coach) return '';
+
+                var ranks = team.team_cert_types || [];
+                var hasMedal = !!MEDALS[pick(team, ['medal', 'medal_type', 'medalType'], '')];
+                if (!coach.has_template && !ranks.length && !hasMedal) return '';
 
                 var html = '<div class="student-row coach-row">' +
                     '<div class="student-num"><i class="ti ti-user"></i></div>' +
@@ -1408,14 +1414,26 @@
                     '<div class="cert-btns">';
 
                 if (coach.checked_in) {
-                    html += '<a class="btn-cert btn-coach js-cert-dl" href="' +
-                        dlHref({ teamId: team.id, certType: 'coach' }) + '">' +
-                        '<i class="ti ti-download"></i> เกียรติบัตรโค้ช</a>';
+                    if (coach.has_template) {
+                        html += '<a class="btn-cert btn-coach js-cert-dl" href="' +
+                            dlHref({ teamId: team.id, certType: 'coach' }) + '">' +
+                            '<i class="ti ti-download"></i> เกียรติบัตรโค้ช</a>';
+                    }
+                    ranks.forEach(function (ct) {
+                        var rc = RANK_CERTS[ct] || { backend: ct, cls: 'btn-3rd', label: ct };
+                        html += '<a class="btn-cert ' + rc.cls + ' js-cert-dl" href="' +
+                            dlHref({ teamId: team.id, student: 'coach', certType: rc.backend }) + '">' +
+                            '<i class="ti ti-download"></i> ' + esc(rc.label) + '</a>';
+                    });
                 } else {
                     html += '<span class="not-checked"><i class="ti ti-clock"></i> ทีมยังไม่ได้เข้าร่วมงานแข่งขัน</span>';
                 }
 
-                return html + '</div></div>';
+                html += '</div>';
+
+                if (coach.checked_in) html += medalHtml(team, { student: 'coach' });
+
+                return html + '</div>';
             }
 
             function teamHtml(team) {

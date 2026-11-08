@@ -45,10 +45,25 @@ const FONT_FILES = ["Sarabun-Regular.ttf", "Sarabun-Bold.ttf"].map((file) =>
 //  ซึ่ง resvg จะข้ามไปเงียบ ๆ ทำให้ไม่มีข้อความบนเกียรติบัตร)
 const FONT_MAGICS = ["00010000", "74727565", "4f54544f", "74746366"]; // TTF, 'true', 'OTTO', 'ttcf'
 
-// resvg วางสระอำ (U+0E33) ผิด → แยกเป็น นิคหิต + สระอา ก่อนสร้างภาพ
+// เกียรติบัตรที่โค้ชได้รับด้วย (ถ้าทีมมีสิทธิ์)
+const COACH_AWARD_TYPES = [
+  "rank_1",
+  "rank_2",
+  "rank_3",
+  "gold",
+  "silver",
+  "bronze",
+];
+
+// resvg วางสระอำ (U+0E33) ผิด → ตัวถัดไปทับสระอา
+// แยกเป็น นิคหิต + สระอา ก่อนสร้างภาพ
 // วรรณยุกต์ที่อยู่หน้าสระอำ ย้ายไปไว้ระหว่างนิคหิตกับสระอา (เช่น น้ำ, ค้ำ, ช่ำ)
+// ใช้เฉพาะตอนสร้างภาพ ข้อมูลในฐานข้อมูลไม่ต้องแก้
 function thaiForSvg(s) {
-  return String(s == null ? "" : s).replace(/([\u0E48-\u0E4B]?)\u0E33/g, "\u0E4D$1\u0E32");
+  return String(s == null ? "" : s).replace(
+    /([\u0E48-\u0E4B]?)\u0E33/g,
+    "\u0E4D$1\u0E32",
+  );
 }
 
 function getFontProblems() {
@@ -124,8 +139,9 @@ function getMedalLabel(medal) {
 // BASIC HELPERS
 // ============================================================================
 
+// ใช้กับทุกข้อความที่ใส่ลงเกียรติบัตร → แก้สระอำในจุดเดียว
 function escapeXml(value) {
-  return String(value ?? "")
+  return thaiForSvg(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -179,6 +195,16 @@ function getCoachName(team) {
   return String(team.coach || "")
     .trim()
     .replace(/\s+/g, " ");
+}
+
+// ขอเกียรติบัตรของโค้ชหรือไม่ (?student=coach / ?student_id=coach / ?role=coach)
+function wantsCoach(req) {
+  const v = String(
+    req.query.student_id || req.query.student || req.query.role || "",
+  )
+    .trim()
+    .toLowerCase();
+  return v === "coach";
 }
 
 // หานักเรียนจาก studentName หรือ student_id
@@ -428,10 +454,13 @@ async function validateCertificateRequest(req) {
   }
 
   // ---------------- Student / Coach ----------------
+  // โค้ช: เกียรติบัตรโค้ช + เกียรติบัตรอันดับ 1–3 / เหรียญ (ตรวจสิทธิ์ทีมด้านล่างเหมือนนักเรียน)
 
   let student;
+  const isCoach =
+    type === "coach" || (COACH_AWARD_TYPES.includes(type) && wantsCoach(req));
 
-  if (type === "coach") {
+  if (isCoach) {
     const coachName = getCoachName(team);
 
     if (!coachName) {
@@ -1018,37 +1047,39 @@ router.get("/search", async (req, res) => {
       const maxScore = maxScoreByTier.get(team.tier) || 0;
       const bestScore = getBestScore(scoresByTeam.get(String(team.id)));
       const medal = getMedalType(bestScore, maxScore);
-            const checkedIn = hasAnyStudentCheckedIn(team);
-            const coachName = getCoachName(team);
+      const checkedIn = hasAnyStudentCheckedIn(team);
+      const coachName = getCoachName(team);
 
-            return {
-              id: team.id,
-              name: team.name,
-              institution: team.institution,
-              tier: team.tier,
+      return {
+        id: team.id,
+        name: team.name,
+        institution: team.institution,
+        tier: team.tier,
 
-              rank,
+        rank,
 
-              students,
+        students,
 
-              coach: coachName
-                ? {
-                    name: coachName,
-                    checked_in: checkedIn,
-                    has_template: coachTemplateTiers.has(team.tier),
-                  }
-                : null,
+        coach: coachName
+          ? {
+              name: coachName,
+              checked_in: checkedIn,
+              has_template: coachTemplateTiers.has(team.tier),
+              // โค้ชได้เกียรติบัตรอันดับ / เหรียญ ชุดเดียวกับนักเรียนของทีม
+              awards: true,
+            }
+          : null,
 
-              team_cert_types: teamCertTypes,
+        team_cert_types: teamCertTypes,
 
-              best_score: bestScore,
-              max_score: maxScore,
+        best_score: bestScore,
+        max_score: maxScore,
 
-              medal,
-              medalLabel: getMedalLabel(medal),
+        medal,
+        medalLabel: getMedalLabel(medal),
 
-              checkedIn,
-            };
+        checkedIn,
+      };
     });
 
     return res.json({ teams });
@@ -1080,15 +1111,16 @@ router.get("/download", async (req, res) => {
       return res.redirect(backToCertificatePage(teamId));
     }
 
-        const params = new URLSearchParams({
-          team_id: String(result.team.id),
-          type: result.type,
-          format: parseFormat(req.query.format),
-        });
+    const params = new URLSearchParams({
+      team_id: String(result.team.id),
+      type: result.type,
+      format: parseFormat(req.query.format),
+    });
 
-        if (result.type !== "coach") {
-          params.set("student_id", String(result.student.number));
-        }
+    if (result.type !== "coach") {
+      // นักเรียน = เลขที่ 1–3 · โค้ช (อันดับ / เหรียญ) = "coach"
+      params.set("student_id", String(result.student.number));
+    }
 
     return res.redirect(`/certificate/generate?${params.toString()}`);
   } catch (err) {
@@ -1150,10 +1182,10 @@ router.get("/generate", async (req, res) => {
     const file =
       format === "pdf" ? await pngToPdf(png, canvas.isPortrait) : png;
 
-        const filename =
-          type === "coach"
-            ? `certificate-${team.id}-coach.${format}`
-            : `certificate-${team.id}-${type}-${student.number}.${format}`;
+    const filename =
+      type === "coach"
+        ? `certificate-${team.id}-coach.${format}`
+        : `certificate-${team.id}-${type}-${student.number}.${format}`;
     const asciiFallback = filename
       .replace(/[^\x20-\x7E]/g, "_")
       .replace(/"/g, "");
@@ -1184,14 +1216,6 @@ router.get("/generate", async (req, res) => {
   }
 });
 
-// แก้สระอำที่ถูกเก็บเป็น นิคหิต + สระอา และลบตัวอักษรล่องหน
-function fixThaiText(s) {
-  return String(s || "")
-    .normalize("NFC")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/\u0E4D([\u0E48-\u0E4B]?)\u0E32/g, "$1\u0E33")
-    .replace(/\u0E32\u0E4D/g, "\u0E33");
-}
 // ============================================================================
 // EXPORT
 // ============================================================================
