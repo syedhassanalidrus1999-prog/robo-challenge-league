@@ -86,6 +86,8 @@ const RULES = {
       /^\/teams\/?$/, //                                จัดการทีม (ดู + Check-in)
       /^\/teams\/(export|pdf|print)(\/.*)?$/,
       /^\/coupons(\/.*)?$/, //                          สแกนคูปอง + พิมพ์ใบใหม่ของทีม
+      /^\/board\/coupons\/?$/, //                       ตารางคูปอง (ดูอย่างเดียว)
+      /^\/board\/coupons\/export\/?$/, //                ดาวน์โหลด Excel
     ],
     post: [
       /^\/teams\/[^/]+\/checkin(\/[1-3])?\/?$/, //      Check-in

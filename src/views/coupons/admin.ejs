@@ -347,8 +347,12 @@
             ชุด (โค้ชคนเดียวหลายทีม นับทุกทีม) · ทีมที่ไม่อนุมัติจะไม่ได้คูปอง</div>
     </div>
     <div class="cp-actions">
-        <a href="/coupons/scan" target="_blank" class="cp-btn primary"><i class="ti ti-scan"></i> เปิดหน้าสแกนคูปอง</a>
-        <a href="/board/coupons/export" class="cp-btn green"><i class="ti ti-file-spreadsheet"></i> ดาวน์โหลด Excel</a>
+        <% if (locals.can ? locals.can('coupons.scan') : true) { %>
+            <a href="/coupons/scan" target="_blank" class="cp-btn primary"><i class="ti ti-scan"></i>
+                เปิดหน้าสแกนคูปอง</a>
+            <% } %>
+                <a href="/board/coupons/export" class="cp-btn green"><i class="ti ti-file-spreadsheet"></i> ดาวน์โหลด
+                    Excel</a>
     </div>
 </div>
 
@@ -357,237 +361,266 @@
         กรุณาเลือกวันที่ด้านล่างก่อนสร้างคูปอง</div>
     <% } %>
 
-        <% if (locals.isAdmin) { %>
-            <!-- ตั้งค่า -->
-            <div class="cp-card">
-                <div class="cp-card-hd">
-                    <div class="cp-card-title">ตั้งค่าวันที่แจกคูปอง</div>
-                    <div class="cp-card-note">ถ้าไม่ได้ตั้ง ระบบจะใช้วันงานจากหน้า "ตั้งค่าหน้าสาธารณะ"</div>
-                </div>
-                <div class="cp-card-body">
-                    <form method="POST" action="/board/coupons/settings" class="cp-settings">
-                        <div class="cp-field">
-                            <label for="day1">วันที่ 1</label>
-                            <input class="cp-input" type="date" id="day1" name="day1" value="<%= days[0] || '' %>">
+        <% var canPrint=locals.can ? locals.can('coupons.print') : !!locals.isAdmin; %>
+            <% var canReissue=locals.can ? locals.can('coupons.reissue') : !!locals.isAdmin; %>
+                <% if (locals.isAdmin) { %>
+                    <!-- ตั้งค่า -->
+                    <div class="cp-card">
+                        <div class="cp-card-hd">
+                            <div class="cp-card-title">ตั้งค่าวันที่แจกคูปอง</div>
+                            <div class="cp-card-note">ถ้าไม่ได้ตั้ง ระบบจะใช้วันงานจากหน้า "ตั้งค่าหน้าสาธารณะ"</div>
                         </div>
-                        <div class="cp-field">
-                            <label for="day2">วันที่ 2</label>
-                            <input class="cp-input" type="date" id="day2" name="day2" value="<%= days[1] || '' %>">
-                        </div>
-                        <div class="cp-field">
-                            <label for="day3">วันที่ 3 (ถ้ามี)</label>
-                            <input class="cp-input" type="date" id="day3" name="day3" value="<%= days[2] || '' %>">
-                        </div>
-                        <label class="cp-check">
-                            <input type="checkbox" name="strict_day" value="1" <%=strictDay ? 'checked' : '' %>>
-                            ใช้คูปองได้เฉพาะวันที่ระบุบนคูปอง
-                        </label>
-                        <button type="submit" class="cp-btn primary"><i class="ti ti-device-floppy"></i> บันทึก</button>
-                    </form>
-                    <% if (!strictDay) { %>
-                        <div class="cp-card-note" style="margin-top:10px;color:#B45309"><i
-                                class="ti ti-alert-circle"></i> ตอนนี้คูปองใช้ข้ามวันได้ (โหมดทดสอบ)
-                            อย่าลืมเปิดกลับก่อนวันงาน</div>
-                        <% } %>
-                </div>
-            </div>
-
-            <% } %>
-
-                <!-- สถิติรายวัน -->
-                <% if (days.length) { %>
-                    <div class="cp-days">
-                        <% days.forEach(function (d) { %>
-                            <% var st=statsByDay[d] || { teams: 0, redeemed: 0, meals: 0 }; %>
-                                <% var pct=st.teams ? Math.round(st.redeemed / st.teams * 100) : 0; %>
-                                    <div class="cp-day <%= d === today ? 'today' : '' %>">
-                                        <div class="cp-day-label">
-                                            <%= dayLabel(d) %>
-                                                <% if (d===today) { %><span class="cp-day-tag">วันนี้</span>
-                                                    <% } %>
-                                        </div>
-                                        <div class="cp-day-num">
-                                            <%= st.redeemed %> <small>/ <%= st.teams %> ทีม รับแล้ว</small>
-                                        </div>
-                                        <div class="cp-bar"><span style="width:<%= pct %>%"></span></div>
-                                        <div class="cp-day-meta">แจกไปแล้ว <b>
-                                                <%= st.meals %>
-                                            </b> ชุด · เหลือ <%= st.teams - st.redeemed %> ทีม</div>
-                                    </div>
-                                    <% }) %>
-                    </div>
-                    <% } %>
-
-                        <!-- รายทีม -->
-                        <div class="cp-card">
-                            <div class="cp-card-hd">
-                                <div class="cp-card-title">รุ่น <%= tierLabel %> — <%= teams.length %> ทีม</div>
-                                <div class="cp-actions">
-                                    <form method="POST" action="/board/coupons/generate?tier=<%= tier %>"
-                                        style="display:inline">
-                                        <button type="submit" class="cp-btn sm" <%=days.length ? '' : 'disabled' %>><i
-                                                class="ti ti-sparkles"></i> สร้างคูปองที่ยังขาด (ทุกรุ่น)</button>
-                                    </form>
-                                    <a href="/board/coupons/print?tier=<%= tier %>" target="_blank"
-                                        class="cp-btn sm primary"><i class="ti ti-printer"></i> พิมพ์ทั้งรุ่น <%=
-                                            tierLabel %></a>
+                        <div class="cp-card-body">
+                            <form method="POST" action="/board/coupons/settings" class="cp-settings">
+                                <div class="cp-field">
+                                    <label for="day1">วันที่ 1</label>
+                                    <input class="cp-input" type="date" id="day1" name="day1"
+                                        value="<%= days[0] || '' %>">
                                 </div>
-                            </div>
-                            <% if (!teams.length) { %>
-                                <div class="cp-empty">ยังไม่มีทีมในรุ่นนี้</div>
-                                <% } else { %>
-                                    <div class="cp-tbl-wrap">
-                                        <table class="cp-tbl">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>ชื่อทีม</th>
-                                                    <th>โค้ช (ผู้ถือคูปอง)</th>
-                                                    <th>Check-in</th>
-                                                    <% days.forEach(function (d) { %>
-                                                        <th>
-                                                            <%= shortDayLabel(d) %>
-                                                        </th>
-                                                        <% }) %>
-                                                            <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <% teams.forEach(function (t) { %>
-                                                    <tr>
-                                                        <td class="cp-id">
-                                                            <%= t.id %>
-                                                        </td>
-                                                        <td class="cp-name">
-                                                            <%= t.name %>
-                                                                <% if (t.status==='rejected' ) { %> <span
-                                                                        class="cp-pill none">ไม่อนุมัติ</span>
-                                                                    <% } %>
-                                                        </td>
-                                                        <td>
-                                                            <%= t.coach || '—' %>
-                                                        </td>
-                                                        <td><span class="cp-pill <%= t.checkedIn ? 'ok' : '' %>">
-                                                                <%= t.checkedIn %> / <%= t.studentCount %> คน
-                                                            </span></td>
-                                                        <% t.days.forEach(function (dd) { %>
-                                                            <td>
-                                                                <% if (dd.state==='used' ) { %>
-                                                                    <span class="cp-pill ok">รับแล้ว <%= dd.meals %> ชุด
-                                                                            · <%= dd.time %></span>
-                                                                    <% } else if (dd.state==='active' ) { %>
-                                                                        <span class="cp-pill">ยังไม่รับ</span>
-                                                                        <% } else { %>
-                                                                            <span
-                                                                                class="cp-pill none">ยังไม่ได้สร้าง</span>
-                                                                            <% } %>
-                                                            </td>
-                                                            <% }) %>
-                                                                <td>
-                                                                    <% if (t.status !=='rejected' ) { %>
-                                                                        <a href="/board/coupons/print?team=<%= encodeURIComponent(t.id) %>"
-                                                                            target="_blank" class="cp-btn sm"><i
-                                                                                class="ti ti-printer"></i> พิมพ์</a>
-                                                                        <% } %>
-                                                                </td>
-                                                    </tr>
-                                                    <% }) %>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <% } %>
-                        </div>
-
-                        <div class="cp-grid2">
-                            <!-- ใช้ล่าสุด -->
-                            <div class="cp-card">
-                                <div class="cp-card-hd">
-                                    <div class="cp-card-title">แลกล่าสุด</div>
-                                    <div class="cp-card-note">15 รายการล่าสุด</div>
+                                <div class="cp-field">
+                                    <label for="day2">วันที่ 2</label>
+                                    <input class="cp-input" type="date" id="day2" name="day2"
+                                        value="<%= days[1] || '' %>">
                                 </div>
-                                <% if (!recent.length) { %>
-                                    <div class="cp-empty">ยังไม่มีการแลกคูปอง</div>
-                                    <% } else { %>
-                                        <div class="cp-tbl-wrap">
-                                            <table class="cp-tbl" style="min-width:0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>เวลา</th>
-                                                        <th>ทีม</th>
-                                                        <th>ชุด</th>
-                                                        <th>ผู้สแกน</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <% recent.forEach(function (r) { %>
-                                                        <tr>
-                                                            <td style="white-space:nowrap">
-                                                                <%= r.usedAt %>
-                                                            </td>
-                                                            <td>
-                                                                <%= r.teamId %> <span class="cp-card-note">
-                                                                        <%= r.team %>
-                                                                    </span>
-                                                            </td>
-                                                            <td><b>
-                                                                    <%= r.meals %>
-                                                                </b></td>
-                                                            <td>
-                                                                <%= r.usedBy || '—' %>
-                                                            </td>
-                                                        </tr>
-                                                        <% }) %>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <% } %>
-                            </div>
-
-                            <% if (locals.isAdmin) { %>
-                                <!-- คูปองหาย -->
-                                <div class="cp-card">
-                                    <div class="cp-card-hd">
-                                        <div class="cp-card-title">คูปองหาย / ชำรุด</div>
-                                    </div>
-                                    <div class="cp-card-body">
-                                        <p class="cp-card-note" style="margin-bottom:12px">กรอกรหัสใต้ QR ของใบที่หาย
-                                            (ดูได้จากไฟล์ Excel ค้นด้วยรหัสทีม) ระบบจะยกเลิกใบเดิมทันที
-                                            แล้วเปิดหน้าพิมพ์ใบใหม่ของทีมนั้น</p>
-                                        <form method="POST" action="/board/coupons/reissue" class="cp-settings"
-                                            onsubmit="return confirm('ยกเลิกคูปองใบนี้ และออกใบใหม่?')">
-                                            <div class="cp-field">
-                                                <label for="reissueCode">รหัสคูปอง</label>
-                                                <input class="cp-input cp-code" id="reissueCode" name="code"
-                                                    placeholder="XXXX-XXXX" maxlength="9" autocomplete="off"
-                                                    style="text-transform:uppercase">
-                                            </div>
-                                            <button type="submit" class="cp-btn"><i class="ti ti-replace"></i>
-                                                ยกเลิกและออกใบใหม่</button>
-                                        </form>
-                                    </div>
+                                <div class="cp-field">
+                                    <label for="day3">วันที่ 3 (ถ้ามี)</label>
+                                    <input class="cp-input" type="date" id="day3" name="day3"
+                                        value="<%= days[2] || '' %>">
                                 </div>
+                                <label class="cp-check">
+                                    <input type="checkbox" name="strict_day" value="1" <%=strictDay ? 'checked' : '' %>>
+                                    ใช้คูปองได้เฉพาะวันที่ระบุบนคูปอง
+                                </label>
+                                <button type="submit" class="cp-btn primary"><i class="ti ti-device-floppy"></i>
+                                    บันทึก</button>
+                            </form>
+                            <% if (!strictDay) { %>
+                                <div class="cp-card-note" style="margin-top:10px;color:#B45309"><i
+                                        class="ti ti-alert-circle"></i> ตอนนี้คูปองใช้ข้ามวันได้ (โหมดทดสอบ)
+                                    อย่าลืมเปิดกลับก่อนวันงาน</div>
                                 <% } %>
                         </div>
+                    </div>
 
-                        <% if (locals.isAdmin) { %>
-                            <!-- ล้างข้อมูล -->
-                            <div class="cp-card cp-danger">
-                                <div class="cp-card-hd">
-                                    <div class="cp-card-title"><i class="ti ti-alert-triangle"></i> ลบคูปองทั้งหมด</div>
-                                    <div class="cp-card-note">ใช้ล้างคูปองทดสอบก่อนวันงาน ·
-                                        คูปองที่พิมพ์ไปแล้วจะใช้ไม่ได้ทั้งหมด</div>
-                                </div>
-                                <div class="cp-card-body">
-                                    <form method="POST" action="/board/coupons/reset" class="cp-settings"
-                                        onsubmit="return confirm('ลบคูปองทั้งหมด? คูปองที่พิมพ์แล้วจะใช้ไม่ได้ และกู้คืนไม่ได้')">
-                                        <div class="cp-field">
-                                            <label for="resetWord">พิมพ์ "<%= resetWord %>" เพื่อยืนยัน</label>
-                                            <input class="cp-input" id="resetWord" name="confirm_text"
-                                                autocomplete="off">
-                                        </div>
-                                        <button type="submit" class="cp-btn danger"><i class="ti ti-trash"></i>
-                                            ลบคูปองทั้งหมด</button>
-                                    </form>
-                                </div>
+                    <% } %>
+
+                        <!-- สถิติรายวัน -->
+                        <% if (days.length) { %>
+                            <div class="cp-days">
+                                <% days.forEach(function (d) { %>
+                                    <% var st=statsByDay[d] || { teams: 0, redeemed: 0, meals: 0 }; %>
+                                        <% var pct=st.teams ? Math.round(st.redeemed / st.teams * 100) : 0; %>
+                                            <div class="cp-day <%= d === today ? 'today' : '' %>">
+                                                <div class="cp-day-label">
+                                                    <%= dayLabel(d) %>
+                                                        <% if (d===today) { %><span class="cp-day-tag">วันนี้</span>
+                                                            <% } %>
+                                                </div>
+                                                <div class="cp-day-num">
+                                                    <%= st.redeemed %> <small>/ <%= st.teams %> ทีม รับแล้ว</small>
+                                                </div>
+                                                <div class="cp-bar"><span style="width:<%= pct %>%"></span></div>
+                                                <div class="cp-day-meta">แจกไปแล้ว <b>
+                                                        <%= st.meals %>
+                                                    </b> ชุด · เหลือ <%= st.teams - st.redeemed %> ทีม</div>
+                                            </div>
+                                            <% }) %>
                             </div>
                             <% } %>
+
+                                <!-- รายทีม -->
+                                <div class="cp-card">
+                                    <div class="cp-card-hd">
+                                        <div class="cp-card-title">รุ่น <%= tierLabel %> — <%= teams.length %> ทีม</div>
+                                        <div class="cp-actions">
+                                            <% if (canPrint) { %>
+                                                <form method="POST" action="/board/coupons/generate?tier=<%= tier %>"
+                                                    style="display:inline">
+                                                    <button type="submit" class="cp-btn sm" <%=days.length ? ''
+                                                        : 'disabled' %>><i class="ti ti-sparkles"></i>
+                                                        สร้างคูปองที่ยังขาด (ทุกรุ่น)</button>
+                                                </form>
+                                                <a href="/board/coupons/print?tier=<%= tier %>" target="_blank"
+                                                    class="cp-btn sm primary"><i class="ti ti-printer"></i>
+                                                    พิมพ์ทั้งรุ่น <%= tierLabel %></a>
+                                                <% } %>
+                                        </div>
+                                    </div>
+                                    <% if (!teams.length) { %>
+                                        <div class="cp-empty">ยังไม่มีทีมในรุ่นนี้</div>
+                                        <% } else { %>
+                                            <div class="cp-tbl-wrap">
+                                                <table class="cp-tbl">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>ID</th>
+                                                            <th>ชื่อทีม</th>
+                                                            <th>โค้ช (ผู้ถือคูปอง)</th>
+                                                            <th>Check-in</th>
+                                                            <% days.forEach(function (d) { %>
+                                                                <th>
+                                                                    <%= shortDayLabel(d) %>
+                                                                </th>
+                                                                <% }) %>
+                                                                    <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <% teams.forEach(function (t) { %>
+                                                            <tr>
+                                                                <td class="cp-id">
+                                                                    <%= t.id %>
+                                                                </td>
+                                                                <td class="cp-name">
+                                                                    <%= t.name %>
+                                                                        <% if (t.status==='rejected' ) { %> <span
+                                                                                class="cp-pill none">ไม่อนุมัติ</span>
+                                                                            <% } %>
+                                                                </td>
+                                                                <td>
+                                                                    <%= t.coach || '—' %>
+                                                                </td>
+                                                                <td><span
+                                                                        class="cp-pill <%= t.checkedIn ? 'ok' : '' %>">
+                                                                        <%= t.checkedIn %> / <%= t.studentCount %> คน
+                                                                    </span></td>
+                                                                <% t.days.forEach(function (dd) { %>
+                                                                    <td>
+                                                                        <% if (dd.state==='used' ) { %>
+                                                                            <span class="cp-pill ok">รับแล้ว <%=
+                                                                                    dd.meals %> ชุด · <%= dd.time %>
+                                                                                        </span>
+                                                                            <% } else if (dd.state==='active' ) { %>
+                                                                                <span class="cp-pill">ยังไม่รับ</span>
+                                                                                <% } else { %>
+                                                                                    <span
+                                                                                        class="cp-pill none">ยังไม่ได้สร้าง</span>
+                                                                                    <% } %>
+                                                                    </td>
+                                                                    <% }) %>
+                                                                        <td>
+                                                                            <% if (t.status !=='rejected' ) { %>
+                                                                                <% if (canPrint) { %>
+                                                                                    <a href="/board/coupons/print?team=<%= encodeURIComponent(t.id) %>"
+                                                                                        target="_blank"
+                                                                                        class="cp-btn sm"><i
+                                                                                            class="ti ti-printer"></i>
+                                                                                        พิมพ์</a>
+                                                                                    <% } else if (canReissue) { %>
+                                                                                        <form method="POST"
+                                                                                            action="/coupons/reissue-team"
+                                                                                            style="display:inline"
+                                                                                            onsubmit="return confirm(<%= JSON.stringify('ยกเลิกคูปองที่ยังไม่ได้ใช้ของทีม ' + t.id + ' และออกใบใหม่?') %>);">
+                                                                                            <input type="hidden"
+                                                                                                name="team"
+                                                                                                value="<%= t.id %>">
+                                                                                            <button type="submit"
+                                                                                                class="cp-btn sm"><i
+                                                                                                    class="ti ti-replace"></i>
+                                                                                                ออกใบใหม่</button>
+                                                                                        </form>
+                                                                                        <% } %>
+                                                                                            <% } %>
+                                                                        </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <% } %>
+                                </div>
+
+                                <div class="cp-grid2">
+                                    <!-- ใช้ล่าสุด -->
+                                    <div class="cp-card">
+                                        <div class="cp-card-hd">
+                                            <div class="cp-card-title">แลกล่าสุด</div>
+                                            <div class="cp-card-note">15 รายการล่าสุด</div>
+                                        </div>
+                                        <% if (!recent.length) { %>
+                                            <div class="cp-empty">ยังไม่มีการแลกคูปอง</div>
+                                            <% } else { %>
+                                                <div class="cp-tbl-wrap">
+                                                    <table class="cp-tbl" style="min-width:0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>เวลา</th>
+                                                                <th>ทีม</th>
+                                                                <th>ชุด</th>
+                                                                <th>ผู้สแกน</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% recent.forEach(function (r) { %>
+                                                                <tr>
+                                                                    <td style="white-space:nowrap">
+                                                                        <%= r.usedAt %>
+                                                                    </td>
+                                                                    <td>
+                                                                        <%= r.teamId %> <span class="cp-card-note">
+                                                                                <%= r.team %>
+                                                                            </span>
+                                                                    </td>
+                                                                    <td><b>
+                                                                            <%= r.meals %>
+                                                                        </b></td>
+                                                                    <td>
+                                                                        <%= r.usedBy || '—' %>
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <% if (locals.isAdmin) { %>
+                                        <!-- คูปองหาย -->
+                                        <div class="cp-card">
+                                            <div class="cp-card-hd">
+                                                <div class="cp-card-title">คูปองหาย / ชำรุด</div>
+                                            </div>
+                                            <div class="cp-card-body">
+                                                <p class="cp-card-note" style="margin-bottom:12px">กรอกรหัสใต้ QR
+                                                    ของใบที่หาย (ดูได้จากไฟล์ Excel ค้นด้วยรหัสทีม)
+                                                    ระบบจะยกเลิกใบเดิมทันที แล้วเปิดหน้าพิมพ์ใบใหม่ของทีมนั้น</p>
+                                                <form method="POST" action="/board/coupons/reissue" class="cp-settings"
+                                                    onsubmit="return confirm('ยกเลิกคูปองใบนี้ และออกใบใหม่?')">
+                                                    <div class="cp-field">
+                                                        <label for="reissueCode">รหัสคูปอง</label>
+                                                        <input class="cp-input cp-code" id="reissueCode" name="code"
+                                                            placeholder="XXXX-XXXX" maxlength="9" autocomplete="off"
+                                                            style="text-transform:uppercase">
+                                                    </div>
+                                                    <button type="submit" class="cp-btn"><i class="ti ti-replace"></i>
+                                                        ยกเลิกและออกใบใหม่</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+
+                                <% if (locals.isAdmin) { %>
+                                    <!-- ล้างข้อมูล -->
+                                    <div class="cp-card cp-danger">
+                                        <div class="cp-card-hd">
+                                            <div class="cp-card-title"><i class="ti ti-alert-triangle"></i>
+                                                ลบคูปองทั้งหมด</div>
+                                            <div class="cp-card-note">ใช้ล้างคูปองทดสอบก่อนวันงาน ·
+                                                คูปองที่พิมพ์ไปแล้วจะใช้ไม่ได้ทั้งหมด</div>
+                                        </div>
+                                        <div class="cp-card-body">
+                                            <form method="POST" action="/board/coupons/reset" class="cp-settings"
+                                                onsubmit="return confirm('ลบคูปองทั้งหมด? คูปองที่พิมพ์แล้วจะใช้ไม่ได้ และกู้คืนไม่ได้')">
+                                                <div class="cp-field">
+                                                    <label for="resetWord">พิมพ์ "<%= resetWord %>" เพื่อยืนยัน</label>
+                                                    <input class="cp-input" id="resetWord" name="confirm_text"
+                                                        autocomplete="off">
+                                                </div>
+                                                <button type="submit" class="cp-btn danger"><i class="ti ti-trash"></i>
+                                                    ลบคูปองทั้งหมด</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <% } %>

@@ -24,6 +24,7 @@ const PERMS = {
 
   "coupons.scan": ["admin", "staff_welfare"],
   "coupons.reissue": ["admin", "staff_welfare"],
+  "coupons.view": ["admin", "staff_welfare", "staff_it"],
   "coupons.print": ["admin", "staff_it"],
   "coupons.manage": ["admin"],
 

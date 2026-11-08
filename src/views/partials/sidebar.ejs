@@ -89,6 +89,11 @@
                 <a href="/coupons/scan" class="sb-item <%= currentPath.startsWith('/coupons') ? 'active' : '' %>">
                   <i class="ti ti-scan"></i> สแกนคูปอง
                 </a>
+
+                <a href="/board/coupons"
+                  class="sb-item <%= currentPath.startsWith('/board/coupons') ? 'active' : '' %>">
+                  <i class="ti ti-table"></i> ตารางคูปอง
+                </a>
                 <% } %>
 
                   <% if (sbRole==='staff_it' ) { %>

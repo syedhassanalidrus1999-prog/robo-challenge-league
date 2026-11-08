@@ -317,13 +317,15 @@ function requireScanner(req, res, next) {
 // สิทธิ์ (utils/permissions.js):
 //   coupons.scan    สแกน / แลกคูปอง            → แอดมิน, สตาฟสวัสดิการ
 //   coupons.reissue ออกคูปองใบใหม่ (คูปองหาย)    → แอดมิน, สตาฟสวัสดิการ
-//   coupons.print   ดูหน้าคูปอง / สร้าง / พิมพ์   → แอดมิน, สตาฟไอที
+//   coupons.view    ดูตารางคูปอง / Excel         → แอดมิน, สตาฟสวัสดิการ, สตาฟไอที
+//   coupons.print   สร้าง / พิมพ์คูปอง           → แอดมิน, สตาฟไอที
 //   coupons.manage  ตั้งค่าวัน / ล้างคูปอง        → แอดมิน
 adminRouter.use(requireLogin);
 staffRouter.use(requireLogin);
 const PERM_SCAN = requirePerm("coupons.scan");
 const PERM_REISSUE = requirePerm("coupons.reissue");
 const PERM_PRINT = requirePerm("coupons.print");
+const PERM_VIEW = requirePerm("coupons.view");
 const PERM_MANAGE = requirePerm("coupons.manage");
 
 // ============================================================================
@@ -538,7 +540,7 @@ staffRouter.post("/redeem", PERM_SCAN, async (req, res) => {
 // ADMIN: GET /board/coupons
 // ============================================================================
 
-adminRouter.get("/", PERM_PRINT, async (req, res) => {
+adminRouter.get("/", PERM_VIEW, async (req, res) => {
   try {
     await tableReady;
     const config = await getCouponConfig();
@@ -958,7 +960,7 @@ adminRouter.post("/reissue", PERM_REISSUE, async (req, res) => {
 
 // ---------------- GET /board/coupons/export ----------------
 
-adminRouter.get("/export", PERM_PRINT, async (req, res) => {
+adminRouter.get("/export", PERM_VIEW, async (req, res) => {
   try {
     await tableReady;
     const result = await query(
