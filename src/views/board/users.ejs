@@ -1,0 +1,465 @@
+<% var ROLE_ICON={ admin: 'ti-shield-lock' , judge: 'ti-clipboard-check' , staff_welfare: 'ti-heart-handshake' ,
+    staff_it: 'ti-device-desktop' }; %>
+    <% var ROLE_COLOR={ admin: '#DC2626' , judge: '#2563EB' , staff_welfare: '#16A34A' , staff_it: '#7C3AED' }; %>
+        <% var ROLE_DESC={ admin: 'ทำได้ทุกอย่าง' , judge: 'ลงคะแนนรุ่นของตัวเอง' ,
+            staff_welfare: 'Check-in · สแกนคูปอง · ออกคูปองใบใหม่' ,
+            staff_it: 'ดูคะแนน · ควบคุมจอแสดงผล · พิมพ์ป้ายชื่อ คูปอง เกียรติบัตร' }; %>
+
+            <style>
+                .us-hd {
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    margin-bottom: 16px;
+                }
+
+                .us-title {
+                    font-size: 22px;
+                    font-weight: 800;
+                    color: #0F172A;
+                }
+
+                .us-sub {
+                    margin-top: 4px;
+                    font-size: 13px;
+                    color: #64748B;
+                }
+
+                .us-btn {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    height: 40px;
+                    padding: 0 14px;
+                    border: 1.5px solid #E2E8F0;
+                    border-radius: 10px;
+                    background: #fff;
+                    color: #334155;
+                    font-family: inherit;
+                    font-size: 13px;
+                    font-weight: 700;
+                    cursor: pointer;
+                    white-space: nowrap;
+                    text-decoration: none;
+                }
+
+                .us-btn.primary {
+                    border-color: #2563EB;
+                    background: #2563EB;
+                    color: #fff;
+                }
+
+                .us-btn.danger {
+                    border-color: #FECACA;
+                    background: #FEF2F2;
+                    color: #DC2626;
+                }
+
+                .us-btn.sm {
+                    height: 34px;
+                    padding: 0 10px;
+                    font-size: 12px;
+                }
+
+                .us-card {
+                    margin-bottom: 16px;
+                    border: 1px solid #E2E8F0;
+                    border-radius: 16px;
+                    background: #fff;
+                    overflow: hidden;
+                }
+
+                .us-card-hd {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 14px 16px;
+                    border-bottom: 1px solid #EEF2F7;
+                }
+
+                .us-card-hd i.role {
+                    width: 36px;
+                    height: 36px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 10px;
+                    background: color-mix(in srgb, var(--c) 12%, #fff);
+                    color: var(--c);
+                    font-size: 20px;
+                }
+
+                .us-card-hd b {
+                    font-size: 16px;
+                    color: #0F172A;
+                }
+
+                .us-card-hd small {
+                    display: block;
+                    font-size: 12px;
+                    color: #64748B;
+                }
+
+                .us-card-hd .count {
+                    margin-left: auto;
+                    padding: 2px 10px;
+                    border-radius: 99px;
+                    background: #F1F5F9;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: #475569;
+                }
+
+                .us-row {
+                    border-bottom: 1px solid #F1F5F9;
+                }
+
+                .us-row:last-child {
+                    border-bottom: 0;
+                }
+
+                .us-row summary {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 12px 16px;
+                    cursor: pointer;
+                    list-style: none;
+                }
+
+                .us-row summary::-webkit-details-marker {
+                    display: none;
+                }
+
+                .us-av {
+                    width: 36px;
+                    height: 36px;
+                    flex-shrink: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    background: color-mix(in srgb, var(--c) 15%, #fff);
+                    color: var(--c);
+                    font-weight: 800;
+                }
+
+                .us-info {
+                    flex: 1;
+                    min-width: 0;
+                }
+
+                .us-info b {
+                    display: block;
+                    font-size: 15px;
+                    color: #0F172A;
+                }
+
+                .us-info span {
+                    font-size: 12px;
+                    color: #64748B;
+                }
+
+                .us-tag {
+                    padding: 2px 8px;
+                    border-radius: 99px;
+                    font-size: 11px;
+                    font-weight: 700;
+                    white-space: nowrap;
+                }
+
+                .us-tag.tier {
+                    background: #EFF6FF;
+                    color: #1D4ED8;
+                }
+
+                .us-tag.off {
+                    background: #FEF2F2;
+                    color: #DC2626;
+                }
+
+                .us-tag.me {
+                    background: #FEF3C7;
+                    color: #92400E;
+                }
+
+                .us-row.inactive summary {
+                    opacity: .55;
+                }
+
+                .us-edit {
+                    padding: 4px 16px 16px 64px;
+                }
+
+                .us-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+                    gap: 10px;
+                }
+
+                .us-field label {
+                    display: block;
+                    margin-bottom: 4px;
+                    font-size: 12px;
+                    font-weight: 700;
+                    color: #64748B;
+                }
+
+                .us-input {
+                    width: 100%;
+                    height: 40px;
+                    padding: 0 10px;
+                    border: 1.5px solid #CBD5E1;
+                    border-radius: 10px;
+                    background: #fff;
+                    font-family: inherit;
+                    font-size: 14px;
+                    outline: none;
+                    box-sizing: border-box;
+                }
+
+                .us-input:focus {
+                    border-color: #2563EB;
+                }
+
+                .us-actions {
+                    display: flex;
+                    gap: 8px;
+                    flex-wrap: wrap;
+                    margin-top: 12px;
+                }
+
+                .us-actions form {
+                    margin: 0;
+                }
+
+                .us-actions .sp {
+                    flex: 1;
+                }
+
+                .us-empty {
+                    padding: 16px;
+                    font-size: 13px;
+                    color: #94A3B8;
+                }
+
+                .us-new {
+                    margin-bottom: 16px;
+                    padding: 16px;
+                    border: 1.5px dashed #93C5FD;
+                    border-radius: 16px;
+                    background: #F8FBFF;
+                }
+
+                .us-new h3 {
+                    margin: 0 0 10px;
+                    font-size: 15px;
+                    color: #1E3A8A;
+                }
+
+                .us-hint {
+                    margin-top: 8px;
+                    font-size: 12px;
+                    color: #64748B;
+                }
+
+                @media (max-width: 700px) {
+                    .us-edit {
+                        padding-left: 16px;
+                    }
+                }
+            </style>
+
+            <div class="us-hd">
+                <div>
+                    <div class="us-title">จัดการผู้ใช้</div>
+                    <div class="us-sub">เพิ่มบัญชีและกำหนดตำแหน่ง · เปลี่ยนตำแหน่งแล้วมีผลทันที
+                        (ไม่ต้องให้ผู้ใช้ออกจากระบบ)</div>
+                </div>
+                <button type="button" class="us-btn primary"
+                    onclick="document.getElementById('usNew').hidden = !document.getElementById('usNew').hidden; document.getElementById('usNewName').focus();">
+                    <i class="ti ti-user-plus"></i> เพิ่มผู้ใช้
+                </button>
+            </div>
+
+            <!-- เพิ่มผู้ใช้ -->
+            <form class="us-new" id="usNew" method="POST" action="/board/users" hidden>
+                <h3><i class="ti ti-user-plus"></i> เพิ่มผู้ใช้ใหม่</h3>
+                <div class="us-grid">
+                    <div class="us-field">
+                        <label for="usNewName">ชื่อที่แสดง</label>
+                        <input class="us-input" id="usNewName" name="name" required maxlength="100"
+                            placeholder="เช่น ครูสมชาย">
+                    </div>
+                    <div class="us-field">
+                        <label>Username (ใช้ login)</label>
+                        <input class="us-input" name="username" required pattern="[a-zA-Z0-9._\-]{3,30}"
+                            placeholder="เช่น judge_b1" autocomplete="off" autocapitalize="off">
+                    </div>
+                    <div class="us-field">
+                        <label>รหัสผ่าน</label>
+                        <input class="us-input" name="password" type="text" required minlength="6"
+                            placeholder="อย่างน้อย 6 ตัว" autocomplete="new-password">
+                    </div>
+                    <div class="us-field">
+                        <label>ตำแหน่ง</label>
+                        <select class="us-input js-role" name="role" required>
+                            <% roles.forEach(function (r) { %>
+                                <option value="<%= r %>" <%=r==='judge' ? 'selected' : '' %>><%= roleLabel[r] %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                    <div class="us-field js-tier-wrap">
+                        <label>รุ่น (กรรมการ)</label>
+                        <select class="us-input" name="tier">
+                            <% tiers.forEach(function (t) { %>
+                                <option value="<%= t %>">
+                                    <%= tierLabel[t] %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
+                </div>
+                <div class="us-actions">
+                    <button type="submit" class="us-btn primary"><i class="ti ti-check"></i> เพิ่มผู้ใช้</button>
+                    <button type="button" class="us-btn"
+                        onclick="document.getElementById('usNew').hidden = true">ยกเลิก</button>
+                </div>
+                <div class="us-hint">จดรหัสผ่านไว้ส่งให้ผู้ใช้ · ระบบเก็บรหัสผ่านแบบเข้ารหัส ดูย้อนหลังไม่ได้
+                    (รีเซ็ตใหม่ได้)</div>
+            </form>
+
+            <% groups.forEach(function (g) { %>
+                <div class="us-card" style="--c:<%= ROLE_COLOR[g.role] %>">
+                    <div class="us-card-hd">
+                        <i class="ti <%= ROLE_ICON[g.role] %> role"></i>
+                        <div>
+                            <b>
+                                <%= g.label %>
+                            </b>
+                            <small>
+                                <%= ROLE_DESC[g.role] %>
+                            </small>
+                        </div>
+                        <span class="count">
+                            <%= g.users.length %> คน
+                        </span>
+                    </div>
+
+                    <% if (!g.users.length) { %>
+                        <div class="us-empty">ยังไม่มีบัญชี</div>
+                        <% } %>
+
+                            <% g.users.forEach(function (u) { %>
+                                <details class="us-row <%= u.active ? '' : 'inactive' %>">
+                                    <summary>
+                                        <span class="us-av">
+                                            <%= (u.name || u.username || '?' ).charAt(0).toUpperCase() %>
+                                        </span>
+                                        <span class="us-info">
+                                            <b>
+                                                <%= u.name || u.username %>
+                                            </b>
+                                            <span>@<%= u.username %>
+                                                    <% if (u.role==='judge' ) { %> · ดูแล <%= u.teams %> ทีม<% } %>
+                                                                </span>
+                                        </span>
+                                        <% if (u.role==='judge' && u.tier) { %><span class="us-tag tier">
+                                                <%= tierLabel[u.tier] || u.tier %>
+                                            </span>
+                                            <% } %>
+                                                <% if (u.isMe) { %><span class="us-tag me">คุณ</span>
+                                                    <% } %>
+                                                        <% if (!u.active) { %><span class="us-tag off">ปิดใช้งาน</span>
+                                                            <% } %>
+                                                                <i class="ti ti-chevron-down" style="color:#94A3B8"></i>
+                                    </summary>
+
+                                    <div class="us-edit">
+                                        <form method="POST" action="/board/users/<%= u.id %>">
+                                            <div class="us-grid">
+                                                <div class="us-field">
+                                                    <label>ชื่อที่แสดง</label>
+                                                    <input class="us-input" name="name" value="<%= u.name %>" required
+                                                        maxlength="100">
+                                                </div>
+                                                <div class="us-field">
+                                                    <label>ตำแหน่ง</label>
+                                                    <select class="us-input js-role" name="role" <%=u.isMe ? 'disabled'
+                                                        : '' %>>
+                                                        <% roles.forEach(function (r) { %>
+                                                            <option value="<%= r %>" <%=r===u.role ? 'selected' : '' %>>
+                                                                <%= roleLabel[r] %>
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+                                                    <% if (u.isMe) { %><input type="hidden" name="role"
+                                                            value="<%= u.role %>">
+                                                        <% } %>
+                                                </div>
+                                                <div class="us-field js-tier-wrap">
+                                                    <label>รุ่น (กรรมการ)</label>
+                                                    <select class="us-input" name="tier">
+                                                        <% tiers.forEach(function (t) { %>
+                                                            <option value="<%= t %>" <%=t===u.tier ? 'selected' : '' %>>
+                                                                <%= tierLabel[t] %>
+                                                            </option>
+                                                            <% }) %>
+                                                    </select>
+                                                </div>
+                                                <div class="us-field">
+                                                    <label>รหัสผ่านใหม่ (เว้นว่าง = ไม่เปลี่ยน)</label>
+                                                    <input class="us-input" name="password" type="text" minlength="6"
+                                                        placeholder="อย่างน้อย 6 ตัว" autocomplete="new-password">
+                                                </div>
+                                            </div>
+                                            <div class="us-actions">
+                                                <button type="submit" class="us-btn primary sm"><i
+                                                        class="ti ti-device-floppy"></i> บันทึก</button>
+                                            </div>
+                                        </form>
+
+                                        <% if (!u.isMe) { %>
+                                            <div class="us-actions">
+                                                <span class="sp"></span>
+                                                <form method="POST" action="/board/users/<%= u.id %>/active">
+                                                    <input type="hidden" name="active"
+                                                        value="<%= u.active ? '0' : '1' %>">
+                                                    <button type="submit" class="us-btn sm">
+                                                        <i
+                                                            class="ti <%= u.active ? 'ti-user-off' : 'ti-user-check' %>"></i>
+                                                        <%= u.active ? 'ปิดใช้งาน' : 'เปิดใช้งาน' %>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="/board/users/<%= u.id %>/delete"
+                                                    onsubmit="return confirm(<%= JSON.stringify('ลบบัญชี ' + (u.name || u.username) + ' ?\nถ้าเคยลงคะแนนแล้ว ระบบจะไม่ให้ลบ (ใช้ปิดใช้งานแทน)') %>);">
+                                                    <button type="submit" class="us-btn danger sm"><i
+                                                            class="ti ti-trash"></i> ลบ</button>
+                                                </form>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                </details>
+                                <% }) %>
+                </div>
+                <% }) %>
+
+                    <script>
+                        (function () {
+                            // ช่องรุ่น แสดงเฉพาะตอนเลือก "กรรมการ"
+                            function sync(sel) {
+                                var form = sel.closest('form');
+                                var wrap = form && form.querySelector('.js-tier-wrap');
+                                if (wrap) wrap.style.display = sel.value === 'judge' ? '' : 'none';
+                            }
+                            var sels = document.querySelectorAll('.js-role');
+                            for (var i = 0; i < sels.length; i++) {
+                                sync(sels[i]);
+                                sels[i].addEventListener('change', function () { sync(this); });
+                            }
+                        })();
+                    </script>

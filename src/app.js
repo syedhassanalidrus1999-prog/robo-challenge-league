@@ -51,13 +51,15 @@ app.use((req, res, next) => {
   next()
 })
 
-const { viewerGuard } = require("./middleware/viewer");   // ← ใหม่
-app.use(viewerGuard);                                      // ← ใหม่
+const { userSync, viewerGuard } = require("./middleware/viewer");
+app.use(userSync);
+app.use(viewerGuard);                            
 
 
 // ── Routes ───────────────────────────────────
 const survey = require("./routes/survey");
 app.use("/survey", survey.publicRouter);
+app.use("/board/users", require("./routes/users"));
 app.use("/board/survey", survey.adminRouter);
 app.use('/', require('./routes/public'))
 app.use('/auth', require('./routes/auth'))

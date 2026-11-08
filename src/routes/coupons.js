@@ -17,6 +17,7 @@ const QRCode = require("qrcode");
 const ExcelJS = require("exceljs");
 const { query } = require("../config/database");
 const { requireLogin } = require("../middleware/auth");
+const { requirePerm } = require("../utils/permissions");
 
 const adminRouter = express.Router();
 const staffRouter = express.Router();
@@ -313,8 +314,17 @@ function requireScanner(req, res, next) {
   return res.redirect("/board");
 }
 
-adminRouter.use(requireLogin, requireAdminOnly);
-staffRouter.use(requireLogin, requireScanner);
+// สิทธิ์ (utils/permissions.js):
+//   coupons.scan    สแกน / แลกคูปอง            → แอดมิน, สตาฟสวัสดิการ
+//   coupons.reissue ออกคูปองใบใหม่ (คูปองหาย)    → แอดมิน, สตาฟสวัสดิการ
+//   coupons.print   ดูหน้าคูปอง / สร้าง / พิมพ์   → แอดมิน, สตาฟไอที
+//   coupons.manage  ตั้งค่าวัน / ล้างคูปอง        → แอดมิน
+adminRouter.use(requireLogin);
+staffRouter.use(requireLogin);
+const PERM_SCAN = requirePerm("coupons.scan");
+const PERM_REISSUE = requirePerm("coupons.reissue");
+const PERM_PRINT = requirePerm("coupons.print");
+const PERM_MANAGE = requirePerm("coupons.manage");
 
 // ============================================================================
 // STAFF: GET /coupons/scan
@@ -333,9 +343,9 @@ async function todayStats(today) {
   return r.rows[0] || { teams: 0, redeemed: 0, meals: 0 };
 }
 
-staffRouter.get("/", (req, res) => res.redirect("/coupons/scan"));
+staffRouter.get("/", PERM_SCAN, (req, res) => res.redirect("/coupons/scan"));
 
-staffRouter.get("/scan", async (req, res) => {
+staffRouter.get("/scan", PERM_SCAN, async (req, res) => {
   try {
     await tableReady;
     const config = await getCouponConfig();
@@ -349,6 +359,8 @@ staffRouter.get("/scan", async (req, res) => {
       strictDay: config.strictDay,
       stats: await todayStats(today),
       user: req.session.user,
+      notice: cleanText(req.query.msg, 200),
+      noticeOk: req.query.ok === "1",
     });
   } catch (err) {
     console.error("Coupon scan page error:", err);
@@ -375,7 +387,7 @@ function baseView(c, team) {
   };
 }
 
-staffRouter.post("/redeem", async (req, res) => {
+staffRouter.post("/redeem", PERM_SCAN, async (req, res) => {
   const code = normalizeCode(req.body.code);
 
   if (!code) {
@@ -526,7 +538,7 @@ staffRouter.post("/redeem", async (req, res) => {
 // ADMIN: GET /board/coupons
 // ============================================================================
 
-adminRouter.get("/", async (req, res) => {
+adminRouter.get("/", PERM_PRINT, async (req, res) => {
   try {
     await tableReady;
     const config = await getCouponConfig();
@@ -631,7 +643,7 @@ adminRouter.get("/", async (req, res) => {
 
 // ---------------- POST /board/coupons/settings ----------------
 
-adminRouter.post("/settings", async (req, res) => {
+adminRouter.post("/settings", PERM_MANAGE, async (req, res) => {
   try {
     const days = [req.body.day1, req.body.day2, req.body.day3]
       .map((d) => cleanText(d, 10))
@@ -654,7 +666,7 @@ adminRouter.post("/settings", async (req, res) => {
 
 // ---------------- POST /board/coupons/generate ----------------
 
-adminRouter.post("/generate", async (req, res) => {
+adminRouter.post("/generate", PERM_PRINT, async (req, res) => {
   const back =
     "/board/coupons" +
     (TIERS.includes(req.query.tier) ? "?tier=" + req.query.tier : "");
@@ -681,7 +693,7 @@ adminRouter.post("/generate", async (req, res) => {
 
 // ---------------- GET /board/coupons/print?team=ID | ?tier=beginner ----------------
 
-adminRouter.get("/print", async (req, res) => {
+async function printHandler(req, res) {
   try {
     await tableReady;
     const config = await getCouponConfig();
@@ -776,7 +788,7 @@ adminRouter.get("/print", async (req, res) => {
       ? "team=" + encodeURIComponent(teamId)
       : "tier=" + tier;
     const url = (l, sd) =>
-      "/board/coupons/print?" + baseQuery + "&layout=" + l + "&side=" + sd;
+      req.baseUrl + "/print?" + baseQuery + "&layout=" + l + "&side=" + sd;
 
     return res.render("coupons/print", {
       layout: false,
@@ -793,14 +805,17 @@ adminRouter.get("/print", async (req, res) => {
         front: url(layout, "front"),
         duplex: url(layout, "duplex"),
       },
-      backUrl: "/board/coupons?tier=" + (teams[0].tier || "beginner"),
+      backUrl:
+        req.baseUrl === "/coupons"
+          ? "/coupons/scan"
+          : "/board/coupons?tier=" + (teams[0].tier || "beginner"),
     });
   } catch (err) {
     console.error("Coupon print error:", err);
     req.flash("error", "สร้างหน้าพิมพ์คูปองไม่สำเร็จ");
     return res.redirect("/board/coupons");
   }
-});
+}
 
 // จัดหน้าพิมพ์
 // A4 แผ่นละ 4 ดวง (2 คอลัมน์ × 2 แถว) — ด้านหลังสลับซ้าย/ขวา
@@ -828,9 +843,72 @@ function buildPages(stickers, layout, side) {
   return pages;
 }
 
+adminRouter.get("/print", PERM_PRINT, printHandler);
+
+// สตาฟสวัสดิการ: พิมพ์คูปองใบใหม่ของทีมเดียว (หลังออกใบใหม่)
+staffRouter.get("/print", PERM_REISSUE, (req, res) => {
+  if (!cleanText(req.query.team, 20)) return res.redirect("/coupons/scan");
+  return printHandler(req, res);
+});
+
+// ---------------- POST /coupons/reissue-team (สตาฟสวัสดิการ) ----------------
+// คูปองหาย / ชำรุด: ยกเลิกคูปองที่ยังไม่ได้ใช้ของทีม แล้วออกใบใหม่ (ใบที่ใช้แล้วคงไว้)
+
+staffRouter.post("/reissue-team", PERM_REISSUE, async (req, res) => {
+  const teamId = cleanText(req.body.team, 20).toUpperCase();
+  const backMsg = (msg, ok) =>
+    res.redirect(
+      "/coupons/scan?msg=" + encodeURIComponent(msg) + (ok ? "&ok=1" : ""),
+    );
+
+  if (!teamId) return backMsg("กรุณาใส่รหัสทีม");
+
+  try {
+    await tableReady;
+    const teamResult = await query("SELECT * FROM teams WHERE UPPER(id) = $1", [
+      teamId,
+    ]);
+    const team = teamResult.rows[0];
+    if (!team) return backMsg("ไม่พบทีม " + teamId);
+    if (team.status === "rejected")
+      return backMsg("ทีม " + team.id + " ไม่ได้รับอนุมัติ ไม่มีคูปอง");
+
+    const voided = await query(
+      "UPDATE team_coupons SET status = 'void' WHERE team_id = $1 AND status = 'active' RETURNING coupon_day",
+      [team.id],
+    );
+    if (!voided.rows.length) {
+      return backMsg(
+        "ทีม " +
+          team.id +
+          " ไม่มีคูปองที่ยังไม่ได้ใช้ (ใช้ครบแล้ว หรือยังไม่ได้สร้างคูปอง)",
+      );
+    }
+
+    for (const row of voided.rows) await insertCoupon(team.id, row.coupon_day);
+
+    const user = req.session.user || {};
+    console.log(
+      "[coupons] ออกใบใหม่ทีม",
+      team.id,
+      voided.rows.length,
+      "ใบ โดย",
+      user.username,
+    );
+    return res.redirect(
+      "/coupons/print?team=" +
+        encodeURIComponent(team.id) +
+        "&layout=label&side=back",
+    );
+  } catch (err) {
+    console.error("Coupon reissue-team error:", err);
+    return backMsg("ออกใบใหม่ไม่สำเร็จ ลองอีกครั้ง");
+  }
+});
+
 // ---------------- POST /board/coupons/reissue ----------------
 
-adminRouter.post("/reissue", async (req, res) => {
+adminRouter.post("/reissue", PERM_REISSUE, async (req, res) => {
   const code = normalizeCode(req.body.code);
   if (!code) {
     req.flash("error", "รหัสคูปองไม่ถูกต้อง");
@@ -880,7 +958,7 @@ adminRouter.post("/reissue", async (req, res) => {
 
 // ---------------- GET /board/coupons/export ----------------
 
-adminRouter.get("/export", async (req, res) => {
+adminRouter.get("/export", PERM_PRINT, async (req, res) => {
   try {
     await tableReady;
     const result = await query(
@@ -959,7 +1037,7 @@ adminRouter.get("/export", async (req, res) => {
 
 // ---------------- POST /board/coupons/reset ----------------
 
-adminRouter.post("/reset", async (req, res) => {
+adminRouter.post("/reset", PERM_MANAGE, async (req, res) => {
   try {
     if (cleanText(req.body.confirm_text, 50) !== RESET_WORD) {
       req.flash(

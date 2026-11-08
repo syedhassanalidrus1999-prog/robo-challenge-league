@@ -10,6 +10,8 @@
 
 const express = require("express");
 const { requireLogin } = require("../middleware/auth");
+const { requirePerm } = require("../utils/permissions");
+
 const board = require("./board");
 
 let formatTime;
@@ -54,50 +56,60 @@ router.get("/", (req, res) => {
 
 // ---------------- หน้าควบคุม (จอโน้ตบุ๊ก) ----------------
 
-router.get("/control", requireLogin, requireAdminOnly, (req, res) => {
-  return res.render("screen/control", {
-    layout: false,
-    user: req.session.user,
-  });
-});
+router.get(
+  "/control",
+  requireLogin,
+  requirePerm("screen.control"),
+  (req, res) => {
+    return res.render("screen/control", {
+      layout: false,
+      user: req.session.user,
+    });
+  },
+);
 
 // ---------------- ผลการแข่งขัน Top 10 ----------------
 // ใช้ getRanked เดียวกับหน้าสรุปผลและเกียรติบัตร → อันดับตรงกันทุกที่
 
-router.get("/api/results", requireLogin, requireAdminOnly, async (req, res) => {
-  const tier = TIERS.includes(req.query.tier) ? req.query.tier : "beginner";
-  try {
-    const [ranked, maxScore] = await Promise.all([
-      board.getRanked(tier),
-      board.getMaxScore(tier),
-    ]);
-    const teams = ranked
-      .filter((t) => parseFloat(t.best_score) > 0)
-      .slice(0, 10)
-      .map((t, i) => ({
-        rank: i + 1,
-        id: t.id,
-        name: t.name,
-        institution: t.institution || "",
-        score: parseFloat(t.best_score),
-        time: formatTime(t.best_time),
-      }));
+router.get(
+  "/api/results",
+  requireLogin,
+  requirePerm("screen.control"),
+  async (req, res) => {
+    const tier = TIERS.includes(req.query.tier) ? req.query.tier : "beginner";
+    try {
+      const [ranked, maxScore] = await Promise.all([
+        board.getRanked(tier),
+        board.getMaxScore(tier),
+      ]);
+      const teams = ranked
+        .filter((t) => parseFloat(t.best_score) > 0)
+        .slice(0, 10)
+        .map((t, i) => ({
+          rank: i + 1,
+          id: t.id,
+          name: t.name,
+          institution: t.institution || "",
+          score: parseFloat(t.best_score),
+          time: formatTime(t.best_time),
+        }));
 
-    res.setHeader("Cache-Control", "no-store");
-    return res.json({
-      ok: true,
-      tier,
-      tierLabel: TIER_LABEL[tier],
-      maxScore,
-      teams,
-    });
-  } catch (err) {
-    console.error("Screen results error:", err);
-    return res
-      .status(500)
-      .json({ ok: false, error: "โหลดผลการแข่งขันไม่สำเร็จ" });
-  }
-});
+      res.setHeader("Cache-Control", "no-store");
+      return res.json({
+        ok: true,
+        tier,
+        tierLabel: TIER_LABEL[tier],
+        maxScore,
+        teams,
+      });
+    } catch (err) {
+      console.error("Screen results error:", err);
+      return res
+        .status(500)
+        .json({ ok: false, error: "โหลดผลการแข่งขันไม่สำเร็จ" });
+    }
+  },
+);
 
 // ---------------- ลิงก์เดิมของนาฬิกา ----------------
 

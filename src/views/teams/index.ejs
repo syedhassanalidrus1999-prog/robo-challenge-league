@@ -1,4 +1,4 @@
-<% var canEdit=!locals.isViewer; %>
+<% var canEdit=!!locals.isAdmin; %>
   <% var tierColor=activeTier==='beginner' ? '#16A34A' : activeTier==='intermediate' ? '#2563EB' : '#EA580C' ; var
     tierLabel=activeTier==='beginner' ? 'Beginner' : activeTier==='intermediate' ? 'Intermediate' : 'Advance' ; var
     tierIcon=activeTier==='beginner' ? 'ti-leaf' : activeTier==='intermediate' ? 'ti-flame' : 'ti-rocket' ; %>
@@ -983,8 +983,9 @@
 
       <% if (!canEdit) { %>
         <div class="readonly-note">
-          <i class="ti ti-eye"></i> โหมดผู้ดูข้อมูล — กดปุ่ม Check-in ในคอลัมน์จัดการได้ แต่ไม่สามารถเพิ่ม แก้ไข
-          หรือลบทีมได้
+          <i class="ti ti-eye"></i>
+          <%= locals.canCheckin ? "โหมดสตาฟ — กดปุ่ม Check-in ในคอลัมน์จัดการได้ แต่ไม่สามารถเพิ่ม แก้ไข หรือลบทีมได้"
+            : "โหมดดูข้อมูล — ไม่สามารถเปลี่ยนแปลงข้อมูลทีมได้" %>
         </div>
         <% } %>
 
@@ -1175,7 +1176,7 @@
                                   ciTotal++; if (t['student_' + ck + '_checked_in' ]) ciIn++; } } %>
                                   <td data-label="จัดการ">
                                     <div class="act-wrap">
-                                      <% if (ciTotal) { %>
+                                      <% if (ciTotal && locals.canCheckin) { %>
                                         <button type="button"
                                           class="ci-open <%= ciIn === ciTotal ? 'all' : ciIn ? 'some' : '' %>"
                                           data-id="<%= t.id %>" data-name="<%= t.name %>"

@@ -1,30 +1,117 @@
 // src/middleware/viewer.js
-// ตำแหน่ง Viewer (ผู้ดูข้อมูล): ดูได้แค่หน้าจัดการทีม + หน้าสรุปผลคะแนน
-// ห้ามเพิ่ม / แก้ / ลบ ทุกอย่าง ยกเว้นสลับสถานะ Check-in นักเรียน
+// ตรวจสิทธิ์ตาม role ทุกคำขอ (ชื่อไฟล์ / ฟังก์ชันเดิม เพื่อไม่ต้องแก้ app.js)
 //
-// ใช้ใน app.js หลัง session + flash:  app.use(viewerGuard);
-// ตรวจที่ server ทุกคำขอ → ซ่อนปุ่มอย่างเดียวไม่พอ (ส่ง POST ตรง ๆ ได้)
+//   userSync    อ่าน role / รุ่น / ชื่อ ล่าสุดจากฐานข้อมูล → เปลี่ยน role ในหน้าจัดการผู้ใช้แล้วมีผลทันที
+//               บัญชีที่ถูกปิดใช้งานหรือถูกลบ → ออกจากระบบทันที
+//   viewerGuard สตาฟเข้าได้เฉพาะหน้าที่กำหนดด้านล่าง (ตรวจที่ server — ซ่อนปุ่มอย่างเดียวไม่พอ)
+//
+// app.js หลัง session + flash:
+//   const { userSync, viewerGuard } = require("./middleware/viewer");
+//   app.use(userSync);
+//   app.use(viewerGuard);
 
-// หน้าหลังบ้านทั้งหมด (หน้าสาธารณะ เช่น /, /certificate, /docs ไม่เกี่ยว)
-const ADMIN_PREFIXES = ["/board", "/teams", "/scores", "/documents"];
+const { query } = require("../config/database");
+const { roleOf, can, homeFor, ROLE_LABEL } = require("../utils/permissions");
 
-// หน้าที่ Viewer เปิดได้ (GET เท่านั้น)
-const VIEWER_ALLOWED = [
-  /^\/board\/?$/, //            สรุปผลคะแนน
-  /^\/board\/export\/?$/, //     ดาวน์โหลด Excel
-  /^\/teams\/?$/, //            จัดการทีม (รายการ)
-  /^\/teams\/(export|pdf|print)(\/.*)?$/, // Export PDF (ปรับให้ตรง path จริง)
+// ============================================================================
+// userSync
+// ============================================================================
+
+const cache = new Map(); // id → { at, row }
+const CACHE_MS = 5000;
+
+async function loadUser(id) {
+  const hit = cache.get(id);
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.row;
+  const r = await query("SELECT * FROM users WHERE id = $1", [id]);
+  const row = r.rows[0] || null;
+  cache.set(id, { at: Date.now(), row });
+  return row;
+}
+
+function clearUserCache(id) {
+  if (id === undefined) cache.clear();
+  else cache.delete(id);
+}
+
+async function userSync(req, res, next) {
+  const user = req.session && req.session.user;
+  if (!user || !user.id || req.path.startsWith("/auth/")) return next();
+
+  try {
+    const row = await loadUser(user.id);
+
+    if (!row || row.is_active === false) {
+      const msg = row ? "บัญชีนี้ถูกปิดใช้งาน" : "ไม่พบบัญชีนี้แล้ว";
+      return req.session.regenerate(function () {
+        if (typeof req.flash === "function")
+          req.flash("error", msg + " กรุณาติดต่อผู้ดูแลระบบ");
+        return res.redirect("/auth/login");
+      });
+    }
+
+    user.role = row.role;
+    user.tier = row.tier || null;
+    if (row.name) user.name = row.name;
+  } catch (err) {
+    console.error("[userSync]", err.message);
+  }
+  return next();
+}
+
+// ============================================================================
+// viewerGuard
+// ============================================================================
+
+// หน้าหลังบ้าน (นอกเหนือจากนี้คือหน้าสาธารณะ เช่น /, /certificate, /survey, /screen)
+const AREAS = [
+  "/board",
+  "/teams",
+  "/scores",
+  "/documents",
+  "/coupons",
+  "/screen/control",
+  "/screen/api",
+  "/timer",
 ];
 
-// path ที่ Viewer ส่งแบบ POST ได้
-const VIEWER_POST_ALLOWED = [
-  /^\/auth\//, //                                   ออกจากระบบ / เข้าสู่ระบบใหม่
-  /^\/teams\/[^/]+\/checkin\/[1-3]\/?$/, //            สลับสถานะ Check-in นักเรียน
-  /^\/teams\/[^/]+\/checkin\/?$/, //                  Check-in ทั้งทีม (ติ๊กชื่อ)
-  /^\/survey\/?$/, //                                 ส่งแบบประเมิน (หน้าสาธารณะ)
-  /^\/coupons\/redeem\/?$/, //                        แลกคูปองที่จุดบริการ
-  /^\/timer\/action\/?$/, //                          ควบคุมนาฬิกาจับเวลา
+const COMMON_POST = [
+  /^\/auth\//, //                 เข้า / ออกจากระบบ
+  /^\/survey\/?$/, //             ส่งแบบประเมิน (หน้าสาธารณะ)
 ];
+
+const RULES = {
+  staff_welfare: {
+    get: [
+      /^\/teams\/?$/, //                                จัดการทีม (ดู + Check-in)
+      /^\/teams\/(export|pdf|print)(\/.*)?$/,
+      /^\/coupons(\/.*)?$/, //                          สแกนคูปอง + พิมพ์ใบใหม่ของทีม
+    ],
+    post: [
+      /^\/teams\/[^/]+\/checkin(\/[1-3])?\/?$/, //      Check-in
+      /^\/coupons\/(redeem|reissue-team)\/?$/, //       แลกคูปอง / ออกใบใหม่
+    ],
+  },
+  staff_it: {
+    get: [
+      /^\/board\/?$/, //                                สรุปผลคะแนน
+      /^\/board\/export\/?$/,
+      /^\/teams\/?$/, //                                ดูรายชื่อทีม
+      /^\/teams\/(export|pdf|print)(\/.*)?$/,
+      /^\/board\/badges(\/.*)?$/, //                    ป้ายชื่อ
+      /^\/board\/cert-export(\/.*)?$/, //               ดาวน์โหลดเกียรติบัตร
+      /^\/board\/coupons\/?$/, //                       คูปอง (ดู + พิมพ์)
+      /^\/board\/coupons\/(print|export)\/?$/,
+      /^\/board\/survey\/draw\/?$/, //                  หน้าสุ่มรางวัล
+      /^\/screen\/(control|api)(\/.*)?$/, //            ควบคุมจอแสดงผล
+      /^\/timer(\/.*)?$/,
+    ],
+    post: [
+      /^\/board\/survey\/draw\/?$/, //                  สุ่มรางวัล
+      /^\/board\/coupons\/generate\/?$/, //             สร้างคูปองที่ยังขาด (ก่อนพิมพ์)
+    ],
+  },
+};
 
 function hasMethodOverride(req) {
   const q = req.query && req.query._method;
@@ -44,56 +131,58 @@ function wantsJson(req) {
   );
 }
 
-function deny(req, res, message) {
-  if (wantsJson(req)) {
-    return res.status(403).json({ error: message });
-  }
-  if (typeof req.flash === "function") req.flash("error", message);
-  return res.redirect("/board");
+function deny(req, res, user, message) {
+  if (wantsJson(req))
+    return res.status(403).json({ ok: false, error: message });
+  // หลัง login ระบบพาไป /board → สตาฟสวัสดิการไปหน้าแรกของตัวเองเงียบ ๆ (ไม่ขึ้นข้อความเตือน)
+  const silent =
+    req.method === "GET" && (req.path === "/board" || req.path === "/board/");
+  if (!silent && typeof req.flash === "function") req.flash("error", message);
+  const home = homeFor(user);
+  return res.redirect(req.path === home ? "/auth/logout" : home);
 }
 
 function viewerGuard(req, res, next) {
   const user = req.session && req.session.user;
-  const role = user ? user.role : null;
+  const role = roleOf(user);
 
-  // ใช้ใน view: <% if (!isViewer) { %> ปุ่มแก้ไข / ลบ <% } %>
-  res.locals.isViewer = role === "viewer";
-  res.locals.isAdmin = role === "admin";
+  // ใช้ใน view
   res.locals.userRole = role;
+  res.locals.roleLabel = ROLE_LABEL[role] || "";
+  res.locals.isAdmin = role === "admin";
+  res.locals.isJudge = role === "judge";
+  res.locals.isStaff = role === "staff_welfare" || role === "staff_it";
+  res.locals.isViewer = res.locals.isStaff; // view เดิมใช้ isViewer = โหมดอ่านอย่างเดียว
+  res.locals.can = function (perm) {
+    return can(user, perm);
+  };
+  res.locals.canCheckin = can(user, "teams.checkin");
 
-  if (role !== "viewer") return next();
+  const rules = RULES[role];
+  if (!rules) return next(); // admin / judge / ยังไม่ login → ให้ route ตรวจเอง
 
   const method = req.method.toUpperCase();
   const path = req.path;
 
-  // ---------------- ห้ามเขียนข้อมูล ----------------
   if (method !== "GET" && method !== "HEAD") {
-    // อนุญาตเฉพาะ POST ตรง ๆ (กันการแฝง _method=DELETE / PUT มา)
-    if (
+    const ok =
       method === "POST" &&
       !hasMethodOverride(req) &&
-      VIEWER_POST_ALLOWED.some((re) => re.test(path))
-    ) {
-      return next();
-    }
-    return deny(
-      req,
-      res,
-      "บัญชีผู้ดูข้อมูลไม่สามารถเพิ่ม แก้ไข หรือลบข้อมูลได้",
-    );
+      COMMON_POST.concat(rules.post).some((re) => re.test(path));
+    return ok
+      ? next()
+      : deny(req, res, user, "บัญชีของคุณไม่มีสิทธิ์ทำรายการนี้");
   }
 
-  // ---------------- จำกัดหน้าหลังบ้าน ----------------
-  const isAdminArea = ADMIN_PREFIXES.some((p) => isUnder(path, p));
-  if (!isAdminArea) return next();
-
-  if (VIEWER_ALLOWED.some((re) => re.test(path))) return next();
+  if (!AREAS.some((p) => isUnder(path, p))) return next();
+  if (rules.get.some((re) => re.test(path))) return next();
 
   return deny(
     req,
     res,
-    "บัญชีผู้ดูข้อมูลเข้าได้เฉพาะหน้าจัดการทีมและสรุปผลคะแนน",
+    user,
+    "บัญชี" + (ROLE_LABEL[role] || "") + "ไม่มีสิทธิ์เข้าหน้านี้",
   );
 }
 
-module.exports = { viewerGuard };
+module.exports = { userSync, viewerGuard, clearUserCache };

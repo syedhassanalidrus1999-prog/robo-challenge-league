@@ -1,5 +1,5 @@
 <% var tbRole=user ? user.role : '' ; %>
-  <% var tbCanSwitch=tbRole==='admin' || tbRole==='viewer' ; %>
+  <% var tbCanSwitch=tbRole !=='judge' ; %>
     <link rel="stylesheet" href="/css/admin-mobile.css?v=1">
     <div class="topbar">
       <button type="button" class="mnav-btn" id="mnavBtn" aria-label="เปิดเมนู" aria-expanded="false">

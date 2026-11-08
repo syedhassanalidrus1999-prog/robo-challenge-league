@@ -56,7 +56,7 @@ function requireAdmin(req, res, next) {
 
 // admin + viewer (ผู้ดูข้อมูล) สลับดูได้ทุกรุ่น / กรรมการดูได้แค่รุ่นตัวเอง
 function canSeeAllTiers(user) {
-  return Boolean(user) && (user.role === "admin" || user.role === "viewer");
+  return Boolean(user) && (user.role === "admin" || user.role === "staff_it");
 }
 
 // ============================================================================

@@ -11,6 +11,7 @@
 const express = require("express");
 const { query } = require("../config/database");
 const { requireLogin } = require("../middleware/auth");
+const { requirePerm } = require("../utils/permissions");
 
 const router = express.Router();
 
@@ -42,7 +43,8 @@ function requireAdminOnly(req, res, next) {
   return res.redirect("/board");
 }
 
-router.use(requireLogin, requireAdminOnly);
+// แอดมิน + สตาฟไอที
+router.use(requireLogin, requirePerm("print.badges"));
 
 async function loadTeams(tier, teamId) {
   if (teamId) {

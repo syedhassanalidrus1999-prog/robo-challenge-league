@@ -13,6 +13,8 @@ const PDFDocument = require("pdfkit");
 const { Resvg } = require("@resvg/resvg-js");
 const { query } = require("../config/database");
 const { requireLogin } = require("../middleware/auth");
+const { requirePerm } = require("../utils/permissions");
+
 const certificate = require("./certificate");
 
 const H = certificate.helpers;
@@ -48,7 +50,8 @@ function requireAdminOnly(req, res, next) {
   return res.redirect("/board");
 }
 
-router.use(requireLogin, requireAdminOnly);
+// แอดมิน + สตาฟไอที
+router.use(requireLogin, requirePerm("print.certs"));
 
 function cleanText(v, max) {
   return String(Array.isArray(v) ? v[0] : (v ?? ""))

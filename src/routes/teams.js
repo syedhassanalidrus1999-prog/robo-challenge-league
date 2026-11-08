@@ -9,15 +9,15 @@ function safeTier(value) {
   return TIERS.includes(value) ? value : "beginner";
 }
 
-// Check-in: admin + viewer (ผู้ดูข้อมูล) ทำได้
-// ไม่ใช้ requireAdmin เพราะตัวนั้นส่งคนที่ไม่ใช่ admin ไปหน้า /dashboard (404)
+// Check-in: แอดมิน + สตาฟสวัสดิการ (สิทธิ์กำหนดใน utils/permissions.js)
+const { can, homeFor } = require("../utils/permissions");
 function requireCheckinAccess(req, res, next) {
   const user = req.session && req.session.user;
-  if (user && (user.role === "admin" || user.role === "viewer")) {
+  if (can(user, "teams.checkin")) {
     return next();
   }
   req.flash("error", "ไม่มีสิทธิ์เปลี่ยนสถานะ Check-in");
-  return res.redirect("/board");
+  return res.redirect(homeFor(user));
 }
 
 // ─── GET /teams ───────────────────────────────────────────────────────────────

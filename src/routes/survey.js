@@ -513,7 +513,14 @@ function wantsJson(req) {
   return req.xhr || (req.headers.accept || "").includes("application/json");
 }
 
-adminRouter.use(requireLogin, requireAdminOnly);
+// หน้าสุ่มรางวัล + การสุ่ม: แอดมิน + สตาฟไอที (ใช้จากจอแสดงผล) · ส่วนอื่น: แอดมิน
+const { can } = require("../utils/permissions");
+adminRouter.use(requireLogin, function (req, res, next) {
+  const isDraw = req.path === "/draw" || req.path === "/draw/";
+  if (isDraw && can(req.session && req.session.user, "survey.draw"))
+    return next();
+  return requireAdminOnly(req, res, next);
+});
 
 // ---------------- GET /board/survey ----------------
 

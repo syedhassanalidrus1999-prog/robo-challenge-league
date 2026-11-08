@@ -375,6 +375,45 @@
             display: none !important;
         }
     </style>
+    <style>
+        .lost {
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .12);
+        }
+
+        .lost summary {
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .lost p {
+            margin: 8px 0;
+            font-size: 13px;
+            opacity: .8;
+            line-height: 1.5;
+        }
+
+        .lost form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lost input {
+            flex: 1;
+            min-width: 0;
+            height: 46px;
+            padding: 0 12px;
+            border-radius: 12px;
+            border: 1.5px solid rgba(255, 255, 255, .2);
+            background: rgba(0, 0, 0, .2);
+            color: inherit;
+            font: inherit;
+            font-size: 16px;
+        }
+    </style>
 </head>
 
 <body>
@@ -383,54 +422,75 @@
             <h1>สแกนคูปอง<%= couponLabel %><small>
                         <%= todayLabel %>
                     </small></h1>
-            <a href="<%= user && user.role === 'admin' ? '/board/coupons' : '/board' %>"><i
+            <a href="<%= user && user.role === 'admin' ? '/board/coupons' : '/teams' %>"><i
                     class="ti ti-arrow-left"></i> กลับ</a>
         </header>
 
-        <% if (!isCouponDay && strictDay) { %>
-            <div class="alert"><i class="ti ti-calendar-off"></i> วันนี้ไม่ใช่วันแจกคูปอง สแกนแล้วจะใช้ไม่ได้</div>
+        <% if (typeof notice !=='undefined' && notice) { %>
+            <div class="alert" style="<%= noticeOk ? 'background:#DCFCE7;color:#166534' : '' %>"><i
+                    class="ti ti-info-circle"></i>
+                <%= notice %>
+            </div>
             <% } %>
-                <% if (!strictDay) { %>
-                    <div class="alert"><i class="ti ti-flask"></i> โหมดทดสอบ: คูปองใช้ข้ามวันได้</div>
+
+                <% if (!isCouponDay && strictDay) { %>
+                    <div class="alert"><i class="ti ti-calendar-off"></i> วันนี้ไม่ใช่วันแจกคูปอง สแกนแล้วจะใช้ไม่ได้
+                    </div>
                     <% } %>
+                        <% if (!strictDay) { %>
+                            <div class="alert"><i class="ti ti-flask"></i> โหมดทดสอบ: คูปองใช้ข้ามวันได้</div>
+                            <% } %>
 
-                        <div class="stat">
-                            <span>วันนี้รับแล้ว <b id="teamCount">
-                                    <%= stats.redeemed %>
-                                </b> / <%= stats.teams %> ทีม</span>
-                            <span>แจก <b id="mealCount">
-                                    <%= stats.meals %>
-                                </b> ชุด</span>
-                        </div>
+                                <div class="stat">
+                                    <span>วันนี้รับแล้ว <b id="teamCount">
+                                            <%= stats.redeemed %>
+                                        </b> / <%= stats.teams %> ทีม</span>
+                                    <span>แจก <b id="mealCount">
+                                            <%= stats.meals %>
+                                        </b> ชุด</span>
+                                </div>
 
-                        <div class="cam">
-                            <div id="reader"></div>
-                            <div class="cam-idle" id="camIdle">
-                                <i class="ti ti-camera"></i>
-                                <div>กดเพื่อเปิดกล้อง แล้วส่อง QR บนคูปองของทีม</div>
-                                <button type="button" class="btn btn-main" id="startBtn"><i class="ti ti-scan"></i>
-                                    เปิดกล้อง</button>
-                            </div>
-                        </div>
+                                <div class="cam">
+                                    <div id="reader"></div>
+                                    <div class="cam-idle" id="camIdle">
+                                        <i class="ti ti-camera"></i>
+                                        <div>กดเพื่อเปิดกล้อง แล้วส่อง QR บนคูปองของทีม</div>
+                                        <button type="button" class="btn btn-main" id="startBtn"><i
+                                                class="ti ti-scan"></i> เปิดกล้อง</button>
+                                    </div>
+                                </div>
 
-                        <div class="cam-tools" id="camTools" hidden>
-                            <button type="button" class="btn btn-ghost" id="stopBtn"><i class="ti ti-camera-off"></i>
-                                ปิดกล้อง</button>
-                        </div>
+                                <div class="cam-tools" id="camTools" hidden>
+                                    <button type="button" class="btn btn-ghost" id="stopBtn"><i
+                                            class="ti ti-camera-off"></i> ปิดกล้อง</button>
+                                </div>
 
-                        <form class="manual" id="manualForm" autocomplete="off">
-                            <input type="text" id="manualCode" placeholder="หรือพิมพ์รหัส XXXX-XXXX" maxlength="9"
-                                inputmode="text" aria-label="รหัสคูปอง">
-                            <button type="submit" class="btn btn-main" aria-label="ตรวจรหัส"><i
-                                    class="ti ti-check"></i></button>
-                        </form>
+                                <form class="manual" id="manualForm" autocomplete="off">
+                                    <input type="text" id="manualCode" placeholder="หรือพิมพ์รหัส XXXX-XXXX"
+                                        maxlength="9" inputmode="text" aria-label="รหัสคูปอง">
+                                    <button type="submit" class="btn btn-main" aria-label="ตรวจรหัส"><i
+                                            class="ti ti-check"></i></button>
+                                </form>
 
-                        <section class="result idle" id="result" aria-live="assertive">พร้อมสแกน</section>
+                                <section class="result idle" id="result" aria-live="assertive">พร้อมสแกน</section>
 
-                        <section class="history" id="historyWrap" hidden>
-                            <h2>สแกนล่าสุด (เครื่องนี้)</h2>
-                            <div id="history"></div>
-                        </section>
+                                <section class="history" id="historyWrap" hidden>
+                                    <h2>สแกนล่าสุด (เครื่องนี้)</h2>
+                                    <div id="history"></div>
+                                </section>
+
+                                <!-- คูปองหาย / ชำรุด -->
+                                <details class="lost">
+                                    <summary><i class="ti ti-replace"></i> คูปองหาย / ชำรุด — ออกใบใหม่</summary>
+                                    <p>ใส่รหัสทีม (เช่น T007_B) ระบบจะยกเลิกคูปองที่ยังไม่ได้ใช้ของทีมนั้น
+                                        แล้วเปิดหน้าพิมพ์ใบใหม่ · วันที่รับไปแล้วยังนับว่ารับแล้ว</p>
+                                    <form method="POST" action="/coupons/reissue-team" autocomplete="off"
+                                        onsubmit="var t=this.team.value.trim(); return t && confirm('ยกเลิกคูปองที่ยังไม่ได้ใช้ของทีม ' + t + ' และออกใบใหม่?');">
+                                        <input type="text" name="team" placeholder="รหัสทีม เช่น T007_B" maxlength="20"
+                                            style="text-transform:uppercase" aria-label="รหัสทีม">
+                                        <button type="submit" class="btn btn-main">ออกใบใหม่</button>
+                                    </form>
+                                </details>
     </main>
 
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
