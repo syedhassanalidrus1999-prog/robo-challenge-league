@@ -56,6 +56,16 @@ function cleanText(v, max) {
     .slice(0, max);
 }
 
+// resvg (ตัวสร้างภาพเกียรติบัตร) วางสระอำ U+0E33 ผิด → ตัวถัดไปทับสระอา
+// แยกเป็น นิคหิต + สระอา ก่อนสร้างภาพ (วรรณยุกต์ย้ายไปไว้ระหว่างกลาง เช่น น้ำ ค้ำ ช่ำ)
+// ข้อมูลในฐานข้อมูลไม่ต้องแก้ ใช้เฉพาะตอนสร้างภาพ
+function thaiForSvg(s) {
+  return String(s == null ? "" : s).replace(
+    /([\u0E48-\u0E4B]?)\u0E33/g,
+    "\u0E4D$1\u0E32",
+  );
+}
+
 function normalizeName(v) {
   return String(v || "")
     .trim()
@@ -271,15 +281,21 @@ router.get("/pdf", async (req, res) => {
     doc.pipe(res);
 
     for (const item of list) {
+      // ข้อความทุกตัวที่อาจไปอยู่บนเกียรติบัตร ผ่าน thaiForSvg ก่อน
+      const teamForSvg = Object.assign({}, item.team, {
+        name: thaiForSvg(item.team.name),
+        institution: thaiForSvg(item.team.institution),
+        coach: thaiForSvg(item.team.coach),
+      });
       const svg = H.createCertificateSvg({
         background,
         canvas,
         template,
-        name: item.name,
-        team: item.team,
+        name: thaiForSvg(item.name),
+        team: teamForSvg,
         type,
         rank: item.rank,
-        medalLabel: item.medalLabel,
+        medalLabel: thaiForSvg(item.medalLabel),
         score: item.score,
         maxScore: item.maxScore,
       });

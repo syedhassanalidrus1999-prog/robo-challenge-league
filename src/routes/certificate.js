@@ -45,6 +45,12 @@ const FONT_FILES = ["Sarabun-Regular.ttf", "Sarabun-Bold.ttf"].map((file) =>
 //  ซึ่ง resvg จะข้ามไปเงียบ ๆ ทำให้ไม่มีข้อความบนเกียรติบัตร)
 const FONT_MAGICS = ["00010000", "74727565", "4f54544f", "74746366"]; // TTF, 'true', 'OTTO', 'ttcf'
 
+// resvg วางสระอำ (U+0E33) ผิด → แยกเป็น นิคหิต + สระอา ก่อนสร้างภาพ
+// วรรณยุกต์ที่อยู่หน้าสระอำ ย้ายไปไว้ระหว่างนิคหิตกับสระอา (เช่น น้ำ, ค้ำ, ช่ำ)
+function thaiForSvg(s) {
+  return String(s == null ? "" : s).replace(/([\u0E48-\u0E4B]?)\u0E33/g, "\u0E4D$1\u0E32");
+}
+
 function getFontProblems() {
   const problems = [];
 
