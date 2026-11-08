@@ -204,6 +204,58 @@ router.delete("/:id", requireLogin, requireAdmin, async (req, res) => {
   return res.redirect("/teams?tier=" + tier);
 });
 
+// ─── POST /teams/:id/checkin ──────────────────────────────────────────────────
+// Check-in ทั้งทีมในครั้งเดียว: ติ๊กชื่อที่มา (present=1&present=3) → คนที่ไม่ติ๊ก = ยังไม่มา
+// admin + viewer ใช้ได้
+router.post(
+  "/:id/checkin",
+  requireLogin,
+  requireCheckinAccess,
+  async (req, res) => {
+    const { id } = req.params;
+    const tier = safeTier(req.query.tier);
+    const back = "/teams?tier=" + tier;
+
+    const raw = req.body.present;
+    const picked = new Set(
+      (Array.isArray(raw) ? raw : raw === undefined ? [] : [raw]).map((v) =>
+        String(v),
+      ),
+    );
+
+    try {
+      const result = await query(
+        `UPDATE teams
+       SET student_1_checked_in = $2, student_2_checked_in = $3, student_3_checked_in = $4
+       WHERE id = $1
+       RETURNING name, student_1, student_2, student_3`,
+        [id, picked.has("1"), picked.has("2"), picked.has("3")],
+      );
+
+      if (!result.rows.length) {
+        req.flash("error", "ไม่พบทีมนี้");
+      } else {
+        const t = result.rows[0];
+        const total = [t.student_1, t.student_2, t.student_3].filter(
+          (n) => n && String(n).trim(),
+        ).length;
+        const came = [1, 2, 3].filter(
+          (n) => picked.has(String(n)) && t["student_" + n],
+        ).length;
+        req.flash(
+          "success",
+          "Check-in ทีม " + t.name + ": มาแล้ว " + came + "/" + total + " คน",
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      req.flash("error", "บันทึก Check-in ไม่สำเร็จ");
+    }
+
+    return res.redirect(back);
+  },
+);
+
 // ─── POST /teams/:id/checkin/:studentNum ──────────────────────────────────────
 // admin + viewer สลับสถานะ Check-in ได้
 router.post(

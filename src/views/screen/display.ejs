@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
     <link rel="stylesheet" href="/css/timer.css?v=4">
-    <link rel="stylesheet" href="/css/screen.css?v=2">
+    <link rel="stylesheet" href="/css/screen.css?v=4">
 </head>
 
 <body class="tdisp state-idle scene-logo" data-preview="<%= preview ? '1' : '0' %>">
@@ -18,7 +18,7 @@
     <% if (!preview) { %>
         <div class="td-start" id="tdStart">
             <button type="button" id="tdStartBtn">คลิกเพื่อเริ่มแสดงผล</button>
-            <p>เปิดเสียง และแสดงเต็มจอบนโปรเจกเตอร์</p>
+            <p>ลากหน้าต่างนี้ไปที่จอโปรเจกเตอร์ก่อน แล้วค่อยคลิก · กด F เพื่อเข้า/ออกเต็มจอ</p>
         </div>
         <% } %>
 
@@ -127,10 +127,14 @@
             <!-- ===== ฉาก: จอดำ ===== -->
             <section class="sc sc-blank" id="scBlank"></section>
 
-            <div class="sc-wait" id="scWait">รอสัญญาณจากหน้าควบคุม…</div>
+            <% if (!preview) { %>
+                <button type="button" class="fs-btn" id="fsBtn" hidden>⛶ เต็มจอ <small>(กด F)</small></button>
+                <% } %>
 
-            <script src="/js/screen-common.js?v=1"></script>
-            <script src="/js/screen-display.js?v=2"></script>
+                    <div class="sc-wait" id="scWait">รอสัญญาณจากหน้าควบคุม…</div>
+
+                    <script src="/js/screen-common.js?v=2"></script>
+                    <script src="/js/screen-display.js?v=4"></script>
 </body>
 
 </html>

@@ -2,6 +2,11 @@
 // เป็นเจ้าของสถานะทั้งหมด แล้วส่งให้หน้าแสดงผลผ่าน BroadcastChannel
 (function () {
   var S = window.RCLScreen;
+  if (!document.getElementById("vcCount")) {
+    console.warn(
+      "[screen] control.ejs เป็นเวอร์ชันเก่า — วางไฟล์ control.ejs ใหม่ทับ",
+    );
+  }
   var ch = S.channel();
   var $ = function (id) {
     return document.getElementById(id);
@@ -66,6 +71,15 @@
         revealed: 0,
         loadedAt: 0,
       },
+      voice: {
+        enabled: true,
+        name: "",
+        particle: "ค่ะ",
+        rate: 0.95,
+        volume: 1,
+        countMode: "voice",
+      },
+      program: { day: 0, current: null, done: [[], []] },
       v: 0,
     };
   }
@@ -148,6 +162,11 @@
       sendMedia(m.id);
     } else if (m.type === "ping") {
       lastPing = Date.now();
+    } else if (m.type === "announceDone") {
+      finishAnnounce(m.seq);
+    } else if (m.type === "timerEnded") {
+      lastPing = Date.now();
+      handleStepEnd(m.seq);
     } else if (m.type === "videoStatus") {
       videoStatus = m;
       lastPing = Date.now();
@@ -281,15 +300,14 @@
       return;
     }
     var cd = cdSeconds();
-    state.timer = {
-      status: "running",
+    state.program.current = null;
+    launchTimer({
       label: label || "จับเวลา",
-      durationMs: ms,
-      startAt: cd ? now + cd * 1000 : null,
-      endAt: now + cd * 1000 + ms,
-      remainingMs: 0,
-    };
-    setScene("timer");
+      ms: ms,
+      cd: cd,
+      voice: {},
+      stepRef: null,
+    });
     commit(
       "เริ่ม " + state.timer.label + (cd ? " · นับถอยหลัง " + cd + " วิ" : ""),
     );
@@ -303,7 +321,7 @@
     var t = state.timer;
     var now = Date.now();
     var p = S.timerPhase(t, now);
-    if (p === "countdown") {
+    if (p === "countdown" || p === "announce") {
       t.remainingMs = t.durationMs;
     } else if (p === "running") {
       t.remainingMs = t.endAt - now;
@@ -332,7 +350,9 @@
       var t = state.timer;
       var now = Date.now();
       var p = S.timerPhase(t, now);
-      if (p === "countdown") {
+      if (p === "announce") {
+        t.durationMs = Math.max(1000, t.durationMs + sec * 1000);
+      } else if (p === "countdown") {
         t.durationMs = Math.max(1000, t.durationMs + sec * 1000);
         t.endAt = t.startAt + t.durationMs;
       } else if (p === "running") {
@@ -355,6 +375,7 @@
   $("tmReset").addEventListener("click", function () {
     if (!confirm("หยุดจับเวลาและล้างนาฬิกา?")) return;
     state.timer = defaultState().timer;
+    state.program.current = null;
     commit("รีเซ็ตแล้ว");
   });
 
@@ -803,6 +824,587 @@
   }
 
   // ======================================================================
+  // โปรแกรมรายวัน + เสียงประกาศ AI
+  // ======================================================================
+  var PROGRAM_STORE = "rcl-screen-program";
+  var SCRIPT_STORE = "rcl-screen-scripts";
+
+  var DEFAULT_PROGRAM = [
+    [
+      {
+        label: "ซ้อมรอบที่ 1",
+        kind: "practice",
+        minutes: 70,
+        cd: 10,
+        after: "next",
+      },
+      {
+        label: "รวมหุ่นยนต์",
+        kind: "collect",
+        minutes: 10,
+        cd: 0,
+        after: "hold",
+      },
+      {
+        label: "ซ้อมรอบที่ 2",
+        kind: "practice",
+        minutes: 90,
+        cd: 10,
+        after: "next",
+      },
+      {
+        label: "รวมหุ่นยนต์",
+        kind: "collect",
+        minutes: 10,
+        cd: 0,
+        after: "hold",
+      },
+    ],
+    [
+      {
+        label: "ซ้อมรอบที่ 1",
+        kind: "practice",
+        minutes: 60,
+        cd: 10,
+        after: "next",
+      },
+      {
+        label: "รวมหุ่นยนต์",
+        kind: "collect",
+        minutes: 10,
+        cd: 0,
+        after: "hold",
+      },
+      {
+        label: "ซ้อมรอบที่ 2",
+        kind: "practice",
+        minutes: 60,
+        cd: 10,
+        after: "next",
+      },
+      {
+        label: "รวมหุ่นยนต์",
+        kind: "collect",
+        minutes: 10,
+        cd: 0,
+        after: "hold",
+      },
+    ],
+  ];
+
+  var SCRIPT_FIELDS = [
+    { key: "practice_start", label: "ซ้อม · ก่อนเริ่ม (ก่อนนับถอยหลัง)" },
+    { key: "practice_go", label: "ซ้อม · ตอนเริ่ม (หลังนับถึง 1)" },
+    { key: "practice_warn", label: "ซ้อม · เตือน 10 / 5 นาที" },
+    { key: "practice_warn1", label: "ซ้อม · เตือน 1 นาที" },
+    { key: "practice_end", label: "ซ้อม · หมดเวลา (ต่อด้วยรวมหุ่นยนต์)" },
+    {
+      key: "practice_end_plain",
+      label: "ซ้อม · หมดเวลา (ไม่มีขั้นรวมหุ่นยนต์ต่อ)",
+    },
+    { key: "collect_start", label: "รวมหุ่นยนต์ · ตอนเริ่ม (กดเริ่มเอง)" },
+    { key: "collect_warn", label: "รวมหุ่นยนต์ · เตือน 5 นาที" },
+    { key: "collect_warn1", label: "รวมหุ่นยนต์ · เตือน 1 นาที" },
+    { key: "collect_end", label: "รวมหุ่นยนต์ · หมดเวลา" },
+  ];
+
+  var DEFAULT_SCRIPTS = {
+    practice_start:
+      "ขอเชิญผู้เข้าแข่งขันทุกทีม เตรียมพร้อมสำหรับการ{label} ค่ะ การซ้อมจะเริ่มในอีก {cd} วินาที",
+    practice_go: "เริ่มซ้อมได้ค่ะ",
+    practice_warn: "เหลือเวลา{label} อีก {n} นาทีค่ะ",
+    practice_warn1:
+      "เหลือเวลา{label} อีก 1 นาที กรุณาเตรียมนำหุ่นยนต์ออกจากสนามค่ะ",
+    practice_end:
+      "หมดเวลา{label} ค่ะ ขอให้ผู้เข้าแข่งขันทุกทีมหยุดการซ้อม และนำหุ่นยนต์มาส่งที่โต๊ะรวมหุ่นยนต์ภายใน {next_minutes} นาทีค่ะ",
+    practice_end_plain:
+      "หมดเวลา{label} ค่ะ ขอให้ผู้เข้าแข่งขันทุกทีมหยุดการซ้อมค่ะ",
+    collect_start:
+      "ขอให้ผู้เข้าแข่งขันทุกทีม นำหุ่นยนต์มาส่งที่โต๊ะรวมหุ่นยนต์ภายใน {minutes} นาทีค่ะ",
+    collect_warn: "เหลือเวลาส่งหุ่นยนต์อีก {n} นาทีค่ะ",
+    collect_warn1:
+      "เหลือเวลาส่งหุ่นยนต์อีก 1 นาที ทีมที่ยังไม่ได้ส่ง กรุณานำหุ่นยนต์มาที่โต๊ะรวมหุ่นยนต์ค่ะ",
+    collect_end:
+      "หมดเวลาส่งหุ่นยนต์ค่ะ ขอบคุณผู้เข้าแข่งขันทุกทีม ทีมที่ยังไม่ได้ส่งหุ่นยนต์ กรุณาติดต่อเจ้าหน้าที่ที่โต๊ะรวมหุ่นยนต์ค่ะ",
+  };
+
+  var QUICK_PHRASES = [
+    "ขอความร่วมมือทุกทีม ไม่ยืนบังสนามระหว่างการซ้อมค่ะ",
+    "ขณะนี้พักรับประทานอาหารกลางวันค่ะ",
+    "ขอเชิญผู้เข้าแข่งขันทุกทีม กลับเข้าประจำพื้นที่ของทีมค่ะ",
+    "ขอเชิญทุกท่านเข้าร่วมพิธีมอบรางวัลค่ะ",
+  ];
+
+  function loadJson(key, fallback) {
+    try {
+      var v = JSON.parse(localStorage.getItem(key) || "null");
+      return v || fallback;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  var program =
+    loadJson(PROGRAM_STORE, null) ||
+    JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+  var scripts = Object.assign({}, DEFAULT_SCRIPTS, loadJson(SCRIPT_STORE, {}));
+  if (!state.program || !state.program.done)
+    state.program = { day: 0, current: null, done: [[], []] };
+  if (!state.voice) state.voice = defaultState().voice;
+
+  function fill(tpl, vars) {
+    return String(tpl || "").replace(/\{(\w+)\}/g, function (m, k) {
+      return vars[k] !== undefined ? vars[k] : m;
+    });
+  }
+
+  // สร้างชุดข้อความเสียงของขั้นตอน
+  function buildVoice(step, next, chained) {
+    var vars = {
+      label: step.label,
+      minutes: step.minutes,
+      cd: step.cd,
+      next_minutes: next ? next.minutes : "",
+    };
+    var v = { start: "", go: "", warns: [], end: "" };
+    if (step.kind === "practice") {
+      v.start = fill(scripts.practice_start, vars);
+      v.go = fill(scripts.practice_go, vars);
+      [10, 5].forEach(function (n) {
+        if (step.minutes > n)
+          v.warns.push({
+            sec: n * 60,
+            text: fill(scripts.practice_warn, Object.assign({ n: n }, vars)),
+          });
+      });
+      if (step.minutes > 1)
+        v.warns.push({ sec: 60, text: fill(scripts.practice_warn1, vars) });
+      v.end =
+        next && next.kind === "collect" && step.after === "next"
+          ? fill(scripts.practice_end, vars)
+          : fill(scripts.practice_end_plain, vars);
+    } else {
+      // รวมหุ่นยนต์ที่ต่อจากการซ้อม: ประกาศไปแล้วตอนหมดเวลาซ้อม
+      v.start = chained ? "" : fill(scripts.collect_start, vars);
+      if (step.minutes > 5)
+        v.warns.push({
+          sec: 300,
+          text: fill(scripts.collect_warn, Object.assign({ n: 5 }, vars)),
+        });
+      if (step.minutes > 1)
+        v.warns.push({ sec: 60, text: fill(scripts.collect_warn1, vars) });
+      v.end = fill(scripts.collect_end, vars);
+    }
+    return v;
+  }
+
+  // เริ่มนาฬิกา (ใช้ทั้งโปรแกรมและจับเวลาเอง)
+  function launchTimer(o) {
+    var now = Date.now();
+    var displayOn = now - lastPing < 5000;
+    var waitVoice =
+      o.cd > 0 && state.voice.enabled && displayOn && o.voice && o.voice.start;
+    state.timer = {
+      status: waitVoice ? "announce" : "running",
+      seq: (state.timer.seq || 0) + 1,
+      label: o.label,
+      durationMs: o.ms,
+      cd: o.cd,
+      announceAt: now,
+      startAt: waitVoice ? null : o.cd ? now + o.cd * 1000 : null,
+      endAt: waitVoice ? null : now + o.cd * 1000 + o.ms,
+      remainingMs: 0,
+      voice: o.voice || {},
+      stepRef: o.stepRef || null,
+      endHandled: false,
+    };
+    // พูดประกาศก่อนนับถอยหลังไม่ได้ (จอไม่เปิด) → ส่งเสียงเริ่มไปพร้อมนับเลย
+    if (!waitVoice && o.cd > 0 && o.voice && o.voice.start)
+      ch.postMessage({ type: "speak", text: o.voice.start });
+    setScene("timer");
+  }
+
+  function finishAnnounce(seq) {
+    var t = state.timer;
+    if (t.status !== "announce" || t.seq !== seq) return;
+    var now = Date.now();
+    t.status = "running";
+    t.startAt = t.cd ? now + t.cd * 1000 : null;
+    t.endAt = now + (t.cd || 0) * 1000 + t.durationMs;
+    commit();
+  }
+
+  function startStep(day, i, chained) {
+    var steps = program[day] || [];
+    var step = steps[i];
+    if (!step) return;
+    var now = Date.now();
+    var p = S.timerPhase(state.timer, now);
+    if (
+      !chained &&
+      (p === "running" ||
+        p === "paused" ||
+        p === "countdown" ||
+        p === "announce") &&
+      !confirm(
+        'กำลังจับเวลา "' +
+          (state.timer.label || "") +
+          '" อยู่ เริ่ม "' +
+          step.label +
+          '" แทนใช่ไหม?',
+      )
+    ) {
+      return;
+    }
+    var next = steps[i + 1] || null;
+    state.program.day = day;
+    state.program.current = i;
+    launchTimer({
+      label: step.label,
+      ms: Math.round(step.minutes * 60000),
+      cd: chained ? 0 : step.cd,
+      voice: buildVoice(step, next, chained),
+      stepRef: { day: day, i: i },
+    });
+    commit(
+      (chained ? "ต่ออัตโนมัติ: " : "เริ่ม: ") +
+        step.label +
+        " (" +
+        step.minutes +
+        " นาที)",
+    );
+  }
+
+  function handleStepEnd(seq) {
+    var t = state.timer;
+    if (!t.stepRef || t.endHandled || (seq !== undefined && seq !== t.seq))
+      return;
+    t.endHandled = true;
+    var day = t.stepRef.day;
+    var i = t.stepRef.i;
+    var done = state.program.done[day] || (state.program.done[day] = []);
+    if (done.indexOf(i) < 0) done.push(i);
+    var step = (program[day] || [])[i];
+    if (step && step.after === "next" && program[day][i + 1]) {
+      startStep(day, i + 1, true);
+    } else {
+      state.program.current = null;
+      commit("จบขั้น: " + (step ? step.label : ""));
+    }
+  }
+
+  function renderProgram() {
+    var day = state.program.day || 0;
+    document.querySelectorAll("#pgDays [data-day]").forEach(function (b) {
+      b.classList.toggle(
+        "active",
+        parseInt(b.getAttribute("data-day"), 10) === day,
+      );
+    });
+    var steps = program[day] || [];
+    var cur = state.program.current;
+    var doneList = state.program.done[day] || [];
+    var phase = S.timerPhase(state.timer, Date.now());
+    var running =
+      state.timer.stepRef &&
+      state.timer.stepRef.day === day &&
+      phase !== "idle" &&
+      phase !== "finished";
+
+    $("pgList").innerHTML =
+      steps
+        .map(function (st, i) {
+          var isCur = running && cur === i;
+          var isDone = doneList.indexOf(i) >= 0 && !isCur;
+          var isNext =
+            !isCur &&
+            !running &&
+            doneList.indexOf(i) < 0 &&
+            steps.slice(0, i).every(function (x, j) {
+              return doneList.indexOf(j) >= 0;
+            });
+          return (
+            '<div class="pg-step' +
+            (isCur ? " cur" : isDone ? " done" : isNext ? " next" : "") +
+            '">' +
+            '<span class="pg-no">' +
+            (isDone ? '<i class="ti ti-check"></i>' : i + 1) +
+            "</span>" +
+            '<div class="pg-info"><b>' +
+            S.esc(st.label) +
+            "</b><span>" +
+            st.minutes +
+            " นาที" +
+            (st.cd ? " · นับถอยหลัง " + st.cd + " วิ" : " · ไม่มีนับถอยหลัง") +
+            (st.after === "next" && steps[i + 1]
+              ? " · จบแล้วต่อ " + S.esc(steps[i + 1].label) + " อัตโนมัติ"
+              : " · จบแล้วหยุดรอ") +
+            "</span></div>" +
+            (isCur ? '<span class="pg-live">กำลังทำ</span>' : "") +
+            '<button type="button" class="ct-btn ' +
+            (isNext ? "primary" : "") +
+            '" data-start="' +
+            i +
+            '"><i class="ti ti-player-play"></i> เริ่ม</button>' +
+            "</div>"
+          );
+        })
+        .join("") || '<p class="ct-small">ยังไม่มีขั้นตอน</p>';
+    renderProgramEdit();
+  }
+
+  function renderProgramEdit() {
+    var steps = program[state.program.day || 0] || [];
+    $("pgEdit").innerHTML = steps
+      .map(function (st, i) {
+        return (
+          '<div class="pg-erow" data-i="' +
+          i +
+          '">' +
+          '<input class="ct-input" data-f="label" value="' +
+          S.esc(st.label) +
+          '" placeholder="ชื่อขั้น">' +
+          '<select class="ct-input" data-f="kind"><option value="practice"' +
+          (st.kind === "practice" ? " selected" : "") +
+          '>ซ้อม</option><option value="collect"' +
+          (st.kind === "collect" ? " selected" : "") +
+          ">รวมหุ่นยนต์</option></select>" +
+          '<input class="ct-input num" data-f="minutes" type="number" min="1" max="600" value="' +
+          st.minutes +
+          '" title="นาที">' +
+          '<select class="ct-input" data-f="cd"><option value="0"' +
+          (!st.cd ? " selected" : "") +
+          '>ไม่นับถอยหลัง</option><option value="5"' +
+          (st.cd == 5 ? " selected" : "") +
+          '>นับ 5 วิ</option><option value="10"' +
+          (st.cd == 10 ? " selected" : "") +
+          '>นับ 10 วิ</option><option value="30"' +
+          (st.cd == 30 ? " selected" : "") +
+          ">นับ 30 วิ</option></select>" +
+          '<select class="ct-input" data-f="after"><option value="next"' +
+          (st.after === "next" ? " selected" : "") +
+          '>จบแล้วต่ออัตโนมัติ</option><option value="hold"' +
+          (st.after !== "next" ? " selected" : "") +
+          ">จบแล้วหยุดรอ</option></select>" +
+          '<button type="button" class="ct-btn danger" data-del="' +
+          i +
+          '" title="ลบขั้นนี้"><i class="ti ti-trash"></i></button>' +
+          "</div>"
+        );
+      })
+      .join("");
+  }
+
+  function readProgramEdit() {
+    var rows = document.querySelectorAll("#pgEdit .pg-erow");
+    var list = [];
+    rows.forEach(function (r) {
+      var g = function (f) {
+        return r.querySelector('[data-f="' + f + '"]').value;
+      };
+      var label = g("label").trim();
+      var minutes = parseFloat(g("minutes"));
+      if (!label || !(minutes > 0)) return;
+      list.push({
+        label: label.slice(0, 60),
+        kind: g("kind"),
+        minutes: Math.min(600, minutes),
+        cd: parseInt(g("cd"), 10) || 0,
+        after: g("after"),
+      });
+    });
+    return list;
+  }
+
+  $("pgDays").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-day]");
+    if (!b) return;
+    state.program.day = parseInt(b.getAttribute("data-day"), 10);
+    save();
+    renderProgram();
+  });
+
+  $("pgList").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-start]");
+    if (!b) return;
+    startStep(
+      state.program.day || 0,
+      parseInt(b.getAttribute("data-start"), 10),
+      false,
+    );
+  });
+
+  $("pgEdit").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-del]");
+    if (!b) return;
+    var day = state.program.day || 0;
+    program[day] = readProgramEdit();
+    program[day].splice(parseInt(b.getAttribute("data-del"), 10), 1);
+    renderProgramEdit();
+  });
+
+  $("pgAdd").addEventListener("click", function () {
+    var day = state.program.day || 0;
+    program[day] = readProgramEdit();
+    program[day].push({
+      label: "ขั้นตอนใหม่",
+      kind: "practice",
+      minutes: 30,
+      cd: 10,
+      after: "hold",
+    });
+    renderProgramEdit();
+  });
+
+  $("pgSave").addEventListener("click", function () {
+    var day = state.program.day || 0;
+    program[day] = readProgramEdit();
+    try {
+      localStorage.setItem(PROGRAM_STORE, JSON.stringify(program));
+    } catch (e) {}
+    state.program.done[day] = [];
+    commit("บันทึกโปรแกรมวันที่ " + (day + 1) + " แล้ว");
+    renderProgram();
+  });
+
+  $("pgDefault").addEventListener("click", function () {
+    if (!confirm("คืนค่าโปรแกรมทั้ง 2 วันเป็นค่าเริ่มต้น?")) return;
+    program = JSON.parse(JSON.stringify(DEFAULT_PROGRAM));
+    try {
+      localStorage.removeItem(PROGRAM_STORE);
+    } catch (e) {}
+    state.program.done = [[], []];
+    commit("คืนค่าโปรแกรมแล้ว");
+    renderProgram();
+  });
+
+  // ---------------- เสียง ----------------
+  function fillVoices() {
+    var sel = $("vcVoice");
+    var list = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+    var th = list.filter(function (v) {
+      return /^th/i.test(v.lang);
+    });
+    var cur = state.voice.name || "";
+    sel.innerHTML =
+      '<option value="">อัตโนมัติ (เสียงไทยที่ดีที่สุด)</option>' +
+      th
+        .map(function (v) {
+          return (
+            '<option value="' +
+            S.esc(v.name) +
+            '"' +
+            (v.name === cur ? " selected" : "") +
+            ">" +
+            S.esc(v.name) +
+            "</option>"
+          );
+        })
+        .join("");
+    $("vcHint").textContent = th.length
+      ? "พบเสียงภาษาไทย " +
+        th.length +
+        " เสียง · เสียงพูดออกที่จอแสดงผล · แนะนำ Microsoft Edge เสียง Premwadee / Niwat (Natural)"
+      : "ไม่พบเสียงภาษาไทยในเบราว์เซอร์นี้ — แนะนำเปิดด้วย Microsoft Edge (มีเสียงไทย Natural ฟรี)";
+  }
+  if (window.speechSynthesis) {
+    fillVoices();
+    window.speechSynthesis.onvoiceschanged = fillVoices;
+  }
+
+  $("vcOn").checked = !!state.voice.enabled;
+  $("vcParticle").value = state.voice.particle || "ค่ะ";
+  $("vcRate").value = state.voice.rate || 0.95;
+  $("vcVol").value = state.voice.volume === undefined ? 1 : state.voice.volume;
+  if ($("vcCount")) $("vcCount").value = state.voice.countMode || "voice";
+
+  function saveVoice() {
+    state.voice = {
+      enabled: $("vcOn").checked,
+      name: $("vcVoice").value,
+      particle: $("vcParticle").value,
+      rate: parseFloat($("vcRate").value) || 0.95,
+      volume: parseFloat($("vcVol").value),
+      countMode: $("vcCount") ? $("vcCount").value : "voice",
+    };
+    commit();
+  }
+  ["vcOn", "vcVoice", "vcParticle", "vcRate", "vcVol", "vcCount"].forEach(
+    function (id) {
+      if ($(id)) $(id).addEventListener("change", saveVoice);
+    },
+  );
+
+  function say(text, cancel) {
+    if (!text) return;
+    if (!state.voice.enabled) {
+      toast('เสียงพูดปิดอยู่ — ติ๊ก "เปิดเสียงพูด" ก่อน', false);
+      return;
+    }
+    if (Date.now() - lastPing > 5000)
+      toast("ยังไม่ได้เปิดจอแสดงผล — เสียงพูดออกที่หน้าต่างจอแสดงผล", false);
+    ch.postMessage({ type: "speak", text: text, cancel: !!cancel });
+  }
+
+  $("vcTest").addEventListener("click", function () {
+    say(fill(scripts.practice_start, { label: "ซ้อมรอบที่ 1", cd: 10 }), true);
+  });
+  $("vcQuick").innerHTML = QUICK_PHRASES.map(function (q, i) {
+    return (
+      '<button type="button" class="ct-btn banner" data-q="' +
+      i +
+      '">' +
+      S.esc(q) +
+      "</button>"
+    );
+  }).join("");
+  $("vcQuick").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-q]");
+    if (b) say(QUICK_PHRASES[parseInt(b.getAttribute("data-q"), 10)]);
+  });
+  $("vcSay").addEventListener("click", function () {
+    say($("vcText").value.trim());
+  });
+  $("vcStop").addEventListener("click", function () {
+    ch.postMessage({ type: "speak", text: "", cancel: true });
+  });
+
+  // ---------------- สคริปต์ ----------------
+  function renderScripts() {
+    $("scEdit").innerHTML = SCRIPT_FIELDS.map(function (f) {
+      return (
+        '<label class="sc-field"><span>' +
+        S.esc(f.label) +
+        '</span><textarea class="ct-input ct-area" rows="2" data-sc="' +
+        f.key +
+        '">' +
+        S.esc(scripts[f.key]) +
+        "</textarea></label>"
+      );
+    }).join("");
+  }
+  renderScripts();
+
+  $("scSave").addEventListener("click", function () {
+    document.querySelectorAll("[data-sc]").forEach(function (t) {
+      scripts[t.getAttribute("data-sc")] = t.value.trim();
+    });
+    try {
+      localStorage.setItem(SCRIPT_STORE, JSON.stringify(scripts));
+    } catch (e) {}
+    toast("บันทึกสคริปต์แล้ว (ใช้กับขั้นตอนที่เริ่มหลังจากนี้)", true);
+  });
+  $("scDefault").addEventListener("click", function () {
+    if (!confirm("คืนค่าสคริปต์เสียงทั้งหมดเป็นค่าเริ่มต้น?")) return;
+    scripts = Object.assign({}, DEFAULT_SCRIPTS);
+    try {
+      localStorage.removeItem(SCRIPT_STORE);
+    } catch (e) {}
+    renderScripts();
+    toast("คืนค่าสคริปต์แล้ว", true);
+  });
+
+  // ======================================================================
   // วาดหน้าควบคุม
   // ======================================================================
   function renderUI() {
@@ -818,6 +1420,7 @@
       (state.results.revealed || 0) >= (state.results.teams || []).length;
     renderMedia();
     renderResultsList();
+    renderProgram();
   }
 
   function tick() {
@@ -825,20 +1428,34 @@
     var t = state.timer;
     var p = S.timerPhase(t, now);
     $("tmNow").textContent = S.formatMs(S.timerRemaining(t, now));
+    // ประกาศค้าง (จอไม่ตอบ) → เริ่มนับถอยหลังเอง
+    if (p === "announce" && now - (t.announceAt || 0) > 25000)
+      finishAnnounce(t.seq);
+    // จอแสดงผลไม่ได้เปิด → หน้าควบคุมต่อขั้นถัดไปเอง
+    if (p === "finished" && t.stepRef && !t.endHandled && now - lastPing > 5000)
+      handleStepEnd(t.seq);
+
     $("tmState").textContent =
-      p === "countdown"
-        ? t.label +
-          " · เริ่มใน " +
-          Math.ceil(S.countdownRemaining(t, now) / 1000) +
-          " วิ"
-        : p === "running"
-          ? t.label + " · กำลังจับเวลา"
-          : p === "paused"
-            ? t.label + " · หยุดพัก"
-            : p === "finished"
-              ? t.label + " · หมดเวลา"
-              : "รอเริ่ม";
-    $("tmPause").disabled = p !== "running" && p !== "countdown";
+      p === "announce"
+        ? t.label + " · กำลังประกาศ"
+        : p === "countdown"
+          ? t.label +
+            " · เริ่มใน " +
+            Math.ceil(S.countdownRemaining(t, now) / 1000) +
+            " วิ"
+          : p === "running"
+            ? t.label + " · กำลังจับเวลา"
+            : p === "paused"
+              ? t.label + " · หยุดพัก"
+              : p === "finished"
+                ? t.label + " · หมดเวลา"
+                : "รอเริ่ม";
+    $("tmPause").disabled =
+      p !== "running" && p !== "countdown" && p !== "announce";
+    if (tick.lastPhase !== p) {
+      tick.lastPhase = p;
+      renderProgram();
+    }
     $("tmResume").disabled = p !== "paused";
 
     var on = now - lastPing < 5000;

@@ -645,6 +645,34 @@
     }
 }
 
+/* ปุ่มเริ่มแสดงผล ต้องอยู่เหนือหน้า "รอสัญญาณ" (เปิดจอก่อนหน้าควบคุมก็กดได้) */
+.td-start {
+    z-index: 55 !important;
+}
+
+/* ปุ่มเต็มจอ */
+.fs-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 60;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 12px;
+    background: #2563EB;
+    color: #fff;
+    font-family: 'Kanit', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .35);
+}
+
+.fs-btn small {
+    opacity: .75;
+    font-size: 13px;
+}
+
 /* ตัวอย่างในหน้าควบคุม: ไม่มีเคอร์เซอร์ / ไม่ให้คลิก */
 .is-preview {
     pointer-events: none;
@@ -1224,5 +1252,155 @@ kbd {
 
     .ct-left {
         position: static;
+    }
+}
+
+/* ======================================================================
+   หน้าควบคุม: โปรแกรมรายวัน + เสียง
+   ====================================================================== */
+
+.pg-days {
+    display: flex;
+    gap: 6px;
+}
+
+.pg-days .ct-tab {
+    height: 34px;
+}
+
+.pg-list {
+    display: grid;
+    gap: 8px;
+}
+
+.pg-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.pg-no {
+    flex: 0 0 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #F1F5F9;
+    color: #475569;
+    font-weight: 800;
+}
+
+.pg-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.pg-info b {
+    font-size: 15px;
+}
+
+.pg-info span {
+    font-size: 12px;
+    color: #64748B;
+}
+
+.pg-step.next {
+    border-color: #93C5FD;
+    background: #EFF6FF;
+}
+
+.pg-step.cur {
+    border-color: #DC2626;
+    background: #FEF2F2;
+}
+
+.pg-step.cur .pg-no {
+    background: #DC2626;
+    color: #fff;
+}
+
+.pg-step.done {
+    opacity: .65;
+}
+
+.pg-step.done .pg-no {
+    background: #DCFCE7;
+    color: #16A34A;
+}
+
+.pg-live {
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #DC2626;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    animation: pg-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes pg-blink {
+    50% {
+        opacity: .55;
+    }
+}
+
+.pg-edit-wrap {
+    margin-top: 12px;
+}
+
+.pg-edit-wrap summary {
+    cursor: pointer;
+}
+
+.pg-edit {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.pg-erow {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 80px 1fr 1.2fr auto;
+    gap: 6px;
+}
+
+.pg-erow .ct-input {
+    min-width: 0;
+    width: 100%;
+}
+
+.sc-field {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.sc-field span {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.sc-field textarea {
+    height: auto;
+    min-height: 54px;
+    font-family: 'Kanit', sans-serif;
+}
+
+.ct-timer-now {
+    margin-bottom: 12px;
+}
+
+@media (max-width: 1200px) {
+    .pg-erow {
+        grid-template-columns: 1fr 1fr;
     }
 }

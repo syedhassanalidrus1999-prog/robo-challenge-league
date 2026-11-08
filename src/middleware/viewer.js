@@ -20,6 +20,7 @@ const VIEWER_ALLOWED = [
 const VIEWER_POST_ALLOWED = [
   /^\/auth\//, //                                   ออกจากระบบ / เข้าสู่ระบบใหม่
   /^\/teams\/[^/]+\/checkin\/[1-3]\/?$/, //            สลับสถานะ Check-in นักเรียน
+  /^\/teams\/[^/]+\/checkin\/?$/, //                  Check-in ทั้งทีม (ติ๊กชื่อ)
   /^\/survey\/?$/, //                                 ส่งแบบประเมิน (หน้าสาธารณะ)
   /^\/coupons\/redeem\/?$/, //                        แลกคูปองที่จุดบริการ
   /^\/timer\/action\/?$/, //                          ควบคุมนาฬิกาจับเวลา

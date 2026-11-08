@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
-    <link rel="stylesheet" href="/css/screen.css?v=1">
+    <link rel="stylesheet" href="/css/screen.css?v=4">
 </head>
 
 <body class="sctl">
@@ -59,9 +59,90 @@
 
             <!-- ===== นาฬิกา ===== -->
             <section class="ct-panel active" data-panel="timer">
+                <div class="ct-timer-now"><b id="tmNow">00:00:00</b><span id="tmState">รอเริ่ม</span></div>
+
+                <!-- โปรแกรมรายวัน -->
                 <div class="ct-card">
-                    <div class="ct-timer-now"><b id="tmNow">00:00:00</b><span id="tmState">รอเริ่ม</span></div>
-                    <h2>เริ่มจับเวลา</h2>
+                    <div class="ct-row" style="justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0">โปรแกรมการแข่งขัน</h2>
+                        <div class="pg-days" id="pgDays">
+                            <button type="button" class="ct-tab" data-day="0">วันที่ 1</button>
+                            <button type="button" class="ct-tab" data-day="1">วันที่ 2</button>
+                        </div>
+                    </div>
+                    <div class="pg-list" id="pgList"></div>
+                    <p class="ct-hint">กด "เริ่ม" ที่ขั้นตอน → ระบบประกาศเสียง นับถอยหลัง
+                        และต่อขั้นถัดไปเองตามที่ตั้งไว้ · กดเริ่มขั้นไหนก็ได้ (เช่น ทำซ้ำ / ข้ามขั้น)</p>
+                    <details class="pg-edit-wrap">
+                        <summary class="ct-small">แก้ไขโปรแกรมวันนี้</summary>
+                        <div class="pg-edit" id="pgEdit"></div>
+                        <div class="ct-row" style="margin-top:8px">
+                            <button type="button" class="ct-btn" id="pgAdd"><i class="ti ti-plus"></i>
+                                เพิ่มขั้นตอน</button>
+                            <button type="button" class="ct-btn primary" id="pgSave"><i class="ti ti-device-floppy"></i>
+                                บันทึกโปรแกรม</button>
+                            <button type="button" class="ct-btn danger" id="pgDefault"
+                                style="margin-left:auto">คืนค่าเริ่มต้น</button>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- เสียงประกาศ AI -->
+                <div class="ct-card">
+                    <div class="ct-row" style="justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0"><i class="ti ti-volume"></i> เสียงประกาศ AI</h2>
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="vcOn"> เปิดเสียงพูด</label>
+                    </div>
+                    <div class="ct-row">
+                        <select class="ct-input" id="vcVoice"></select>
+                        <select class="ct-input" id="vcParticle" style="flex:0 0 120px">
+                            <option value="ค่ะ">ลงท้าย ค่ะ</option>
+                            <option value="ครับ">ลงท้าย ครับ</option>
+                        </select>
+                        <select class="ct-input" id="vcCount" style="flex:0 0 190px" title="เสียงตอนนับถอยหลัง">
+                            <option value="voice">นับถอยหลัง: เสียงพูด</option>
+                            <option value="beep">นับถอยหลัง: เสียงบี๊บ</option>
+                        </select>
+                    </div>
+                    <div class="ct-row">
+                        <span class="ct-small" style="width:60px">ความเร็ว</span>
+                        <input type="range" id="vcRate" min="0.6" max="1.3" step="0.05" style="flex:1">
+                        <span class="ct-small" style="width:60px">ความดัง</span>
+                        <input type="range" id="vcVol" min="0" max="1" step="0.05" style="flex:1">
+                        <button type="button" class="ct-btn" id="vcTest"><i class="ti ti-player-play"></i>
+                            ทดลองฟัง</button>
+                    </div>
+                    <p class="ct-hint" id="vcHint">เสียงพูดออกที่จอแสดงผล (ลำโพงที่ต่อกับคอม) · แนะนำ Microsoft Edge
+                        เสียง Premwadee / Niwat (Natural)</p>
+
+                    <h2 style="margin-top:14px">พูดประกาศทันที</h2>
+                    <div class="ct-grid2" id="vcQuick"></div>
+                    <div class="ct-row" style="margin-top:8px">
+                        <input class="ct-input" id="vcText" placeholder="พิมพ์ข้อความให้ AI พูด" maxlength="300">
+                        <button type="button" class="ct-btn primary" id="vcSay"><i class="ti ti-speakerphone"></i>
+                            พูด</button>
+                        <button type="button" class="ct-btn" id="vcStop" title="หยุดเสียงที่กำลังพูด"><i
+                                class="ti ti-volume-off"></i></button>
+                    </div>
+
+                    <details class="pg-edit-wrap">
+                        <summary class="ct-small">แก้ไขสคริปต์เสียง</summary>
+                        <p class="ct-small" style="margin:8px 0">ใช้ <b>{label}</b> = ชื่อขั้น · <b>{minutes}</b> =
+                            เวลาขั้นนี้ · <b>{cd}</b> = วินาทีนับถอยหลัง · <b>{n}</b> = นาทีที่เหลือ ·
+                            <b>{next_minutes}</b> = เวลาขั้นถัดไป</p>
+                        <div id="scEdit"></div>
+                        <div class="ct-row" style="margin-top:8px">
+                            <button type="button" class="ct-btn primary" id="scSave"><i class="ti ti-device-floppy"></i>
+                                บันทึกสคริปต์</button>
+                            <button type="button" class="ct-btn danger" id="scDefault"
+                                style="margin-left:auto">คืนค่าเริ่มต้น</button>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="ct-card">
+                    <h2>จับเวลาเอง (ไม่อยู่ในโปรแกรม)</h2>
                     <div class="ct-row ct-cd">
                         <span class="ct-small">นับถอยหลังก่อนเริ่ม:</span>
                         <label><input type="radio" name="tmCd" value="0"> ไม่มี</label>
@@ -254,8 +335,8 @@
 
     <div class="ct-status" id="ctStatus" role="status"></div>
 
-    <script src="/js/screen-common.js?v=1"></script>
-    <script src="/js/screen-control.js?v=1"></script>
+    <script src="/js/screen-common.js?v=2"></script>
+    <script src="/js/screen-control.js?v=3"></script>
 </body>
 
 </html>

@@ -79,30 +79,174 @@
   };
 
   // ======================================================================
+  // เสียงพูด AI (Web Speech API) — พูดเฉพาะจอหลัก ไม่พูดในตัวอย่าง
+  // ======================================================================
+  var synth = window.speechSynthesis || null;
+  var voicesCache = [];
+
+  function loadVoices() {
+    if (synth) voicesCache = synth.getVoices() || [];
+  }
+  if (synth) {
+    loadVoices();
+    synth.onvoiceschanged = loadVoices;
+  }
+
+  function pickVoice(cfg) {
+    if (!voicesCache.length) loadVoices();
+    if (cfg.name) {
+      var exact = voicesCache.filter(function (v) {
+        return v.name === cfg.name;
+      })[0];
+      if (exact) return exact;
+    }
+    var th = voicesCache.filter(function (v) {
+      return /^th/i.test(v.lang);
+    });
+    return (
+      th.filter(function (v) {
+        return /Natural|Premwadee|Niwat/i.test(v.name);
+      })[0] ||
+      th[0] ||
+      null
+    );
+  }
+
+  // ความหน่วงของเสียง (ms) = เวลาจากสั่งพูด → เริ่มได้ยินจริง
+  // เสียง Online/Natural ต้องส่งไปสร้างเสียงที่ server จึงช้ากว่าเสียงในเครื่อง
+  var lead = null;
+  var leadVoice = null;
+
+  function speechLead(cfg) {
+    var v = pickVoice(cfg || (state && state.voice) || {});
+    var name = v ? v.name : "";
+    if (name !== leadVoice) {
+      leadVoice = name;
+      lead = /Online|Natural|Google/i.test(name) ? 650 : 200;
+    }
+    return lead;
+  }
+
+  function speak(text, done, opt) {
+    opt = opt || {};
+    var finished = false;
+    function fin() {
+      if (finished) return;
+      finished = true;
+      if (done) done();
+    }
+    var cfg = (state && state.voice) || {};
+    if (PREVIEW || !synth || !cfg.enabled || !text) {
+      fin();
+      return;
+    }
+
+    var msg = String(text);
+    if (cfg.particle === "ครับ")
+      msg = msg.replace(/ค่ะ/g, "ครับ").replace(/คะ/g, "ครับ");
+
+    var u = new SpeechSynthesisUtterance(msg);
+    u.lang = "th-TH";
+    var v = pickVoice(cfg);
+    if (v) u.voice = v;
+    u.rate = opt.fast ? Math.max(1.1, cfg.rate || 1) : cfg.rate || 0.95;
+    var asked = Date.now();
+    speechLead(cfg);
+    u.onstart = function () {
+      // วัดความหน่วงจริง แล้วปรับค่าเฉลี่ย (ใช้ชดเชยการนับถอยหลัง)
+      var ms = Date.now() - asked;
+      if (ms > 30 && ms < 2500) lead = Math.round(lead * 0.6 + ms * 0.4);
+    };
+    u.volume = cfg.volume === undefined ? 1 : cfg.volume;
+    u.onend = fin;
+    u.onerror = fin;
+    // กันค้าง: ถ้าเสียงไม่ตอบ ให้ไปต่อเอง
+    setTimeout(fin, Math.max(4000, msg.length * 130));
+    try {
+      if (opt.cancel) synth.cancel();
+      synth.speak(u);
+    } catch (e) {
+      fin();
+    }
+  }
+
+  // ======================================================================
   // เริ่มแสดงผล: เปิดเสียง + เต็มจอ (ถ้ามี 2 จอ → ส่งไปเต็มจอที่จอโปรเจกเตอร์)
   // ======================================================================
-  function goFullscreen() {
+  // ต้องเรียก requestFullscreen ทันทีตอนคลิก (ถ้ารอ promise นาน เบราว์เซอร์จะไม่ยอม)
+  var screenPermission = "prompt";
+  if (navigator.permissions && navigator.permissions.query) {
+    navigator.permissions
+      .query({ name: "window-management" })
+      .then(function (p) {
+        screenPermission = p.state;
+      })
+      .catch(function () {});
+  }
+
+  function plainFullscreen() {
     var root = document.documentElement;
     if (!root.requestFullscreen) return;
-    if (window.getScreenDetails) {
+    root.requestFullscreen().catch(function () {
+      showFsHint(true);
+    });
+  }
+
+  function goFullscreen() {
+    if (document.fullscreenElement) return;
+    var root = document.documentElement;
+    if (!root.requestFullscreen) return;
+
+    // อนุญาต "จัดการหน้าต่าง" ไว้แล้ว → ส่งไปเต็มจอที่จอโปรเจกเตอร์ให้เอง
+    if (window.getScreenDetails && screenPermission === "granted") {
       window
         .getScreenDetails()
         .then(function (d) {
-          var other =
-            d.screens.filter(function (s) {
-              return s !== d.currentScreen;
-            })[0] ||
-            d.screens.filter(function (s) {
-              return !s.isPrimary;
-            })[0];
+          var other = d.screens.filter(function (x) {
+            return x !== d.currentScreen;
+          })[0];
           return root.requestFullscreen(other ? { screen: other } : undefined);
         })
-        .catch(function () {
-          root.requestFullscreen().catch(function () {});
-        });
-    } else {
-      root.requestFullscreen().catch(function () {});
+        .catch(plainFullscreen);
+      return;
     }
+
+    // ยังไม่ได้อนุญาต → เต็มจอบนจอที่หน้าต่างนี้อยู่ (ลากหน้าต่างไปจอโปรเจกเตอร์ก่อนคลิก)
+    plainFullscreen();
+  }
+
+  // ปุ่มเต็มจอมุมขวาบน (แสดงเมื่อยังไม่เต็มจอ)
+  var fsBtn = document.getElementById("fsBtn");
+  var fsHideTimer = null;
+
+  function showFsHint(force) {
+    if (PREVIEW || !fsBtn || document.fullscreenElement) return;
+    fsBtn.hidden = false;
+    clearTimeout(fsHideTimer);
+    if (!force)
+      fsHideTimer = setTimeout(function () {
+        fsBtn.hidden = true;
+      }, 4000);
+  }
+
+  if (!PREVIEW && fsBtn) {
+    fsBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      goFullscreen();
+    });
+    document.addEventListener("mousemove", function () {
+      showFsHint(false);
+    });
+    document.addEventListener("fullscreenchange", function () {
+      if (document.fullscreenElement) fsBtn.hidden = true;
+      else showFsHint(true);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "f" || e.key === "F") {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else goFullscreen();
+      }
+    });
   }
 
   if (!PREVIEW) {
@@ -130,6 +274,9 @@
       state = m.state;
       $("scWait").hidden = true;
       apply();
+    } else if (m.type === "speak") {
+      if (m.cancel && synth) synth.cancel();
+      speak(m.text);
     } else if (m.type === "media" && m.blob) {
       if (!media[m.id]) media[m.id] = URL.createObjectURL(m.blob);
       apply();
@@ -487,6 +634,89 @@
   var lastPhase = null;
   var lastCount = null;
 
+  // ----------------------------------------------------------------------
+  // เสียงประกาศตามนาฬิกา (จอแสดงผลเป็นคนพูด เพราะหน้าต่างนี้ไม่ถูกเบราว์เซอร์หน่วงเวลา)
+  // ----------------------------------------------------------------------
+  var vSeq; // undefined = ยังไม่เคยเห็นนาฬิกา (เพิ่งเปิดจอ)
+  var vPhase = null;
+  var vSec = null;
+  var vCount = null;
+  var vGo = false;
+
+  function voiceTriggers(t, phase, sec, cdSec) {
+    var v = t.voice || {};
+    var seq = t.seq || 0;
+
+    if (seq !== vSeq) {
+      var firstLook = vSeq === undefined;
+      vSeq = seq;
+      vPhase = null;
+      vSec = null;
+      vCount = null;
+      vGo = false;
+
+      if (phase === "announce") {
+        // หน้าควบคุมรอให้ประกาศจบ ก่อนเริ่มนับถอยหลัง
+        speak(v.start, function () {
+          if (!PREVIEW) ch.postMessage({ type: "announceDone", seq: seq });
+        });
+      } else if (!firstLook && phase === "running" && v.start) {
+        speak(v.start); // เช่น เริ่มรวมหุ่นยนต์เอง (ไม่มีนับถอยหลัง)
+      }
+    }
+
+    // นับถอยหลังด้วยเสียง: สิบ เก้า ... หนึ่ง
+    // สั่งพูดล่วงหน้าเท่ากับความหน่วงของเสียง → ได้ยินตรงกับตัวเลขที่เปลี่ยนบนจอ
+    var cfg = (state && state.voice) || {};
+    var voiceCount =
+      cfg.enabled && cfg.countMode !== "beep" && synth && !PREVIEW;
+    if (phase === "countdown") {
+      var rem = S.countdownRemaining(t, Date.now());
+      var heard = voiceCount
+        ? Math.ceil((rem - speechLead(cfg)) / 1000)
+        : Math.ceil(rem / 1000);
+      if (heard !== vCount) {
+        var fresh = vCount !== null || vPhase === "announce";
+        if (fresh && heard >= 1 && heard <= 10) {
+          if (voiceCount)
+            speak(S.thNum(heard), null, { fast: true, cancel: true });
+          else if (cfg.enabled) snd.count();
+        }
+        if (fresh && heard <= 0 && !vGo) {
+          vGo = true;
+          speak(v.go, null, { cancel: true }); // เริ่มพูดก่อนเล็กน้อย → ได้ยินตอนนาฬิกาเริ่มเดินพอดี
+        }
+        vCount = heard;
+      }
+    }
+
+    if (phase === "running" && vPhase === "countdown" && !vGo) {
+      vGo = true;
+      speak(v.go);
+    }
+
+    // เตือนเวลา
+    if (
+      phase === "running" &&
+      vPhase === "running" &&
+      vSec !== null &&
+      sec < vSec
+    ) {
+      (v.warns || []).forEach(function (w) {
+        if (vSec > w.sec && sec <= w.sec) speak(w.text);
+      });
+    }
+
+    // หมดเวลา → พูด + แจ้งหน้าควบคุม (ต่อขั้นถัดไปอัตโนมัติ)
+    if (phase === "finished" && vPhase === "running") {
+      speak(v.end);
+      if (!PREVIEW) ch.postMessage({ type: "timerEnded", seq: seq });
+    }
+
+    vPhase = phase;
+    vSec = sec;
+  }
+
   function render() {
     var now = Date.now();
     var d = new Date(now);
@@ -518,21 +748,30 @@
     if (body.className !== cls) body.className = cls;
 
     var onTimer = scene === "timer";
-    $("tdCount").hidden = !(onTimer && phase === "countdown");
+    var preCount = phase === "countdown" || phase === "announce";
+    $("tdCount").hidden = !(onTimer && preCount);
     $("tdOver").hidden = !(onTimer && phase === "finished");
     if (phase === "countdown") $("tdCountNum").textContent = String(cdSec);
+    if (phase === "announce") $("tdCountNum").textContent = String(t.cd || "");
+
+    voiceTriggers(t, phase, sec, cdSec);
 
     // ประกาศ: เวลาตัวเล็กด้านล่าง
     var bt = $("bnTimer");
     if (
       scene === "banner" &&
-      (phase === "running" || phase === "paused" || phase === "countdown")
+      (phase === "running" ||
+        phase === "paused" ||
+        phase === "countdown" ||
+        phase === "announce")
     ) {
       bt.textContent =
         (t.label ? t.label + " · " : "") +
         (phase === "countdown"
           ? "เริ่มใน " + cdSec + " วินาที"
-          : S.formatMs(ms));
+          : phase === "announce"
+            ? "เตรียมพร้อม"
+            : S.formatMs(ms));
       bt.hidden = false;
     } else {
       bt.hidden = true;
@@ -545,7 +784,8 @@
         phase === "countdown" &&
         lastCount !== null &&
         cdSec < lastCount &&
-        cdSec <= 10
+        cdSec <= 10 &&
+        !(state.voice && state.voice.enabled)
       )
         snd.count();
       if (
@@ -554,8 +794,9 @@
         lastPhase !== "running" &&
         lastPhase !== "paused"
       ) {
-        if (lastPhase === "countdown") snd.go();
-        else snd.start();
+        if (lastPhase === "countdown") {
+          if (!(state.voice && state.voice.enabled)) snd.go();
+        } else snd.start();
       }
       if (
         phase === "running" &&
@@ -575,5 +816,5 @@
     lastPhase = phase;
   }
 
-  setInterval(render, 200);
+  setInterval(render, 100);
 })();

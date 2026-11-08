@@ -4,138 +4,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ควบคุมนาฬิกา — Robo Challenge League</title>
+    <title>ควบคุมจอแสดงผล — Robo Challenge League</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3">
-    <link rel="stylesheet" href="/css/timer.css?v=3">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="stylesheet" href="/css/screen.css?v=4">
 </head>
 
-<body class="tctl state-idle">
-    <main class="tc-wrap">
-        <header class="tc-top">
-            <h1>ควบคุมนาฬิกา</h1>
-            <div class="tc-links">
-                <a href="/timer" target="_blank"><i class="ti ti-device-tv"></i> เปิดจอแสดงผล</a>
-                <a href="/board"><i class="ti ti-arrow-left"></i> กลับ</a>
-            </div>
-        </header>
+<body class="sctl">
+    <header class="ct-top">
+        <h1><i class="ti ti-device-tv"></i> ควบคุมจอแสดงผล</h1>
+        <span class="ct-conn" id="ctConn"><i></i><span>จอโปรเจกเตอร์: ยังไม่เปิด</span></span>
+        <button type="button" class="ct-open" id="ctOpen"><i class="ti ti-external-link"></i> เปิดจอแสดงผล</button>
+        <a href="/board"><i class="ti ti-arrow-left"></i> หลังบ้าน</a>
+    </header>
 
-        <!-- ตัวอย่างสิ่งที่อยู่บนจอ -->
-        <section class="tc-preview">
-            <div class="tc-p-label" id="tcLabel">ยังไม่ได้เริ่ม</div>
-            <div class="tc-p-time" id="tcTime">--:--</div>
-            <div class="tc-p-sub" id="tcSub"></div>
-        </section>
+    <div class="ct-grid">
+        <!-- ซ้าย: ตัวอย่างจอ + ปุ่มด่วน -->
+        <aside class="ct-left">
+            <div class="ct-preview-wrap" id="ctPreviewWrap">
+                <span class="ct-live">LIVE · <span id="ctLiveName">โลโก้</span></span>
+                <iframe id="ctPreview" src="/screen?preview=1" title="ตัวอย่างจอ" tabindex="-1"></iframe>
+            </div>
+            <div class="ct-quick" id="ctQuick">
+                <button type="button" data-scene="timer"><i class="ti ti-alarm"></i>นาฬิกา</button>
+                <button type="button" data-scene="banner"><i class="ti ti-speakerphone"></i>ประกาศ</button>
+                <button type="button" data-scene="logo"><i class="ti ti-photo-star"></i>โลโก้</button>
+                <button type="button" data-scene="blank"><i class="ti ti-square-filled"></i>จอดำ</button>
+            </div>
+            <p class="ct-hint">
+                ตัวอย่างด้านบนคือสิ่งที่ผู้ชมเห็นอยู่ตอนนี้ · ปุ่มด่วนสลับฉากทันที<br>
+                ตั้งค่าจอ: <kbd>Win</kbd> + <kbd>P</kbd> → Extend · กด "เปิดจอแสดงผล" แล้วคลิกปุ่มบนหน้าต่างนั้น 1 ครั้ง
+            </p>
+        </aside>
 
-        <div class="tc-status" id="tcStatus" role="status"></div>
+        <!-- ขวา: แท็บควบคุม -->
+        <main>
+            <nav class="ct-tabs" id="ctTabs">
+                <button type="button" class="ct-tab active" data-tab="timer"><span class="dot"></span><i
+                        class="ti ti-alarm"></i> นาฬิกา</button>
+                <button type="button" class="ct-tab" data-tab="banner"><span class="dot"></span><i
+                        class="ti ti-speakerphone"></i> ประกาศ</button>
+                <button type="button" class="ct-tab" data-tab="image"><span class="dot"></span><i
+                        class="ti ti-photo"></i> รูปภาพ</button>
+                <button type="button" class="ct-tab" data-tab="video"><span class="dot"></span><i
+                        class="ti ti-movie"></i> วิดีโอ</button>
+                <button type="button" class="ct-tab" data-tab="draw"><span class="dot"></span><i class="ti ti-gift"></i>
+                    จับรางวัล</button>
+                <button type="button" class="ct-tab" data-tab="results"><span class="dot"></span><i
+                        class="ti ti-trophy"></i> ประกาศผล</button>
+            </nav>
 
-        <!-- เริ่มจากค่าที่ตั้งไว้ -->
-        <section class="tc-card">
-            <h2>เริ่มจับเวลา</h2>
-            <div class="tc-cd" role="radiogroup" aria-label="นับถอยหลังก่อนเริ่ม">
-                <span>นับถอยหลังก่อนเริ่ม:</span>
-                <label><input type="radio" name="tcCd" value="0"> ไม่มี</label>
-                <label><input type="radio" name="tcCd" value="5"> 5 วิ</label>
-                <label><input type="radio" name="tcCd" value="10" checked> 10 วิ</label>
-                <label><input type="radio" name="tcCd" value="30"> 30 วิ</label>
-            </div>
-            <div class="tc-presets" id="tcPresets">
-                <% presets.forEach(function (p) { %>
-                    <button type="button" class="tc-btn tc-preset" data-label="<%= p.label %>"
-                        data-minutes="<%= p.minutes %>">
-                        <b>
-                            <%= p.label %>
-                        </b><span>
-                            <%= p.minutes %> นาที
-                        </span>
-                    </button>
-                    <% }) %>
-            </div>
-            <div class="tc-row">
-                <input class="tc-input" id="tcCustomLabel" placeholder="ชื่อช่วงเวลา เช่น แข่งขันรอบที่ 1"
-                    maxlength="80">
-                <input class="tc-input tc-num" id="tcCustomMin" type="number" min="1" max="600" step="1"
-                    placeholder="นาที" inputmode="numeric">
-                <button type="button" class="tc-btn tc-primary" id="tcCustomStart"><i class="ti ti-player-play"></i>
-                    เริ่ม</button>
-            </div>
-        </section>
+            <!-- ===== นาฬิกา ===== -->
+            <section class="ct-panel active" data-panel="timer">
+                <div class="ct-timer-now"><b id="tmNow">00:00:00</b><span id="tmState">รอเริ่ม</span></div>
 
-        <!-- ระหว่างจับเวลา -->
-        <section class="tc-card">
-            <h2>ระหว่างจับเวลา</h2>
-            <div class="tc-grid">
-                <button type="button" class="tc-btn tc-big" id="tcPause"><i class="ti ti-player-pause"></i> พัก</button>
-                <button type="button" class="tc-btn tc-big tc-primary" id="tcResume"><i class="ti ti-player-play"></i>
-                    ต่อ</button>
-            </div>
-            <div class="tc-grid tc-grid-4">
-                <button type="button" class="tc-btn" data-add="-60">−1 นาที</button>
-                <button type="button" class="tc-btn" data-add="-10">−10 วิ</button>
-                <button type="button" class="tc-btn" data-add="10">+10 วิ</button>
-                <button type="button" class="tc-btn" data-add="60">+1 นาที</button>
-            </div>
-            <button type="button" class="tc-btn tc-danger tc-full" id="tcReset"><i class="ti ti-refresh"></i> รีเซ็ต
-                (หยุดและล้างจอ)</button>
-        </section>
+                <!-- โปรแกรมรายวัน -->
+                <div class="ct-card">
+                    <div class="ct-row" style="justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0">โปรแกรมการแข่งขัน</h2>
+                        <div class="pg-days" id="pgDays">
+                            <button type="button" class="ct-tab" data-day="0">วันที่ 1</button>
+                            <button type="button" class="ct-tab" data-day="1">วันที่ 2</button>
+                        </div>
+                    </div>
+                    <div class="pg-list" id="pgList"></div>
+                    <p class="ct-hint">กด "เริ่ม" ที่ขั้นตอน → ระบบประกาศเสียง นับถอยหลัง
+                        และต่อขั้นถัดไปเองตามที่ตั้งไว้ · กดเริ่มขั้นไหนก็ได้ (เช่น ทำซ้ำ / ข้ามขั้น)</p>
+                    <details class="pg-edit-wrap">
+                        <summary class="ct-small">แก้ไขโปรแกรมวันนี้</summary>
+                        <div class="pg-edit" id="pgEdit"></div>
+                        <div class="ct-row" style="margin-top:8px">
+                            <button type="button" class="ct-btn" id="pgAdd"><i class="ti ti-plus"></i>
+                                เพิ่มขั้นตอน</button>
+                            <button type="button" class="ct-btn primary" id="pgSave"><i class="ti ti-device-floppy"></i>
+                                บันทึกโปรแกรม</button>
+                            <button type="button" class="ct-btn danger" id="pgDefault"
+                                style="margin-left:auto">คืนค่าเริ่มต้น</button>
+                        </div>
+                    </details>
+                </div>
 
-        <!-- ประกาศตัวใหญ่เต็มจอ -->
-        <section class="tc-card">
-            <h2>ประกาศตัวใหญ่เต็มจอ</h2>
-            <div class="tc-banner-on" id="tcBannerOn" hidden>กำลังแสดง: <b id="tcBannerNow"></b></div>
-            <div class="tc-banners">
-                <button type="button" class="tc-btn tc-banner-btn" data-banner="พักเบรก">พักเบรก</button>
-                <button type="button" class="tc-btn tc-banner-btn" data-banner="แข่งขันรอบที่ 1">แข่งขันรอบที่
-                    1</button>
-                <button type="button" class="tc-btn tc-banner-btn" data-banner="แข่งขันรอบที่ 2">แข่งขันรอบที่
-                    2</button>
-                <button type="button" class="tc-btn tc-banner-btn" data-banner="พิธีมอบรางวัล">พิธีมอบรางวัล</button>
-            </div>
-            <div class="tc-row">
-                <input class="tc-input" id="tcBannerText" placeholder="ข้อความใหญ่ เช่น พักรับประทานอาหาร"
-                    maxlength="60">
-            </div>
-            <div class="tc-row">
-                <input class="tc-input" id="tcBannerSub" placeholder="บรรทัดรอง (ไม่บังคับ) เช่น กลับมาเวลา 13:00 น."
-                    maxlength="100">
-                <button type="button" class="tc-btn tc-primary" id="tcBannerSend">แสดง</button>
-            </div>
-            <button type="button" class="tc-btn tc-full" id="tcBannerClear"><i class="ti ti-x"></i> ปิดประกาศ
-                (กลับไปหน้านาฬิกา)</button>
-            <p class="tc-hint">ประกาศจะแสดงทับนาฬิกา ถ้ากำลังจับเวลาอยู่จะมีเวลาตัวเล็กด้านล่าง · กดเริ่มจับเวลาใหม่
-                ประกาศจะปิดเอง</p>
-        </section>
+                <!-- เสียงประกาศ AI -->
+                <div class="ct-card">
+                    <div class="ct-row" style="justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0"><i class="ti ti-volume"></i> เสียงประกาศ AI</h2>
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="vcOn"> เปิดเสียงพูด</label>
+                    </div>
+                    <div class="ct-row">
+                        <select class="ct-input" id="vcVoice"></select>
+                        <select class="ct-input" id="vcParticle" style="flex:0 0 120px">
+                            <option value="ค่ะ">ลงท้าย ค่ะ</option>
+                            <option value="ครับ">ลงท้าย ครับ</option>
+                        </select>
+                        <select class="ct-input" id="vcCount" style="flex:0 0 190px" title="เสียงตอนนับถอยหลัง">
+                            <option value="voice">นับถอยหลัง: เสียงพูด</option>
+                            <option value="beep">นับถอยหลัง: เสียงบี๊บ</option>
+                        </select>
+                    </div>
+                    <div class="ct-row">
+                        <span class="ct-small" style="width:60px">ความเร็ว</span>
+                        <input type="range" id="vcRate" min="0.6" max="1.3" step="0.05" style="flex:1">
+                        <span class="ct-small" style="width:60px">ความดัง</span>
+                        <input type="range" id="vcVol" min="0" max="1" step="0.05" style="flex:1">
+                        <button type="button" class="ct-btn" id="vcTest"><i class="ti ti-player-play"></i>
+                            ทดลองฟัง</button>
+                    </div>
+                    <p class="ct-hint" id="vcHint">เสียงพูดออกที่จอแสดงผล (ลำโพงที่ต่อกับคอม) · แนะนำ Microsoft Edge
+                        เสียง Premwadee / Niwat (Natural)</p>
 
-        <!-- ข้อความขึ้นจอ -->
-        <section class="tc-card">
-            <h2>ข้อความแถบล่าง (ตัวเล็ก)</h2>
-            <div class="tc-row">
-                <input class="tc-input" id="tcMsg" placeholder="เช่น กรุณารอสักครู่" maxlength="120">
-                <button type="button" class="tc-btn tc-primary" id="tcMsgSend">แสดง</button>
-                <button type="button" class="tc-btn" id="tcMsgClear">ลบ</button>
-            </div>
-            <div class="tc-row">
-                <input class="tc-input" id="tcNext" placeholder="ถัดไป เช่น ซ้อมรอบที่ 2 · 13:00 น." maxlength="120">
-                <button type="button" class="tc-btn" id="tcNextSave">บันทึก</button>
-            </div>
-            <p class="tc-hint">"ถัดไป" แสดงบนจอตอนที่ยังไม่ได้จับเวลา</p>
-        </section>
+                    <h2 style="margin-top:14px">พูดประกาศทันที</h2>
+                    <div class="ct-grid2" id="vcQuick"></div>
+                    <div class="ct-row" style="margin-top:8px">
+                        <input class="ct-input" id="vcText" placeholder="พิมพ์ข้อความให้ AI พูด" maxlength="300">
+                        <button type="button" class="ct-btn primary" id="vcSay"><i class="ti ti-speakerphone"></i>
+                            พูด</button>
+                        <button type="button" class="ct-btn" id="vcStop" title="หยุดเสียงที่กำลังพูด"><i
+                                class="ti ti-volume-off"></i></button>
+                    </div>
 
-        <!-- ปุ่มสำเร็จรูป -->
-        <details class="tc-card">
-            <summary>แก้ไขปุ่มเวลาสำเร็จรูป</summary>
-            <p class="tc-hint">บรรทัดละ 1 ปุ่ม รูปแบบ <b>ชื่อ | นาที</b></p>
-            <textarea class="tc-input tc-area" id="tcPresetText"><% presets.forEach(function (p) { %><%= p.label %> | <%= p.minutes %>
-<% }) %></textarea>
-            <button type="button" class="tc-btn tc-primary tc-full" id="tcPresetSave">บันทึกปุ่ม</button>
-        </details>
-    </main>
+                    <details class="pg-edit-wrap">
+                        <summary class="ct-small">แก้ไขสคริปต์เสียง</summary>
+                        <p class="ct-small" style="margin:8px 0">ใช้ <b>{label}</b> = ชื่อขั้น · <b>{minutes}</b> =
+                            เวลาขั้นนี้ · <b>{cd}</b> = วินาทีนับถอยหลัง · <b>{n}</b> = นาทีที่เหลือ ·
+                            <b>{next_minutes}</b> = เวลาขั้นถัดไป</p>
+                        <div id="scEdit"></div>
+                        <div class="ct-row" style="margin-top:8px">
+                            <button type="button" class="ct-btn primary" id="scSave"><i class="ti ti-device-floppy"></i>
+                                บันทึกสคริปต์</button>
+                            <button type="button" class="ct-btn danger" id="scDefault"
+                                style="margin-left:auto">คืนค่าเริ่มต้น</button>
+                        </div>
+                    </details>
+                </div>
 
-    <script src="/js/timer-core.js?v=3"></script>
-    <script src="/js/timer-control.js?v=3"></script>
+                <div class="ct-card">
+                    <h2>จับเวลาเอง (ไม่อยู่ในโปรแกรม)</h2>
+                    <div class="ct-row ct-cd">
+                        <span class="ct-small">นับถอยหลังก่อนเริ่ม:</span>
+                        <label><input type="radio" name="tmCd" value="0"> ไม่มี</label>
+                        <label><input type="radio" name="tmCd" value="5"> 5 วิ</label>
+                        <label><input type="radio" name="tmCd" value="10" checked> 10 วิ</label>
+                        <label><input type="radio" name="tmCd" value="30"> 30 วิ</label>
+                    </div>
+                    <div class="ct-row ct-grid2" id="tmPresets" style="margin-top:10px"></div>
+                    <div class="ct-row">
+                        <input class="ct-input" id="tmLabel" placeholder="ชื่อช่วงเวลา เช่น แข่งขันรอบที่ 1"
+                            maxlength="80">
+                        <input class="ct-input num" id="tmMin" type="number" min="1" max="600" placeholder="นาที">
+                        <button type="button" class="ct-btn primary" id="tmStart"><i class="ti ti-player-play"></i>
+                            เริ่ม</button>
+                    </div>
+                </div>
+
+                <div class="ct-card">
+                    <h2>ระหว่างจับเวลา</h2>
+                    <div class="ct-row">
+                        <button type="button" class="ct-btn big" id="tmPause"><i class="ti ti-player-pause"></i>
+                            พัก</button>
+                        <button type="button" class="ct-btn big primary" id="tmResume"><i class="ti ti-player-play"></i>
+                            ต่อ</button>
+                    </div>
+                    <div class="ct-row">
+                        <button type="button" class="ct-btn" data-add="-60">−1 นาที</button>
+                        <button type="button" class="ct-btn" data-add="-10">−10 วิ</button>
+                        <button type="button" class="ct-btn" data-add="10">+10 วิ</button>
+                        <button type="button" class="ct-btn" data-add="60">+1 นาที</button>
+                        <button type="button" class="ct-btn danger" id="tmReset" style="margin-left:auto"><i
+                                class="ti ti-refresh"></i> รีเซ็ต</button>
+                    </div>
+                </div>
+
+                <div class="ct-card">
+                    <h2>ข้อความบนหน้านาฬิกา</h2>
+                    <div class="ct-row">
+                        <input class="ct-input" id="tmMsg" placeholder="แถบล่าง เช่น กรุณารอสักครู่" maxlength="120">
+                        <button type="button" class="ct-btn primary" id="tmMsgSend">แสดง</button>
+                        <button type="button" class="ct-btn" id="tmMsgClear">ลบ</button>
+                    </div>
+                    <div class="ct-row">
+                        <input class="ct-input" id="tmNext" placeholder="ถัดไป เช่น ซ้อมรอบที่ 2 · 13:00 น."
+                            maxlength="120">
+                        <button type="button" class="ct-btn" id="tmNextSave">บันทึก</button>
+                    </div>
+                </div>
+
+                <details class="ct-card">
+                    <summary class="ct-small">แก้ไขปุ่มเวลาสำเร็จรูป</summary>
+                    <p class="ct-small" style="margin:8px 0">บรรทัดละ 1 ปุ่ม รูปแบบ <b>ชื่อ | นาที</b></p>
+                    <textarea class="ct-input ct-area" id="tmPresetText"></textarea>
+                    <div class="ct-row"><button type="button" class="ct-btn primary"
+                            id="tmPresetSave">บันทึกปุ่ม</button></div>
+                </details>
+            </section>
+
+            <!-- ===== ประกาศ ===== -->
+            <section class="ct-panel" data-panel="banner">
+                <div class="ct-card">
+                    <h2>ประกาศตัวใหญ่เต็มจอ (กดแล้วขึ้นจอทันที)</h2>
+                    <div class="ct-grid2">
+                        <button type="button" class="ct-btn banner" data-banner="พักเบรก">พักเบรก</button>
+                        <button type="button" class="ct-btn banner" data-banner="แข่งขันรอบที่ 1">แข่งขันรอบที่
+                            1</button>
+                        <button type="button" class="ct-btn banner" data-banner="แข่งขันรอบที่ 2">แข่งขันรอบที่
+                            2</button>
+                        <button type="button" class="ct-btn banner" data-banner="ซ้อมรอบที่ 1">ซ้อมรอบที่ 1</button>
+                        <button type="button" class="ct-btn banner" data-banner="ซ้อมรอบที่ 2">ซ้อมรอบที่ 2</button>
+                        <button type="button" class="ct-btn banner"
+                            data-banner="พักรับประทานอาหาร">พักรับประทานอาหาร</button>
+                        <button type="button" class="ct-btn banner" data-banner="พิธีเปิด">พิธีเปิด</button>
+                        <button type="button" class="ct-btn banner" data-banner="พิธีมอบรางวัล">พิธีมอบรางวัล</button>
+                    </div>
+                    <div class="ct-row" style="margin-top:12px">
+                        <input class="ct-input" id="bnSub" placeholder="บรรทัดรอง (ไม่บังคับ) เช่น กลับมาเวลา 13:00 น."
+                            maxlength="100">
+                    </div>
+                    <div class="ct-row">
+                        <input class="ct-input" id="bnText" placeholder="ข้อความใหญ่ (พิมพ์เอง)" maxlength="60">
+                        <button type="button" class="ct-btn primary" id="bnSend">แสดง</button>
+                    </div>
+                    <p class="ct-hint">ถ้ากำลังจับเวลา จะมีเวลาตัวเล็กแสดงใต้ประกาศ</p>
+                </div>
+            </section>
+
+            <!-- ===== รูปภาพ ===== -->
+            <section class="ct-panel" data-panel="image">
+                <div class="ct-card">
+                    <h2>รูปภาพ (คลิกรูปเพื่อขึ้นจอ)</h2>
+                    <div class="ct-row">
+                        <label class="ct-file"><i class="ti ti-folder-open"></i> เลือกรูปจากเครื่อง (ได้หลายไฟล์)<input
+                                type="file" id="imgFiles" accept="image/*" multiple></label>
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="imgCover"> เต็มจอ (ครอปขอบ)</label>
+                    </div>
+                    <div class="ct-media" id="imgList"></div>
+                    <p class="ct-hint">รูปไม่ถูกอัปโหลดขึ้นเว็บ ใช้จากเครื่องนี้โดยตรง · ถ้า refresh
+                        หน้านี้ต้องเลือกไฟล์ใหม่</p>
+                </div>
+            </section>
+
+            <!-- ===== วิดีโอ ===== -->
+            <section class="ct-panel" data-panel="video">
+                <div class="ct-card">
+                    <h2>วิดีโอ (คลิกเพื่อขึ้นจอและเล่น)</h2>
+                    <div class="ct-row">
+                        <label class="ct-file"><i class="ti ti-folder-open"></i> เลือกวิดีโอจากเครื่อง<input type="file"
+                                id="vidFiles" accept="video/*" multiple></label>
+                    </div>
+                    <div class="ct-media" id="vidList"></div>
+                    <div class="ct-row" style="margin-top:12px">
+                        <button type="button" class="ct-btn primary" id="vidPlay"><i class="ti ti-player-play"></i>
+                            เล่น</button>
+                        <button type="button" class="ct-btn" id="vidPause"><i class="ti ti-player-pause"></i>
+                            หยุด</button>
+                        <button type="button" class="ct-btn" id="vidRestart"><i class="ti ti-rotate"></i>
+                            เริ่มใหม่</button>
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="vidLoop"> เล่นวน</label>
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="vidMute"> ปิดเสียง</label>
+                    </div>
+                    <div class="ct-progress"><span id="vidProg"></span></div>
+                    <div class="ct-small" id="vidTime" style="margin-top:4px">—</div>
+                    <p class="ct-hint">MP4 (H.264) เล่นได้ทุกเครื่อง · วิดีโอเล่นจากเครื่องนี้ ไม่ใช้อินเทอร์เน็ต</p>
+                </div>
+            </section>
+
+            <!-- ===== จับรางวัล ===== -->
+            <section class="ct-panel" data-panel="draw">
+                <div class="ct-card">
+                    <h2>จับรางวัลผู้ตอบแบบประเมิน</h2>
+                    <div class="ct-row">
+                        <select class="ct-input" id="drPool" style="flex:0 0 220px">
+                            <option value="all_no_staff">ทุกกลุ่ม ยกเว้นสตาฟ</option>
+                            <option value="all">ทุกกลุ่ม</option>
+                            <option value="participant">ผู้เข้าแข่งขัน (นักเรียน)</option>
+                            <option value="coach">ผู้คุมทีม / โค้ช</option>
+                            <option value="audience">ผู้ชมทั่วไป / ผู้ปกครอง</option>
+                            <option value="staff">คณะกรรมการ / สตาฟ</option>
+                        </select>
+                        <input class="ct-input" id="drPrize" placeholder="ชื่อรางวัล เช่น ชุดหุ่นยนต์ Mini Kit"
+                            maxlength="200">
+                    </div>
+                    <div class="ct-row">
+                        <button type="button" class="ct-btn" id="drShow"><i class="ti ti-device-tv"></i> ขึ้นจอ
+                            (ยังไม่สุ่ม)</button>
+                        <button type="button" class="ct-btn big primary" id="drGo"><i class="ti ti-gift"></i>
+                            สุ่มรางวัล</button>
+                    </div>
+                    <div class="ct-winner" id="drWinner" hidden></div>
+                    <div class="ct-list" id="drHist" hidden></div>
+                    <p class="ct-hint">ต้องใช้อินเทอร์เน็ต (บันทึกผู้ได้รางวัลลงระบบ) · ยกเลิกรางวัลได้ที่ หลังบ้าน →
+                        แบบประเมิน → หน้าสุ่มรางวัล</p>
+                </div>
+            </section>
+
+            <!-- ===== ประกาศผล ===== -->
+            <section class="ct-panel" data-panel="results">
+                <div class="ct-card">
+                    <h2>ประกาศผล Top 10</h2>
+                    <div class="ct-row">
+                        <select class="ct-input" id="rsTier" style="flex:0 0 200px">
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advance">Advance</option>
+                        </select>
+                        <button type="button" class="ct-btn" id="rsLoad"><i class="ti ti-download"></i> โหลดผล</button>
+                        <button type="button" class="ct-btn primary" id="rsShow"><i class="ti ti-device-tv"></i>
+                            ขึ้นจอ</button>
+                    </div>
+                    <div class="ct-row">
+                        <button type="button" class="ct-btn" id="rsPrev"><i class="ti ti-arrow-back-up"></i>
+                            ย้อน</button>
+                        <button type="button" class="ct-btn big primary" id="rsNext"><i
+                                class="ti ti-player-track-next"></i> เปิดอันดับถัดไป</button>
+                        <button type="button" class="ct-btn" id="rsAll">เปิดทั้งหมด</button>
+                        <button type="button" class="ct-btn" id="rsNone">ซ่อนทั้งหมด</button>
+                    </div>
+                    <div class="ct-list" id="rsList" hidden></div>
+                    <p class="ct-hint">เปิดจากอันดับ 10 → 1 · อันดับ 10–4 ขึ้นจอทีละทีมเต็มจอ · อันดับ 3–1
+                        ขึ้นเป็นโพเดียม · ใช้ <kbd>→</kbd> <kbd>Page Down</kbd> หรือรีโมทพรีเซนต์ เพื่อเปิดอันดับถัดไป
+                        (ตอนฉากประกาศผลขึ้นจออยู่) · โหลดผลไว้ก่อนขึ้นเวที</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="ct-status" id="ctStatus" role="status"></div>
+
+    <script src="/js/screen-common.js?v=2"></script>
+    <script src="/js/screen-control.js?v=3"></script>
 </body>
 
 </html>

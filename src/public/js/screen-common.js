@@ -29,8 +29,10 @@
   }
 
   // สถานะนาฬิกา: idle | countdown | running | paused | finished
+  // announce = กำลังพูดประกาศก่อนนับถอยหลัง (รอเสียงจบ)
   function timerPhase(t, now) {
     if (!t || t.status === "idle") return "idle";
+    if (t.status === "announce") return "announce";
     if (t.status === "paused") return "paused";
     if (t.startAt && now < t.startAt) return "countdown";
     return now >= t.endAt ? "finished" : "running";
@@ -38,7 +40,7 @@
 
   function timerRemaining(t, now) {
     var p = timerPhase(t, now);
-    if (p === "countdown") return t.durationMs || 0;
+    if (p === "countdown" || p === "announce") return t.durationMs || 0;
     if (p === "running") return Math.max(0, t.endAt - now);
     if (p === "paused") return t.remainingMs || 0;
     return 0;
@@ -58,7 +60,24 @@
       .replace(/'/g, "&#39;");
   }
 
+  var TH_NUM = [
+    "ศูนย์",
+    "หนึ่ง",
+    "สอง",
+    "สาม",
+    "สี่",
+    "ห้า",
+    "หก",
+    "เจ็ด",
+    "แปด",
+    "เก้า",
+    "สิบ",
+  ];
+
   g.RCLScreen = {
+    thNum: function (n) {
+      return TH_NUM[n] || String(n);
+    },
     channel: channel,
     formatMs: formatMs,
     timerPhase: timerPhase,

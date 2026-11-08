@@ -1,142 +1,526 @@
-<div class="page-hd">
-  <div class="page-title">ลงคะแนน — <span
-      style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
-      <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
-    </span></div>
-  <div style="font-size:12px;color:#64748B;background:#fff;border:1px solid #E2E8F0;padding:5px 12px;border-radius:6px">
-    คะแนนสูงสุด <strong style="color:#2563EB">
-      <%= maxScore %> คะแนน
-    </strong> ต่อรอบ
-  </div>
-</div>
+<% var tierColor=tier==='beginner' ? '#16A34A' : tier==='intermediate' ? '#2563EB' : '#EA580C' ; %>
+  <% var canClear=!!locals.isAdmin; %>
+    <% function fmtTime(v) { if (v===null || v===undefined || v==='' ) return '' ; var total=Math.round(parseFloat(v) *
+      1000); if (isNaN(total)) return '' ; var m=Math.floor(total / 60000); var s=Math.floor((total % 60000) / 1000);
+      var ms=total % 1000; return m + '.' + ('0' + s).slice(-2) + '.' + ('00' + ms).slice(-3); } %>
 
-<style>
-  .btn-clear {
-    padding: 4px 10px;
-    border: 1px solid #FECACA;
-    background: #FEF2F2;
-    color: #DC2626;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: inherit;
-  }
+      <style>
+        .sc-hd {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          flex-wrap: wrap;
+          margin-bottom: 16px;
+        }
 
-  .btn-clear:hover {
-    background: #FEE2E2;
-  }
+        .sc-title {
+          font-size: 22px;
+          font-weight: 800;
+          color: #0F172A;
+        }
 
-  .clear-form {
-    display: inline;
-    margin: 0;
-  }
-</style>
+        .sc-max {
+          font-size: 12px;
+          color: #64748B;
+          background: #fff;
+          border: 1px solid #E2E8F0;
+          padding: 6px 12px;
+          border-radius: 8px;
+        }
 
-<div class="card">
-  <div style="overflow-x:auto">
-    <table>
-      <thead>
-        <tr>
-          <th>ทีม</th>
-          <th>สถาบัน</th>
-          <th>รอบที่ 1</th>
-          <th>รอบที่ 2</th>
-          <th>คะแนนดีสุด</th>
-          <th>ลงคะแนน</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (teams.length===0) { %>
-          <tr>
-            <td colspan="6">
-              <div class="empty"><i class="ti ti-clipboard-x"></i>ยังไม่มีทีมในรุ่นนี้</div>
-            </td>
-          </tr>
-          <% } %>
+        .sc-search {
+          position: relative;
+          margin-bottom: 12px;
+        }
 
-            <% teams.forEach(function(t) { %>
-              <% var hasR1=t.r1_score !==null && t.r1_score !==undefined; %>
-                <% var hasR2=t.r2_score !==null && t.r2_score !==undefined; %>
-                  <% var s1=parseFloat(t.r1_score) || 0; %>
-                    <% var s2=parseFloat(t.r2_score) || 0; %>
-                      <% var best=Math.max(s1, s2); %>
-                        <tr>
-                          <td>
-                            <div class="team-name">
-                              <%= t.name %>
-                            </div>
-                            <div class="team-id">
-                              <%= t.id %>
-                            </div>
-                          </td>
-                          <td style="color:#64748B;font-size:12px">
-                            <%= t.institution || '—' %>
-                          </td>
-                          <td>
-                            <% if (s1> 0) { %>
-                              <div class="score-num">
-                                <%= s1 %>
-                              </div>
-                              <div class="score-time">
-                                <%= t.r1_time ? t.r1_time + ' วิ' : '' %>
-                              </div>
-                              <% } else { %>
-                                <span style="color:#CBD5E1">—</span>
-                                <% } %>
-                          </td>
-                          <td>
-                            <% if (s2> 0) { %>
-                              <div class="score-num" style="color:#EA580C">
-                                <%= s2 %>
-                              </div>
-                              <div class="score-time">
-                                <%= t.r2_time ? t.r2_time + ' วิ' : '' %>
-                              </div>
-                              <% } else { %>
-                                <span style="color:#CBD5E1">—</span>
-                                <% } %>
-                          </td>
-                          <td>
-                            <div class="best-score">
-                              <%= best || '—' %>
-                            </div>
-                            <% if (best> 0 && maxScore > 0) { %>
-                              <div class="bar-bg">
-                                <div class="bar-fill"
-                                  style="width:<%= Math.min(100, Math.round(best / maxScore * 100)) %>%"></div>
-                              </div>
-                              <% } %>
-                          </td>
-                          <td>
-                            <div class="action-row">
-                              <a href="/scores/<%= encodeURIComponent(t.id) %>/1" class="btn btn-secondary btn-sm"
-                                style="color:#7C3AED;border-color:#DDD6FE">รอบที่ 1</a>
-                              <a href="/scores/<%= encodeURIComponent(t.id) %>/2" class="btn btn-secondary btn-sm"
-                                style="color:#D97706;border-color:#FDE68A">รอบที่ 2</a>
-                            </div>
+        .sc-search i {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #94A3B8;
+        }
 
-                            <% if (hasR1 || hasR2) { %>
-                              <div class="action-row" style="margin-top:6px">
-                                <% if (hasR1) { %>
-                                  <form method="POST" class="clear-form"
-                                    action="/board/scores/<%= encodeURIComponent(t.id) %>/1/clear?tier=<%= tier %>&back=scores"
-                                    onsubmit="return confirm(<%= JSON.stringify('ล้างคะแนนรอบที่ 1 ของทีม ' + t.name + ' ?') %>);">
-                                    <button type="submit" class="btn-clear">ล้าง R1</button>
-                                  </form>
-                                  <% } %>
-                                    <% if (hasR2) { %>
-                                      <form method="POST" class="clear-form"
-                                        action="/board/scores/<%= encodeURIComponent(t.id) %>/2/clear?tier=<%= tier %>&back=scores"
-                                        onsubmit="return confirm(<%= JSON.stringify('ล้างคะแนนรอบที่ 2 ของทีม ' + t.name + ' ?') %>);">
-                                        <button type="submit" class="btn-clear">ล้าง R2</button>
-                                      </form>
-                                      <% } %>
-                              </div>
-                              <% } %>
-                          </td>
-                        </tr>
-                        <% }) %>
-      </tbody>
-    </table>
-  </div>
-</div>
+        .sc-search input {
+          width: 100%;
+          height: 44px;
+          padding: 0 12px 0 36px;
+          border: 1.5px solid #E2E8F0;
+          border-radius: 12px;
+          background: #fff;
+          font-family: inherit;
+          font-size: 15px;
+          outline: none;
+        }
+
+        .sc-search input:focus {
+          border-color: #2563EB;
+        }
+
+        .sc-tbl {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        .sc-tbl th {
+          padding: 12px 16px;
+          background: #F8FAFC;
+          border-bottom: 1px solid #E2E8F0;
+          font-size: 12px;
+          font-weight: 700;
+          color: #64748B;
+          text-align: left;
+          white-space: nowrap;
+        }
+
+        .sc-tbl td {
+          padding: 14px 16px;
+          border-bottom: 1px solid #F1F5F9;
+          vertical-align: middle;
+        }
+
+        .sc-tbl tbody tr:hover td {
+          background: #FAFBFF;
+        }
+
+        .sc-team b {
+          display: block;
+          font-size: 15px;
+          color: #0F172A;
+        }
+
+        .sc-team span {
+          font-size: 12px;
+          font-weight: 700;
+          color: #2563EB;
+        }
+
+        .sc-team em {
+          display: none;
+          font-style: normal;
+          font-size: 12px;
+          color: #64748B;
+        }
+
+        .sc-inst {
+          font-size: 13px;
+          color: #64748B;
+        }
+
+        /* ช่องคะแนนแต่ละรอบ (คะแนน + ปุ่มของรอบนั้น) */
+        .rd {
+          min-width: 170px;
+        }
+
+        .rd-val {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+        }
+
+        .rd-score {
+          font-size: 22px;
+          font-weight: 800;
+          color: #2563EB;
+          line-height: 1.1;
+        }
+
+        .rd-time {
+          font-family: ui-monospace, Menlo, Consolas, monospace;
+          font-size: 12px;
+          color: #64748B;
+        }
+
+        .rd-act {
+          display: flex;
+          gap: 6px;
+          margin-top: 6px;
+        }
+
+        .rd-act form {
+          margin: 0;
+        }
+
+        .sc-btn {
+          box-sizing: border-box;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          height: 36px;
+          padding: 0 12px;
+          border-radius: 9px;
+          border: 1.5px solid #E2E8F0;
+          background: #fff;
+          color: #334155;
+          font-family: inherit;
+          font-size: 13px;
+          font-weight: 700;
+          text-decoration: none;
+          white-space: nowrap;
+          cursor: pointer;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        .sc-btn:active {
+          transform: scale(.97);
+        }
+
+        /* ยังไม่มีคะแนน → ปุ่มหลัก */
+        .sc-btn.add {
+          height: 40px;
+          padding: 0 16px;
+          border-color: transparent;
+          color: #fff;
+        }
+
+        .sc-btn.add.r1 {
+          background: #7C3AED;
+        }
+
+        .sc-btn.add.r2 {
+          background: #D97706;
+        }
+
+        .sc-btn.edit:hover {
+          border-color: #93C5FD;
+          color: #2563EB;
+        }
+
+        /* ล้าง = ปุ่มไอคอนเล็ก สีแดงจาง แยกจากปุ่มแก้ไข */
+        .sc-btn.clear {
+          width: 36px;
+          padding: 0;
+          border-color: #FECACA;
+          background: #FEF2F2;
+          color: #DC2626;
+        }
+
+        .sc-btn.clear:hover {
+          background: #FEE2E2;
+        }
+
+        .sc-best {
+          min-width: 110px;
+        }
+
+        .sc-best b {
+          font-size: 24px;
+          font-weight: 800;
+          color: #0F172A;
+        }
+
+        .sc-bar {
+          height: 6px;
+          margin-top: 6px;
+          border-radius: 99px;
+          background: #E2E8F0;
+          overflow: hidden;
+        }
+
+        .sc-bar span {
+          display: block;
+          height: 100%;
+          border-radius: 99px;
+          background: #2563EB;
+        }
+
+        .sc-empty {
+          padding: 40px 16px;
+          text-align: center;
+          color: #94A3B8;
+        }
+
+        .sc-none td {
+          display: none;
+        }
+
+        /* ---------- แท็บเล็ต: ซ่อนคอลัมน์สถาบัน (แสดงใต้ชื่อทีมแทน) ---------- */
+        @media (max-width: 1100px) {
+          .sc-col-inst {
+            display: none;
+          }
+
+          .sc-team em {
+            display: block;
+          }
+
+          .sc-tbl td,
+          .sc-tbl th {
+            padding-left: 12px;
+            padding-right: 12px;
+          }
+        }
+
+        /* ---------- มือถือ: การ์ดทีละทีม ---------- */
+        @media (max-width: 700px) {
+          .sc-title {
+            font-size: 19px;
+          }
+
+          .sc-wrap {
+            overflow: visible !important;
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+          }
+
+          .sc-tbl thead {
+            display: none;
+          }
+
+          .sc-tbl,
+          .sc-tbl tbody {
+            display: block;
+          }
+
+          .sc-tbl tbody tr {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+              "team best"
+              "r1 r2";
+            gap: 10px;
+            margin-bottom: 12px;
+            padding: 14px;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+          }
+
+          .sc-tbl tbody tr:hover td {
+            background: transparent;
+          }
+
+          .sc-tbl td {
+            display: block;
+            padding: 0;
+            border: 0;
+          }
+
+          .sc-tbl td.sc-col-inst {
+            display: none;
+          }
+
+          .sc-tbl td.sc-col-team {
+            grid-area: team;
+          }
+
+          .sc-tbl td.sc-col-best {
+            grid-area: best;
+            text-align: right;
+          }
+
+          .sc-tbl td.sc-col-r1 {
+            grid-area: r1;
+          }
+
+          .sc-tbl td.sc-col-r2 {
+            grid-area: r2;
+          }
+
+          .sc-tbl td.sc-empty-cell {
+            grid-column: 1 / -1;
+          }
+
+          .sc-best {
+            min-width: 0;
+          }
+
+          .sc-best b {
+            font-size: 26px;
+          }
+
+          .sc-best small {
+            display: block;
+            font-size: 11px;
+            color: #94A3B8;
+          }
+
+          .rd {
+            box-sizing: border-box;
+            min-width: 0;
+            padding: 10px !important;
+            border-radius: 12px;
+            background: #F8FAFC;
+          }
+
+          .rd::before {
+            content: attr(data-label);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #94A3B8;
+          }
+
+          .rd-val {
+            flex-direction: column;
+            gap: 0;
+          }
+
+          .rd-act {
+            margin-top: 8px;
+          }
+
+          .rd-act .sc-btn.edit {
+            flex: 1;
+          }
+
+          .sc-btn.add {
+            width: 100%;
+            height: 48px;
+            font-size: 14px;
+          }
+
+          .sc-btn,
+          .sc-btn.clear {
+            height: 42px;
+          }
+
+          .sc-btn.clear {
+            width: 42px;
+          }
+        }
+
+        .sc-best-label {
+          display: none;
+        }
+
+        @media (max-width: 700px) {
+          .sc-best-label {
+            display: block;
+          }
+        }
+      </style>
+
+      <div class="sc-hd">
+        <div class="sc-title">ลงคะแนน — <span style="color:<%= tierColor %>">
+            <%= tier==='beginner' ? 'Beginner' : tier==='intermediate' ? 'Intermediate' : 'Advance' %>
+          </span></div>
+        <div class="sc-max">คะแนนสูงสุด <strong style="color:#2563EB">
+            <%= maxScore %> คะแนน
+          </strong> ต่อรอบ</div>
+      </div>
+
+      <% if (teams.length> 6) { %>
+        <div class="sc-search">
+          <i class="ti ti-search"></i>
+          <input type="search" id="scSearch" placeholder="ค้นหาชื่อทีม / รหัสทีม / สถาบัน" autocomplete="off">
+        </div>
+        <% } %>
+
+          <div class="card sc-wrap" style="overflow-x:auto">
+            <table class="sc-tbl">
+              <thead>
+                <tr>
+                  <th>ทีม</th>
+                  <th class="sc-col-inst">สถาบัน</th>
+                  <th>รอบที่ 1</th>
+                  <th>รอบที่ 2</th>
+                  <th>คะแนนดีสุด</th>
+                </tr>
+              </thead>
+              <tbody id="scBody">
+                <% if (teams.length===0) { %>
+                  <tr>
+                    <td colspan="5" class="sc-empty-cell">
+                      <div class="sc-empty"><i class="ti ti-clipboard-x"></i> ยังไม่มีทีมในรุ่นนี้</div>
+                    </td>
+                  </tr>
+                  <% } %>
+
+                    <% teams.forEach(function (t) { %>
+                      <% var s1=parseFloat(t.r1_score) || 0; %>
+                        <% var s2=parseFloat(t.r2_score) || 0; %>
+                          <% var best=Math.max(s1, s2); %>
+                            <tr data-search="<%= (t.name + ' ' + t.id + ' ' + (t.institution || '')).toLowerCase() %>">
+                              <td class="sc-col-team">
+                                <div class="sc-team">
+                                  <b>
+                                    <%= t.name %>
+                                  </b>
+                                  <span>
+                                    <%= t.id %>
+                                  </span>
+                                  <em>
+                                    <%= t.institution || '' %>
+                                  </em>
+                                </div>
+                              </td>
+                              <td class="sc-col-inst">
+                                <div class="sc-inst">
+                                  <%= t.institution || '—' %>
+                                </div>
+                              </td>
+
+                              <% [1, 2].forEach(function (r) { %>
+                                <% var score=t['r' + r + '_score' ]; %>
+                                  <% var has=score !==null && score !==undefined; %>
+                                    <td class="rd sc-col-r<%= r %>" data-label="รอบที่ <%= r %>">
+                                      <% if (has) { %>
+                                        <div class="rd-val">
+                                          <span class="rd-score">
+                                            <%= parseFloat(score) %>
+                                          </span>
+                                          <% if (fmtTime(t['r' + r + '_time' ])) { %>
+                                            <span class="rd-time">
+                                              <%= fmtTime(t['r' + r + '_time' ]) %>
+                                            </span>
+                                            <% } %>
+                                        </div>
+                                        <div class="rd-act">
+                                          <a href="/scores/<%= encodeURIComponent(t.id) %>/<%= r %>"
+                                            class="sc-btn edit"><i class="ti ti-pencil"></i> แก้ไข</a>
+                                          <% if (canClear) { %>
+                                            <form method="POST"
+                                              action="/board/scores/<%= encodeURIComponent(t.id) %>/<%= r %>/clear?tier=<%= tier %>&back=scores"
+                                              onsubmit="return confirm(<%= JSON.stringify('ล้างคะแนนรอบที่ ' + r + ' ของทีม ' + t.name + ' ?\nคะแนน ' + parseFloat(score) + ' และเวลาจะถูกลบ') %>);">
+                                              <button type="submit" class="sc-btn clear"
+                                                title="ล้างคะแนนรอบที่ <%= r %>"
+                                                aria-label="ล้างคะแนนรอบที่ <%= r %>"><i
+                                                  class="ti ti-trash"></i></button>
+                                            </form>
+                                            <% } %>
+                                        </div>
+                                        <% } else { %>
+                                          <a href="/scores/<%= encodeURIComponent(t.id) %>/<%= r %>"
+                                            class="sc-btn add r<%= r %>"><i class="ti ti-plus"></i> ลงคะแนน</a>
+                                          <% } %>
+                                    </td>
+                                    <% }) %>
+
+                                      <td class="sc-col-best">
+                                        <div class="sc-best">
+                                          <small class="sc-best-label">คะแนนดีสุด</small>
+                                          <b>
+                                            <%= best || '—' %>
+                                          </b>
+                                          <% if (best> 0 && maxScore > 0) { %>
+                                            <div class="sc-bar"><span
+                                                style="width:<%= Math.min(100, Math.round(best / maxScore * 100)) %>%"></span>
+                                            </div>
+                                            <% } %>
+                                        </div>
+                                      </td>
+                            </tr>
+                            <% }) %>
+              </tbody>
+            </table>
+          </div>
+
+          <script>
+            (function () {
+              var input = document.getElementById('scSearch');
+              if (!input) return;
+              var rows = document.querySelectorAll('#scBody tr[data-search]');
+              input.addEventListener('input', function () {
+                var q = input.value.trim().toLowerCase();
+                for (var i = 0; i < rows.length; i++) {
+                  rows[i].style.display = !q || rows[i].getAttribute('data-search').indexOf(q) !== -1 ? '' : 'none';
+                }
+              });
+            })();
+          </script>

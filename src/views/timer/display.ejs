@@ -4,67 +4,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>นาฬิกาจับเวลา — Robo Challenge League</title>
+    <title>จอแสดงผล — Robo Challenge League</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3">
-    <link rel="stylesheet" href="/css/timer.css?v=3">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
+    <link rel="stylesheet" href="/css/timer.css?v=4">
+    <link rel="stylesheet" href="/css/screen.css?v=4">
 </head>
 
-<body class="tdisp state-idle">
-    <div class="td-start" id="tdStart">
-        <button type="button" id="tdStartBtn">แตะเพื่อเริ่มแสดงผล</button>
-        <p>เปิดเสียงเตือนและแสดงเต็มจอ</p>
-    </div>
+<body class="tdisp state-idle scene-logo" data-preview="<%= preview ? '1' : '0' %>">
 
-    <header class="td-head">
-        <div class="td-brand">
-            <img src="/RCL Logo.png" alt="">
-            <span>ROBO CHALLENGE LEAGUE 2026</span>
+    <% if (!preview) { %>
+        <div class="td-start" id="tdStart">
+            <button type="button" id="tdStartBtn">คลิกเพื่อเริ่มแสดงผล</button>
+            <p>ลากหน้าต่างนี้ไปที่จอโปรเจกเตอร์ก่อน แล้วค่อยคลิก · กด F เพื่อเข้า/ออกเต็มจอ</p>
         </div>
-        <div class="td-clock" id="tdClock">--:--</div>
-    </header>
+        <% } %>
 
-    <main class="td-main">
-        <div class="td-label" id="tdLabel"></div>
-        <div class="td-time" id="tdTime">--:--</div>
-        <div class="td-bar"><span id="tdBar"></span></div>
-        <div class="td-sub" id="tdSub"></div>
+            <!-- ===== ฉาก: นาฬิกา ===== -->
+            <section class="sc sc-timer" id="scTimer">
+                <header class="td-head">
+                    <div class="td-brand">
+                        <img src="/RCL Logo.png" alt="">
+                        <span>ROBO CHALLENGE LEAGUE 2026</span>
+                    </div>
+                    <div class="td-clock" id="tdClock">--:--</div>
+                </header>
+                <main class="td-main">
+                    <div class="td-label" id="tdLabel"></div>
+                    <div class="td-time" id="tdTime">00:00:00</div>
+                    <div class="td-bar"><span id="tdBar"></span></div>
+                    <div class="td-sub" id="tdSub"></div>
+                    <div class="td-idle" id="tdIdle">
+                        <div class="td-idle-title">พร้อมจับเวลา</div>
+                        <div class="td-next" id="tdNext"></div>
+                    </div>
+                </main>
+                <div class="td-msg" id="tdMsg" hidden></div>
 
-        <div class="td-idle" id="tdIdle">
-            <div class="td-idle-title">พร้อมจับเวลา</div>
-            <div class="td-next" id="tdNext"></div>
-        </div>
-    </main>
+                <div class="td-count" id="tdCount" hidden>
+                    <div class="td-count-top">เตรียมพร้อม</div>
+                    <div class="td-count-label" id="tdCountLabel"></div>
+                    <div class="td-count-num" id="tdCountNum"></div>
+                    <div class="td-count-sub">วินาที</div>
+                </div>
 
-    <!-- นับถอยหลังก่อนเริ่ม -->
-    <div class="td-count" id="tdCount" hidden>
-        <div class="td-count-top">เตรียมพร้อม</div>
-        <div class="td-count-label" id="tdCountLabel"></div>
-        <div class="td-count-num" id="tdCountNum"></div>
-        <div class="td-count-sub">วินาที</div>
-    </div>
+                <div class="td-over" id="tdOver" hidden>
+                    <div class="td-over-title">หมดเวลา</div>
+                    <div class="td-over-label" id="tdOverLabel"></div>
+                    <div class="td-over-sub">กรุณานำหุ่นยนต์ออกจากสนาม</div>
+                </div>
+            </section>
 
-    <!-- ประกาศตัวใหญ่เต็มจอ -->
-    <div class="td-banner" id="tdBanner" hidden>
-        <div class="td-banner-text" id="tdBannerText"></div>
-        <div class="td-banner-sub" id="tdBannerSub"></div>
-        <div class="td-banner-timer" id="tdBannerTimer" hidden></div>
-    </div>
+            <!-- ===== ฉาก: ประกาศ ===== -->
+            <section class="sc sc-banner" id="scBanner">
+                <div class="td-banner-text" id="bnText"></div>
+                <div class="td-banner-sub" id="bnSub"></div>
+                <div class="td-banner-timer" id="bnTimer" hidden></div>
+            </section>
 
-    <div class="td-msg" id="tdMsg" hidden></div>
+            <!-- ===== ฉาก: รูปภาพ ===== -->
+            <section class="sc sc-image" id="scImage">
+                <img id="imgEl" alt="">
+                <div class="sc-missing" id="imgMissing" hidden>ไม่พบไฟล์รูป — เลือกไฟล์ใหม่ในหน้าควบคุม</div>
+            </section>
 
-    <div class="td-over" id="tdOver" hidden>
-        <div class="td-over-title">หมดเวลา</div>
-        <div class="td-over-label" id="tdOverLabel"></div>
-        <div class="td-over-sub">กรุณานำหุ่นยนต์ออกจากสนาม</div>
-    </div>
+            <!-- ===== ฉาก: วิดีโอ ===== -->
+            <section class="sc sc-video" id="scVideo">
+                <video id="vidEl" playsinline preload="auto"></video>
+                <div class="sc-missing" id="vidMissing" hidden>ไม่พบไฟล์วิดีโอ — เลือกไฟล์ใหม่ในหน้าควบคุม</div>
+                <div class="sc-preview-video" id="vidPreview" hidden></div>
+            </section>
 
-    <div class="td-net" id="tdNet" title="สถานะการเชื่อมต่อ"></div>
+            <!-- ===== ฉาก: จับรางวัล ===== -->
+            <section class="sc sc-draw" id="scDraw">
+                <div class="dr-top">
+                    <img src="/RCL Logo.png" alt="">
+                    <span>จับรางวัลผู้ตอบแบบประเมิน</span>
+                </div>
+                <div class="dr-prize" id="drPrize"></div>
+                <div class="dr-code" id="drCode">RCL-????</div>
+                <div class="dr-who" id="drWho"></div>
+                <div class="dr-history" id="drHistory"></div>
+            </section>
 
-    <script src="/js/timer-core.js?v=3"></script>
-    <script src="/js/timer-display.js?v=3"></script>
+            <!-- ===== ฉาก: ประกาศผล ===== -->
+            <section class="sc sc-results" id="scResults">
+                <header class="rs-head">
+                    <img src="/RCL Logo.png" alt="">
+                    <div>
+                        <div class="rs-title">ผลการแข่งขัน</div>
+                        <div class="rs-tier" id="rsTier"></div>
+                    </div>
+                </header>
+                <!-- ยังไม่เปิดอันดับ -->
+                <div class="rs-intro" id="rsIntro">
+                    <div class="rs-intro-sub">ประกาศผลการแข่งขัน</div>
+                    <div class="rs-intro-tier" id="rsIntroTier"></div>
+                </div>
+
+                <!-- อันดับ 10–4: ทีละทีมเต็มจอ -->
+                <div class="rs-spot" id="rsSpot">
+                    <div class="rs-spot-rank">อันดับ <b id="rsSpotRank"></b></div>
+                    <div class="rs-spot-name" id="rsSpotName"></div>
+                    <div class="rs-spot-inst" id="rsSpotInst"></div>
+                    <div class="rs-spot-score" id="rsSpotScore"></div>
+                </div>
+
+                <!-- อันดับ 3–1: โพเดียม -->
+                <div class="rs-body">
+                    <div class="rs-podium" id="rsPodium"></div>
+                </div>
+            </section>
+
+            <!-- ===== ฉาก: โลโก้ ===== -->
+            <section class="sc sc-logo" id="scLogo">
+                <img src="/RCL Logo.png" alt="Robo Challenge League">
+                <div class="lg-title">ROBO CHALLENGE LEAGUE 2026</div>
+            </section>
+
+            <!-- ===== ฉาก: จอดำ ===== -->
+            <section class="sc sc-blank" id="scBlank"></section>
+
+            <% if (!preview) { %>
+                <button type="button" class="fs-btn" id="fsBtn" hidden>⛶ เต็มจอ <small>(กด F)</small></button>
+                <% } %>
+
+                    <div class="sc-wait" id="scWait">รอสัญญาณจากหน้าควบคุม…</div>
+
+                    <script src="/js/screen-common.js?v=2"></script>
+                    <script src="/js/screen-display.js?v=5"></script>
 </body>
 
 </html>
