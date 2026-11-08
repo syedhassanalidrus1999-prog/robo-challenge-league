@@ -215,7 +215,7 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
   const user = req.session.user;
   const tier = user.role === "admin" ? req.query.tier || "beginner" : user.tier;
   try {
-    const [teamsResult, criteriaResult] = await Promise.all([
+    const [teamsResult, criteriaResult, judgesResult] = await Promise.all([
       query(
         `SELECT t.*,
           s1.total_score as r1_score, s1.time_seconds as r1_time,
@@ -228,7 +228,17 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
         [tier],
       ),
       query(CRITERIA_BY_TIER_SQL, [tier]),
+      query(
+        "SELECT * FROM users WHERE role = 'judge' AND tier = $1 ORDER BY id ASC",
+        [tier],
+      ),
     ]);
+
+    // ชื่อกรรมการผู้ดูแลแต่ละทีม (teams.judge_id — ตั้งในหน้ามอบหมายกรรมการ)
+    const judgeNames = {};
+    judgesResult.rows.forEach((u) => {
+      judgeNames[u.id] = u.name || u.username || "กรรมการ #" + u.id;
+    });
 
     res.render("scores/index", {
       title: "ลงคะแนน",
@@ -239,6 +249,9 @@ router.get("/", requireLogin, requireJudge, async (req, res) => {
       criteria: criteriaResult.rows,
       maxScore: calcMaxScore(criteriaResult.rows),
       tier,
+      judgeNames,
+      myId: user.id,
+      isJudge: user.role === "judge",
     });
   } catch (err) {
     console.error(err);

@@ -1,0 +1,316 @@
+<% var COLORS=['#2563EB', '#16A34A' , '#EA580C' , '#7C3AED' , '#DB2777' , '#0891B2' ]; %>
+    <% var colorOf={}; judges.forEach(function (j, i) { colorOf[j.id]=COLORS[i % COLORS.length]; }); %>
+
+        <style>
+            .jg-title {
+                font-size: 22px;
+                font-weight: 800;
+                color: #0F172A;
+            }
+
+            .jg-sub {
+                margin: 4px 0 16px;
+                font-size: 13px;
+                color: #64748B;
+            }
+
+            .jg-judges {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+
+            .jg-judge {
+                padding: 14px 16px;
+                border: 1px solid #E2E8F0;
+                border-left: 5px solid var(--c);
+                border-radius: 14px;
+                background: #fff;
+            }
+
+            .jg-judge b {
+                display: block;
+                font-size: 15px;
+                color: #0F172A;
+            }
+
+            .jg-judge span {
+                font-size: 12px;
+                color: #64748B;
+            }
+
+            .jg-judge em {
+                display: block;
+                margin-top: 4px;
+                font-style: normal;
+                font-size: 24px;
+                font-weight: 800;
+                color: var(--c);
+            }
+
+            .jg-judge.none {
+                --c: #DC2626;
+                background: #FEF2F2;
+            }
+
+            .jg-card {
+                background: #fff;
+                border: 1px solid #E2E8F0;
+                border-radius: 16px;
+                overflow: hidden;
+                margin-bottom: 16px;
+            }
+
+            .jg-bar {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex-wrap: wrap;
+                padding: 14px 16px;
+                border-bottom: 1px solid #EEF2F7;
+            }
+
+            .jg-bar form {
+                margin: 0;
+            }
+
+            .jg-bar .sp {
+                flex: 1;
+            }
+
+            .jg-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                height: 40px;
+                padding: 0 14px;
+                border: 1.5px solid #E2E8F0;
+                border-radius: 10px;
+                background: #fff;
+                color: #334155;
+                font-family: inherit;
+                font-size: 13px;
+                font-weight: 700;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            .jg-btn.primary {
+                border-color: #2563EB;
+                background: #2563EB;
+                color: #fff;
+            }
+
+            .jg-tbl {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .jg-tbl th {
+                padding: 10px 16px;
+                background: #F8FAFC;
+                font-size: 12px;
+                font-weight: 700;
+                color: #64748B;
+                text-align: left;
+                border-bottom: 1px solid #E2E8F0;
+            }
+
+            .jg-tbl td {
+                padding: 10px 16px;
+                border-bottom: 1px solid #F1F5F9;
+                font-size: 14px;
+            }
+
+            .jg-team b {
+                color: #0F172A;
+            }
+
+            .jg-team span {
+                display: block;
+                font-size: 12px;
+                color: #64748B;
+            }
+
+            .jg-select {
+                width: 100%;
+                max-width: 260px;
+                height: 40px;
+                padding: 0 10px;
+                border: 1.5px solid #CBD5E1;
+                border-left: 5px solid var(--c, #CBD5E1);
+                border-radius: 10px;
+                background: #fff;
+                font-family: inherit;
+                font-size: 14px;
+            }
+
+            .jg-select.empty {
+                border-color: #FCA5A5;
+                background: #FEF2F2;
+            }
+
+            .jg-save {
+                position: sticky;
+                bottom: 0;
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                padding: 12px 16px;
+                background: rgba(255, 255, 255, .96);
+                border-top: 1px solid #E2E8F0;
+            }
+
+            .jg-empty {
+                padding: 30px 16px;
+                text-align: center;
+                color: #94A3B8;
+            }
+
+            .jg-note {
+                font-size: 12px;
+                color: #64748B;
+                line-height: 1.6;
+            }
+
+            @media (max-width: 700px) {
+                .jg-tbl thead {
+                    display: none;
+                }
+
+                .jg-tbl,
+                .jg-tbl tbody,
+                .jg-tbl tr,
+                .jg-tbl td {
+                    display: block;
+                    width: 100%;
+                }
+
+                .jg-tbl tr {
+                    padding: 10px 14px;
+                    border-bottom: 1px solid #F1F5F9;
+                }
+
+                .jg-tbl td {
+                    padding: 4px 0;
+                    border: 0;
+                }
+
+                .jg-select {
+                    max-width: none;
+                }
+            }
+        </style>
+
+        <div class="jg-title">มอบหมายกรรมการ · <%= tierLabel %>
+        </div>
+        <div class="jg-sub">แต่ละทีมมีกรรมการผู้ดูแล 1 คน · กรรมการจะเห็น "ทีมที่ดูแล" ก่อนในหน้าลงคะแนน</div>
+
+        <div class="jg-judges">
+            <% judges.forEach(function (j) { %>
+                <div class="jg-judge" style="--c:<%= colorOf[j.id] %>">
+                    <b>
+                        <%= j.name %>
+                    </b>
+                    <span>@<%= j.username %></span>
+                    <em>
+                        <%= counts[j.id] %> ทีม
+                    </em>
+                </div>
+                <% }) %>
+                    <div class="jg-judge none">
+                        <b>ยังไม่มีกรรมการ</b>
+                        <span>ทีมที่ยังไม่ได้มอบหมาย</span>
+                        <em>
+                            <%= unassigned %> ทีม
+                        </em>
+                    </div>
+        </div>
+
+        <% if (!judges.length) { %>
+            <div class="jg-card">
+                <div class="jg-empty">
+                    ยังไม่มีบัญชีกรรมการรุ่น <%= tierLabel %><br>
+                        สร้างบัญชีที่มี role = judge และ tier = <%= tier %> ก่อน
+                </div>
+            </div>
+            <% } else { %>
+                <div class="jg-card">
+                    <div class="jg-bar">
+                        <form method="POST" action="/board/judges/auto?tier=<%= tier %>">
+                            <input type="hidden" name="mode" value="unassigned">
+                            <button type="submit" class="jg-btn"><i class="ti ti-wand"></i>
+                                แบ่งทีมที่ยังไม่มีกรรมการ</button>
+                        </form>
+                        <form method="POST" action="/board/judges/auto?tier=<%= tier %>"
+                            onsubmit="return confirm('แบ่งทีมใหม่ทั้งหมดให้กรรมการเท่า ๆ กัน?\nการมอบหมายเดิมจะถูกแทนที่');">
+                            <input type="hidden" name="mode" value="all">
+                            <button type="submit" class="jg-btn"><i class="ti ti-arrows-shuffle"></i>
+                                แบ่งใหม่ทั้งหมด</button>
+                        </form>
+                        <span class="sp"></span>
+                        <span class="jg-note">หรือเลือกกรรมการเองทีละทีม แล้วกดบันทึก</span>
+                    </div>
+
+                    <form method="POST" action="/board/judges/assign?tier=<%= tier %>">
+                        <table class="jg-tbl">
+                            <thead>
+                                <tr>
+                                    <th>ทีม</th>
+                                    <th>กรรมการผู้ดูแล</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (!teams.length) { %>
+                                    <tr>
+                                        <td colspan="2" class="jg-empty">ยังไม่มีทีมในรุ่นนี้</td>
+                                    </tr>
+                                    <% } %>
+                                        <% teams.forEach(function (t) { %>
+                                            <% var has=!!colorOf[t.judge_id]; %>
+                                                <tr>
+                                                    <td class="jg-team">
+                                                        <b>
+                                                            <%= t.id %> · <%= t.name %>
+                                                        </b>
+                                                        <span>
+                                                            <%= t.institution || '' %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <select class="jg-select <%= has ? '' : 'empty' %>"
+                                                            name="judge_<%= t.id %>"
+                                                            style="--c:<%= has ? colorOf[t.judge_id] : '#FCA5A5' %>"
+                                                            onchange="paintJudge(this)">
+                                                            <option value="">— ยังไม่มีกรรมการ —</option>
+                                                            <% judges.forEach(function (j) { %>
+                                                                <option value="<%= j.id %>"
+                                                                    data-c="<%= colorOf[j.id] %>" <%=t.judge_id===j.id
+                                                                    ? 'selected' : '' %>><%= j.name %>
+                                                                </option>
+                                                                <% }) %>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                            </tbody>
+                        </table>
+                        <% if (teams.length) { %>
+                            <div class="jg-save">
+                                <button type="submit" class="jg-btn primary"><i class="ti ti-device-floppy"></i>
+                                    บันทึกการมอบหมาย</button>
+                            </div>
+                            <% } %>
+                    </form>
+                </div>
+                <% } %>
+
+                    <script>
+                        function paintJudge(sel) {
+                            var opt = sel.options[sel.selectedIndex];
+                            var c = opt && opt.getAttribute('data-c');
+                            sel.style.setProperty('--c', c || '#FCA5A5');
+                            sel.classList.toggle('empty', !c);
+                        }
+                    </script>

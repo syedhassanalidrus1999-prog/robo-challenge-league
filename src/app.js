@@ -74,6 +74,7 @@ app.use("/board/badges", require("./routes/badges"));
 const screen = require("./routes/screen");
 app.use("/screen", screen.router);
 app.use("/timer", screen.legacyTimer);
+app.use("/board/judges", require("./routes/judges"));
 // ── 404 ──────────────────────────────────────
 app.use((req, res) => {
   res.status(404).render('404', { layout: 'layouts/public', title: 'ไม่พบหน้านี้' })
