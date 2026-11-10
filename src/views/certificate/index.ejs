@@ -1268,7 +1268,7 @@
 
                     var cd = res.headers.get('content-disposition') || '';
                     var m = cd.match(/filename\*=UTF-8''([^;]+)/i);
-                    var filename = m ? decodeURIComponent(m[1]) : 'certificate.png';
+                    var filename = m ? decodeURIComponent(m[1]) : 'certificate.pdf';
 
                     return res.blob().then(function (blob) {
                         var objectUrl = URL.createObjectURL(blob);
@@ -1336,8 +1336,9 @@
                 return fallback;
             }
 
+            // ดาวน์โหลดเป็น PDF (A4 พร้อมพิมพ์)
             function dlHref(params) {
-                return '/certificate/download?' + qs(params);
+                return '/certificate/download?' + qs(Object.assign({ format: 'pdf' }, params));
             }
 
             // เหรียญเป็นของนักเรียนแต่ละคน → ต้องส่งชื่อนักเรียนไปด้วย
