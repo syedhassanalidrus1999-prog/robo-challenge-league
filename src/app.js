@@ -57,6 +57,7 @@ app.use(viewerGuard);
 
 
 // ── Routes ───────────────────────────────────
+app.use("/board/announce", require("./routes/announce"));
 const survey = require("./routes/survey");
 app.use("/survey", survey.publicRouter);
 app.use("/board/users", require("./routes/users"));

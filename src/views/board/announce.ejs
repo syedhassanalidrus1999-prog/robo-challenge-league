@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบประกาศผลสำหรับพิธีกร — Robo Challenge League</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="/css/announce.css?v=3">
+</head>
+
+<body>
+    <div class="an-toolbar">
+        <a href="/board"><i class="ti ti-arrow-left"></i> กลับ</a>
+        <span class="an-info">ใบประกาศผลสำหรับพิธีกร · อ่านจากอันดับ 10 → 1 · พิมพ์ A4 แนวตั้ง</span>
+        <span class="an-tabs">
+            <a href="/board/announce" class="<%= current === 'all' ? 'on' : '' %>">ทุกรุ่น</a>
+            <% tiersAll.forEach(function (t) { %>
+                <a href="/board/announce?tier=<%= t %>" class="<%= current === t ? 'on' : '' %>">
+                    <%= tierLabel[t] %>
+                </a>
+                <% }) %>
+        </span>
+        <button type="button" onclick="window.print()"><i class="ti ti-printer"></i> พิมพ์</button>
+    </div>
+
+    <% sections.forEach(function (sec) { %>
+        <section class="an-page tier-<%= sec.tier %>">
+            <header class="an-head">
+                <div>
+                    <div class="an-event">ROBO CHALLENGE LEAGUE 2026 · ประกาศผลการแข่งขัน</div>
+                    <h1>รุ่น <%= sec.label %>
+                    </h1>
+                </div>
+                <div class="an-meta">
+                    <div>คะแนนเต็ม <b>
+                            <%= sec.maxScore %>
+                        </b></div>
+                    <div>พิมพ์เมื่อ <%= printedAt %>
+                    </div>
+                </div>
+            </header>
+
+            <% if (!sec.count) { %>
+                <div class="an-empty">ยังไม่มีทีมที่มีคะแนนในรุ่นนี้</div>
+                <% } else { %>
+                    <div class="an-intro">
+                        <span class="an-say">“ต่อไปเป็นการประกาศผลการแข่งขันรุ่น <%= sec.label %>
+                                โดยจะประกาศจากอันดับที่ <%= sec.count %> ไปจนถึงรางวัลชนะเลิศ”</span>
+                    </div>
+
+                    <% sec.rows.forEach(function (r) { %>
+                        <% if (r.rank===3 && sec.count>= 7) { %>
+                            <div class="an-break"></div>
+                            <div class="an-podium-title">รุ่น <%= sec.label %> · รางวัลอันดับ 1–3</div>
+                            <% } %>
+                                <article class="an-row <%= r.rank <= 3 ? 'top top-' + r.rank : '' %>">
+                                    <div class="an-check" aria-hidden="true"></div>
+                                    <div class="an-rank">
+                                        <small>
+                                            <%= r.rank <=3 ? 'รางวัล' : 'อันดับ' %>
+                                        </small>
+                                        <b>
+                                            <%= r.rank %>
+                                        </b>
+                                    </div>
+                                    <div class="an-body">
+                                        <div class="an-say">
+                                            “<%= r.award %> ได้แก่ ทีม <b>
+                                                    <%= r.name %>
+                                                </b>
+                                                <% if (r.institution) { %> จาก<%= r.institution %>
+                                                        <% } %>”
+                                        </div>
+                                        <div class="an-team">
+                                            <span class="an-name">
+                                                <%= r.name %>
+                                            </span>
+                                            <span class="an-id">
+                                                <%= r.id %>
+                                            </span>
+                                            <% if (r.medal) { %><span
+                                                    class="an-medal m-<%= r.medal === 'เหรียญทอง' ? 'gold' : r.medal === 'เหรียญเงิน' ? 'silver' : 'bronze' %>">
+                                                    <%= r.medal %>
+                                                </span>
+                                                <% } %>
+                                        </div>
+                                        <% if (r.students.length || r.coach) { %>
+                                            <div class="an-members">
+                                                <% if (r.students.length) { %><b>สมาชิก:</b>
+                                                    <%= r.students.join(' · ') %><% } %>
+                  <% if (r.coach) { %><%= r.students.length ? ' · ' : '' %><b>โค้ช:</b> <%= r.coach %><% } %>
+                </div>
+              <% } %>
+              <% if (r.tie) { %>
+                <div class="an-tie"><i class="ti ti-alert-triangle"></i> คะแนนและเวลาเท่ากับทีมข้างเคียง — ตรวจกับกรรมการก่อนประกาศ</div>
+              <% } %>
+            </div>
+            <div class="an-score">
+              <b><%= r.score %></b>
+              <small>คะแนน</small>
+              <% if (r.time) { %><em><%= r.time %></em><% } %>
+            </div>
+          </article>
+        <% }) %>
+
+        <div class="an-outro">
+          <span class="an-say">“ขอแสดงความยินดีกับทุกทีมที่ได้รับรางวัล และขอบคุณผู้เข้าแข่งขันรุ่น <%= sec.label %> ทุกคน”</span>
+        </div>
+      <% } %>
+
+      <footer class="an-foot">
+        อันดับเรียงตามคะแนนสูงสุด แล้วตามเวลาที่น้อยกว่า (ชุดเดียวกับหน้าสรุปผลและจอแสดงผล) · ช่อง ☐ ด้านซ้ายไว้ติ๊กเมื่อประกาศแล้ว
+      </footer>
+    </section>
+  <% }) %>
+</body>
+
+</html>

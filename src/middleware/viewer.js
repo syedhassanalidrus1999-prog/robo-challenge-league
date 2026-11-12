@@ -98,6 +98,7 @@ const RULES = {
     get: [
       /^\/board\/?$/, //                                สรุปผลคะแนน
       /^\/board\/export\/?$/,
+      /^\/board\/announce\/?$/, //                     ใบประกาศผลสำหรับพิธีกร
       /^\/teams\/?$/, //                                ดูรายชื่อทีม
       /^\/teams\/(export|pdf|print)(\/.*)?$/,
       /^\/board\/badges(\/.*)?$/, //                    ป้ายชื่อ

@@ -1,0 +1,349 @@
+/* public/css/announce.css — ใบประกาศผลสำหรับพิธีกร (A4) */
+@page {
+    size: A4 portrait;
+    margin: 12mm 12mm 14mm;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+body {
+    margin: 0;
+    background: #E2E8F0;
+    color: #0F172A;
+    font-family: 'Sarabun', sans-serif;
+}
+
+.an-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 10px 16px;
+    background: #0F172A;
+    color: #fff;
+    font-size: 14px;
+}
+
+.an-info {
+    flex: 1;
+    min-width: 200px;
+    color: #CBD5E1;
+}
+
+.an-toolbar a,
+.an-toolbar button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.an-toolbar a.on {
+    background: #fff;
+    color: #0F172A;
+}
+
+.an-toolbar button {
+    background: #2563EB;
+}
+
+.an-tabs {
+    display: inline-flex;
+    gap: 6px;
+}
+
+.an-page {
+    --tier: #7C3AED;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 16px auto;
+    padding: 12mm;
+    background: #fff;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, .12);
+    break-after: page;
+    page-break-after: always;
+}
+
+.an-page:last-of-type {
+    break-after: auto;
+    page-break-after: auto;
+}
+
+.tier-intermediate {
+    --tier: #0284C7;
+}
+
+.tier-advance {
+    --tier: #DC2626;
+}
+
+.an-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 4mm;
+    margin-bottom: 4mm;
+    border-bottom: 1.2mm solid var(--tier);
+}
+
+.an-event {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #64748B;
+}
+
+.an-head h1 {
+    margin: 1mm 0 0;
+    font-size: 22pt;
+    font-weight: 800;
+    color: var(--tier);
+    line-height: 1.1;
+}
+
+.an-meta {
+    text-align: right;
+    font-size: 9.5pt;
+    color: #64748B;
+    line-height: 1.5;
+}
+
+.an-meta b {
+    color: #0F172A;
+}
+
+.an-say {
+    display: block;
+    font-size: 11pt;
+    line-height: 1.4;
+    color: #1E293B;
+    font-style: italic;
+}
+
+.an-say b {
+    font-style: normal;
+}
+
+.an-intro,
+.an-outro {
+    margin: 0 0 2mm;
+    padding: 2mm 3mm;
+    border-radius: 2mm;
+    background: #F8FAFC;
+    border-left: 1mm solid #CBD5E1;
+}
+
+.an-outro {
+    margin-top: 4mm;
+}
+
+.an-row {
+    display: grid;
+    grid-template-columns: 7mm 18mm 1fr 24mm;
+    gap: 3mm;
+    align-items: start;
+    padding: 1.6mm 0;
+    border-bottom: 0.3mm solid #E2E8F0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.an-check {
+    width: 6mm;
+    height: 6mm;
+    margin-top: 2mm;
+    border: 0.5mm solid #94A3B8;
+    border-radius: 1mm;
+}
+
+.an-rank {
+    text-align: center;
+    line-height: 1;
+}
+
+.an-rank small {
+    display: block;
+    font-size: 8pt;
+    color: #64748B;
+}
+
+.an-rank b {
+    font-size: 22pt;
+    font-weight: 800;
+    color: var(--tier);
+}
+
+.an-team {
+    display: flex;
+    align-items: baseline;
+    gap: 2.5mm;
+    flex-wrap: wrap;
+    margin-top: 1mm;
+}
+
+.an-name {
+    font-size: 12pt;
+    font-weight: 800;
+}
+
+.an-id {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #64748B;
+}
+
+.an-medal {
+    padding: 0.3mm 2mm;
+    border-radius: 99mm;
+    font-size: 8.5pt;
+    font-weight: 700;
+}
+
+.m-gold {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.m-silver {
+    background: #F1F5F9;
+    color: #334155;
+}
+
+.m-bronze {
+    background: #FFEDD5;
+    color: #9A3412;
+}
+
+.an-members {
+    margin-top: 0.3mm;
+    font-size: 9pt;
+    color: #334155;
+}
+
+.an-tie {
+    margin-top: 1mm;
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #B45309;
+}
+
+.an-score {
+    text-align: right;
+    line-height: 1.15;
+}
+
+.an-score b {
+    display: block;
+    font-size: 16pt;
+    font-weight: 800;
+}
+
+.an-score small {
+    font-size: 8pt;
+    color: #64748B;
+}
+
+.an-score em {
+    display: block;
+    font-style: normal;
+    font-size: 9pt;
+    color: #475569;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+/* อันดับ 1–3 ขึ้นหน้าใหม่ (เฉพาะรุ่นที่มีหลายทีม) → หน้าแรก 10–4, หน้าสอง 3–1 */
+.an-break {
+    break-before: page;
+    page-break-before: always;
+}
+
+.an-podium-title {
+    margin: 0 0 3mm;
+    font-size: 16pt;
+    font-weight: 800;
+    color: var(--tier);
+}
+
+/* อันดับ 1–3 */
+.an-row.top {
+    margin: 1.5mm 0;
+    padding: 3.5mm 2mm;
+    border: 0.4mm solid #FDE68A;
+    border-radius: 2mm;
+    background: #FFFBEB;
+}
+
+.an-row.top-1 {
+    border-color: #F59E0B;
+    background: #FEF3C7;
+}
+
+.an-row.top {
+    padding: 5mm 3mm;
+}
+
+.an-row.top .an-say {
+    font-size: 15pt;
+}
+
+.an-row.top .an-rank b {
+    font-size: 30pt;
+}
+
+.an-row.top .an-name {
+    font-size: 17pt;
+}
+
+.an-row.top .an-members {
+    font-size: 11pt;
+}
+
+.an-empty {
+    padding: 20mm 0;
+    text-align: center;
+    color: #94A3B8;
+    font-size: 14pt;
+}
+
+.an-foot {
+    margin-top: 3mm;
+    font-size: 8.5pt;
+    color: #94A3B8;
+}
+
+@media print {
+    body {
+        background: #fff;
+    }
+
+    .an-toolbar {
+        display: none;
+    }
+
+    .an-page {
+        width: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+    }
+}
