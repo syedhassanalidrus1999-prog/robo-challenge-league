@@ -14,6 +14,9 @@
   var STORE = "rcl-screen-state";
   var PRESET_STORE = "rcl-screen-presets";
 
+  // แท็บหลักด้านบนเท่านั้น (ไม่รวมปุ่ม "วันที่ 1/2" ที่ใช้ class ct-tab เหมือนกัน)
+  var MAIN_TABS = "#ctTabs .ct-tab[data-tab]";
+
   var SCENE_NAME = {
     timer: "นาฬิกา",
     banner: "ประกาศ",
@@ -205,20 +208,24 @@
   // แท็บ + ปุ่มด่วน
   // ======================================================================
   var activeTab = "timer";
-  document.querySelectorAll(".ct-tab").forEach(function (b) {
+
+  function showTab(name) {
+    if (!name) return;
+    activeTab = name;
+    document.querySelectorAll(MAIN_TABS).forEach(function (x) {
+      x.classList.toggle("active", x.getAttribute("data-tab") === name);
+    });
+    document.querySelectorAll(".ct-panel").forEach(function (p) {
+      p.classList.toggle("active", p.getAttribute("data-panel") === name);
+    });
+  }
+
+  document.querySelectorAll(MAIN_TABS).forEach(function (b) {
     b.addEventListener("click", function () {
-      activeTab = b.getAttribute("data-tab");
-      document.querySelectorAll(".ct-tab").forEach(function (x) {
-        x.classList.toggle("active", x === b);
-      });
-      document.querySelectorAll(".ct-panel").forEach(function (p) {
-        p.classList.toggle(
-          "active",
-          p.getAttribute("data-panel") === activeTab,
-        );
-      });
+      showTab(b.getAttribute("data-tab"));
     });
   });
+  showTab(activeTab);
 
   document.querySelectorAll("#ctQuick button").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -1412,7 +1419,7 @@
     document.querySelectorAll("#ctQuick button").forEach(function (b) {
       b.classList.toggle("on", b.getAttribute("data-scene") === state.scene);
     });
-    document.querySelectorAll(".ct-tab").forEach(function (b) {
+    document.querySelectorAll(MAIN_TABS).forEach(function (b) {
       b.classList.toggle("live", b.getAttribute("data-tab") === state.scene);
     });
     $("rsNext").disabled =

@@ -4,11 +4,11 @@
     <div class="page-hd">
       <div class="page-title">สรุปผล — <span
           style="color:<%= tier==='beginner'?'#16A34A':tier==='intermediate'?'#2563EB':'#EA580C' %>">
-          <%= tier==='beginner' ?'Beginner':tier==='intermediate' ?'Intermediate':'Advance' %>
+          <%= tier==='beginner' ? 'Beginner' : tier==='intermediate' ? 'Intermediate' : 'Advance' %>
         </span></div>
       <a href="/board/export?tier=<%= tier %>" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
-                  background:#16a34a;color:#fff;border-radius:8px;text-decoration:none;
-                  font-weight:500;font-size:14px;">
+              background:#16a34a;color:#fff;border-radius:8px;text-decoration:none;
+              font-weight:500;font-size:14px;">
         <i class="ti ti-file-spreadsheet"></i> ดาวน์โหลด Excel
       </a>
       <a href="/board/announce" target="_blank"
@@ -48,6 +48,19 @@
       span.pub-btn {
         cursor: default;
       }
+
+      .team-id {
+        display: inline-block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        background: #F1F5F9;
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        padding: 2px 8px;
+        white-space: nowrap;
+      }
     </style>
 
     <div class="card">
@@ -56,6 +69,7 @@
           <thead>
             <tr>
               <th>อันดับ</th>
+              <th>ID</th>
               <th>ชื่อทีม</th>
               <th>รอบที่ 1</th>
               <th>รอบที่ 2</th>
@@ -66,7 +80,7 @@
           <tbody>
             <% if (ranked.length===0) { %>
               <tr>
-                <td colspan="6">
+                <td colspan="7">
                   <div class="empty"><i class="ti ti-trophy-off"></i>ยังไม่มีผลการแข่งขัน</div>
                 </td>
               </tr>
@@ -95,6 +109,13 @@
                                   <span class="rank-other">#<%= i + 1 %></span>
                                   <% } %>
                         </div>
+                      </td>
+
+                      <!-- ID -->
+                      <td data-label="ID">
+                        <span class="team-id">
+                          <%= t.id %>
+                        </span>
                       </td>
 
                       <!-- ชื่อทีม -->

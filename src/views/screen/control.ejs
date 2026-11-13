@@ -11,6 +11,115 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2">
     <link rel="stylesheet" href="/css/screen.css?v=4">
+    <style>
+        /* ===== แท็บเสียง / เพลง ===== */
+        .au-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            margin-top: 6px;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .au-row.on {
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .au-row .no {
+            width: 24px;
+            text-align: center;
+            color: #94A3B8;
+            font-weight: 600;
+        }
+
+        .au-row.on .no {
+            color: #2563EB;
+        }
+
+        .au-row .nm {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .au-x {
+            border: 0;
+            background: none;
+            color: #94A3B8;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            line-height: 1;
+        }
+
+        .au-x:hover {
+            color: #DC2626;
+        }
+
+        .au-sfx {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .au-tile {
+            position: relative;
+        }
+
+        .au-tile .sfx {
+            width: 100%;
+            min-height: 56px;
+            justify-content: center;
+            text-align: center;
+            padding-right: 26px;
+        }
+
+        .au-tile .sfx.playing {
+            background: #F0FDF4;
+            border-color: #16A34A;
+            color: #15803D;
+        }
+
+        .au-tile .au-x {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+        }
+
+        .au-seek {
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        .au-vol {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .au-vol input[type=range] {
+            flex: 1;
+        }
+
+        .au-vol .val {
+            width: 44px;
+            text-align: right;
+        }
+
+        #auDuck.on {
+            background: #FEF3C7;
+            border-color: #F59E0B;
+            color: #B45309;
+        }
+    </style>
 </head>
 
 <body class="sctl">
@@ -51,6 +160,8 @@
                         class="ti ti-photo"></i> รูปภาพ</button>
                 <button type="button" class="ct-tab" data-tab="video"><span class="dot"></span><i
                         class="ti ti-movie"></i> วิดีโอ</button>
+                <button type="button" class="ct-tab" data-tab="audio"><span class="dot"></span><i
+                        class="ti ti-music"></i> เสียง / เพลง</button>
                 <button type="button" class="ct-tab" data-tab="draw"><span class="dot"></span><i class="ti ti-gift"></i>
                     จับรางวัล</button>
                 <button type="button" class="ct-tab" data-tab="results"><span class="dot"></span><i
@@ -130,7 +241,8 @@
                         <summary class="ct-small">แก้ไขสคริปต์เสียง</summary>
                         <p class="ct-small" style="margin:8px 0">ใช้ <b>{label}</b> = ชื่อขั้น · <b>{minutes}</b> =
                             เวลาขั้นนี้ · <b>{cd}</b> = วินาทีนับถอยหลัง · <b>{n}</b> = นาทีที่เหลือ ·
-                            <b>{next_minutes}</b> = เวลาขั้นถัดไป</p>
+                            <b>{next_minutes}</b> = เวลาขั้นถัดไป
+                        </p>
                         <div id="scEdit"></div>
                         <div class="ct-row" style="margin-top:8px">
                             <button type="button" class="ct-btn primary" id="scSave"><i class="ti ti-device-floppy"></i>
@@ -273,6 +385,89 @@
                 </div>
             </section>
 
+            <!-- ===== เสียง / เพลง ===== -->
+            <section class="ct-panel" data-panel="audio">
+                <!-- เพลงพื้นหลัง -->
+                <div class="ct-card">
+                    <div class="ct-row" style="justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0"><i class="ti ti-music"></i> เพลงพื้นหลัง</h2>
+                        <span class="ct-small" id="auNow">ไม่ได้เล่น</span>
+                    </div>
+                    <div class="ct-row">
+                        <label class="ct-file"><i class="ti ti-folder-open"></i> เพิ่มเพลงจากเครื่อง (ได้หลายไฟล์)<input
+                                type="file" id="bgmFiles" accept="audio/*" multiple></label>
+                        <select class="ct-input" id="auLoop" style="flex:0 0 200px">
+                            <option value="all">วนทั้งรายการ</option>
+                            <option value="one">วนเพลงเดียว</option>
+                            <option value="list">เล่นจนจบรายการ</option>
+                            <option value="single">เล่นเพลงเดียวแล้วหยุด</option>
+                        </select>
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="auFade"> เฟดเข้า-ออก</label>
+                    </div>
+                    <div id="bgmList"></div>
+                    <div class="ct-progress au-seek" id="auSeek" title="คลิกเพื่อเลื่อนตำแหน่ง"><span
+                            id="auProg"></span></div>
+                    <div class="ct-small" id="auTime" style="margin-top:4px">—</div>
+                    <div class="ct-row" style="margin-top:10px">
+                        <button type="button" class="ct-btn" id="auPrev" title="เพลงก่อนหน้า"><i
+                                class="ti ti-player-skip-back"></i></button>
+                        <button type="button" class="ct-btn big primary" id="auPlay"><i class="ti ti-player-play"></i>
+                            เล่น</button>
+                        <button type="button" class="ct-btn" id="auNext" title="เพลงถัดไป"><i
+                                class="ti ti-player-skip-forward"></i></button>
+                        <button type="button" class="ct-btn" id="auStop"><i class="ti ti-player-stop"></i>
+                            หยุด</button>
+                        <button type="button" class="ct-btn" id="auDuck" style="margin-left:auto"
+                            title="ลดเสียงเพลงชั่วคราว เช่น ตอนพิธีกรพูด"><i class="ti ti-volume-2"></i>
+                            ลดเสียงเพลง</button>
+                    </div>
+                    <div class="au-vol" style="margin-top:8px">
+                        <span class="ct-small" style="width:80px">ความดังเพลง</span>
+                        <input type="range" id="auVol" min="0" max="1" step="0.05">
+                        <span class="ct-small val" id="auVolVal"></span>
+                    </div>
+                </div>
+
+                <!-- เอฟเฟกต์เสียง -->
+                <div class="ct-card">
+                    <div class="ct-row" style="justify-content:space-between;margin-bottom:10px">
+                        <h2 style="margin:0"><i class="ti ti-bell-ringing"></i> เอฟเฟกต์เสียง</h2>
+                        <button type="button" class="ct-btn danger" id="sfxStop"><i class="ti ti-player-stop"></i>
+                            หยุดทั้งหมด</button>
+                    </div>
+                    <div class="ct-row">
+                        <label class="ct-file"><i class="ti ti-folder-open"></i> เพิ่มเสียงจากเครื่อง
+                            (ได้หลายไฟล์)<input type="file" id="sfxFiles" accept="audio/*" multiple></label>
+                    </div>
+                    <div class="au-sfx" id="sfxList"></div>
+                    <div class="au-vol" style="margin-top:12px">
+                        <span class="ct-small" style="width:80px">ความดัง</span>
+                        <input type="range" id="sfxVol" min="0" max="1" step="0.05">
+                        <span class="ct-small val" id="sfxVolVal"></span>
+                    </div>
+                    <p class="ct-hint">คลิกปุ่มเพื่อเล่น · คลิกซ้ำระหว่างเล่นเพื่อหยุด · เหมาะกับเสียงปรบมือ กลองรัว
+                        เสียงเปิดตัว ฯลฯ</p>
+                </div>
+
+                <!-- ตั้งค่า -->
+                <div class="ct-card">
+                    <h2>ลดเสียงเพลงอัตโนมัติ</h2>
+                    <div class="ct-row">
+                        <label class="ct-small" style="display:inline-flex;gap:6px;align-items:center"><input
+                                type="checkbox" id="auDuckAuto"> ลดเสียงเพลงตอน AI พูดประกาศ และตอนเล่นเอฟเฟกต์</label>
+                        <select class="ct-input" id="auDuckLevel" style="flex:0 0 180px;margin-left:auto">
+                            <option value="0.1">ลดเหลือ 10%</option>
+                            <option value="0.25">ลดเหลือ 25%</option>
+                            <option value="0.4">ลดเหลือ 40%</option>
+                        </select>
+                    </div>
+                    <p class="ct-hint">เสียงออกลำโพงของเครื่องนี้ (เครื่องเดียวกับจอแสดงผล) ·
+                        ไฟล์เก็บไว้ในเบราว์เซอร์เครื่องนี้
+                        refresh แล้วยังอยู่ ไม่ถูกอัปโหลดขึ้นเว็บ · MP3 เล่นได้ทุกเครื่อง</p>
+                </div>
+            </section>
+
             <!-- ===== จับรางวัล ===== -->
             <section class="ct-panel" data-panel="draw">
                 <div class="ct-card">
@@ -336,7 +531,8 @@
     <div class="ct-status" id="ctStatus" role="status"></div>
 
     <script src="/js/screen-common.js?v=2"></script>
-    <script src="/js/screen-control.js?v=3"></script>
+    <script src="/js/screen-control.js?v=4"></script>
+    <script src="/js/screen-audio.js?v=1"></script>
 </body>
 
 </html>
